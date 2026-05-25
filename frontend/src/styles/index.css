@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
+@import "tailwindcss";
+@import "./components.css";
+
+
+@theme {
+  --color-purple-deep: #0b0416;
+  --color-purple-accent: #8a2be2;
+  --color-silver: #d3d3d3;
+  --color-dark-titanium: #1b1c1e;
+
+  --font-rajdhani: "Rajdhani", sans-serif;
+  --font-inter: "Inter", sans-serif;
+}
+
+:root {
+  font-family: var(--font-inter);
+  background-color: transparent;
+  color: var(--color-silver);
+  overflow: hidden;
+  user-select: none;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: transparent;
+}

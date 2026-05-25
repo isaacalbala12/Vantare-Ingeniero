@@ -1,0 +1,50 @@
+2026-05-22 10:43:39,471 [INFO] vantare.main: Starting server on 127.0.0.1:8000...
+2026-05-22 10:43:39,680 [INFO] uvicorn.error: Started server process [25308]
+2026-05-22 10:43:39,685 [INFO] uvicorn.error: Waiting for application startup.
+2026-05-22 10:43:39,689 [INFO] vantare.main: Initializing Ingeniero de IA Backend Services...
+2026-05-22 10:43:39,693 [INFO] packaging.tags: sharedmemory: ACTIVE: LMU_Data (Copy Access)
+2026-05-22 10:43:39,699 [INFO] vantare.main: TelemetryReader started (offline_mode=False)
+2026-05-22 10:43:39,703 [INFO] vantare.main: LMU REST API poller task spawned
+2026-05-22 10:43:39,707 [INFO] vantare.strategy_service: StrategyService loop started
+2026-05-22 10:43:39,707 [INFO] vantare.main: StrategyService loop spawned
+2026-05-22 10:43:39,708 [INFO] vantare.main: SpotterService initialized and hooked to WS broadcaster
+2026-05-22 10:43:40,199 [INFO] vantare.main: IntelligenceEngine initialized and hooked to WS broadcaster
+2026-05-22 10:43:40,200 [INFO] vantare.lmu_api: LMU REST API poller started
+2026-05-22 10:43:40,816 [INFO] uvicorn.error: Application startup complete.
+2026-05-22 10:43:40,830 [INFO] uvicorn.error: Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2026-05-22 10:43:40,838 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/sessions/weather "HTTP/1.1 200 OK"
+2026-05-22 10:43:40,844 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:43:40,856 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:43:43,894 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:43:43,916 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:43:46,962 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:43:46,977 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:43:50,030 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:43:50,042 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:43:53,088 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:43:53,100 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:43:56,141 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:43:56,157 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:43:59,206 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:43:59,214 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:44:02,280 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:44:02,282 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:44:05,334 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:44:05,345 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:44:08,411 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:44:08,417 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:44:11,479 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:44:11,498 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:44:14,444 [INFO] uvicorn.access: 127.0.0.1:60789 - "GET /health HTTP/1.1" 200
+2026-05-22 10:44:14,542 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:44:14,546 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:44:17,602 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:44:17,621 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:44:20,643 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:44:20,664 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:44:23,687 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:44:23,702 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:44:26,736 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:44:26,745 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"
+2026-05-22 10:44:29,782 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/strategy/usage "HTTP/1.1 200 OK"
+2026-05-22 10:44:29,800 [INFO] httpx: HTTP Request: GET http://localhost:6397/rest/garage/UIScreen/RepairAndRefuel "HTTP/1.1 200 OK"

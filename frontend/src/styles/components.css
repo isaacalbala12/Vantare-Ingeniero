@@ -1,0 +1,105 @@
+/* Estilos Viga de Cristal - MOTEC UI System */
+
+.glass-panel {
+  background: rgba(11, 4, 22, 0.65);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(138, 43, 226, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(11, 4, 22, 0.37),
+              inset 0 0 12px rgba(138, 43, 226, 0.1);
+  border-radius: 8px;
+  color: #d3d3d3;
+}
+
+.glass-panel-active {
+  border-color: rgba(138, 43, 226, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(138, 43, 226, 0.2),
+              inset 0 0 16px rgba(138, 43, 226, 0.2);
+}
+
+.glass-button {
+  background: rgba(27, 28, 30, 0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(211, 211, 211, 0.2);
+  border-radius: 6px;
+  color: #d3d3d3;
+  font-family: var(--font-rajdhani);
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  outline: none;
+}
+
+.glass-button:hover {
+  background: rgba(138, 43, 226, 0.25);
+  border-color: rgba(138, 43, 226, 0.5);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+  transform: translateY(-1px);
+}
+
+.glass-button:active {
+  transform: translateY(1px);
+}
+
+.glass-button-primary {
+  background: rgba(138, 43, 226, 0.2);
+  border-color: rgba(138, 43, 226, 0.5);
+}
+
+.glass-button-primary:hover {
+  background: rgba(138, 43, 226, 0.4);
+  border-color: rgba(138, 43, 226, 0.8);
+  box-shadow: 0 0 15px rgba(138, 43, 226, 0.5);
+}
+
+.glass-input {
+  background: rgba(11, 4, 22, 0.5);
+  border: 1px solid rgba(211, 211, 211, 0.15);
+  border-radius: 6px;
+  color: #ffffff;
+  font-family: var(--font-inter);
+  padding: 8px 12px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: rgba(138, 43, 226, 0.6);
+  box-shadow: 0 0 8px rgba(138, 43, 226, 0.25);
+}
+
+/* Scrollbar personalizado para el estilo Viga de Cristal */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(11, 4, 22, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(138, 43, 226, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(138, 43, 226, 0.6);
+}
+
+/* Clases de animación */
+@keyframes glow-purple {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(138, 43, 226, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(138, 43, 226, 0.7);
+  }
+}
+
+.animate-glow {
+  animation: glow-purple 2s infinite ease-in-out;
+}
