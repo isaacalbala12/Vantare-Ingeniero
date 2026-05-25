@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-cosmic-dark: #0b0416;
+  --color-neon-purple: #8a2be2;
+  --color-bright-silver: #d3d3d3;
+  --color-titanium-dark: #1b1c1e;
+  --font-rajdhani: "Rajdhani", sans-serif;
+  --font-inter: "Inter", sans-serif;
+}
+
+:root {
+  font-family: 'Inter', sans-serif;
+  color-scheme: dark;
+  background-color: transparent;
+  color: #d3d3d3;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: transparent;
+}
+
+/* Sistema de Diseño Viga de Cristal - Glassmorphism Premium */
+.glass-panel {
+  background: rgba(11, 4, 22, 0.65);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(138, 43, 226, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(11, 4, 22, 0.5);
+  border-radius: 12px;
+}
+
+.glass-panel-silver {
+  background: rgba(27, 28, 30, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(211, 211, 211, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+}
+
+.glass-panel-purple {
+  background: rgba(138, 43, 226, 0.08);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid rgba(138, 43, 226, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(138, 43, 226, 0.1);
+  border-radius: 12px;
+}
+
+.glass-button {
+  background: rgba(138, 43, 226, 0.12);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(138, 43, 226, 0.35);
+  color: #d3d3d3;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.glass-button:hover {
+  background: rgba(138, 43, 226, 0.3);
+  border-color: rgba(138, 43, 226, 0.6);
+  box-shadow: 0 0 12px rgba(138, 43, 226, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.glass-button:active {
+  transform: translateY(1px);
+  background: rgba(138, 43, 226, 0.4);
+}
+
+.glass-button-muted {
+  background: rgba(27, 28, 30, 0.4);
+  border: 1px solid rgba(211, 211, 211, 0.2);
+  color: #888888;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.glass-button-muted:hover {
+  background: rgba(211, 211, 211, 0.1);
+  border-color: rgba(211, 211, 211, 0.4);
+  color: #d3d3d3;
+}
+
+.glass-input {
+  background: rgba(11, 4, 22, 0.5);
+  border: 1px solid rgba(138, 43, 226, 0.25);
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.glass-input:focus {
+  border-color: rgba(138, 43, 226, 0.6);
+  box-shadow: 0 0 8px rgba(138, 43, 226, 0.3);
+}
+
+/* Animaciones e indicadores de estado */
+@keyframes pulse-ring {
+  0% { transform: scale(0.95); opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { transform: scale(1.05); opacity: 0; }
+}
+
+.status-pulse {
+  position: relative;
+}
+
+.status-pulse::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: inherit;
+  border-radius: inherit;
+  animation: pulse-ring 1.5s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}

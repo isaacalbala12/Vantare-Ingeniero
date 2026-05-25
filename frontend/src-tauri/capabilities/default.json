@@ -1,0 +1,17 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for Vantare Ingeniero IA windows including sidecar execution",
+  "windows": ["main", "config"],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "shell:default",
+    "global-shortcut:default",
+    "global-shortcut:allow-is-registered",
+    "websocket:default",
+    "shell:allow-execute",
+    "shell:allow-spawn",
+    "shell:allow-stdin-write"
+  ]
+}
