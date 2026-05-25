@@ -22,8 +22,8 @@ async def health_check(request: Request):
     # 2. Verificar estado de la API REST de LMU
     cache_info = get_cache_sizes()
 
-    # 3. Verificar estado del LLM (CrofAI)
-    llm_api_configured = bool(settings.CROFAI_API_KEY)
+    # 3. Verificar estado del LLM
+    llm_api_configured = bool(settings.LLM_API_KEY)
 
     return {
         "status": "ok",

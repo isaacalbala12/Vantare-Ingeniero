@@ -6,7 +6,7 @@ from src.config import settings
 
 logger = logging.getLogger("vantare.llm_service")
 
-CROFAI_API_URL = f"{settings.CROFAI_BASE_URL}/chat/completions"
+LLM_API_URL = f"{settings.LLM_BASE_URL}/chat/completions"
 
 SYSTEM_PROMPT = (
     "Eres un entrenador de simracing profesional. Analizas datos de telemetría "
@@ -111,13 +111,13 @@ MOCK_TRAINING_PLAN = {
 
 
 async def _llm_request(messages: list, response_json: bool = True) -> dict | None:
-    """Realiza una request asíncrona al LLM de CrofAI."""
-    if not settings.CROFAI_API_KEY:
+    """Realiza una request asíncrona al LLM."""
+    if not settings.LLM_API_KEY:
         logger.warning("GROQ_API_KEY is empty. Skipping LLM request and using mock fallback.")
         return None
 
     headers = {
-        "Authorization": f"Bearer {settings.CROFAI_API_KEY}",
+        "Authorization": f"Bearer {settings.LLM_API_KEY}",
         "Content-Type": "application/json",
     }
 
@@ -135,7 +135,7 @@ async def _llm_request(messages: list, response_json: bool = True) -> dict | Non
     try:
         async with httpx.AsyncClient() as client:
             resp = await client.post(
-                CROFAI_API_URL,
+                LLM_API_URL,
                 headers=headers,
                 json=payload,
                 timeout=30.0
@@ -153,13 +153,13 @@ async def _llm_request(messages: list, response_json: bool = True) -> dict | Non
 
             return json.loads(content)
     except Exception as e:
-        logger.error(f"CrofAI LLM request failed: {e}", exc_info=True)
+        logger.error(f"LLM request failed: {e}", exc_info=True)
         return None
 
 
 async def llamar_llm(contexto: dict) -> dict:
-    """Envía el contexto al LLM de CrofAI. Si no hay key, devuelve respuesta mock."""
-    if not settings.CROFAI_API_KEY:
+    """Envía el contexto al LLM. Si no hay key, devuelve respuesta mock."""
+    if not settings.LLM_API_KEY:
         return MOCK_RESPONSE
 
     messages = [
@@ -177,7 +177,7 @@ async def llamar_llm(contexto: dict) -> dict:
 
 async def llamar_llm_session_title(contexto: dict) -> dict:
     """Genera un titular de sesión usando el LLM. Mock si no hay API key."""
-    if not settings.CROFAI_API_KEY:
+    if not settings.LLM_API_KEY:
         return MOCK_SESSION_TITLE
 
     messages = [
@@ -196,7 +196,7 @@ async def llamar_llm_session_title(contexto: dict) -> dict:
 
 async def llamar_llm_training_plan(contexto: dict) -> dict:
     """Genera un plan de entrenamiento semanal usando el LLM. Mock si no hay API key."""
-    if not settings.CROFAI_API_KEY:
+    if not settings.LLM_API_KEY:
         return MOCK_TRAINING_PLAN
 
     messages = [
@@ -214,12 +214,12 @@ async def llamar_llm_training_plan(contexto: dict) -> dict:
 
 
 async def llamar_copiloto_stream(pregunta: str, contexto: dict, chat_history: list = None):
-    """Envía la pregunta del piloto y el contexto de carrera actual al LLM de CrofAI.
+    """Envía la pregunta del piloto y el contexto de carrera actual al LLM.
     
     Yields chunks de texto en tiempo real (streaming).
     """
-    if not settings.CROFAI_API_KEY:
-        yield "Copiado piloto, pero no tengo conexión de red activa en boxes ahora mismo. Configura la clave de CrofAI para que pueda guiarte."
+    if not settings.LLM_API_KEY:
+        yield "Copiado piloto, pero no tengo conexión de red activa en boxes ahora mismo. Configura la clave de LLM_API_KEY para que pueda guiarte."
         return
 
     system_prompt = (
@@ -243,7 +243,7 @@ async def llamar_copiloto_stream(pregunta: str, contexto: dict, chat_history: li
     messages.append({"role": "user", "content": pregunta})
 
     headers = {
-        "Authorization": f"Bearer {settings.CROFAI_API_KEY}",
+        "Authorization": f"Bearer {settings.LLM_API_KEY}",
         "Content-Type": "application/json",
     }
 
@@ -259,7 +259,7 @@ async def llamar_copiloto_stream(pregunta: str, contexto: dict, chat_history: li
         async with httpx.AsyncClient() as client:
             async with client.stream(
                 "POST",
-                CROFAI_API_URL,
+                LLM_API_URL,
                 headers=headers,
                 json=payload,
                 timeout=30.0
@@ -281,6 +281,6 @@ async def llamar_copiloto_stream(pregunta: str, contexto: dict, chat_history: li
                         except Exception:
                             pass
     except Exception as e:
-        logger.error(f"Error in CrofAI streaming: {e}", exc_info=True)
+        logger.error(f"Error in LLM streaming: {e}", exc_info=True)
         yield f" Error de radio: {e}. Intenta de nuevo."
 

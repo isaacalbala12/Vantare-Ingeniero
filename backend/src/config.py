@@ -12,10 +12,15 @@ else:
 
 
 class Settings(BaseSettings):
-    # CrofAI (motor de lenguaje remoto, compatible con OpenAI API)
-    CROFAI_API_KEY: str = ""
-    CROFAI_BASE_URL: str = "https://crof.ai/v1"
-    LLM_MODEL: str = "deepseek-v4-flash"
+    # LLM (motor de lenguaje genérico, compatible con OpenAI API)
+    # Permite cambiar de proveedor fácilmente (CrofAI, Groq, vLLM, etc.)
+    LLM_BASE_URL: str = "https://bright-climb-alan-reforms.trycloudflare.com/v1"
+    LLM_API_KEY: str = ""
+    LLM_MODEL: str = "hipfire-qwen"
+
+    # DEPRECATED: CrofAI (mantenido por compatibilidad)
+    CROFAI_API_KEY: str = ""  # DEPRECATED - usar LLM_API_KEY
+    CROFAI_BASE_URL: str = "https://crof.ai/v1"  # DEPRECATED - usar LLM_BASE_URL
 
     # Groq (legacy, usado por el endpoint /ask)
     GROQ_API_KEY: str = ""
