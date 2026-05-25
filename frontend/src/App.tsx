@@ -10,6 +10,11 @@ import { getHealth } from "./services/api";
 import { audioQueue } from "./services/audioQueue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
+// Verificar disponibilidad de Web Speech API
+const isSpeechRecognitionAvailable = 
+  typeof window !== "undefined" && 
+  ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
+
 /**
  * Hub Unificado - Una sola ventana Tauri con Dashboard y Configuración.
  * Integra WebSocket, captura de audio PTT, hotkeys, síntesis de beeps,
@@ -212,6 +217,27 @@ export const App: React.FC = () => {
     // y el TTS se solicita al endpoint /tts cuando llega advice_end.
   };
 
+  // Handler para envío de texto directo (fallback cuando SpeechRecognition no disponible en Linux)
+  const handleTextSubmit = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    console.log("[App] Texto enviado:", trimmed);
+    
+    // Interrumpir reproducción de audio TTS en curso
+    audioQueue.stop();
+    
+    // Añadir mensaje del piloto al historial
+    addMessageToHistory("pilot", trimmed);
+    
+    // Enviar al backend
+    sendJson("pilot_question", { question: trimmed });
+    
+    // Cambiar modo a pensando
+    setRadioMode("THINKING_LLM");
+    setCurrentTokens("");
+  };
+
   // 6. Registrar interceptación de Teclado (PTT local y global)
   useHotkey({
     onKeyDown: handlePTTStart,
@@ -322,7 +348,7 @@ export const App: React.FC = () => {
 
       {/* Contenido principal que alterna entre Dashboard y Configuración */}
       <div className="flex-1 overflow-hidden relative bg-[#111]">
-        {screen === "config" ? <ConfigTab /> : <Dashboard />}
+        {screen === "config" ? <ConfigTab /> : <Dashboard onPTTStart={handlePTTStart} onPTTEnd={handlePTTEnd} onTextSubmit={handleTextSubmit} showTextInput={!isSpeechRecognitionAvailable} />}
       </div>
 
       {/* Barra inferior de navegación */}
