@@ -14,9 +14,9 @@ logger = logging.getLogger("vantare.llm_client")
 
 
 class VLLMClient:
-    """Cliente asíncrono para el motor de lenguaje CrofAI (API compatible con OpenAI).
+    """Cliente asíncrono para el motor de lenguaje LLM (API compatible con OpenAI).
 
-    Se conecta a CrofAI (https://crof.ai/v1) usando el SDK oficial de OpenAI.
+    Se conecta a la URL configurada en LLM_BASE_URL usando el SDK oficial de OpenAI.
     """
 
     def __init__(
@@ -25,16 +25,16 @@ class VLLMClient:
         base_url: Optional[str] = None,
         model: Optional[str] = None,
     ) -> None:
-        self._api_key = api_key or settings.CROFAI_API_KEY
-        self._base_url = base_url or settings.CROFAI_BASE_URL
+        self._api_key = api_key or settings.LLM_API_KEY
+        self._base_url = base_url or settings.LLM_BASE_URL
         self._model = model or settings.LLM_MODEL
         self._client: Optional[AsyncOpenAI] = None
 
         if not self._api_key:
             logger.warning(
-                "*** CROFAI_API_KEY no configurada. El LLM no funcionará. ***\n"
+                "*** LLM_API_KEY no configurada. El LLM no funcionará. ***\n"
                 "    Crea un archivo backend/.env con:\n"
-                "    CROFAI_API_KEY=tu-api-key-aqui"
+                "    LLM_API_KEY=tu-api-key-aqui"
             )
 
         logger.info(
@@ -47,42 +47,39 @@ class VLLMClient:
     def _get_client(self) -> AsyncOpenAI:
         """Devuelve (y cachea) el cliente OpenAI asíncrono."""
         if self._client is None:
-            import httpx
-            self._client = AsyncOpenAI(
-                api_key=self._api_key,
+            self._client = openai.AsyncOpenAI(
                 base_url=self._base_url,
-                timeout=httpx.Timeout(25.0, connect=10.0, read=20.0),
-                max_retries=1,
+                api_key=self._api_key,
             )
         return self._client
 
     async def health_check(self) -> bool:
-        """Verifica conectividad con CrofAI listando los modelos disponibles."""
+        """Verifica conectividad con el LLM listando los modelos disponibles."""
         try:
             client = self._get_client()
             models = await client.models.list()
             model_ids = [m.id for m in models.data]
             logger.info(
-                "CrofAI health OK: %d modelos disponibles. Modelo objetivo: %s",
+                "LLM health OK: %d modelos disponibles. Modelo objetivo: %s",
                 len(model_ids),
                 self._model,
             )
             # Verificar que el modelo configurado existe en la lista
             if self._model not in model_ids:
                 logger.warning(
-                    "Modelo '%s' no encontrado en CrofAI. Disponibles: %s",
+                    "Modelo '%s' no encontrado en el LLM. Disponibles: %s",
                     self._model,
                     ", ".join(model_ids[:10]),
                 )
             return True
         except Exception as e:
-            logger.warning("CrofAI health check fallido: %s", e)
+            logger.warning("LLM health check fallido: %s", e)
             return False
 
     async def ask_streaming(
         self, prompt: str, tier: str, advice_id: str, engine_ref=None
     ) -> None:
-        """Realiza una consulta por streaming al LLM de CrofAI.
+        """Realiza una consulta por streaming al LLM.
 
         Los tokens se emiten al frontend vía WebSocket (AdviceTokenMessage).
         Al finalizar se emite AdviceEndMessage con el texto completo y acciones UI.
@@ -195,7 +192,7 @@ class VLLMClient:
             ))
 
         except Exception as e:
-            logger.error("Error en streaming LLM (CrofAI): %s", e)
+            logger.error("Error en streaming LLM: %s", e)
             error_fallback = "... Pérdida de comunicación de radio con el muro de boxes ..."
             send(
                 AdviceEndMessage(

@@ -94,13 +94,13 @@ async def lifespan(app: FastAPI):
     app.state.intelligence_engine = intelligence_engine
     logger.info("IntelligenceEngine initialized and hooked to WS broadcaster")
 
-    if not settings.CROFAI_API_KEY:
+    if not settings.LLM_API_KEY:
         logger.error(
             "╔══════════════════════════════════════════════════╗\n"
-            "║  CROFAI_API_KEY no configurada                  ║\n"
+            "║  LLM_API_KEY no configurada                    ║\n"
             "║  El LLM no responderá preguntas del piloto.     ║\n"
             "║  Crea backend/.env con:                         ║\n"
-            "║    CROFAI_API_KEY=tu-api-key                    ║\n"
+            "║    LLM_API_KEY=tu-api-key                       ║\n"
             "╚══════════════════════════════════════════════════╝"
         )
 
