@@ -218,7 +218,7 @@ export const App: React.FC = () => {
   };
 
   // Handler para envío de texto directo (fallback cuando SpeechRecognition no disponible en Linux)
-  const handleTextSubmit = (text: string) => {
+  const handleTextSubmit = async (text: string) => {
     const trimmed = text.trim();
     if (!trimmed) return;
 
@@ -230,12 +230,45 @@ export const App: React.FC = () => {
     // Añadir mensaje del piloto al historial
     addMessageToHistory("pilot", trimmed);
     
-    // Enviar al backend
-    sendJson("pilot_question", { question: trimmed });
-    
     // Cambiar modo a pensando
     setRadioMode("THINKING_LLM");
     setCurrentTokens("");
+
+    try {
+      const config = useAppStore.getState().config;
+      const baseUrl = `http://${config.vllmIP}:${config.serverPort}`;
+      const response = await fetch(`${baseUrl}/ask`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: trimmed }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      // Extraer texto de la respuesta desde el header
+      const responseText = response.headers.get("X-Response-Text") || "";
+      if (responseText) {
+        addMessageToHistory("engineer", responseText);
+      }
+
+      // Leer el blob de audio
+      const audioBlob = await response.blob();
+      if (audioBlob.size > 0) {
+        const url = URL.createObjectURL(audioBlob);
+        audioQueue.enqueue(responseText || "Respuesta sin texto", url);
+        // El modo SPEAKING_ENGINE se activará automáticamente vía callback
+      } else {
+        console.warn("[App] Audio vacío recibido del backend.");
+        // Si no hay audio, volver a IDLE
+        setRadioMode("IDLE");
+      }
+    } catch (error) {
+      console.error("[App] Error al enviar pregunta:", error);
+      setRadioMode("IDLE");
+      setCurrentTokens("");
+    }
   };
 
   // 6. Registrar interceptación de Teclado (PTT local y global)
