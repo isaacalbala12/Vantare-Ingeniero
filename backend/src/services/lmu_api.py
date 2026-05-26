@@ -13,6 +13,14 @@ _weather_cache: dict = {}
 _strategy_usage_cache: dict = {}
 _garage_wear_cache: dict = {}
 
+_weather_updated: float = 0.0
+_strategy_updated: float = 0.0
+_garage_updated: float = 0.0
+
+_weather_updated: float = 0.0
+_strategy_updated: float = 0.0
+_garage_updated: float = 0.0
+
 _cache_lock = Lock()
 
 
@@ -68,13 +76,16 @@ def get_additional_data(category: str) -> dict:
         return {}
 
 
-def get_cache_sizes() -> dict[str, int]:
-    """Cantidad de entradas en los caches. Útil para diagnóstico y health-check."""
+def get_cache_sizes() -> dict:
+    """Cantidad de entradas en los caches con timestamps. Útil para diagnóstico."""
     with _cache_lock:
         return {
             "weather": len(_weather_cache),
             "strategy_usage": len(_strategy_usage_cache),
             "garage_wear": len(_garage_wear_cache),
+            "weather_age_s": time.monotonic() - _weather_updated if _weather_updated else -1,
+            "strategy_age_s": time.monotonic() - _strategy_updated if _strategy_updated else -1,
+            "garage_age_s": time.monotonic() - _garage_updated if _garage_updated else -1,
             # Claves compatibles para no romper la API de health actual
             "drivers": len(_strategy_usage_cache),
             "brakes": len(_garage_wear_cache)
@@ -146,14 +157,17 @@ async def poll_api() -> None:
                             logger.debug(f"Failed to parse JSON response for {key}: {e}")
                     
                     # Swap atómico con lock para mantener la persistencia
-                    global _weather_cache, _strategy_usage_cache, _garage_wear_cache
+                    global _weather_cache, _strategy_usage_cache, _garage_wear_cache, _weather_updated, _strategy_updated, _garage_updated
                     with _cache_lock:
                         if new_weather is not None:
                             _weather_cache = new_weather
+                            _weather_updated = current_time
                         if new_strategy is not None:
                             _strategy_usage_cache = new_strategy
+                            _strategy_updated = current_time
                         if new_garage is not None:
                             _garage_wear_cache = new_garage
+                            _garage_updated = current_time
                             
                     # Actualizar timestamps de última consulta para evitar busy-waiting
                     if "weather" in task_keys:
