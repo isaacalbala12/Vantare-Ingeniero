@@ -125,15 +125,20 @@ async def strategy_sender_loop(websocket: WebSocket, app_state, active_subtasks:
                 # 1. Evaluar la capa de inteligencia y triggers tácticos
                 engine = getattr(app_state, "intelligence_engine", None)
                 if engine:
-                    reader = getattr(app_state, "telemetry_reader", None)
-                    if reader:
-                        frame = reader.get_state()
-                        if frame:
-                            # Evaluar en background de forma asíncrona no bloqueante
-                            task = asyncio.create_task(_safe_evaluate_cycle(engine, frame, advice))
-                            if active_subtasks is not None:
-                                task.add_done_callback(active_subtasks.discard)
-                                active_subtasks.add(task)
+                    # 1. Intentar usar telemetría del frontend (Windows → Linux)
+                    frame = getattr(app_state, "latest_client_frame", None)
+                    
+                    # 2. Fallback: telemetry_reader (offline en Linux, real en Windows)
+                    if not frame:
+                        reader = getattr(app_state, "telemetry_reader", None)
+                        if reader:
+                            frame = reader.get_state()
+                    
+                    if frame:
+                        task = asyncio.create_task(_safe_evaluate_cycle(engine, frame, advice))
+                        if active_subtasks is not None:
+                            task.add_done_callback(active_subtasks.discard)
+                            active_subtasks.add(task)
 
                 # Emitir solo si ha cambiado el contenido estratégico para reducir ancho de banda
                 if advice_dict != last_advice_dict:
