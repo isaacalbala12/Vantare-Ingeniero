@@ -169,6 +169,22 @@ async def strategy_sender_loop(websocket: WebSocket, app_state, active_subtasks:
             break
 
 
+async def _index_events_async(event_store, frame: dict, events: list[dict]) -> None:
+    """Indexa eventos en EventStore de forma asíncrona (no bloquea el WS loop)."""
+    try:
+        batches: list[tuple[dict, str, int]] = []
+        for evt in events:
+            event_type = evt.get("type", "unknown")
+            lap = evt.get("lap", 1)
+            batches.append((frame, event_type, lap))
+
+        if batches:
+            event_store.store_events_batch(batches)
+            logger.debug("Indexados %d eventos en EventStore", len(batches))
+    except Exception as e:
+        logger.warning("Error indexing events in EventStore: %s", e)
+
+
 @router.websocket("/ws/sidecar")
 async def sidecar_endpoint(websocket: WebSocket):
     """Endpoint dedicado para el sidecar StrategyService en Windows.
@@ -187,6 +203,15 @@ async def sidecar_endpoint(websocket: WebSocket):
                 if frame_data:
                     app_state.latest_strategy_frame = frame_data
                     logger.debug("strategy_frame recibido del sidecar")
+
+                    # Indexar eventos en EventStore (RAG) — asíncrono, no bloquea
+                    events = frame_data.get("events", [])
+                    if events and hasattr(app_state, "event_store"):
+                        frame = frame_data.get("frame", {})
+                        event_store = app_state.event_store
+                        asyncio.ensure_future(
+                            _index_events_async(event_store, frame, events)
+                        )
     except WebSocketDisconnect:
         logger.info("Sidecar desconectado de /ws/sidecar")
     except Exception as e:
