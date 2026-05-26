@@ -89,12 +89,10 @@ async def telemetry_sender_loop(websocket: WebSocket, app_state) -> None:
                 if spotter:
                     spotter.evaluate_tick(state)
 
-                # Serializar el modelo Pydantic a JSON compatible
+                # Serializar el modelo Pydantic a MessagePack binario
                 state_dict = state.model_dump(mode="json")
-                await websocket.send_json({
-                    "event": "telemetry",
-                    "data": state_dict
-                })
+                raw = mp_encode(state_dict)
+                await websocket.send_bytes(raw)
             await asyncio.sleep(0.05)  # 20Hz (50ms)
         except asyncio.CancelledError:
             break
