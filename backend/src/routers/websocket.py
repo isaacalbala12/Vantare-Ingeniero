@@ -118,27 +118,40 @@ async def strategy_sender_loop(websocket: WebSocket, app_state, active_subtasks:
                 await asyncio.sleep(2.0)
                 continue
 
-            advice = strategy_service.get_latest_advice()
-            if advice is not None:
-                advice_dict = advice.model_dump(mode="json")
-                
-                # 1. Evaluar la capa de inteligencia y triggers tácticos
+            # 1. Intentar usar strategy_frame del sidecar Windows
+            sidecar_frame = getattr(app_state, "latest_strategy_frame", None)
+            if sidecar_frame:
+                advice = sidecar_frame.get("advice")
+                frame = sidecar_frame.get("frame")
+                if advice is not None:
+                    advice_dict = advice if isinstance(advice, dict) else advice.model_dump(mode="json")
+                    logger.debug("Usando strategy_frame del sidecar Windows")
+                else:
+                    advice_dict = None
+            else:
+                # 2. Fallback: usar StrategyService local
+                advice = strategy_service.get_latest_advice()
+                if advice is not None:
+                    advice_dict = advice.model_dump(mode="json")
+                    logger.debug("Usando StrategyService offline (sidecar no detectado)")
+                else:
+                    advice_dict = None
+
+                # Resolver frame desde telemetry_reader
+                frame = getattr(app_state, "latest_client_frame", None)
+                if not frame:
+                    reader = getattr(app_state, "telemetry_reader", None)
+                    if reader:
+                        frame = reader.get_state()
+
+            if advice_dict is not None:
+                # Evaluar la capa de inteligencia y triggers tácticos
                 engine = getattr(app_state, "intelligence_engine", None)
-                if engine:
-                    # 1. Intentar usar telemetría del frontend (Windows → Linux)
-                    frame = getattr(app_state, "latest_client_frame", None)
-                    
-                    # 2. Fallback: telemetry_reader (offline en Linux, real en Windows)
-                    if not frame:
-                        reader = getattr(app_state, "telemetry_reader", None)
-                        if reader:
-                            frame = reader.get_state()
-                    
-                    if frame:
-                        task = asyncio.create_task(_safe_evaluate_cycle(engine, frame, advice))
-                        if active_subtasks is not None:
-                            task.add_done_callback(active_subtasks.discard)
-                            active_subtasks.add(task)
+                if engine and frame:
+                    task = asyncio.create_task(_safe_evaluate_cycle(engine, frame, advice))
+                    if active_subtasks is not None:
+                        task.add_done_callback(active_subtasks.discard)
+                        active_subtasks.add(task)
 
                 # Emitir solo si ha cambiado el contenido estratégico para reducir ancho de banda
                 if advice_dict != last_advice_dict:
@@ -147,13 +160,37 @@ async def strategy_sender_loop(websocket: WebSocket, app_state, active_subtasks:
                         "data": advice_dict
                     })
                     last_advice_dict = advice_dict
-            
+
             await asyncio.sleep(2.0)  # 0.5Hz (2s)
         except asyncio.CancelledError:
             break
         except Exception as e:
             logger.debug(f"Error sending strategy advice: {e}")
             break
+
+
+@router.websocket("/ws/sidecar")
+async def sidecar_endpoint(websocket: WebSocket):
+    """Endpoint dedicado para el sidecar StrategyService en Windows.
+    
+    Solo recibe strategy_frame, sin loops de telemetría ni estrategia fantasma.
+    """
+    await websocket.accept()
+    app_state = websocket.app.state
+    logger.info("Sidecar conectado en /ws/sidecar")
+    try:
+        while True:
+            data = await websocket.receive_json()
+            event = data.get("event", "")
+            if event == "strategy_frame":
+                frame_data = data.get("data", {})
+                if frame_data:
+                    app_state.latest_strategy_frame = frame_data
+                    logger.debug("strategy_frame recibido del sidecar")
+    except WebSocketDisconnect:
+        logger.info("Sidecar desconectado de /ws/sidecar")
+    except Exception as e:
+        logger.warning(f"Error en sidecar endpoint: {e}")
 
 
 @router.websocket("/ws")
