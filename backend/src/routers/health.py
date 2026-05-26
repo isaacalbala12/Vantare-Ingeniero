@@ -32,6 +32,9 @@ async def health_check(request: Request):
             "offline_mode": getattr(reader, "offline", True) if reader else True,
             "last_lap": last_lap
         },
+        "frontend_telemetry": {
+            "received": getattr(request.app.state, "latest_client_frame", None) is not None,
+        },
         "lmu_api": {
             "status": "active" if cache_info.get("drivers", 0) > 0 or cache_info.get("brakes", 0) > 0 else "idle",
             "cache": cache_info
