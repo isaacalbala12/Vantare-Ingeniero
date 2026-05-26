@@ -197,8 +197,37 @@ export const App: React.FC = () => {
 
     // Determinar pregunta final (solo si hay transcripción válida)
     let questionText = transcriptionRef.current.trim();
+    
+    // Fallback WAV: if SpeechRecognition didn't capture text, send audio to backend for ASR
+    if (!questionText && wavBlob && wavBlob.size > 0) {
+      console.log("[App] SpeechRecognition sin transcripción — enviando WAV para ASR");
+      try {
+        const config = useAppStore.getState().config;
+        const baseUrl = `http://${config.vllmIP}:${config.serverPort}`;
+        const formData = new FormData();
+        formData.append("audio", wavBlob, "ptt_recording.wav");
+        
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        
+        const res = await fetch(`${baseUrl}/transcribe`, {
+          method: "POST",
+          body: formData,
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+        
+        if (res.ok) {
+          const data = await res.json();
+          questionText = (data.text || "").trim();
+        }
+      } catch (err) {
+        console.warn("[App] Fallback ASR falló:", err);
+      }
+    }
+
     if (!questionText) {
-      console.warn("[App] No se capturó transcripción de voz. El microfono puede no estar disponible en esta ventana.");
+      console.warn("[App] No se capturó transcripción de voz.");
       setRadioMode("IDLE");
       setCurrentTokens("");
       return;
@@ -210,7 +239,6 @@ export const App: React.FC = () => {
     // Enviar evento de texto por websocket
     sendJson("pilot_question", { question: questionText });
 
-    // (el blob WAV se descarta — el backend no lo procesa y causaba cierre del WebSocket)
 
     // La respuesta del LLM llega via WebSocket (advice_token/advice_end).
     // El backend procesa pilot_question a traves del IntelligenceEngine
