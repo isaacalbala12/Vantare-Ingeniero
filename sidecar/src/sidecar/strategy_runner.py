@@ -63,8 +63,13 @@ class StrategyRunner:
             return
 
         # Session type mapping
-        session_type_map = {0: "practice", 1: "practice", 2: "qualifying"}
-        session_type = session_type_map.get(race_state.session.session_type, "race")
+        session_type_int = race_state.session.session_type
+        if session_type_int in (0, 1):
+            session_type = "practice"
+        elif session_type_int == 2:
+            session_type = "qualifying"
+        else:
+            session_type = "race"
 
         scoring_info = data.scoring.scoringInfo
 
@@ -74,9 +79,11 @@ class StrategyRunner:
             self.track.track_length = track_dist
 
         # Session info
-        max_laps = int(scoring_info.mMaxLaps) if scoring_info.mMaxLaps > 0 else 999
+        session_laps_left = 999.0
+        max_laps = scoring_info.mMaxLaps
+        if max_laps > 0:
+            session_laps_left = max(0.0, float(max_laps - current_lap))
         current_lap = race_state.player.current_lap
-        session_laps_left = max(0, max_laps - current_lap)
         session_time_left = race_state.session.time_remaining
 
         # Game phase flags
@@ -157,7 +164,10 @@ class StrategyRunner:
                 continue
 
             tele_index = self.sync._tele_indexes.get(veh_info.mID, -1)
-            opp_tele = data.telemetry.telemetryData[tele_index] if tele_index >= 0 else None
+            if 0 <= tele_index < len(data.telemetry.telemInfo):
+                opp_tele = data.telemetry.telemInfo[tele_index]
+            else:
+                opp_tele = None
 
             if opp_tele is not None:
                 opp_speed = math.sqrt(
@@ -172,13 +182,20 @@ class StrategyRunner:
             pit_requested = veh_info.mPitState == 1
 
             competitor = CompetitorTelemetry(
-                id=veh_info.mID,
-                name=safe_str(veh_info.mDriverName),
-                position=int(veh_info.mPlace),
-                speed=opp_speed,
-                fuel_fraction=fuel_fraction,
-                in_pits=pit_requested,
+                driver_index=int(veh_info.mID),
+                driver_name=safe_str(veh_info.mDriverName),
+                driver_class=safe_str(veh_info.mVehicleClass),
+                standing_position=int(veh_info.mPlace),
+                class_position=int(veh_info.mPlace),
+                lap_number=int(veh_info.mTotalLaps + 1),
+                lap_distance=safe_float(veh_info.mLapDist),
+                lap_time_best=safe_float(veh_info.mBestLapTime),
+                lap_time_previous=safe_float(veh_info.mLastLapTime),
+                in_pits=bool(veh_info.mInPits),
                 pit_requested=pit_requested,
+                estimated_time_into_lap=safe_float(veh_info.mTimeIntoLap),
+                speed=opp_speed,
+                fuel_capacity_fraction=fuel_fraction,
             )
             competitors_list.append(competitor)
 
@@ -195,8 +212,8 @@ class StrategyRunner:
             session_laps_left=session_laps_left,
             lap_number=current_lap,
             lap_distance=player.lap_distance,
-            lap_time_best=race_state.lap_times.best,
-            lap_time_previous=race_state.lap_times.previous,
+            lap_time_best=player.best_laptime,
+            lap_time_previous=player.last_laptime,
             is_invalid_lap=is_invalid_lap,
             in_garage=in_garage,
             in_pits=in_pits,
@@ -226,9 +243,9 @@ class StrategyRunner:
             speed=speed,
             throttle=throttle,
             brake=race_state.inputs.brake,
-            pos_x=player.position_xyz.x,
-            pos_y=player.position_xyz.y,
-            pos_z=player.position_xyz.z,
+            pos_x=player.position_xyz[0],
+            pos_y=player.position_xyz[1],
+            pos_z=player.position_xyz[2],
             competitors=competitors_list,
         )
 
