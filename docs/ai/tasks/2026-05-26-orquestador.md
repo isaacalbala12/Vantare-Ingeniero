@@ -12,7 +12,7 @@ Ingeniero de carreras con IA para Le Mans Ultimate. Escucha voz, analiza telemet
 - Flujo HTTP texto→voz: ✅ completo.
 - WebSocket telemetría en vivo: ⚠️ pendiente de reparar.
 - Reconocimiento de voz: ⚠️ solo Windows/Tauri (Linux no compatible).
-- Prompt del sistema: ✅ SYSTEM_PROMPT_BASIC corregido (respuesta natural y abierta).
+- Prompt del sistema: ✅ SYSTEM_PROMPT_BASIC corregido (respuesta natural, abierta, sin arrogancia pedante).
 - Código: ⚠️ pendiente limpieza (legacy CrofAI, imports no usados).
 
 ## Decisiones técnicas clave
@@ -27,7 +27,7 @@ Ingeniero de carreras con IA para Le Mans Ultimate. Escucha voz, analiza telemet
 Reparar WebSocket y ajustar el prompt del sistema para que el ingeniero sea contextual (no hable de carreras sin telemetría). Luego, integrar el motor determinista en el flujo de preguntas.
 
 ## Tareas inmediatas (orden sugerido)
-1. Ajustar SYSTEM_PROMPT_BASIC: respuestas contextuales, sin frases fuera de lugar.
+1. ✅ SYSTEM_PROMPT_BASIC: respuestas naturales, abiertas, sin arrogancia.
 2. Reparar WebSocket para telemetría en vivo (frontend en PC principal).
 3. Integrar shared-strategy en el endpoint /ask para enriquecer respuestas del LLM.
 4. Limpiar código: eliminar imports no usados, código legacy de CrofAI y duplicados.
