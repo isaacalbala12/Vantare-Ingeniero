@@ -20,8 +20,7 @@ from src.intelligence.formatter import format_event_text
 
 logger = logging.getLogger("vantare.event_store")
 
-# Cache del modelo de embedding a nivel de módulo (se carga 1 vez)
-_embedding_model: Optional[EmbeddingFunction] = None
+
 
 
 class _E5EmbeddingFunction(EmbeddingFunction):
@@ -73,7 +72,8 @@ class EventStore:
         persist_path: str = "./.chroma_db",
         collection_name: str = "race_events",
     ) -> None:
-        self._persist_path = str(Path(persist_path).resolve())
+        # Resolve and normalize the path to prevent path traversal
+        self._persist_path = str(Path(persist_path).resolve().expanduser())
         self._collection_name = collection_name
         self._client: Optional[chromadb.Client] = None
         self._collection: Optional[Any] = None
@@ -140,8 +140,9 @@ class EventStore:
             logger.warning("EventStore no inicializado — ignorando evento %s", event_type)
             return
 
+        now = time.time()
         text = format_event_text(frame, event_type, lap)
-        event_id = f"{event_type}_{lap}_{int(time.time() * 1000)}"
+        event_id = f"{event_type}_{lap}_{int(now * 1000)}"
 
         self._collection.add(
             documents=[text],
@@ -149,7 +150,7 @@ class EventStore:
             metadatas=[{
                 "type": event_type,
                 "lap": lap,
-                "timestamp": time.time(),
+                "timestamp": now,
                 "race_id": self._current_race_id or "",
                 "session_type": frame.get("session_type", "race"),
             }],
