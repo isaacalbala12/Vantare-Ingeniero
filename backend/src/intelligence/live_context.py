@@ -194,3 +194,36 @@ class LiveContextManager:
             return copy.deepcopy(self._standard)
         else:
             return copy.deepcopy(self._deep)
+
+    def update_realtime(self, telemetry: dict, strategy: dict) -> None:
+        """Actualiza campos volátiles en los 3 snapshots sin esperar a completar vuelta.
+
+        Necesario para que el ticker tenga datos frescos entre cruces de meta.
+        """
+        speed = telemetry.get("speed", 0.0)
+        track_grip_level = telemetry.get("track_grip_level", 0)
+        cloud_coverage = telemetry.get("cloud_coverage", 0)
+        raining = telemetry.get("raining", 0.0)
+        gap_ahead = telemetry.get("gap_ahead", 99.0)
+        gap_behind = telemetry.get("gap_behind", 99.0)
+        brake_wear = round(
+            (
+                telemetry.get("brake_wear_fl", 0.0)
+                + telemetry.get("brake_wear_fr", 0.0)
+                + telemetry.get("brake_wear_rl", 0.0)
+                + telemetry.get("brake_wear_rr", 0.0)
+            )
+            / 4.0,
+            2,
+        )
+
+        for snap in (self._fast, self._standard, self._deep):
+            snap["speed"] = speed
+            snap["track_grip_level"] = track_grip_level
+            snap["cloud_coverage"] = cloud_coverage
+            snap["raining"] = raining
+            snap["gap_ahead"] = gap_ahead
+            snap["gap_behind"] = gap_behind
+            # Only update deep's damage dict if it already exists
+            if "damage" in snap:
+                snap["damage"]["brake_wear"] = brake_wear
