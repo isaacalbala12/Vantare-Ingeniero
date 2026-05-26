@@ -64,6 +64,7 @@ async def lifespan(app: FastAPI):
     reader.start()
     app.state.telemetry_reader = reader
     app.state.latest_client_frame = None  # Se poblará desde el frontend vía WebSocket
+    app.state.latest_strategy_frame = None  # Se poblará desde el sidecar Windows vía /ws/sidecar
     logger.info(f"TelemetryReader started (offline_mode={reader.offline}). Waiting for frontend telemetry.")
 
     # 2. Iniciar el Poller REST de la API de LMU en background
@@ -80,6 +81,7 @@ async def lifespan(app: FastAPI):
     # 3b. Esperar a que el primer ciclo de estrategia se complete antes de arrancar el engine
     await strategy_service.wait_until_ready()
     logger.info("StrategyService primer ciclo completado")
+    logger.info("Esperando strategy_frame del sidecar Windows en /ws/sidecar. Usando StrategyService offline como fallback.")
 
     # 4. Instanciar e inicializar SpotterService (20Hz)
     spotter_service = SpotterService(broadcast_callback=broadcast_sync)
