@@ -39,6 +39,7 @@ from src.routers.websocket import router as ws_router, broadcast_sync
 from src.routers.llm import router as llm_router
 from src.routers.tts import router as tts_router
 from src.routers.history import router as history_router
+from src.routers.transcribe import router as transcribe_router
 
 from src.intelligence.spotter import SpotterService
 from src.intelligence.engine import IntelligenceEngine
@@ -255,6 +256,7 @@ app.include_router(ws_router)
 app.include_router(llm_router)
 app.include_router(tts_router)
 app.include_router(history_router)
+app.include_router(transcribe_router)
 
 
 if __name__ == "__main__":
