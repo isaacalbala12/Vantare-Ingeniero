@@ -148,6 +148,8 @@ def _snapshot_to_frame(snapshot: dict) -> Optional[dict]:
         "ambient_temp": snapshot.get("ambient_temp", 20.0),
         "track_temp": snapshot.get("track_temp", 20.0),
         "drs_state": snapshot.get("drs_state", False),
+        "rear_flap_activated": snapshot.get("rear_flap_activated", False),
+        "pit_state": snapshot.get("pit_state", 0),
     }
 
 
