@@ -104,7 +104,11 @@ async def lifespan(app: FastAPI):
     logger.info("EventStore initialized (ChromaDB RAG)")
 
     # 6. Instanciar e inicializar IntelligenceEngine (0.5Hz / Triggers / Preempción)
-    intelligence_engine = IntelligenceEngine(broadcast_callback=broadcast_sync, history_store=history_store)
+    intelligence_engine = IntelligenceEngine(
+        broadcast_callback=broadcast_sync,
+        history_store=history_store,
+        event_store=event_store,
+    )
     app.state.intelligence_engine = intelligence_engine
     logger.info("IntelligenceEngine initialized and hooked to WS broadcaster")
 
