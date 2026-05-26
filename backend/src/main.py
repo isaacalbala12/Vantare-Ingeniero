@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import uuid
 import sys
 import os
 
@@ -93,6 +94,14 @@ async def lifespan(app: FastAPI):
     history_store = HistoryStore()
     app.state.history_store = history_store
     logger.info("HistoryStore initialized (%d records loaded)", len(history_store.get_history()))
+
+    # 5b. Inicializar EventStore (ChromaDB para RAG)
+    import uuid
+    from src.persistence.event_store import EventStore
+    event_store = EventStore()
+    event_store.initialize(race_id=str(uuid.uuid4()))
+    app.state.event_store = event_store
+    logger.info("EventStore initialized (ChromaDB RAG)")
 
     # 6. Instanciar e inicializar IntelligenceEngine (0.5Hz / Triggers / Preempción)
     intelligence_engine = IntelligenceEngine(broadcast_callback=broadcast_sync, history_store=history_store)
@@ -219,6 +228,11 @@ async def lifespan(app: FastAPI):
     if hasattr(app.state, "history_store"):
         app.state.history_store.save()
         logger.info("HistoryStore saved to disk (%d records)", len(app.state.history_store.get_history()))
+
+    # 4b. Limpiar EventStore (RAG)
+    if hasattr(app.state, "event_store"):
+        app.state.event_store.clear()
+        logger.info("EventStore cleaned up (ChromaDB RAG)")
 
     # 5. Detener el lector físico de shared memory
     if reader:
