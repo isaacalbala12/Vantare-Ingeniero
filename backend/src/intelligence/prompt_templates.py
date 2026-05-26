@@ -1,10 +1,6 @@
 import json
 from typing import Any, Dict, List
 
-SYSTEM_PROMPT_WEC = (
-    "Responde de forma concisa y directa."
-)
-
 SYSTEM_PROMPT_BASIC = (
     "Eres un ingeniero de carrera para Le Mans Ultimate. Sé conciso, directo y útil. "
     "Responde en 1-3 frases máximo. Estilo radio/comunicación de ingeniería."
@@ -56,7 +52,7 @@ def render(context_dict: dict, tier: str) -> str:
     """Devuelve el prompt completo: system prompt + contexto en JSON."""
     has_telemetry = _has_telemetry(context_dict)
     if has_telemetry:
-        system_prompt = SYSTEM_PROMPT_WEC
+        system_prompt = SYSTEM_PROMPT_BASIC
         context_json = json.dumps(context_dict, ensure_ascii=False, indent=2)
         telemetry_section = (
             f"### CONTEXTO DE TELEMETRÍA ({tier}) ###\n"

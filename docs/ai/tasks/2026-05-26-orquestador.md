@@ -12,7 +12,7 @@ Ingeniero de carreras con IA para Le Mans Ultimate. Escucha voz, analiza telemet
 - Flujo HTTP texto→voz: ✅ completo.
 - WebSocket telemetría en vivo: ⚠️ pendiente de reparar.
 - Reconocimiento de voz: ⚠️ solo Windows/Tauri (Linux no compatible).
-- Prompt del sistema: ⚠️ necesita ajustes contextuales.
+- Prompt del sistema: ✅ SYSTEM_PROMPT_BASIC corregido (respuesta natural y abierta).
 - Código: ⚠️ pendiente limpieza (legacy CrofAI, imports no usados).
 
 ## Decisiones técnicas clave
@@ -38,6 +38,24 @@ Reparar WebSocket y ajustar el prompt del sistema para que el ingeniero sea cont
 - Prompt contextual → ingeniero responde según modo (carrera o genérico).
 - Beta cerrada con 5-10 pilotos.
 
+## Comandos de prueba
+```bash
+# Probar SYSTEM_PROMPT_BASIC (sin telemetría)
+curl -X POST http://localhost:8008/ask \
+  -H "Content-Type: application/json" \
+  -d '{"question": "¿Cuánto es 2+2?"}'
+
+# Probar con historial de chat
+curl -X POST http://localhost:8008/ask \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "¿Qué presión de neumáticos usamos?",
+    "chat_history": [
+      {"role": "user", "content": "Llevamos 3停了"},
+      {"role": "assistant", "content": "Bien, entrada en 2 vuelta"}
+    ]
+  }'
+```
+
 ## Historial de decisiones
-2026-05-26: Migración completa de CrofAI a LLM local (Hipfire + LiteLLM) - independencia de APIs externas.
-2026-05-26: Edge TTS como motor principal de voz - calidad aceptable, gratuito, sin carga en VRAM.
+2026-05-26: SYSTEM_PROMPT_BASIC corregido - respuesta natural y abierta, sin arrogancia.

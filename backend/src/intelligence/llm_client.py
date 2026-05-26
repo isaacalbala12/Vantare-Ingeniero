@@ -10,7 +10,7 @@ from openai import AsyncOpenAI
 from src.config import settings
 from src.models.messages import AdviceStartMessage, AdviceTokenMessage, AdviceEndMessage, UIAction
 from src.transport.broadcaster import send
-from src.intelligence.prompt_templates import SYSTEM_PROMPT_WEC as SYSTEM_PROMPT, UI_TOOLS
+from src.intelligence.prompt_templates import UI_TOOLS
 
 logger = logging.getLogger("vantare.llm_client")
 
@@ -103,7 +103,6 @@ class VLLMClient:
             stream = await client.chat.completions.create(
                 model=self._model,
                 messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
                     {"role": "user", "content": prompt},
                 ],
                 temperature=0.2,
@@ -220,7 +219,6 @@ class VLLMClient:
         payload = {
             "model": self._model,
             "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
             "temperature": 0.2,
