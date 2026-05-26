@@ -7,9 +7,9 @@ def test_build_ticker_data_has_fields():
     data = _build_ticker_data(snapshot)
     assert "position" in data
     assert "lap" in data
-    assert "fuel_in_tank" in data
-    assert "tyre_wear_fl" in data
-    assert "brake_wear" in data
+    assert "fuel" in data
+    assert "tyre_wear" in data  # lista [fl, fr, rl, rr]
+    assert "brake_wear" in data  # lista [fl, fr, rl, rr]
 
 
 def test_build_prompt_with_ticker():
@@ -22,4 +22,6 @@ def test_build_prompt_with_ticker():
 def test_build_prompt_legacy():
     snapshot = {"lap": 5, "fuel_in_tank": 42.0, "place": 3}
     result = build_prompt(snapshot, "test", None, prompt_templates)
-    assert "snapshot" in result
+    # Modo legacy: usa SYSTEM_PROMPT_BASIC + no contiene ticker
+    assert "Eres un ingeniero de carrera" in result
+    assert "DRV:P" not in result

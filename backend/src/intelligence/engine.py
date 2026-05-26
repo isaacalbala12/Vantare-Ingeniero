@@ -144,7 +144,8 @@ class IntelligenceEngine:
                 "weather_forecast": forecast
             }
 
-        # 1. Detectar cruce de meta para actualizar snapshots de contexto
+        # 1. Actualizar datos en tiempo real (entre vueltas) y detectar cruce de meta
+        self.live_context.update_realtime(telemetry_dict, strategy_dict)
         current_lap = telemetry_dict.get("lap_number", 0)
         if self._last_lap_number > 0 and current_lap > self._last_lap_number:
             self.live_context.on_lap_completed(telemetry_dict, strategy_dict, session_dict)
@@ -181,13 +182,16 @@ class IntelligenceEngine:
             # Obtiene snapshot
             snapshot = self.live_context.snapshot(trigger.tier.name)
 
-            # Construye prompt
+            # Construye prompt (con ticker y datos frescos)
             prompt = self.context_builder.build_prompt(
                 snapshot,
                 trigger.description,
                 pilot_question,
                 self.prompt_templates,
                 event_store=self._get_event_store(),
+                telemetry_frame=telemetry_dict,
+                strategy_advice=strategy_dict,
+                lmu_api=self.lmu_api,
             )
 
             # Lanza ask_streaming
@@ -236,13 +240,16 @@ class IntelligenceEngine:
                         # Obtiene snapshot
                         snapshot = self.live_context.snapshot(trigger.tier.name)
 
-                        # Construye prompt
+                        # Construye prompt (con ticker y datos frescos)
                         prompt = self.context_builder.build_prompt(
                             snapshot,
                             trigger.description,
                             None,
                             self.prompt_templates,
                             event_store=self._get_event_store(),
+                            telemetry_frame=telemetry_dict,
+                            strategy_advice=strategy_dict,
+                            lmu_api=self.lmu_api,
                         )
 
                         # Lanza ask_streaming

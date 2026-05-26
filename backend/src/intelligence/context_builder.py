@@ -7,34 +7,54 @@ Si hay un EventStore configurado, inyecta los top-5 eventos históricos más
 similares a la telemetría actual como contexto RAG.
 """
 
+import logging
 from typing import Any, Optional
 
+from src.intelligence.ticker import generate_ticker
 
-def _build_ticker_data(snapshot, telemetry_frame=None, strategy_advice=None, lmu_api=None):
-    """Construye el diccionario de datos para generate_ticker desde snapshot y fuentes adicionales."""
+logger = logging.getLogger("vantare.context_builder")
+
+
+def _build_ticker_data(
+    snapshot: dict,
+    telemetry_frame: Optional[dict] = None,
+    strategy_advice: Optional[dict] = None,
+    lmu_api: Optional[Any] = None,
+) -> dict:
+    """Construye el diccionario de datos para generate_ticker desde snapshot y fuentes adicionales.
+
+    El dict resultante usa las keys que espera generate_ticker() de ticker.py.
+    """
     data = {}
-    data["position"] = snapshot.get("position", snapshot.get("place", 0))
+    # Posición (de telemetry_frame si disponible, fallback snapshot)
+    if telemetry_frame:
+        pos = telemetry_frame.get("standing_position", snapshot.get("position", snapshot.get("place", 0)))
+    else:
+        pos = snapshot.get("position", snapshot.get("place", 0))
+    data["position"] = pos
     data["lap"] = snapshot.get("lap", 0)
-    data["fuel_in_tank"] = snapshot.get("fuel_in_tank", 0.0)
 
+    # Combustible (ticker espera "fuel", "fuel_rate_trend", "laps_rest")
     fuel_laps = 0
     fuel_rate = 0
     if strategy_advice:
-        fuel_info = strategy_advice.get("fuel", {})
+        fuel_info = strategy_advice.get("fuel") or {}
         fuel_laps = fuel_info.get("estimated_laps_remaining", fuel_info.get("laps_left", 0))
         fuel_rate = fuel_info.get("fuel_rate_trend", 0)
-    data["fuel_rate"] = fuel_rate
-    data["fuel_laps_left"] = fuel_laps
+    data["fuel"] = snapshot.get("fuel_in_tank", 0.0)
+    data["fuel_rate_trend"] = fuel_rate
+    data["laps_rest"] = fuel_laps
 
-    if telemetry_frame:
-        for wheel in ["fl", "fr", "rl", "rr"]:
-            data[f"tyre_wear_{wheel}"] = telemetry_frame.get(f"tyre_wear_{wheel}", 0.0)
-            data[f"tyre_temp_{wheel}"] = telemetry_frame.get(f"tyre_temp_{wheel}", 90.0)
-    else:
-        for wheel in ["fl", "fr", "rl", "rr"]:
-            data[f"tyre_wear_{wheel}"] = snapshot.get(f"tyre_wear_{wheel}", 0.0)
-            data[f"tyre_temp_{wheel}"] = snapshot.get(f"tyre_temp_{wheel}", 90.0)
+    # Neumáticos (ticker espera listas "tyre_wear" y "tyre_temps")
+    wear_list, temps_list = [], []
+    src = telemetry_frame if telemetry_frame else snapshot
+    for wheel in ["fl", "fr", "rl", "rr"]:
+        wear_list.append(src.get(f"tyre_wear_{wheel}", 0.0))
+        temps_list.append(src.get(f"tyre_temp_{wheel}", 90.0))
+    data["tyre_wear"] = wear_list
+    data["tyre_temps"] = temps_list
 
+    # Frenos (de REST API)
     brake_wear = [0, 0, 0, 0]
     if lmu_api is not None:
         try:
@@ -43,29 +63,43 @@ def _build_ticker_data(snapshot, telemetry_frame=None, strategy_advice=None, lmu
                 bw = brakes_data.get("wear", [])
                 if bw and len(bw) == 4:
                     brake_wear = [int(w * 100) for w in bw]
-        except Exception:
-            pass
+        except Exception as e:
+            logger.debug("Error fetching brake wear from LMU API: %s", e)
     data["brake_wear"] = brake_wear
 
-    data["ahead_name"] = snapshot.get("ahead_name", "")
-    data["ahead_gap"] = snapshot.get("gap_ahead", 0)
-    data["ahead_best"] = 0
-    data["behind_name"] = snapshot.get("behind_name", "")
-    data["behind_gap"] = snapshot.get("gap_behind", 0)
-    data["behind_best"] = 0
-    data["delta"] = 0
+    # Gaps (de telemetry_frame o snapshot)
+    ahead_gap = telemetry_frame.get("time_gap_place_ahead", snapshot.get("gap_ahead", 0)) if telemetry_frame else snapshot.get("gap_ahead", 0)
+    behind_gap = telemetry_frame.get("time_gap_place_behind", snapshot.get("gap_behind", 0)) if telemetry_frame else snapshot.get("gap_behind", 0)
+    data["ahead_gap"] = ahead_gap
+    data["behind_gap"] = behind_gap
 
+    # Rivales
     competitors = []
     if telemetry_frame:
         competitors = telemetry_frame.get("competitors", [])
     data["competitors"] = competitors
     data["total_cars"] = len(competitors)
 
+    # Extraer nombres de rivales de competitors si no hay ahead_name/behind_name
+    if competitors and len(competitors) > 0:
+        comps_sorted = sorted(competitors, key=lambda c: c.get("gap", 999))
+        # El más cercano detrás (gap positivo = detrás de ti)
+        behind = [c for c in comps_sorted if c.get("gap", 0) > 0]
+        # El más cercano adelante (gap negativo o menor que el tuyo... no tenemos posición aquí)
+        # Simplificar: el de menor gap es el rival más cercano (adelante si gap negativo, detrás si positivo)
+        data["behind_name"] = behind[0].get("name", "") if behind else ""
+        data["ahead_name"] = ""  # No detectamos quién va adelante sin standing_position
+    data["ahead_best"] = 0
+    data["behind_best"] = 0
+    data["delta"] = 0
+
+    # Sesión
     data["session_class"] = telemetry_frame.get("session_class", "GT3") if telemetry_frame else "GT3"
     data["session_type"] = telemetry_frame.get("session_type", snapshot.get("phase", "RACE")) if telemetry_frame else snapshot.get("phase", "RACE")
     data["total_laps"] = telemetry_frame.get("session_laps_left", 0) if telemetry_frame else 0
     data["time_left"] = telemetry_frame.get("session_time_left", 0) if telemetry_frame else 0
 
+    # Clima
     data["grip"] = snapshot.get("track_grip_level", 0)
     data["ambient_temp"] = snapshot.get("ambient_temp", 20)
     data["rain_chance"] = 0
@@ -76,11 +110,11 @@ def _build_ticker_data(snapshot, telemetry_frame=None, strategy_advice=None, lmu
     data["avg_path_wetness"] = telemetry_frame.get("avg_path_wetness", 0.0) if telemetry_frame else 0.0
     data["track_temp"] = telemetry_frame.get("track_temp", 20) if telemetry_frame else 20
 
+    # Otros
     data["speed"] = snapshot.get("speed", 0)
     data["drs_state"] = telemetry_frame.get("drs_state", False) if telemetry_frame else False
     data["pit_state"] = telemetry_frame.get("pit_state", 0) if telemetry_frame else 0
     data["battery_charge"] = snapshot.get("battery_charge", 100)
-
     data["player_best_lap"] = telemetry_frame.get("lap_time_best", 0) if telemetry_frame else 0
 
     return data
