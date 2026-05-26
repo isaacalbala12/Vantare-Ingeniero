@@ -239,14 +239,30 @@ export const App: React.FC = () => {
       const baseUrl = `http://${config.vllmIP}:${config.serverPort}`;
       
       // Paso 1: POST /ask → obtener texto de la respuesta del LLM
-      const response = await fetch(`${baseUrl}/ask`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: trimmed }),
-      });
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      let response: Response;
+      try {
+        response = await fetch(`${baseUrl}/ask`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: trimmed }),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+      } catch (err: any) {
+        if (err.name === "AbortError") {
+          console.warn("[App] Timeout en /ask (15s)");
+          setRadioMode("IDLE");
+          return;
+        }
+        throw err;
+      } finally {
+        clearTimeout(timeoutId);
       }
 
       // Leer la respuesta como texto (Content-Type: text/plain)
