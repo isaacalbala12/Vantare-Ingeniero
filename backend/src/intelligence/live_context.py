@@ -58,7 +58,11 @@ class LiveContextManager:
             "pit_window_open": pit_window_open,
             "gap_ahead": round(gap_ahead, 2),
             "gap_behind": round(gap_behind, 2),
-            "tyre_temps_ok": tyre_temps_ok
+            "tyre_temps_ok": tyre_temps_ok,
+            "speed": telemetry.get("speed", 0.0),
+            "track_grip_level": telemetry.get("track_grip_level", 0),
+            "cloud_coverage": telemetry.get("cloud_coverage", 0),
+            "raining": telemetry.get("raining", 0.0),
         }
 
         # 3. Construir snapshot STANDARD
@@ -142,7 +146,17 @@ class LiveContextManager:
         rain_expected = any(float(slot.get("WNV_RAIN_CHANCE", 0.0)) > 20.0 for slot in weather_forecast if isinstance(slot, dict))
 
         damage = {
-            "aero": round(telemetry.get("brake_wear_fl", 0.0) * 0.1, 2), # proxy
+            "aero": telemetry.get("damage_aero", 0.0),
+            "brake_wear": round(
+                (
+                    telemetry.get("brake_wear_fl", 0.0)
+                    + telemetry.get("brake_wear_fr", 0.0)
+                    + telemetry.get("brake_wear_rl", 0.0)
+                    + telemetry.get("brake_wear_rr", 0.0)
+                )
+                / 4.0,
+                2,
+            ),
             "suspension": telemetry.get("suspension_damage", 0.0)
         }
         
