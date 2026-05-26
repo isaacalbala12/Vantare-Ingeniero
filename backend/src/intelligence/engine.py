@@ -38,6 +38,7 @@ class IntelligenceEngine:
         lmu_api=None,
         broadcast_callback=None,
         history_store=None,
+        event_store=None,
     ) -> None:
         # Resolve live_context
         if live_context is None:
@@ -100,6 +101,7 @@ class IntelligenceEngine:
         self._last_lap_number: int = 0
         
         self.triggers = get_all_triggers()
+        self._event_store = event_store
 
     def _get_strategy_service(self):
         if self.strategy_service is not None:
@@ -108,6 +110,10 @@ class IntelligenceEngine:
         if main_mod and hasattr(main_mod, "app"):
             return getattr(main_mod.app.state, "strategy_service", None)
         return None
+
+    def _get_event_store(self):
+        """Obtiene el EventStore (ChromaDB RAG) si está disponible."""
+        return getattr(self, "_event_store", None)
 
     async def evaluate_cycle(self, telemetry_state, strategy_state, session_state=None, pilot_question: Optional[str] = None) -> None:
         """Ciclo principal invocado periódicamente para evaluar los triggers de carrera."""
@@ -180,7 +186,8 @@ class IntelligenceEngine:
                 snapshot,
                 trigger.description,
                 pilot_question,
-                self.prompt_templates
+                self.prompt_templates,
+                event_store=self._get_event_store(),
             )
 
             # Lanza ask_streaming
@@ -234,7 +241,8 @@ class IntelligenceEngine:
                             snapshot,
                             trigger.description,
                             None,
-                            self.prompt_templates
+                            self.prompt_templates,
+                            event_store=self._get_event_store(),
                         )
 
                         # Lanza ask_streaming
@@ -357,7 +365,8 @@ class IntelligenceEngine:
             snapshot=snapshot,
             pilot_question=pilot_question,
             chat_history=chat_history,
-            templates=self.prompt_templates
+            templates=self.prompt_templates,
+            event_store=self._get_event_store(),
         )
         
         # 5. Ejecutar streaming del LLM usando ask_streaming_text
