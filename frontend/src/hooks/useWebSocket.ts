@@ -118,10 +118,10 @@ export function useWebSocket() {
         // Handle binary (MessagePack telemetry)
         if (event.data instanceof ArrayBuffer) {
           try {
-            const decoded = decodeMsgpack(new Uint8Array(event.data as ArrayBuffer));
-            const player = decoded.player || {};
-            const engine = decoded.engine || {};
-            const tyres = decoded.tyres || {};
+            const decoded: any = decodeMsgpack(new Uint8Array(event.data as ArrayBuffer));
+            const player: any = decoded.player || {};
+            const engine: any = decoded.engine || {};
+            const tyres: any = decoded.tyres || {};
 
             // 1. Detección robusta de velocidad en km/h
             let speed = 0;
@@ -154,6 +154,7 @@ export function useWebSocket() {
               rr = Math.round((1.0 - (tyres.wear.rr ?? 0)) * 100);
             }
 
+            setLastTelemetry(decoded);
             updateTelemetry({
               speed: Math.round(speed),
               rpm: Math.round(engine.rpm ?? 0),
