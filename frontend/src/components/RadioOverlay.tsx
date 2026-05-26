@@ -4,10 +4,20 @@ import PTTIndicator from "./PTTIndicator";
 import ChatBubble from "./ChatBubble";
 
 /**
+ * Props para el Dashboard - incluye callbacks de PTT y texto para fallback en Linux.
+ */
+export interface DashboardProps {
+  onPTTStart?: () => void;
+  onPTTEnd?: () => void;
+  onTextSubmit?: (text: string) => void;
+  showTextInput?: boolean;
+}
+
+/**
  * Dashboard principal del Hub - Vista de telemetría y radio.
  * Fondo negro #111, texto blanco #fff, acento púrpura #8a2be2.
  */
-export const Dashboard: React.FC = () => {
+export const Dashboard: React.FC<DashboardProps> = ({ onPTTStart, onPTTEnd, onTextSubmit, showTextInput }) => {
   // Selectores individuales para evitar re-renderizados completos a 20Hz
   const mode = useAppStore((s) => s.radio.mode);
   const currentTokens = useAppStore((s) => s.radio.currentTokens);
@@ -107,6 +117,63 @@ export const Dashboard: React.FC = () => {
           ))
         )}
       </div>
+
+      {/* Fila 5: Botón PTT de emergencia (fallback para navegadores) */}
+      {mode === "IDLE" && onPTTStart && (
+        <div className="px-3 pb-3 flex justify-center">
+          <button
+            onClick={onPTTStart}
+            className="w-full py-2 px-4 bg-[#8a2be2] hover:bg-[#9d4be2] active:bg-[#7a1be2] text-white text-[12px] font-bold rounded transition-colors"
+            title="PTT: Mantén presionado para hablar"
+          >
+            🎤 Hablar
+          </button>
+        </div>
+      )}
+      {mode === "LISTENING_PILOT" && onPTTEnd && (
+        <div className="px-3 pb-3 flex justify-center">
+          <button
+            onClick={onPTTEnd}
+            className="w-full py-2 px-4 bg-[#8a2be2] hover:bg-[#9d4be2] active:bg-[#7a1be2] text-white text-[12px] font-bold rounded transition-colors animate-pulse"
+            title="PTT: Suelta para enviar"
+          >
+            ⏹️ Enviar
+          </button>
+        </div>
+      )}
+
+      {/* Campo de texto de emergencia (visible cuando SpeechRecognition no disponible en Linux) */}
+      {showTextInput && onTextSubmit && (
+        <div className="px-3 pb-3 flex gap-2">
+          <input
+            type="text"
+            id="ptt-text-input"
+            placeholder="Escribe tu pregunta..."
+            className="flex-1 px-3 py-2 bg-[#222] border border-[#444] text-white text-[12px] rounded focus:outline-none focus:border-[#8a2be2]"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                const input = e.currentTarget as HTMLInputElement;
+                const value = input.value;
+                input.value = '';
+                onTextSubmit(value);
+              }
+            }}
+          />
+          <button
+            onClick={() => {
+              const input = document.getElementById('ptt-text-input') as HTMLInputElement;
+              if (input && input.value.trim()) {
+                const value = input.value;
+                input.value = '';
+                onTextSubmit(value);
+              }
+            }}
+            className="px-4 py-2 bg-[#8a2be2] hover:bg-[#9d4be2] active:bg-[#7a1be2] text-white text-[12px] font-bold rounded transition-colors"
+          >
+            Enviar
+          </button>
+        </div>
+      )}
     </div>
   );
 };

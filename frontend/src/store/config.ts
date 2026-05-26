@@ -105,8 +105,8 @@ const loadSavedConfig = (): AppConfig => {
         speakerDevice: parsed.speakerDevice ?? "default",
         wakeWord: parsed.wakeWord ?? "ingeniero",
         sensitivity: parsed.sensitivity ?? 50,
-        pttHotkey: parsed.pttHotkey ?? "Ctrl+Shift+P",
-        pttStopHotkey: parsed.pttStopHotkey ?? "Ctrl+Shift+P",
+        pttHotkey: parsed.pttHotkey ?? "Ctrl+Shift+Space",
+        pttStopHotkey: parsed.pttStopHotkey ?? "Ctrl+Shift+Space",
         wakeWordEnabled: parsed.wakeWordEnabled ?? true,
       };
     }
@@ -120,8 +120,8 @@ const loadSavedConfig = (): AppConfig => {
     speakerDevice: "default",
     wakeWord: "ingeniero",
     sensitivity: 50,
-    pttHotkey: "Ctrl+Shift+P",
-    pttStopHotkey: "Ctrl+Shift+P",
+    pttHotkey: "Ctrl+Shift+Space",
+    pttStopHotkey: "Ctrl+Shift+Space",
     wakeWordEnabled: true,
   };
 };

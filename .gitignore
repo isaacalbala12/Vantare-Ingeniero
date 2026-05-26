@@ -238,3 +238,4 @@ test_edge.mp3
 test_edge.mp3
 test_*.py
 !backend/tests/**/*.py
+.aider*

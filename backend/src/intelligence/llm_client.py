@@ -210,6 +210,7 @@ class VLLMClient:
         """
         tier_upper = tier.upper()
         max_tokens = 500
+        full_text = ""
 
         headers = {
             "Authorization": f"Bearer {self._api_key}",
@@ -266,7 +267,7 @@ class VLLMClient:
                             # Solo procesar el contenido real (respuesta final)
                             token = delta.get("content", "")
                             if not token:
-                                continue
+                                token = delta.get("reasoning_content", "")
 
                             # Limpiar etiquetas de control residuales
                             if token.strip() in ("", "<|im_end|>", "<|im_start|>", "<!--", "-->", "<think>"):

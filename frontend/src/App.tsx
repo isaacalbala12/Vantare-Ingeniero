@@ -237,6 +237,8 @@ export const App: React.FC = () => {
     try {
       const config = useAppStore.getState().config;
       const baseUrl = `http://${config.vllmIP}:${config.serverPort}`;
+      
+      // Paso 1: POST /ask → obtener texto de la respuesta del LLM
       const response = await fetch(`${baseUrl}/ask`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -247,21 +249,40 @@ export const App: React.FC = () => {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      // Extraer texto de la respuesta desde el header
-      const responseText = response.headers.get("X-Response-Text") || "";
-      if (responseText) {
-        addMessageToHistory("engineer", responseText);
+      // Leer la respuesta como texto (Content-Type: text/plain)
+      const responseText = await response.text();
+      
+      if (!responseText || responseText.trim() === "") {
+        console.warn("[App] Respuesta vacía del LLM.");
+        setRadioMode("IDLE");
+        return;
       }
 
-      // Leer el blob de audio
-      const audioBlob = await response.blob();
-      if (audioBlob.size > 0) {
-        const url = URL.createObjectURL(audioBlob);
-        audioQueue.enqueue(responseText || "Respuesta sin texto", url);
-        // El modo SPEAKING_ENGINE se activará automáticamente vía callback
-      } else {
-        console.warn("[App] Audio vacío recibido del backend.");
-        // Si no hay audio, volver a IDLE
+      // Añadir el texto al historial como mensaje del ingeniero
+      addMessageToHistory("engineer", responseText);
+
+      // Paso 2: GET /tts?text=... → obtener audio MP3/WAV
+      try {
+        const ttsResponse = await fetch(`${baseUrl}/tts?text=${encodeURIComponent(responseText)}`);
+        
+        if (ttsResponse.ok) {
+          const audioBlob = await ttsResponse.blob();
+          
+          if (audioBlob.size > 0) {
+            const url = URL.createObjectURL(audioBlob);
+            audioQueue.enqueue(responseText, url);
+            // El modo SPEAKING_ENGINE se activará automáticamente vía callback
+          } else {
+            console.warn("[App] Audio vacío recibido del TTS.");
+            setRadioMode("IDLE");
+          }
+        } else {
+          console.warn("[App] Error al obtener TTS:", ttsResponse.status);
+          setRadioMode("IDLE");
+        }
+      } catch (ttsError) {
+        console.warn("[App] Error en solicitud TTS:", ttsError);
+        // Mostrar el texto en el historial sin audio
         setRadioMode("IDLE");
       }
     } catch (error) {

@@ -1,7 +1,10 @@
 import asyncio
+import logging
 import uuid
 import sys
-from typing import Any, Optional
+from typing import Any, Dict, List, Optional
+
+logger = logging.getLogger("vantare.engine")
 from src.models.messages import (
     BaseMessage,
     LLMPendingMessage,
@@ -317,6 +320,56 @@ class IntelligenceEngine:
         else:
             # It's a standard coroutine
             await res
+
+    async def ask_async(self, pilot_question: str, chat_history: list = None):
+        """Procesa pregunta del piloto de forma asíncrona (para endpoint HTTP /ask).
+        
+        A diferencia de evaluate_cycle(), este método:
+        - No usa el sistema de triggers/prioridad
+        - No emite mensajes WebSocket
+        - Devuelve el texto directamente como generator
+        
+        Args:
+            pilot_question: Pregunta del piloto
+            chat_history: Historial de conversación opcional [{"role": "user"/"assistant", "content": "..."}]
+        
+        Yields:
+            Chunks de texto de la respuesta del LLM
+        """
+        
+        # 1. Obtener contexto desde strategy_service y live_context
+        strategy_service = self._get_strategy_service()
+        
+        # 2. Obtener snapshot del tier FAST (mínimo para preguntas)
+        snapshot = self.live_context.snapshot(tier="FAST")
+        
+        # 3. Enriquecer con datos de race_summary si disponibles
+        if strategy_service:
+            race_summary = strategy_service.get_race_summary()
+            if race_summary and "status" not in race_summary:
+                # Merge race_summary en snapshot
+                for key, value in race_summary.items():
+                    if key not in snapshot:
+                        snapshot[key] = value
+        
+        # 4. Construir prompt usando context_builder
+        prompt = self.context_builder.build_prompt_for_question(
+            snapshot=snapshot,
+            pilot_question=pilot_question,
+            chat_history=chat_history,
+            templates=self.prompt_templates
+        )
+        
+        # 5. Ejecutar streaming del LLM usando ask_streaming_text
+        full_text = ""
+        try:
+            async for token in self.llm_client.ask_streaming_text(prompt, tier="FAST"):
+                full_text += token
+        except Exception as e:
+            logger.error(f"Error en ask_async LLM stream: {e}", exc_info=True)
+            full_text = "Error de comunicación con el muro de boxes."
+        
+        yield full_text
 
     def _on_llm_task_done(self, task: asyncio.Task) -> None:
         """Callback para tareas LLM completadas. Recupera excepciones y envía AdviceEndMessage de emergencia si falló."""
