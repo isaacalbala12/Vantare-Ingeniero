@@ -251,7 +251,7 @@ async def llamar_copiloto_stream(pregunta: str, contexto: dict, chat_history: li
         "model": settings.LLM_MODEL,
         "messages": messages,
         "temperature": 0.3,
-        "max_tokens": 512,
+        "max_tokens": 500,
         "stream": True
     }
 
@@ -269,17 +269,29 @@ async def llamar_copiloto_stream(pregunta: str, contexto: dict, chat_history: li
                     line = line.strip()
                     if not line:
                         continue
+
+                    # Formato SSE estándar: "data: {...}"
                     if line.startswith("data: "):
                         data_str = line[6:].strip()
-                        if data_str == "[DONE]":
-                            break
-                        try:
-                            data_json = json.loads(data_str)
-                            delta = data_json["choices"][0]["delta"]
-                            if "content" in delta:
-                                yield delta["content"]
-                        except Exception:
-                            pass
+                    else:
+                        data_str = line
+
+                    if data_str == "[DONE]":
+                        break
+
+                    try:
+                        data_json = json.loads(data_str)
+                        # Formato OpenAI streaming estándar
+                        choices = data_json.get("choices", [])
+                        if choices:
+                            delta = choices[0].get("delta", {})
+                            content = delta.get("content")
+                            if content:
+                                yield content
+                    except json.JSONDecodeError as e:
+                        logger.warning(f"JSON decode error in stream: {e}, line: {data_str[:100]}")
+                    except Exception as e:
+                        logger.warning(f"Stream parse error: {e}, line: {data_str[:100]}")
     except Exception as e:
         logger.error(f"Error in LLM streaming: {e}", exc_info=True)
         yield f" Error de radio: {e}. Intenta de nuevo."

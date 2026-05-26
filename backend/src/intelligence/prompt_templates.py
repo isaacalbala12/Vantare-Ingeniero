@@ -2,13 +2,12 @@ import json
 from typing import Any, Dict, List
 
 SYSTEM_PROMPT_WEC = (
-    "Eres el Ingeniero de Carrera de WEC. Sé extremadamente conciso, directo y estilo radio (máximo 2 frases). "
-    "Prioriza la seguridad en pista; ante FCY o Safety Car, recomienda entrar a boxes inmediatamente."
+    "Responde de forma concisa y directa."
 )
 
 SYSTEM_PROMPT_BASIC = (
-    "Eres un asistente de carreras. Responde de forma concisa y directa, máximo 2 frases. "
-    "No menciones telemetría ni monitoreo a menos que te pregunten explícitamente por ello."
+    "Eres un ingeniero de carrera para Le Mans Ultimate. Sé conciso, directo y útil. "
+    "Responde en 1-3 frases máximo. Estilo radio/comunicación de ingeniería."
 )
 
 UI_TOOLS = [
@@ -65,7 +64,11 @@ def render(context_dict: dict, tier: str) -> str:
             f"INSTRUCCIÓN: Analiza los datos de carrera anteriores. Responde al piloto de forma ultra corta, clara y radio-style. "
             f"Si la telemetría lo requiere, activa la herramienta 'trigger_ui_alert'."
         )
+        return f"{system_prompt}\n\n{telemetry_section}"
     else:
         system_prompt = SYSTEM_PROMPT_BASIC
-        telemetry_section = ""
-    return f"{system_prompt}\n\n{telemetry_section}"
+        pilot_question = context_dict.get("pilot_question", "")
+        if pilot_question:
+            return f"{system_prompt}\n\nPREGUNTA DEL PILOTO:\n{pilot_question}"
+        else:
+            return system_prompt
