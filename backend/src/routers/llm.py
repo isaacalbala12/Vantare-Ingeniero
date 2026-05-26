@@ -3,8 +3,6 @@ from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
-from src.services.llm_service import llamar_copiloto_stream
-
 router = APIRouter()
 
 
@@ -22,24 +20,21 @@ class AskRequest(BaseModel):
 
 @router.post("/ask")
 async def ask_copilot(request: Request, body: AskRequest):
-    """Endpoint POST para pruebas con curl. Devuelve texto plano.
+    """Endpoint POST para preguntas de texto directo.
     
-    El flujo PTT real usa WebSocket (pilot_question).
-    El TTS se solicita al endpoint /tts por separado.
+    Usa IntelligenceEngine (mismo motor que el WebSocket) para garantizar
+    respuestas consistentes con el sistema de ingeniero de carreras.
     """
     
-    # 1. Obtener servicio de estrategia desde el estado de la aplicación
-    strategy_service = getattr(request.app.state, "strategy_service", None)
-    if not strategy_service:
+    # 1. Obtener IntelligenceEngine desde el estado de la aplicación
+    engine = getattr(request.app.state, "intelligence_engine", None)
+    if not engine:
         raise HTTPException(
             status_code=503,
-            detail="El motor de estrategia e ingenieria no está inicializado en el servidor."
+            detail="IntelligenceEngine no está inicializado en el servidor."
         )
 
-    # 2. Generar el resumen de carrera enriquecido con telemetría actual
-    contexto = strategy_service.get_race_summary()
-
-    # 3. Formatear chat_history para la API de OpenAI si existe
+    # 2. Formatear chat_history si existe
     formatted_history = []
     if body.chat_history:
         for msg in body.chat_history:
@@ -48,19 +43,15 @@ async def ask_copilot(request: Request, body: AskRequest):
                 "content": msg.content
             })
 
-    # 4. Consumir el stream completo para obtener el texto de respuesta
+    # 3. Procesar la pregunta usando IntelligenceEngine
     full_response = ""
-    async for chunk in llamar_copiloto_stream(
-        pregunta=body.question,
-        contexto=contexto,
-        chat_history=formatted_history
-    ):
+    async for chunk in engine.ask_async(body.question, formatted_history):
         full_response += chunk
 
     if not full_response.strip():
         full_response = "No he podido generar una respuesta en este momento."
 
-    # 5. Devolver texto plano (el TTS se sirve desde /tts)
+    # 4. Devolver texto plano (el TTS se solicita al endpoint /tts)
     return Response(
         content=full_response,
         media_type="text/plain",

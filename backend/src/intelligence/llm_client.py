@@ -1,14 +1,16 @@
 import asyncio
 import json
 import logging
-from typing import Any, Dict, List, Optional
+import re
+from typing import Any, AsyncGenerator, Dict, List, Optional
 
+import httpx
 from openai import AsyncOpenAI
 
 from src.config import settings
 from src.models.messages import AdviceStartMessage, AdviceTokenMessage, AdviceEndMessage, UIAction
 from src.transport.broadcaster import send
-from src.intelligence.prompt_templates import SYSTEM_PROMPT, UI_TOOLS
+from src.intelligence.prompt_templates import SYSTEM_PROMPT_WEC as SYSTEM_PROMPT, UI_TOOLS
 
 logger = logging.getLogger("vantare.llm_client")
 
@@ -47,7 +49,7 @@ class VLLMClient:
     def _get_client(self) -> AsyncOpenAI:
         """Devuelve (y cachea) el cliente OpenAI asíncrono."""
         if self._client is None:
-            self._client = openai.AsyncOpenAI(
+            self._client = AsyncOpenAI(
                 base_url=self._base_url,
                 api_key=self._api_key,
             )
@@ -90,12 +92,7 @@ class VLLMClient:
 
         # 2. Configurar parámetros según el tier
         tier_upper = tier.upper()
-        if tier_upper == "FAST":
-            max_tokens = 80
-        elif tier_upper == "STANDARD":
-            max_tokens = 150
-        else:
-            max_tokens = 300
+        max_tokens = 500
 
         full_text = ""
         actions: List[UIAction] = []
@@ -205,3 +202,86 @@ class VLLMClient:
         finally:
             if engine_ref:
                 engine_ref._current_response = None
+
+    async def ask_streaming_text(self, prompt: str, tier: str = "FAST") -> AsyncGenerator[str, None]:
+        """Similar a ask_streaming() pero devuelve generador de texto para HTTP, no emite WebSocket.
+        
+        Usa httpx.stream() directamente para manejar respuestas SSE de LiteLLM.
+        """
+        tier_upper = tier.upper()
+        max_tokens = 500
+
+        headers = {
+            "Authorization": f"Bearer {self._api_key}",
+            "Content-Type": "application/json",
+        }
+
+        payload = {
+            "model": self._model,
+            "messages": [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt},
+            ],
+            "temperature": 0.2,
+            "max_tokens": max_tokens,
+            "stream": True,
+        }
+
+        try:
+            async with httpx.AsyncClient() as client:
+                async with client.stream(
+                    "POST",
+                    f"{self._base_url}/chat/completions",
+                    headers=headers,
+                    json=payload,
+                    timeout=30.0,
+                ) as response:
+                    response.raise_for_status()
+                    async for line in response.aiter_lines():
+                        line = line.strip()
+                        if not line:
+                            continue
+
+                        # Formato SSE: "data: {...}"
+                        if line.startswith("data: "):
+                            data_str = line[6:].strip()
+                        else:
+                            data_str = line
+
+                        if data_str == "[DONE]":
+                            break
+
+                        try:
+                            data = json.loads(data_str)
+                            choices = data.get("choices", [])
+                            if not choices:
+                                continue
+
+                            delta = data["choices"][0]["delta"]
+
+                            # Descartar completamente los chunks de razonamiento
+                            if delta.get("reasoning_content"):
+                                continue
+
+                            # Solo procesar el contenido real (respuesta final)
+                            token = delta.get("content", "")
+                            if not token:
+                                continue
+
+                            # Limpiar etiquetas de control residuales
+                            if token.strip() in ("", "<|im_end|>", "<|im_start|>", "<!--", "-->", "<think>"):
+                                continue
+
+                            # Eliminar prefijos de etiquetas que puedan colarse
+                            if token.strip().startswith("<"):
+                                token = re.sub(r"^\s*</?think[^>]*>\s*", "", token)
+                                if not token or token.strip() in ("\n", "\n\n"):
+                                    continue
+
+                            # Token válido
+                            full_text += token
+                            yield token
+                        except json.JSONDecodeError:
+                            continue
+        except Exception as e:
+            logger.error(f"Error en ask_streaming_text: {e}", exc_info=True)
