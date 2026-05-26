@@ -57,11 +57,13 @@ async def lifespan(app: FastAPI):
     logger.info("Initializing Ingeniero de IA Backend Services...")
 
     # 1. Instanciar e inicializar el lector de telemetría física de LMU
-    # Intentamos conectar a Shared Memory física. Si falla, el lector automáticamente activa el modo simulado/offline.
-    reader = TelemetryReader(offline=False, poll_rate=settings.TELEMETRY_POLL_RATE)
+    # En Linux, no hay shared memory de LMU. Usamos TelemetryReader en modo offline como fallback.
+    # La telemetría real vendrá del frontend Windows vía WebSocket → app.state.latest_client_frame.
+    reader = TelemetryReader(offline=True, poll_rate=settings.TELEMETRY_POLL_RATE)
     reader.start()
     app.state.telemetry_reader = reader
-    logger.info(f"TelemetryReader started (offline_mode={reader.offline})")
+    app.state.latest_client_frame = None  # Se poblará desde el frontend vía WebSocket
+    logger.info(f"TelemetryReader started (offline_mode={reader.offline}). Waiting for frontend telemetry.")
 
     # 2. Iniciar el Poller REST de la API de LMU en background
     api_poller_task = asyncio.create_task(poll_api())
