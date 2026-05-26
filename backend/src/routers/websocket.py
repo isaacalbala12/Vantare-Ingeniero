@@ -183,7 +183,12 @@ async def websocket_endpoint(websocket: WebSocket):
                 msg = json.loads(data)
                 event = msg.get("event", "")
                 
-                if event == "pilot_question":
+                if event == "telemetry":
+                    # Almacenar la telemetría entrante del frontend para que strategy_sender_loop la use
+                    telemetry_data = msg.get("data", {})
+                    if telemetry_data:
+                        app_state.latest_client_frame = telemetry_data
+                elif event == "pilot_question":
                     question = msg.get("data", {}).get("question", "")
                     if question:
                         logger.info(f"[WS] Pregunta del piloto recibida: {question[:80]}...")
