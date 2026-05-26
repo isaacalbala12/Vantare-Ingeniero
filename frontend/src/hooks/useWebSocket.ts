@@ -352,6 +352,17 @@ export function useWebSocket() {
     return false;
   }, []);
 
+  // Enviar telemetría al backend a 20Hz (50ms) para que el backend Linux tenga datos reales
+  useEffect(() => {
+    if (!lastTelemetry) return;
+
+    const interval = setInterval(() => {
+      sendJson("telemetry", lastTelemetry);
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [lastTelemetry, sendJson]);
+
   return {
     connect,
     disconnect,
