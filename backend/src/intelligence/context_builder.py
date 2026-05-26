@@ -10,12 +10,91 @@ similares a la telemetría actual como contexto RAG.
 from typing import Any, Optional
 
 
+def _build_ticker_data(snapshot, telemetry_frame=None, strategy_advice=None, lmu_api=None):
+    """Construye el diccionario de datos para generate_ticker desde snapshot y fuentes adicionales."""
+    data = {}
+    data["position"] = snapshot.get("position", snapshot.get("place", 0))
+    data["lap"] = snapshot.get("lap", 0)
+    data["fuel_in_tank"] = snapshot.get("fuel_in_tank", 0.0)
+
+    fuel_laps = 0
+    fuel_rate = 0
+    if strategy_advice:
+        fuel_info = strategy_advice.get("fuel", {})
+        fuel_laps = fuel_info.get("estimated_laps_remaining", fuel_info.get("laps_left", 0))
+        fuel_rate = fuel_info.get("fuel_rate_trend", 0)
+    data["fuel_rate"] = fuel_rate
+    data["fuel_laps_left"] = fuel_laps
+
+    if telemetry_frame:
+        for wheel in ["fl", "fr", "rl", "rr"]:
+            data[f"tyre_wear_{wheel}"] = telemetry_frame.get(f"tyre_wear_{wheel}", 0.0)
+            data[f"tyre_temp_{wheel}"] = telemetry_frame.get(f"tyre_temp_{wheel}", 90.0)
+    else:
+        for wheel in ["fl", "fr", "rl", "rr"]:
+            data[f"tyre_wear_{wheel}"] = snapshot.get(f"tyre_wear_{wheel}", 0.0)
+            data[f"tyre_temp_{wheel}"] = snapshot.get(f"tyre_temp_{wheel}", 90.0)
+
+    brake_wear = [0, 0, 0, 0]
+    if lmu_api is not None:
+        try:
+            brakes_data = lmu_api.get_additional_data("brakes")
+            if isinstance(brakes_data, dict):
+                bw = brakes_data.get("wear", [])
+                if bw and len(bw) == 4:
+                    brake_wear = [int(w * 100) for w in bw]
+        except Exception:
+            pass
+    data["brake_wear"] = brake_wear
+
+    data["ahead_name"] = snapshot.get("ahead_name", "")
+    data["ahead_gap"] = snapshot.get("gap_ahead", 0)
+    data["ahead_best"] = 0
+    data["behind_name"] = snapshot.get("behind_name", "")
+    data["behind_gap"] = snapshot.get("gap_behind", 0)
+    data["behind_best"] = 0
+    data["delta"] = 0
+
+    competitors = []
+    if telemetry_frame:
+        competitors = telemetry_frame.get("competitors", [])
+    data["competitors"] = competitors
+    data["total_cars"] = len(competitors)
+
+    data["session_class"] = telemetry_frame.get("session_class", "GT3") if telemetry_frame else "GT3"
+    data["session_type"] = telemetry_frame.get("session_type", snapshot.get("phase", "RACE")) if telemetry_frame else snapshot.get("phase", "RACE")
+    data["total_laps"] = telemetry_frame.get("session_laps_left", 0) if telemetry_frame else 0
+    data["time_left"] = telemetry_frame.get("session_time_left", 0) if telemetry_frame else 0
+
+    data["grip"] = snapshot.get("track_grip_level", 0)
+    data["ambient_temp"] = snapshot.get("ambient_temp", 20)
+    data["rain_chance"] = 0
+    data["rain_min"] = 0
+    data["safety_car_active"] = telemetry_frame.get("safety_car_active", False) if telemetry_frame else False
+    data["cloud_coverage"] = snapshot.get("cloud_coverage", 0)
+    data["raining"] = snapshot.get("raining", 0.0)
+    data["avg_path_wetness"] = telemetry_frame.get("avg_path_wetness", 0.0) if telemetry_frame else 0.0
+    data["track_temp"] = telemetry_frame.get("track_temp", 20) if telemetry_frame else 20
+
+    data["speed"] = snapshot.get("speed", 0)
+    data["drs_state"] = telemetry_frame.get("drs_state", False) if telemetry_frame else False
+    data["pit_state"] = telemetry_frame.get("pit_state", 0) if telemetry_frame else 0
+    data["battery_charge"] = snapshot.get("battery_charge", 100)
+
+    data["player_best_lap"] = telemetry_frame.get("lap_time_best", 0) if telemetry_frame else 0
+
+    return data
+
+
 def build_prompt(
     snapshot: dict,
     trigger_reason: str,
     pilot_question: Optional[str],
     templates: Any,
     event_store: Optional[Any] = None,
+    telemetry_frame: Optional[dict] = None,
+    strategy_advice: Optional[dict] = None,
+    lmu_api: Optional[Any] = None,
 ) -> str:
     """Construye el prompt completo para el LLM.
 
@@ -25,6 +104,9 @@ def build_prompt(
         pilot_question: Pregunta directa del piloto (opcional).
         templates: Módulo prompt_templates con render().
         event_store: EventStore opcional para RAG.
+        telemetry_frame: Frame de telemetría opcional para usar ticker.
+        strategy_advice: Advice de estrategia opcional para datos de ticker.
+        lmu_api: Módulo lmu_api opcional para datos adicionales de ticker.
 
     Returns:
         String del prompt completo renderizado.
@@ -36,10 +118,17 @@ def build_prompt(
     if pilot_question:
         context_dict["pilot_question"] = pilot_question
 
-    # Inyectar RAG: top-5 eventos históricos con telemetría similar
-    rag_context = _build_rag_context(snapshot, event_store)
-    if rag_context:
-        context_dict["rag_context"] = rag_context
+    # Si hay telemetry_frame, usar ticker en vez de snapshot crudo
+    if telemetry_frame is not None:
+        ticker_data = _build_ticker_data(snapshot, telemetry_frame, strategy_advice, lmu_api)
+        ticker_text = generate_ticker(ticker_data)
+        context_dict["ticker_text"] = ticker_text
+        context_dict.pop("snapshot", None)
+    else:
+        # Inyectar RAG: top-5 eventos históricos con telemetría similar
+        rag_context = _build_rag_context(snapshot, event_store)
+        if rag_context:
+            context_dict["rag_context"] = rag_context
 
     # Determinar tier para template
     tier = "FAST"
@@ -57,8 +146,11 @@ def build_prompt_for_question(
     chat_history: Optional[list] = None,
     templates: Optional[Any] = None,
     event_store: Optional[Any] = None,
+    telemetry_frame: Optional[dict] = None,
+    strategy_advice: Optional[dict] = None,
+    lmu_api: Optional[Any] = None,
 ) -> str:
-    """Construye prompt para pregunta directa del piloto con RAG."""
+    """Construye prompt para pregunta directa del piloto con RAG y ticker."""
     context_dict: dict = {
         "snapshot": snapshot,
         "pilot_question": pilot_question,
@@ -66,10 +158,17 @@ def build_prompt_for_question(
     if chat_history:
         context_dict["chat_history"] = chat_history
 
-    # RAG
-    rag_context = _build_rag_context(snapshot, event_store)
-    if rag_context:
-        context_dict["rag_context"] = rag_context
+    # Si hay telemetry_frame, usar ticker en vez de snapshot crudo
+    if telemetry_frame is not None:
+        ticker_data = _build_ticker_data(snapshot, telemetry_frame, strategy_advice, lmu_api)
+        ticker_text = generate_ticker(ticker_data)
+        context_dict["ticker_text"] = ticker_text
+        context_dict.pop("snapshot", None)
+    else:
+        # RAG
+        rag_context = _build_rag_context(snapshot, event_store)
+        if rag_context:
+            context_dict["rag_context"] = rag_context
 
     tier = "FAST"
     if snapshot.get("lap_number", 0) > 0 and (snapshot.get("speed") or snapshot.get("fuel")):
