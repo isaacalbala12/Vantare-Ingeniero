@@ -313,6 +313,12 @@ export function useWebSocket() {
             updateTelemetry({
               alerts: [alertMsg]
             });
+            
+            // Encolar en TTS para que se hable la alerta
+            if (alertMsg) {
+              ttsQueueRef.current.push(alertMsg);
+              processTtsQueue();
+            }
             break;
           }
 
