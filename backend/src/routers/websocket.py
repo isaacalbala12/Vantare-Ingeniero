@@ -5,6 +5,7 @@ from typing import Set
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from src.models.messages import BaseMessage
+from src.services.msgpack_codec import encode as mp_encode, decode as mp_decode, apply_delta, is_full_frame
 
 logger = logging.getLogger("vantare.websocket")
 
@@ -238,7 +239,29 @@ async def websocket_endpoint(websocket: WebSocket):
                 if "text" in raw:
                     data = raw["text"]
                 elif "bytes" in raw:
-                    # Mensaje binario (WAV Blob del frontend) — ignorar
+                    # Mensaje binario (MessagePack telemetry del frontend)
+                    try:
+                        frame = mp_decode(raw["bytes"])
+                        
+                        # Detectar gap de timestamps para diagnóstico
+                        frame_ts = frame.get("_t", 0)
+                        last_ts = getattr(app_state, "_last_telemetry_t", 0)
+                        if last_ts > 0 and frame_ts - last_ts > 0.5:
+                            logger.warning(f"Telemetry gap detected: {frame_ts - last_ts:.2f}s since last frame")
+                        app_state._last_telemetry_t = frame_ts
+                        
+                        # Aplicar delta o snapshot completo
+                        if is_full_frame(frame):
+                            app_state.latest_client_frame = frame
+                        else:
+                            mp_delta = {k: v for k, v in frame.items() if not k.startswith("_")}
+                            if getattr(app_state, "latest_client_frame", None) is not None:
+                                app_state.latest_client_frame = apply_delta(app_state.latest_client_frame, mp_delta)
+                            else:
+                                # Primer frame tras conexión, guardar como está
+                                app_state.latest_client_frame = frame
+                    except Exception as e:
+                        logger.warning(f"Error decoding MessagePack telemetry: {e}")
                     continue
                 else:
                     continue
