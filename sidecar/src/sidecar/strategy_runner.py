@@ -80,10 +80,10 @@ class StrategyRunner:
 
         # Session info
         session_laps_left = 999.0
+        current_lap = race_state.player.current_lap
         max_laps = scoring_info.mMaxLaps
         if max_laps > 0:
             session_laps_left = max(0.0, float(max_laps - current_lap))
-        current_lap = race_state.player.current_lap
         session_time_left = race_state.session.time_remaining
 
         # Game phase flags
