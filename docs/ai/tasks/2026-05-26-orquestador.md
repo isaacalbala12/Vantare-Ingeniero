@@ -7,7 +7,7 @@ Ingeniero de carreras con IA para Le Mans Ultimate. Escucha voz, analiza telemet
 - Telemetría LMU: ✅ 20 Hz vía shared memory.
 - Motor determinista: ✅ shared-strategy funcional (combustible, neumáticos, pits).
 - LLM local: ✅ Qwen 3.5 4B MQ4 en Hipfire (Vulkan), streaming SSE.
-- LiteLLM: ✅ proxy en :4000, OpenAI-compatible, expuesto por Cloudflare Tunnel.
+- LiteLLM: ✅ proxy en :4000, OpenAI-compatible, expuesto por Cloudflare Tunnel: `https://considering-replies-nursery-gnome.trycloudflare.com`
 - TTS: ✅ Edge TTS (es-ES-AlvaroNeural), ~500ms.
 - Flujo HTTP texto→voz: ✅ completo.
 - WebSocket telemetría en vivo: ⚠️ pendiente de reparar.
