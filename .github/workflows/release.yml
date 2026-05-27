@@ -40,6 +40,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -e ./shared-telemetry -e ./shared-strategy
+          pip install -e ./backend
           pip install pyinstaller
 
       - name: Build backend

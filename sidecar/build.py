@@ -25,6 +25,8 @@ args = [
     "--name=strategy-sidecar",
     "--add-data", f"{SHARED_TELEMETRY}{os.pathsep}shared_telemetry",
     "--add-data", f"{SHARED_STRATEGY}{os.pathsep}shared_strategy",
+    "--paths", str(REPO_ROOT / "shared-telemetry"),
+    "--paths", str(REPO_ROOT / "shared-strategy" / "src"),
     "--distpath=./dist",
     "--workpath=./build",
 ]
