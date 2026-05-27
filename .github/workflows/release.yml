@@ -110,45 +110,36 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y dpkg-dev nsis zip
+          df -h .
 
-      - name: Download all artifacts
+      # =====================================================================
+      # WINDOWS INSTALLER (download, build, cleanup)
+      # =====================================================================
+      - name: Download Windows backend
         uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          name: vantare-engine-windows
+          path: artifacts/vantare-engine-windows
 
-      - name: Prepare Windows installer
-        run: |
-          mkdir -p installer-build/windows
-          mkdir -p installer-build/windows/backend
-          mkdir -p installer-build/windows/sidecar
-          
-          # Copy artifacts
-          cp -r artifacts/vantare-engine-windows/* installer-build/windows/backend/
-          cp -r artifacts/strategy-sidecar-windows/* installer-build/windows/sidecar/
-          
-          # Copy NSIS script
-          cp installer/windows.nsi installer-build/windows/
-          
-          # Create LICENSE
-          echo "Vantare Ingeniero IA v${{ env.VERSION }}" > installer-build/windows/LICENSE.txt
-          
-          echo "=== Windows build contents ==="
-          ls -la installer-build/windows/
+      - name: Download Windows sidecar
+        uses: actions/download-artifact@v4
+        with:
+          name: strategy-sidecar-windows
+          path: artifacts/strategy-sidecar-windows
 
       - name: Build Windows NSIS installer
         run: |
-          cd installer-build/windows
+          mkdir -p installer-build/windows/backend installer-build/windows/sidecar
+          cp -r artifacts/vantare-engine-windows/* installer-build/windows/backend/
+          cp -r artifacts/strategy-sidecar-windows/* installer-build/windows/sidecar/
+          cp installer/windows.nsi installer-build/windows/
+          echo "Vantare Ingeniero IA v${{ env.VERSION }}" > installer-build/windows/LICENSE.txt
           
-          # Prepare directory structure for NSIS
-          # NSIS script expects: backend\dist\vantare-engine\ and sidecar\dist\strategy-sidecar\
-          mkdir -p backend/dist/vantare-engine
-          mkdir -p sidecar/dist/strategy-sidecar
+          cd installer-build/windows
+          mkdir -p backend/dist/vantare-engine sidecar/dist/strategy-sidecar
           cp -r backend/* backend/dist/vantare-engine/ 2>/dev/null || true
           cp -r sidecar/* sidecar/dist/strategy-sidecar/ 2>/dev/null || true
           
-          ls -la
-          
-          # Build installer
           if command -v makensis &> /dev/null; then
             makensis windows.nsi || echo "NSIS failed, falling back to ZIP"
           fi
@@ -158,25 +149,36 @@ jobs:
             mv vantare-instalador-${{ env.VERSION }}.exe.zip vantare-instalador-${{ env.VERSION }}.exe
           fi
           
-          echo "=== Generated files ==="
-          find . -type f -name "*.exe" -o -name "*.zip" | head -10
+          cp vantare-instalador-${{ env.VERSION }}.exe ../../../
+          cd ../../..
           
-          # Move installer to root
-          cp vantare-instalador-${{ env.VERSION }}.exe ../../vantare-instalador-${{ env.VERSION }}.exe
-          cd ../..
-          # Free disk space: remove Windows artifacts (no longer needed)
-          rm -rf artifacts/vantare-engine-windows artifacts/strategy-sidecar-windows
-          echo "=== Disk space after Windows build ==="
+          # Clean Windows artifacts immediately
+          rm -rf artifacts/vantare-engine-windows artifacts/strategy-sidecar-windows installer-build/windows
+          echo "=== Disk after Windows build ==="
           df -h .
 
-      - name: Prepare Linux DEB package
+      # =====================================================================
+      # LINUX DEB (download, build, cleanup)
+      # =====================================================================
+      - name: Download Linux backend
+        uses: actions/download-artifact@v4
+        with:
+          name: vantare-engine-linux
+          path: artifacts/vantare-engine-linux
+
+      - name: Download Linux sidecar
+        uses: actions/download-artifact@v4
+        with:
+          name: strategy-sidecar-linux
+          path: artifacts/strategy-sidecar-linux
+
+      - name: Build Linux DEB package
         run: |
           mkdir -p installer-build/linux/DEBIAN
           mkdir -p installer-build/linux/usr/bin
           mkdir -p installer-build/linux/usr/share/doc/vantare-engine
           mkdir -p installer-build/linux/usr/share/applications
           
-          # Copy Linux artifacts
           cp -r artifacts/vantare-engine-linux/* installer-build/linux/usr/bin/ 2>/dev/null || true
           cp -r artifacts/strategy-sidecar-linux/* installer-build/linux/usr/bin/ 2>/dev/null || true
           
@@ -226,28 +228,25 @@ jobs:
       - name: Build DEB package
         run: |
           cd installer-build/linux
-          dpkg-deb --build . ../../../vantare-engine-${{ env.VERSION }}_amd64.deb
-          cd ../../..
+          dpkg-deb --build . ../../vantare-engine-${{ env.VERSION }}_amd64.deb
+          cd ../..
           
           echo "=== Generated DEB ==="
-          ls -la *.deb
+          ls -la vantare-engine-*.deb
           
-          # Cleanup Linux artifacts to free disk space
-          rm -rf ../artifacts/vantare-engine-linux ../artifacts/strategy-sidecar-linux
-          echo "=== Disk space after Linux build ==="
+          # Cleanup Linux artifacts and installer-build/linux (no longer needed)
+          rm -rf artifacts/vantare-engine-linux artifacts/strategy-sidecar-linux installer-build/linux
+          echo "=== Disk space after cleanup ==="
           df -h .
 
       - name: Create portable archives
         run: |
-          # Windows installer already at root as vantare-instalador-${{ env.VERSION }}.exe
+          # Windows installer already at root
           echo "Windows installer: vantare-instalador-${{ env.VERSION }}.exe"
           ls -la vantare-instalador-${{ env.VERSION }}.exe
           
-          # Create Linux portable tarball from installer-build/linux
-          tar -czf vantare-engine-linux.tar.gz installer-build/linux/ 2>/dev/null || true
-          
           echo "=== All generated packages ==="
-          ls -la *.exe *.deb *.tar.gz 2>/dev/null || echo "Packages created"
+          ls -la vantare-*.exe vantare-engine-*.deb 2>/dev/null || echo "Packages created"
 
       - name: Upload all installers
         uses: actions/upload-artifact@v4
