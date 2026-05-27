@@ -279,12 +279,11 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag: ${{ github.ref }}
-          working_directory: artifacts/all-installers/installer-build
           files: |
-            windows/vantare-instalador-*.exe
-            linux/vantare-engine-*.deb
-            vantare-engine-*.tar.gz
-            vantare-engine-win-portable.zip
+            artifacts/all-installers/installer-build/windows/vantare-instalador-*.exe
+            artifacts/all-installers/installer-build/linux/vantare-engine-*.deb
+            artifacts/all-installers/installer-build/vantare-engine-*.tar.gz
+            artifacts/all-installers/installer-build/vantare-engine-win-portable.zip
           draft: false
           prerelease: true
           generate_release_notes: true
