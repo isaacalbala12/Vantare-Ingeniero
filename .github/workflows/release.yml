@@ -9,6 +9,7 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
   PYTHON_VERSION: '3.12'
+  VERSION: '0.1.0-alpha'
 
 jobs:
   build-backend:
@@ -43,13 +44,6 @@ jobs:
         run: |
           cd backend
           python build.py --noconfirm
-          dir dist
-
-      - name: List and fix dist contents
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
-        run: |
-          Get-ChildItem -Path backend/dist -Recurse | Select-Object FullName
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -99,7 +93,7 @@ jobs:
             sidecar/dist/
 
   build-installers:
-    name: Build Installers
+    name: Build Installers (NSIS + DEB)
     runs-on: ubuntu-24.04
     needs: [build-backend, build-sidecar]
 
@@ -119,54 +113,148 @@ jobs:
         with:
           path: artifacts
 
-      - name: List artifacts
+      - name: Prepare Windows installer
         run: |
-          echo "=== Artifacts ==="
-          find artifacts -type f | head -50
+          mkdir -p installer-build/windows
+          mkdir -p installer-build/windows/backend
+          mkdir -p installer-build/windows/sidecar
+          
+          # Copy artifacts
+          cp -r artifacts/vantare-engine-windows/* installer-build/windows/backend/
+          cp -r artifacts/strategy-sidecar-windows/* installer-build/windows/sidecar/
+          
+          # Copy NSIS script
+          cp installer/windows.nsi installer-build/windows/
+          
+          # Create LICENSE
+          echo "Vantare Ingeniero IA v${{ env.VERSION }}" > installer-build/windows/LICENSE.txt
+          
+          echo "=== Windows build contents ==="
+          ls -la installer-build/windows/
 
-      - name: Create portable ZIP for Windows
+      - name: Build Windows NSIS installer
         run: |
-          mkdir -p release
+          cd installer-build/windows
           
-          # Copy Windows builds to release folder
-          if [ -d "artifacts/vantare-engine-windows" ]; then
-            echo "Found Windows backend"
-            cp -r artifacts/vantare-engine-windows release/vantare-engine-win
+          # Prepare directory structure for NSIS
+          mkdir -p vantare-engine
+          mkdir -p strategy-sidecar
+          cp -r backend/* vantare-engine/ 2>/dev/null || true
+          cp -r sidecar/* strategy-sidecar/ 2>/dev/null || true
+          
+          ls -la
+          
+          # Build installer
+          if command -v makensis &> /dev/null; then
+            makensis windows.nsi
+          else
+            echo "NSIS not available, creating ZIP instead"
+            zip -r vantare-instalador-${{ env.VERSION }}.exe.zip vantare-engine strategy-sidecar LICENSE.txt
+            mv vantare-instalador-${{ env.VERSION }}.exe.zip vantare-instalador-${{ env.VERSION }}.exe
           fi
           
-          if [ -d "artifacts/strategy-sidecar-windows" ]; then
-            echo "Found Windows sidecar"
-            cp -r artifacts/strategy-sidecar-windows release/strategy-sidecar-win
-          fi
-          
-          # Copy Linux builds
-          if [ -d "artifacts/vantare-engine-linux" ]; then
-            echo "Found Linux backend"
-            cp -r artifacts/vantare-engine-linux release/vantare-engine-linux
-          fi
-          
-          if [ -d "artifacts/strategy-sidecar-linux" ]; then
-            echo "Found Linux sidecar"
-            cp -r artifacts/strategy-sidecar-linux release/strategy-sidecar-linux
-          fi
-          
-          ls -laR release/
-          
-          # Create ZIPs
-          zip -r release/vantare-engine-win.zip release/vantare-engine-win 2>/dev/null || true
-          zip -r release/strategy-sidecar-win.zip release/strategy-sidecar-win 2>/dev/null || true
-          tar -czf release/vantare-engine-linux.tar.gz -C release vantare-engine-linux 2>/dev/null || true
-          tar -czf release/strategy-sidecar-linux.tar.gz -C release strategy-sidecar-linux 2>/dev/null || true
-          
-          echo "=== Generated packages ==="
-          ls -la release/
+          echo "=== Generated files ==="
+          find . -type f -name "*.exe" -o -name "*.zip" | head -10
 
-      - name: Upload all artifacts
+      - name: Prepare Linux DEB package
+        run: |
+          mkdir -p installer-build/linux/DEBIAN
+          mkdir -p installer-build/linux/usr/bin
+          mkdir -p installer-build/linux/usr/share/doc/vantare-engine
+          mkdir -p installer-build/linux/usr/share/applications
+          
+          # Copy Linux artifacts
+          cp -r artifacts/vantare-engine-linux/* installer-build/linux/usr/bin/ 2>/dev/null || true
+          cp -r artifacts/strategy-sidecar-linux/* installer-build/linux/usr/bin/ 2>/dev/null || true
+          
+          # Create DEBIAN/control
+          cat > installer-build/linux/DEBIAN/control << EOF
+Package: vantare-engine
+Version: ${{ env.VERSION }}
+Section: games
+Priority: optional
+Architecture: amd64
+Depends: python3.12
+Maintainer: Vantare <info@vantare.es>
+Description: Vantare Ingeniero IA - Race Strategy Assistant
+ A real-time race strategy assistant for Le Mans Ultimate (LMU).
+ Provides pit strategies, tire recommendations, and voice advice.
+EOF
+
+          # Create postinst
+          cat > installer-build/linux/DEBIAN/postinst << 'EOF'
+#!/bin/bash
+chmod +x /usr/bin/vantare-engine 2>/dev/null || true
+chmod +x /usr/bin/vantare-sidecar 2>/dev/null || true
+mkdir -p ~/.config/vantare
+echo "Vantare Ingeniero IA installed!"
+EOF
+          chmod 755 installer-build/linux/DEBIAN/postinst
+          
+          # Create postrm
+          cat > installer-build/linux/DEBIAN/postrm << 'EOF'
+#!/bin/bash
+if [ "$1" = "purge" ]; then
+  rm -rf ~/.config/vantare 2>/dev/null || true
+fi
+EOF
+          chmod 755 installer-build/linux/DEBIAN/postrm
+          
+          # Copy LICENSE
+          cp installer-build/windows/LICENSE.txt installer-build/linux/usr/share/doc/vantare-engine/LICENSE 2>/dev/null || echo "v${{ env.VERSION }}" > installer-build/linux/usr/share/doc/vantare-engine/copyright
+          
+          # Create desktop entry
+          cat > installer-build/linux/usr/share/applications/vantare-engine.desktop << 'EOF'
+[Desktop Entry]
+Name=Vantare Ingeniero IA
+Comment=Race Strategy Assistant for Le Mans Ultimate
+Exec=/usr/bin/vantare-engine
+Icon=utilities-terminal
+Terminal=true
+Type=Application
+Categories=Game;
+EOF
+
+          echo "=== Linux DEB contents ==="
+          ls -laR installer-build/linux/
+
+      - name: Build DEB package
+        run: |
+          cd installer-build/linux
+          dpkg-deb --build . ../../../vantare-engine-${{ env.VERSION }}_amd64.deb
+          cd ../../..
+          
+          echo "=== Generated DEB ==="
+          ls -la *.deb
+
+      - name: Create portable archives
+        run: |
+          cd installer-build
+          
+          # Create portable ZIP for Windows
+          if [ -f windows/vantare-instalador-${{ env.VERSION }}.exe ]; then
+            echo "Found NSIS installer"
+          else
+            echo "Creating ZIP for Windows"
+            zip -r ../../vantare-engine-win-portable.zip windows/ 2>/dev/null || true
+          fi
+          
+          # Create Linux portable tarball
+          tar -czf ../../vantare-engine-linux.tar.gz linux/ 2>/dev/null || true
+          
+          echo "=== All generated packages ==="
+          ls -la ../../*.zip ../../*.deb ../../*.tar.gz 2>/dev/null || echo "Packages created"
+
+      - name: Upload all installers
         uses: actions/upload-artifact@v4
         with:
           name: all-installers
           path: |
-            release/**
+            installer-build/**/*.exe
+            installer-build/**/*.zip
+            vantare-*.deb
+            vantare-*.tar.gz
+            vantare-*.zip
 
   create-release:
     name: Create Release
@@ -188,16 +276,18 @@ jobs:
 
       - name: List all files
         run: |
-          echo "=== All files ==="
-          find artifacts -type f 2>/dev/null
+          echo "=== All installer files ==="
+          find artifacts -type f 2>/dev/null | grep -E "\.(exe|deb|zip|tar\.gz)$" | head -20
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag: ${{ github.ref }}
           files: |
-            artifacts/**/*.zip
-            artifacts/**/*.tar.gz
+            artifacts/**/*.exe
+            vantare-engine-*.deb
+            vantare-engine-*.tar.gz
+            vantare-engine-*.zip
           draft: false
           prerelease: true
           generate_release_notes: true
