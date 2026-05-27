@@ -160,6 +160,14 @@ jobs:
           
           echo "=== Generated files ==="
           find . -type f -name "*.exe" -o -name "*.zip" | head -10
+          
+          # Move installer to root
+          cp vantare-instalador-${{ env.VERSION }}.exe ../../vantare-instalador-${{ env.VERSION }}.exe
+          cd ../..
+          # Free disk space: remove Windows artifacts (no longer needed)
+          rm -rf artifacts/vantare-engine-windows artifacts/strategy-sidecar-windows
+          echo "=== Disk space after Windows build ==="
+          df -h .
 
       - name: Prepare Linux DEB package
         run: |
@@ -200,7 +208,7 @@ jobs:
           chmod 755 installer-build/linux/DEBIAN/postrm
           
           # Copy LICENSE
-          cp installer-build/windows/LICENSE.txt installer-build/linux/usr/share/doc/vantare-engine/LICENSE 2>/dev/null || echo "v${{ env.VERSION }}" > installer-build/linux/usr/share/doc/vantare-engine/copyright
+          echo "Vantare Ingeniero IA v${{ env.VERSION }}" > installer-build/linux/usr/share/doc/vantare-engine/copyright
           
           # Create desktop entry
           echo '[Desktop Entry]' > installer-build/linux/usr/share/applications/vantare-engine.desktop
@@ -223,35 +231,32 @@ jobs:
           
           echo "=== Generated DEB ==="
           ls -la *.deb
+          
+          # Cleanup Linux artifacts to free disk space
+          rm -rf ../artifacts/vantare-engine-linux ../artifacts/strategy-sidecar-linux
+          echo "=== Disk space after Linux build ==="
+          df -h .
 
       - name: Create portable archives
         run: |
-          cd installer-build
+          # Windows installer already at root as vantare-instalador-${{ env.VERSION }}.exe
+          echo "Windows installer: vantare-instalador-${{ env.VERSION }}.exe"
+          ls -la vantare-instalador-${{ env.VERSION }}.exe
           
-          # Create portable ZIP for Windows
-          if [ -f windows/vantare-instalador-${{ env.VERSION }}.exe ]; then
-            echo "Found NSIS installer"
-          else
-            echo "Creating ZIP for Windows"
-            zip -r ../../vantare-engine-win-portable.zip windows/ 2>/dev/null || true
-          fi
-          
-          # Create Linux portable tarball
-          tar -czf ../../vantare-engine-linux.tar.gz linux/ 2>/dev/null || true
+          # Create Linux portable tarball from installer-build/linux
+          tar -czf vantare-engine-linux.tar.gz installer-build/linux/ 2>/dev/null || true
           
           echo "=== All generated packages ==="
-          ls -la ../../*.zip ../../*.deb ../../*.tar.gz 2>/dev/null || echo "Packages created"
+          ls -la *.exe *.deb *.tar.gz 2>/dev/null || echo "Packages created"
 
       - name: Upload all installers
         uses: actions/upload-artifact@v4
         with:
           name: all-installers
           path: |
-            installer-build/**/*.exe
-            installer-build/**/*.zip
-            vantare-*.deb
-            vantare-*.tar.gz
-            vantare-*.zip
+            vantare-instalador-*.exe
+            vantare-engine-*.deb
+            vantare-engine-*.tar.gz
 
   create-release:
     name: Create Release
@@ -282,9 +287,8 @@ jobs:
           tag: ${{ github.ref }}
           files: |
             artifacts/**/*.exe
-            vantare-engine-*.deb
-            vantare-engine-*.tar.gz
-            vantare-engine-*.zip
+            artifacts/**/*.deb
+            artifacts/**/*.tar.gz
           draft: false
           prerelease: true
           generate_release_notes: true
