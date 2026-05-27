@@ -12,15 +12,20 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 # Las librerías están en shared-telemetry/shared_telemetry/ y shared-strategy/src/
 SHARED_TELEMETRY = REPO_ROOT / "shared-telemetry" / "shared_telemetry"
 SHARED_STRATEGY = REPO_ROOT / "shared-strategy" / "src"
+BACKEND_SRC = REPO_ROOT / "backend" / "src"
 
 args = [
     "--onedir",
     "--noconsole",
+    "--noconfirm",
     "--name=vantare-engine",
     "--add-data", f"{SHARED_TELEMETRY}{os.pathsep}shared_telemetry",
     "--add-data", f"{SHARED_STRATEGY}{os.pathsep}shared_strategy",
+    "--add-data", f"{BACKEND_SRC}{os.pathsep}src",
     "--paths", str(REPO_ROOT / "shared-telemetry"),
     "--paths", str(REPO_ROOT / "shared-strategy" / "src"),
+    "--paths", str(REPO_ROOT / "backend"),
+    "--paths", str(REPO_ROOT / "backend" / "src"),
     "--distpath=./dist",
     "--workpath=./build",
     # Hidden imports clave para que PyInstaller detecte los módulos
