@@ -1,17 +1,23 @@
 """
-Build script para empaquetar backend FastAPI como vantare-engine.exe.
-Uso: cd backend && pyinstaller build.py
+Build script para empaquetar backend FastAPI como vantare-engine.
+Uso: cd backend && python build.py
 """
-import sys
 from pathlib import Path
+import os
 
 import PyInstaller.__main__
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SHARED_TELEMETRY = REPO_ROOT / "shared-telemetry" / "src"
+
+# Las librerías están en shared-telemetry/shared_telemetry/ y shared-strategy/src/
+SHARED_TELEMETRY = REPO_ROOT / "shared-telemetry" / "shared_telemetry"
 SHARED_STRATEGY = REPO_ROOT / "shared-strategy" / "src"
 
-import os
+# Verificar que existen antes de continuar
+if not SHARED_TELEMETRY.exists():
+    print(f"ADVERTENCIA: {SHARED_TELEMETRY} no existe")
+if not SHARED_STRATEGY.exists():
+    print(f"ADVERTENCIA: {SHARED_STRATEGY} no existe")
 
 args = [
     "--onedir",
@@ -25,10 +31,6 @@ args = [
     "--distpath=./dist",
     "--workpath=./build",
 ]
-
-PYLMU_DIR = SHARED_TELEMETRY / "shared_telemetry" / "pyLMUSharedMemory"
-for pyd_file in PYLMU_DIR.glob("*.pyd"):
-    args.extend(["--add-binary", f"{str(pyd_file)}{os.pathsep}shared_telemetry/pyLMUSharedMemory"])
 
 args.append("src/main.py")
 
