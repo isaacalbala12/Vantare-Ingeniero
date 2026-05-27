@@ -139,19 +139,21 @@ jobs:
           cd installer-build/windows
           
           # Prepare directory structure for NSIS
-          mkdir -p vantare-engine
-          mkdir -p strategy-sidecar
-          cp -r backend/* vantare-engine/ 2>/dev/null || true
-          cp -r sidecar/* strategy-sidecar/ 2>/dev/null || true
+          # NSIS script expects: backend\dist\vantare-engine\ and sidecar\dist\strategy-sidecar\
+          mkdir -p backend/dist/vantare-engine
+          mkdir -p sidecar/dist/strategy-sidecar
+          cp -r backend/* backend/dist/vantare-engine/ 2>/dev/null || true
+          cp -r sidecar/* sidecar/dist/strategy-sidecar/ 2>/dev/null || true
           
           ls -la
           
           # Build installer
           if command -v makensis &> /dev/null; then
-            makensis windows.nsi
-          else
-            echo "NSIS not available, creating ZIP instead"
-            zip -r vantare-instalador-${{ env.VERSION }}.exe.zip vantare-engine strategy-sidecar LICENSE.txt
+            makensis windows.nsi || echo "NSIS failed, falling back to ZIP"
+          fi
+          if ! ls *.exe &>/dev/null; then
+            echo "Creating ZIP instead"
+            zip -r vantare-instalador-${{ env.VERSION }}.exe.zip backend sidecar LICENSE.txt
             mv vantare-instalador-${{ env.VERSION }}.exe.zip vantare-instalador-${{ env.VERSION }}.exe
           fi
           
