@@ -241,12 +241,9 @@ jobs:
 
       - name: Create portable archives
         run: |
-          # Windows installer already at root
-          echo "Windows installer: vantare-instalador-${{ env.VERSION }}.exe"
-          ls -la vantare-instalador-${{ env.VERSION }}.exe
-          
           echo "=== All generated packages ==="
-          ls -la vantare-*.exe vantare-engine-*.deb 2>/dev/null || echo "Packages created"
+          ls -la vantare-instalador-*.exe vantare-engine-*.deb 2>/dev/null
+          echo "Package generation complete"
 
       - name: Upload all installers
         uses: actions/upload-artifact@v4
