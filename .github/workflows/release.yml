@@ -11,6 +11,10 @@ on:
         required: true
         default: 'v0.1.0'
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  PYTHON_VERSION: '3.12'
+
 jobs:
   build-backend:
     name: Build Backend (vantare-engine)
@@ -19,47 +23,40 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2022
             artifact: vantare-engine-windows
-            target: backend
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             artifact: vantare-engine-linux
-            target: backend
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          fetch-depth: 0
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
         run: |
-          pip install -e ../shared-telemetry -e ../shared-strategy
+          pip install -e shared-telemetry -e shared-strategy
           pip install pyinstaller
 
-      - name: Build backend (Windows)
-        if: matrix.os == 'windows-latest'
+      - name: Build backend
         run: |
           cd backend
-          pyinstaller build.py --noconfirm
-          # Rename output folder
-          mv dist/vantare-engine dist/vantare-engine-win
+          python build.py --noconfirm
 
-      - name: Build backend (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          cd backend
-          pyinstaller build.py --noconfirm
-          mv dist/vantare-engine dist/vantare-engine-linux
+      - name: List dist contents
+        run: ls -la backend/dist/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: backend/dist/vantare-engine-*
+          path: backend/dist/vantare-engine/
 
   build-sidecar:
     name: Build Sidecar (strategy-sidecar)
@@ -68,74 +65,53 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
+          - os: windows-2022
             artifact: strategy-sidecar-windows
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             artifact: strategy-sidecar-linux
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          fetch-depth: 0
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
         run: |
-          pip install -e ../shared-telemetry -e ../shared-strategy
+          pip install -e shared-telemetry -e shared-strategy
           pip install pyinstaller
 
       - name: Build sidecar
         run: |
           cd sidecar
-          pyinstaller build.py --noconfirm
+          python build.py --noconfirm
+
+      - name: List dist contents
+        run: ls -la sidecar/dist/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: sidecar/dist/strategy-sidecar
+          path: sidecar/dist/strategy-sidecar/
 
-  build-frontend:
-    name: Build Frontend (Tauri)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Tauri
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  create-release:
-    name: Create Release
+  build-installers:
+    name: Build Installers
+    runs-on: ubuntu-24.04
     needs: [build-backend, build-sidecar]
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Install Linux build dependencies
+      - name: Install build dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y dpkg-dev nsis
@@ -146,32 +122,35 @@ jobs:
           path: artifacts
 
       - name: List artifacts
-        run: ls -la artifacts/
+        run: ls -laR artifacts/
 
-      - name: Prepare installer directory
+      - name: Prepare Windows installer directory
         run: |
           mkdir -p installer/build/windows
-          mkdir -p installer/build/linux
-
-      - name: Copy artifacts for Windows installer
-        run: |
-          cp -r artifacts/vantare-engine-windows installer/build/windows/backend || true
-          cp -r artifacts/strategy-sidecar-windows installer/build/windows/sidecar || true
+          mkdir -p installer/build/windows/backend
+          mkdir -p installer/build/windows/sidecar
+          cp -r artifacts/vantare-engine-windows/* installer/build/windows/backend/
+          cp -r artifacts/strategy-sidecar-windows/* installer/build/windows/sidecar/
+          ls -laR installer/build/windows/
 
       - name: Build Windows NSIS installer
         run: |
           cd installer/build/windows
-          cp ../../installer/windows.nsi .
-          cp ../../LICENSE . 2>/dev/null || true
-          if [ -d "backend" ]; then
-            mkdir -p backend/vantare-engine
-            cp -r backend/* backend/vantare-engine/
+          cp ../../../../installer/windows.nsi .
+          echo "Vantare Ingeniero IA Alpha v0.1.0" > LICENSE.txt
+          ls -la
+          if command -v makensis &> /dev/null; then
+            makensis windows.nsi || echo "NSIS build may have issues"
+          else
+            echo "NSIS not installed, skipping Windows installer"
           fi
-          if [ -d "sidecar" ]; then
-            mkdir -p sidecar/strategy-sidecar
-            cp -r sidecar/* sidecar/strategy-sidecar/
-          fi
-          makensis windows.nsi || echo "NSIS build skipped"
+
+      - name: Prepare Linux package directory
+        run: |
+          mkdir -p installer/build/linux/usr/bin
+          cp -r artifacts/vantare-engine-linux/* installer/build/linux/usr/bin/ 2>/dev/null || true
+          cp -r artifacts/strategy-sidecar-linux/* installer/build/linux/usr/bin/ 2>/dev/null || true
+          ls -la installer/build/linux/usr/bin/
 
       - name: Build Linux DEB package
         run: |
@@ -181,42 +160,57 @@ jobs:
 
       - name: List generated installers
         run: |
-          echo "=== Windows Installers ==="
-          ls -la installer/build/*.exe 2>/dev/null || echo "No .exe found"
+          echo "=== All generated files ==="
+          find installer/build -type f 2>/dev/null
           echo ""
-          echo "=== Linux Installers ==="
-          ls -la installer/build/*.deb 2>/dev/null || echo "No .deb found"
-          ls -la installer/build/*.AppImage 2>/dev/null || echo "No AppImage found"
+          echo "=== Windows .exe files ==="
+          find installer/build -name "*.exe" -type f 2>/dev/null
+          echo ""
+          echo "=== Linux packages ==="
+          find installer/build -name "*.deb" -type f 2>/dev/null
+          find installer/build -name "*.AppImage" -type f 2>/dev/null
 
-      - name: Upload Windows installer
+      - name: Upload all artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows-installers
+          name: all-installers
           path: |
-            installer/build/*.exe
-            artifacts/vantare-engine-windows/**/*.exe
-          if-no-artifact-found: ignore
+            installer/build/**/*
+            artifacts/**/*
 
-      - name: Upload Linux installers
-        uses: actions/upload-artifact@v4
+  create-release:
+    name: Create Release
+    needs: [build-installers]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          name: linux-installers
-          path: |
-            installer/build/*.deb
-            installer/build/*.AppImage
-          if-no-artifact-found: ignore
+          fetch-depth: 0
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: '*'
+          merge-multiple: false
+
+      - name: List all files
+        run: |
+          echo "=== artifacts directory ==="
+          find artifacts -type f 2>/dev/null | head -50
 
       - name: Create Release
-        id: create_release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            installer/build/*.exe
-            installer/build/*.deb
-            installer/build/*.AppImage
-            artifacts/vantare-engine-windows/**/*.exe
-            artifacts/vantare-engine-linux/vantare-engine
-            artifacts/strategy-sidecar-linux/strategy-sidecar
+            artifacts/**/*exe
+            artifacts/**/*.AppImage
+            artifacts/**/*linux*/**
+            artifacts/**/*windows*/**
           draft: false
           prerelease: true
           generate_release_notes: true
