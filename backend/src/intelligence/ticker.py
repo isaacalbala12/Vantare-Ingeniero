@@ -196,7 +196,8 @@ def _format_gap(data: dict) -> str:
     # Sección atrás (<)
     if behind_name and behind_gap is not None:
         best_str = _format_laptime(behind_best) if behind_best else "0:00.0"
-        parts.append(f"<{abbreviate_name(behind_name)}:{behind_gap}·{best_str}·d{delta}")
+        # Gap detrás siempre es negativo (estás por delante)
+        parts.append(f"|<{abbreviate_name(behind_name)}:-{behind_gap}·{best_str}·d{delta}")
 
     return "".join(parts)
 

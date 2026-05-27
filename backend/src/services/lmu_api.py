@@ -17,10 +17,6 @@ _weather_updated: float = 0.0
 _strategy_updated: float = 0.0
 _garage_updated: float = 0.0
 
-_weather_updated: float = 0.0
-_strategy_updated: float = 0.0
-_garage_updated: float = 0.0
-
 _cache_lock = Lock()
 
 

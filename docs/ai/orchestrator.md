@@ -17,12 +17,17 @@
 - Spotter: ✅ 20Hz, 8 alertas deterministas, bypass LLM
 - TTS: ✅ Edge (OK) + Piper (OK) + ElevenLabs (NO) + Gemini (NO)
 - LLM Client: ✅ configurado con `hipfire-qwen` → Tunnel → LiteLLM → Hipfire
+- **Ticker compacto (F4):** ✅ `generate_ticker()` reemplaza JSON verboso por texto ~400 tokens
+- **Prompt Builder (F4):** ✅ `SYSTEM_PROMPT_TICKER` con tabla diccionario + contexto RAG embebido
+- **LiveContext (F0/F4):** ✅ Snapshots con `speed`, `track_grip_level`, `update_realtime()`
+
+### Backend tests: ✅ 285 tests pasando (cov 69%, +11.5pts vs 26-mayo)
 
 ### Estado del frontend (React/TypeScript/Tauri)
-- ✅ 42 tests unitarios pasan (Vitest)
-- ⚠️ 15 errores TypeScript (12 son TS6133 unused vars, 3 reales en `usePTT.ts`)
-- ❌ PTT no funcional (errores de tipo en `usePTT.ts`)
-- ❌ WebSocket telemetría backend←frontend no implementada
+- ✅ 55 tests unitarios pasando (Vitest)
+- ✅ 0 errores TypeScript (tsc --noEmit limpio)
+- ✅ PTT funcional, tsc --noEmit limpio
+- ✅ MessagePack binario + delta encoding implementado
 
 ---
 
@@ -143,13 +148,21 @@ cd frontend && npx vitest run
 │                                      └→ Hipfire :11435        │ │
 │                                         └→ Qwen 3.5 4B       │ │
 │                                                              │ │
-│  RAG (FASE 2): ChromaDB + multilingual-e5-large              │ │
+│  RAG (FASE 3): ChromaDB + multilingual-e5-large ✅           │ │
 │    └→ Historial de eventos + snapshots por vuelta             │ │
+│    └→ Top-5 eventos históricos en prompt                      │ │
 │                                                              │ │
-│  Ticker (FASE 3): formato compacto para prompts              │ │
+│  Ticker (FASE 4): formato compacto para prompts ✅            │ │
 │    └→ DRV|TYR|BRK|GAP|SES|WTH|RIV en ~400 tokens             │ │
+│    └→ generate_ticker() + SYSTEM_PROMPT_TICKER                │ │
+│    └→ _build_ticker_data() normaliza 3 fuentes + REST API     │ │
 │                                                              │ │
-│  Transporte (FASE 4): MessagePack + Delta encoding            │ │
+│  LiveContextManager (F0/F4): snapshots mejorados ✅           │ │
+│    └→ speed, track_grip, cloud_coverage, raining              │ │
+│    └→ update_realtime() entre vueltas                         │ │
+│    └→ damage[aero] corregido (no brake_wear)                 │ │
+│                                                              │ │
+│  Transporte (FASE 5): MessagePack + Delta encoding            │ │
 │    └→ 20-50 bytes por frame delta, snapshot 5s cada 30       │ │
 └──────────────────────────────────────────────────────────────┘ │
                                                                │ │
@@ -163,47 +176,40 @@ cd frontend && npx vitest run
 
 ## 🗺️ Roadmap Completo — Todas las Fases Detalladas
 
-### Fase 0: WebSocket Telemetría (F0) — CRÍTICO
+### Fase 0: WebSocket Telemetría (F0) — ✅ COMPLETADA
 **Objetivo**: Que el frontend Windows envíe telemetría real al backend Linux para estrategias reales.
-
-#### ¿Por qué?
-El backend Linux no tiene acceso a la shared memory de LMU. Usa `TelemetryReader(offline=True)` que genera datos simulados. El StrategyService calcula estrategia (combustible, neumáticos, pits) con datos falsos. Hasta que no reciba telemetría real, todo lo que haga el LLM es sobre datos inventados.
 
 #### Tareas concretas
 
-**T0.1: Handler `telemetry` en websocket.py**
+**T0.1: Handler `telemetry` en websocket.py** ✅
 - El backend ya recibe WebSocket del frontend
 - Falta un `if event == "telemetry": app_state.latest_client_frame = data`
 - Ya está el health check que reporta `frontend_telemetry.received`
 - Archivo: `backend/src/routers/websocket.py` (~línea 183)
 
-**T0.2: Strategy loop use latest_client_frame**
+**T0.2: Strategy loop use latest_client_frame** ✅
 - `strategy_sender_loop` usa `reader.get_state()` (simulado)
 - Cambiar a: intentar `latest_client_frame` primero, fallback a reader
 - Archivo: `backend/src/routers/websocket.py` (~línea 105)
 
-**T0.3: Inicializar latest_client_frame en main.py**
+**T0.3: Inicializar latest_client_frame en main.py** ✅
 - `app.state.latest_client_frame = None`
 - Cambiar `TelemetryReader(offline=True)` explícitamente
 - Archivo: `backend/src/main.py` (~línea 59)
-- ✅ YA IMPLEMENTADO (lo verificamos antes)
 
-**T0.4: Frontend enviar telemetría a 20Hz**
+**T0.4: Frontend enviar telemetría a 20Hz** ✅
 - `useWebSocket.ts`: añadir `useEffect` con `setInterval(sendJson("telemetry", lastTelemetry), 50)`
 - Archivo: `frontend/src/hooks/useWebSocket.ts`
-- ⚠️ Antes de esto hay que arreglar los errores TypeScript de `usePTT.ts`
 
-**T0.5: Test de integración WebSocket**
+**T0.5: Test de integración WebSocket** ✅
 - Script Python que envía telemetría simulada y verifica `health`
 - Verificar que `frontend_telemetry.received: true`
 
-**Dependencias**: ❌ Ninguna directa, pero el PTT/captura de telemetría del frontend necesita que `usePTT.ts` compile.
-
-**Orden**: F0.1 → F0.2 → F0.4 → F0.5 (F0.3 ya hecho)
+**Nota de implementación**: Implementada junto con Fase 5 como transporte MessagePack binario + delta
 
 ---
 
-### Fase 0b: Reparar errores TypeScript del frontend — CRÍTICO
+### Fase 0b: Reparar errores TypeScript del frontend — ✅ COMPLETADA
 **Objetivo**: Que el frontend compile sin errores para poder desarrollar.
 
 #### ¿Por qué?
@@ -217,6 +223,8 @@ Además, 12 errores TS6133 (variables declaradas pero no usadas) que no rompen l
 **Archivo**: `frontend/src/hooks/usePTT.ts`
 
 **Dependencias**: ❌ Ninguna. Se puede hacer ahora mismo.
+
+**Nota de implementación**: 3 errores TS6133 corregidos. `tsc --noEmit`: 0 errores.
 
 ---
 
@@ -284,21 +292,24 @@ Además, 12 errores TS6133 (variables declaradas pero no usadas) que no rompen l
 #### ¿Por qué?
 Actualmente el StrategyService corre en Linux con datos simulados. Aunque la Fase 0 resuelva el envío de telemetría, la latencia (100ms ida+vuelta) y la fiabilidad (WebSocket puede perder frames) hacen mejor tener el motor determinista local en Windows.
 
-#### Arquitectura del sidecar
+#### Arquitectura del sidecar (revisada 26 mayo)
 ```
 Windows:
   shared-telemetry (real, 20Hz)
-    └→ StateChangeDetector
-         ├→ detecta: posición, pits, gap, SC, clima, degradación
+    ├→ StrategyRunner._process_cycle() cada 2s
+    │    └→ TelemetryFrame → compute_strategy() → StrategyAdvice
+    │    └→ brake_wear = 0.0 (DEUDA TÉCNICA: LMU shared memory no expone brake wear;
+    │         REST API poller en sidecar pendiente para Fase 3+)
+    │
+    └→ StateChangeDetector (20Hz interno)
+         ├→ detecta: posición, pits, gap, SC, clima, vuelta completada
          └→ genera: eventos + snapshots por vuelta
-    └→ StrategyService (fuel, tyres, brakes, hybrid, pit_window, stints)
-         └→ get_latest_advice()
     
-    WebSocket cliente → envía al backend Linux:
-      - strategy_frame → resultados de estrategia
-      - ticker_update → snapshot compacto
-      - events → eventos detectados
+    WebSocket cliente → ws://LINUX_IP:8008/ws/sidecar
+      └→ envía cada 2s: {event: "strategy_frame", data: {advice, frame, events, snapshot}}
 ```
+
+> **⚠️ DEUDA TÉCNICA — brake_wear**: La shared memory de LMU solo expone `mBrakeTemp` y `mBrakePressure`. El `BrakeData.wear_thickness` del reader es siempre `[0,0,0,0]`. El backend obtiene brake wear vía REST API (`/rest/garage/UIScreen/RepairAndRefuel`). En Fase 2, el sidecar envía `brake_wear=0` y el subcomponente de frenos del `StrategyAdvice` siempre reporta "frenos OK". Esto afecta principalmente carreras endurance. Solución planificada: mini REST poller en sidecar (`http://localhost:6397`) en Fase 3 o cuando se requiera. Ver `findings.md` en `.planning/2026-05-26-fase-2-sidecar/`.
 
 #### Tareas concretas
 
@@ -318,10 +329,11 @@ Windows:
 - Calcular fuel/tyres/brakes/hybrid/pit_window en tiempo real
 - Enviar resultados al backend cada 2s vía WebSocket
 
-**T2.4: Handler `strategy_frame` en websocket.py**
-- El backend Linux recibe los resultados del sidecar
-- `app_state.latest_strategy = strategy_data`
-- Eliminar `StrategyService(reader)` del backend Linux
+**T2.4: Endpoint `/ws/sidecar` + handler `strategy_frame`**
+- Nuevo endpoint `/ws/sidecar` sin `telemetry_sender_loop` ni `strategy_sender_loop` fantasma
+- Almacena `strategy_frame` en `app.state.latest_strategy_frame`
+- `strategy_sender_loop` usa `latest_strategy_frame` primero, fallback a `strategy_service`
+- Mantener `StrategyService(reader)` en Linux como fallback offline (no eliminar)
 
 **T2.5: Tauri sidecar (futuro, Fase 5)**
 - Empaquetar sidecar Python como binario (PyInstaller)
@@ -332,40 +344,94 @@ Windows:
 
 ---
 
-### Fase 3: RAG — Historial de Carrera
+### Fase 3: RAG — Historial de Carrera ✅ COMPLETADA
 **Objetivo**: Dar al LLM contexto histórico de la carrera (eventos pasados, ritmo rivales, degradación).
 
 #### ¿Por qué?
 El LLM actual solo ve el frame actual de telemetría. No sabe lo que pasó hace 10 vueltas, si un rival está en estrategia diferente, o cómo evoluciona la degradación. Con RAG, el prompt incluye los eventos relevantes más cercanos semánticamente a la pregunta/trigger actual.
 
 #### Stack
-- **Vector DB**: ChromaDB (simple, sin servidor, persistencia en disco)
-- **Embedding model**: `multilingual-e5-large` (2.2 GB RAM, CPU, ~40ms por embedding)
+- **Vector DB**: ChromaDB (simple, sin servidor, persistencia en disco, se borra al cerrar sesión)
+- **Embedding model**: `multilingual-e5-large` (CPU, ~40ms por embedding, cola asíncrona)
 - **Idioma**: español + inglés (modelo multilingüe)
+- **Indexación**: Por evento detectado (NO cada 2s ni cada frame de telemetría)
+- **Regla especial**: Vueltas 1-3 NO incluyen neumáticos en el embedding (desgaste no representativo)
 
-#### Tareas concretas
+#### Formato del embedding (texto plano para ChromaDB)
 
-**T3.1: Instalar ChromaDB + sentence-transformers**
+El embedding se genera sobre un texto compacto de la telemetría del MOMENTO del evento. Dos eventos con telemetría similar tendrán vectores cercanos en ChromaDB, independientemente del tipo de evento.
+
+Formato por prefijos fijos (ver sección [Mapa completo de telemetría LMU](#mapa-completo-de-telemetría-lmu)):
+
+```
+L{vuelta}|P{posición}|F{combustibleL}|T{FL/Fr/RL/RR}|SC{S/N}|YF{S/N}|G{+ahead/-behind}|S{velocidad}|CLD{0-10}|RAIN{0.0-1.0}|WET{0.0-1.0}|A{tempC}|TEMP{tempC}|DRS{S/N}|PIT{0-4}|BAT{%}|D{aero_%}|E{tipo_evento}
+```
+
+Ejemplo real (Safety Car, V26, P3, lluvia ligera, neumáticos válidos):
+```
+L26|P3|F42.3|T72/68/65/63|SCS|YFS|G+2.1|S180|CLD6|RAIN0.3|WET0.4|A22|TEMP30|DRSN|PIT0|BAT85|D12|Esafety_car
+```
+
+Ejemplo V3 (sin neumáticos, regla especial):
+```
+L3|P5|F91.2|SCN|YFN|G-1.2|S175|CLD2|RAIN0.0|WET0.0|A20|TEMP32|DRSS|PIT0|BAT90|D2|Egap_change
+```
+
+**Cada evento en ChromaDB** (~4.9 KB c/u):
+- Vector embedding (1024 floats × 4 bytes = 4,096 bytes)
+- Texto embedido (~120 chars = ~120 bytes)
+- Metadata: {type, lap, timestamp, session_type, race_id} (~100 bytes)
+- Overhead ChromaDB (~600 bytes)
+
+**Estimación por carrera (~35 vueltas, 92 eventos):** ~450 KB.**
+**Estimación anual (~52 carreras semanales):** ~23 MB.
+
+#### Flujo de indexación (diagrama)
+```
+Sidecar (Windows):
+  StrategyRunner.process_cycle() cada 2s
+    └→ StateChangeDetector.detect(frame)
+         └→ TIERRA: nuevo = comparar con frame anterior
+              └→ Si hay cambios → evento(s) detectado(s)
+                   
+Backend (Linux):  
+  /ws/sidecar recibe strategy_frame (cada 2s)
+    └→ Por cada evento en el batch:
+         1. Tomar TelemetryFrame de ESE momento
+         2. Convertir a texto plano (formato prefijos fijo)
+         3. Si lap ≤ 3: omitir campo T (neumáticos)
+         4. Embedding → ChromaDB store
+         5. Metadata: {type, lap, timestamp, race_id, session_type}
+
+Trigger automático (fuel_critical, pit_window, etc.) o pregunta piloto:
+  Frame actual → mismo formato texto → embedding
+    └→ ChromaDB query top-5 (filtro lap > 3 para neumáticos)
+         └→ 5 eventos históricos con telemetría más similar
+              └→ Se inyectan en el prompt del LLM (~100 tokens)
+
+#### Tareas concretas ✅
+
+**T3.1: Instalar ChromaDB + sentence-transformers** ✅ Instalado y verificado
 ```bash
 pip install chromadb sentence-transformers
 ```
 Descargar `multilingual-e5-large` (2.2 GB, cacheado en HF)
 
-**T3.2: EventStore (`backend/src/persistence/event_store.py`)**
+**T3.2: EventStore (`backend/src/persistence/event_store.py`)** ✅ Creado
 - Clase que gestiona ChromaDB
 - `store_event(event_type, data, metadata)` → inserta en colección
 - `query(query_text, top_k=5)` → búsqueda semántica
 - `store_snapshot(lap, driver, snapshot_data)` → por vuelta
 - `get_snapshots(driver=None, lap_range=None)` → recuperar históricos
 
-**T3.3: LiveContextManager — extensiones**
+**T3.3: LiveContextManager — extensiones** ✅ Implementado (snapshots históricos + buffers)
 - Guardar snapshots históricos por vuelta por driver
 - Timeline de eventos para el prompt
 - Buffers de ritmo: últimas 5 vueltas, top-10 rivales
 - Buffers de desgaste: últimas 5 vueltas propias
 - Exponer método `get_context_for_prompt(query, current_frame)` → RAG top-5 + buffers
 
-**T3.4: Integrar RAG en context_builder.py**
+**T3.4: Integrar RAG en context_builder.py** ✅ Integrado via `_build_rag_context()` en `context_builder.py`
 - Al construir prompt para LLM, añadir top-5 eventos históricos
 - Formato: `## RECORDATORIO HISTÓRICO\n- V10: Safety Car desplegado\n- V15: Boxes ALO\nduró 35s\n...`
 - Límite: ~100 tokens de RAG por prompt
@@ -374,8 +440,9 @@ Descargar `multilingual-e5-large` (2.2 GB, cacheado en HF)
 
 ---
 
-### Fase 4: Ticker Compacto + Prompt Builder
+### Fase 4: Ticker Compacto + Prompt Builder ✅ COMPLETADA
 **Objetivo**: Reducir el tamaño del prompt del LLM (~700-800 tokens total) para velocidad y economía.
+**Implementación**: 26-mayo-2026, 204 tests backend, flujo completo verificado.
 
 #### ¿Por qué?
 El prompt actual incluye telemetría como JSON verboso (~2 KB). A 0.5Hz con 500 tokens de salida, el overhead es grande. Un ticker compacto reduce a ~400 tokens la información de 40 rivales.
@@ -392,27 +459,28 @@ RIV:VST|HY|+2.1|V22|78·ALO|HY|-1.2|--|65·LEC|HY|-5.4|V22|70·...
 
 **Campos**: DRV (posición, vuelta, combustible, neumáticos), BRK (frenos), GAP (gaps), SES (sesión), WTH (clima), RIV (rivales compactos, 40 máximo)
 
-#### Tareas concretas
+#### Tareas concretas ✅
 
-**T4.1: `backend/src/intelligence/ticker.py`** (nuevo)
-- Función `generate_ticker(frame: TelemetryFrame) -> str`
-- Formatear DRV, TYR, BRK, GAP, SES, WTH, RIV
-- 40 rivales en tabla compacta (70 chars cada 2)
+**T4.1: `backend/src/intelligence/ticker.py`** ✅ Creado y testeado (30 tests)
+- `generate_ticker(data: dict) -> str` que produce ticker compacto
+- 6 líneas: DRV, BRK, GAP, SES, WTH, RIV (anillos de proximidad CLS1/CLS2/FAR/LAP)
+- `abbreviate_name(name) -> str` para abreviar nombres a 3 chars
+- Formato completo documentado en `LMU/rag-dictionary.md`
 
-**T4.2: Detector de tokens**
-- `tiktoken` para contar tokens del prompt antes de enviar
-- Si prompt > 500 tokens: no llamar al LLM, reproducir audio pregrabado
-- `"Un momento, déjame consultarlo..."`
+**T4.2: Detector de tokens** ✅ (seguridad, threshold ~3000 tokens con degradación de tier)
+- degradación: RAG → RIV FAR → DRV básico
+- No bloquea funcionalmente
 
-**T4.3: Refactorizar context_builder.py**
-- Usar ticker en vez de JSON de telemetría
-- Incluir RAG top-5 (Fase 3) como bloque opcional
-- Incluir system prompt (~200 tokens)
-- Prompt total: ~700-800 tokens
+**T4.3: Refactorizar context_builder.py** ✅
+- `_build_ticker_data()` normaliza snapshot + telemetry + strategy + lmu_api en dict canónico
+- `build_prompt()` acepta `telemetry_frame`, `strategy_advice`, `lmu_api` como kwargs
+- Usa `generate_ticker()` en vez de JSON crudo
+- Cobertura: modo ticker + modo legacy (backward compatible)
 
-**T4.4: Actualizar prompt_templates.py**
-- Enseñar al LLM el formato ticker en SYSTEM_PROMPT
-- Reglas de parseo y qué significa cada campo
+**T4.4: Actualizar prompt_templates.py** ✅
+- `SYSTEM_PROMPT_TICKER` con tabla diccionario completa (~200 tokens)
+- `render()` detecta modo ticker vs legacy automáticamente
+- Prompt final: system + ticker + RAG + trigger ≈ ~730 tokens
 
 #### Flujo final del prompt (Fase 3 + 4)
 ```
@@ -439,7 +507,7 @@ Total: ~700-800 tokens
 
 ---
 
-### Fase 5: Transporte Eficiente (MessagePack + Delta)
+### Fase 5: Transporte Eficiente (MessagePack + Delta) — ✅ COMPLETADA
 **Objetivo**: Reducir ancho de banda WebSocket para telemetría 20Hz.
 
 #### ¿Por qué?
@@ -447,22 +515,22 @@ Telemetría completa como JSON a 20Hz: ~200 bytes × 20 = ~4 KB/s por cliente. C
 
 #### Tareas concretas
 
-**T5.1: Instalar librerías**
+**T5.1: Instalar librerías** ✅
 ```bash
 pip install msgpack
 npm install @msgpack/msgpack
 ```
 
-**T5.2: Serialización MessagePack**
+**T5.2: Serialización MessagePack** ✅
 - Frontend: `encode(frame)` → Uint8Array → WebSocket binario
 - Backend: `decode(data)` → dict → `latest_client_frame`
 
-**T5.3: Delta encoding**
+**T5.3: Delta encoding** ✅
 - Frontend: comparar frame actual con anterior, enviar solo campos que cambiaron
 - Campo `_t`: timestamp del frame (para que backend sepa si perdió algún delta)
 - Backend: aplicar delta sobre `latest_client_frame` existente
 
-**T5.4: Snapshot completo cada 5s**
+**T5.4: Snapshot completo cada 5s** ✅
 - Cada 100 frames (~5s), enviar frame completo (no delta)
 - Backend: si detecta gap en `_t`, pedir resync (o esperar al próximo snapshot)
 
@@ -481,6 +549,23 @@ Frontend                           Backend
    └── Si gap detectado ────────────→ │
        (re-sync en próximo snapshot)  │
 ```
+
+#### Detalle técnico (implementación final)
+- **20-50 bytes/frame delta**, snapshot 120 bytes cada 100 frames (5s a 20Hz)
+- **Total ~650 B/s vs ~4 KB/s anteriores (~6× reducción)**
+- Soporte sidecar priority en el flujo binario
+- Delta tracking con sequence numbers para detección de gaps
+
+#### Archivos creados
+- `backend/src/services/msgpack_codec.py` (62 líneas, mypy strict)
+- `frontend/src/services/msgpack.ts` (64 líneas)
+- `backend/tests/test_msgpack_codec.py` (21 tests)
+- `frontend/src/__tests__/msgpack.test.ts` (13 tests)
+- `backend/tests/test_ws_integration.py` (11 tests)
+
+#### Archivos modificados
+- `backend/src/routers/websocket.py` (binario, delta, sidecar priority)
+- `frontend/src/hooks/useWebSocket.ts` (binario, delta, tracking)
 
 **Dependencias**: Fase 0 (telemetría básica funcionando primero).
 
@@ -549,6 +634,41 @@ Frontend                           Backend
 
 ---
 
+## Arquitectura de Voz — 3 Niveles (27 mayo 2026)
+
+```
+Telemetry 20Hz
+  │
+  ├→ Nivel 1: Reglas duras → TTS DIRECTO (20Hz, <50ms)
+  │    ├── fuel < 3 vueltas → "Combustible crítico" 🗣️
+  │    ├── SC activo → "Safety Car desplegado" 🗣️
+  │    ├── gap < 0.5s → "Coche pegado" 🗣️
+  │    ├── pit limiter → "Pit limiter no activado" 🗣️
+  │    ├── daños → "Daños detectados" 🗣️
+  │    ├── última vuelta → "Última vuelta" 🗣️
+  │    └── entrada/salida pits → "Entrando en boxes" 🗣️
+  │
+  └→ Nivel 3: LLM + TTS (0.5Hz, ~1-3s)
+       ├── Preguntas del piloto (PTT)
+       └── Análisis estratégico complejo
+```
+
+**Flujo:** SpotterService/triggers `ALERT_ONLY` → AlertMessage → WebSocket → frontend → TTS queue → Edge TTS → 🗣️
+
+### Deuda Técnica — Nivel 2 (Heurísticas programadas, p/mvp)
+
+| Caso | Descripción | Por qué es deuda |
+|------|-------------|:----------------:|
+| Fuel + ventana pits | "Ventana de pits con combustible justo" | Combina 2 variables |
+| Degradación acelerada | "Neumáticos cayendo rápido" | Requiere media móvil por vuelta |
+| Rival en boxes | "Rival directo paró — undercut posible" | Requiere tracking de oponentes |
+| Temperatura excesiva | "Neumáticos sobrecalentados" | Requiere umbral dinámico |
+| Batería + tendencia | "Batería baja y descargando" | Requiere tendencia en ventana |
+
+**Criterio de activación:** Si la condición necesita >1 fuente de datos o cálculo en ventana de N vueltas, es Nivel 2 → post-MVP.
+
+---
+
 ### Fase 7: Soporte Windows Sidecar (Tauri)
 
 **T7.1: Sidecar con PyInstaller**
@@ -603,29 +723,250 @@ Frontend                           Backend
 ## Dependencias entre fases (orden de implementación)
 
 ```
-Fase 0b (TypeScript fixes) ─→ Fase 0 (WS Telemetría)
-                                    │
-                                    ├→ Fase 1 (Correcciones robustez)
-                                    │      │
-                                    │      └→ Fase 2 (Sidecar Windows)
-                                    │             │
-                                    │             └→ Fase 3 (RAG)
-                                    │                    │
-                                    │                    └→ Fase 4 (Ticker)
-                                    │
-                                    └→ Fase 5 (Transporte) ─ (independiente)
-                                              │
-                                              └→ Fase 7 (Tauri sidecar)
+Fase 0b (TypeScript fixes) ✅ ─→ Fase 0 (WS Telemetría) ✅
+                                      │
+                                      ├→ Fase 1 (Correcciones robustez) ✅
+                                      │      │
+                                      │      └→ Fase 2 (Sidecar Windows)
+                                      │             │
+                                      │             ├→ Fase 3 (RAG) ✅
+                                      │             │      │
+                                      │             │      └→ Fase 4 (Ticker) ✅
+                                      │             │
+                                      │             └─── Fase 5 (Transporte) ✅
 
-Fase 6 (Tests/código) ─→ independiente, en paralelo con cualquier fase
-Fase 8 (Optimizaciones) ─→ independiente, después de estabilidad
+Fase 6 (Tests/código) ─→ ✅ (236 tests backend pasando)
+Fase 8 (Optimizaciones) ─→ pendiente, post-MVP
 ```
 
-## Orden recomendado ahora
+---
 
-1. **🔴 Fase 0b**: Reparar `usePTT.ts` (3 errores de tipo) — el PTT no funciona
-2. **🔴 Fase 0**: WebSocket Telemetría — datos reales para estrategia
-3. **🟡 Fase 1**: Correcciones rápidas (timeouts, cola TTS, selectores)
-4. **🟡 Fase 6.4**: Unificar dos clientes LLM
-5. **🟢 Fase 6.6**: edge-tts en pyproject.toml
-6. **🟢 Fase 6.7**: Eliminar GEMINI_API_KEY hardcodeada
+## Mapa completo de telemetría LMU (shared memory)
+
+> Fuente: `shared-telemetry/shared_telemetry/pyLMUSharedMemory/lmu_data.py` (mapping oficial de la estructura C de LMU)
+
+### Bloque 1: Contexto de sesión — `data.scoring.scoringInfo`
+
+| Campo LMU | Tipo | Rango | Descripción |
+|-----------|------|-------|-------------|
+| `mTrackName` | str[64] | — | Nombre del circuito |
+| `mSession` | int | 0-13 | 0=TestDay, 1-4=Practice, 5-8=Qual, 9=Warmup, 10-13=Race |
+| `mCurrentET` | double | — | Tiempo actual de sesión (segundos) |
+| `mEndET` | double | — | Tiempo final de sesión |
+| `mMaxLaps` | int | — | Vueltas máximas (0 si es por tiempo) |
+| `mLapDist` | double | — | Longitud del circuito (metros) |
+| `mNumVehicles` | int | 0-104 | Número actual de vehículos |
+| `mGamePhase` | ubyte | 0-9 | 5=Green, 6=SC/FCY, 8=SessionOver |
+| `mYellowFlagState` | char | -1-7 | Estado FCY: 0=None, 1=Pending, 4=PitsOpen |
+| `mSectorFlag` | ubyte[3] | — | Bandera amarilla por sector |
+| `mDarkCloud` | double | 0.0-1.0 | Nubosidad |
+| `mRaining` | double | 0.0-1.0 | Intensidad de lluvia |
+| `mAmbientTemp` | double | °C | Temperatura ambiente |
+| `mTrackTemp` | double | °C | Temperatura pista |
+| `mWind` | LMUVect3 | — | Velocidad del viento (x,y,z) |
+| `mMinPathWetness` | double | 0.0-1.0 | Mojado mínimo de la trazada |
+| `mMaxPathWetness` | double | 0.0-1.0 | Mojado máximo de la trazada |
+| `mAvgPathWetness` | double | 0.0-1.0 | Mojado promedio de la trazada |
+| `mSessionTimeRemaining` | float | segundos | Tiempo restante de sesión |
+| `mTimeOfDay` | float | horas | Hora del día en la simulación |
+| `mTrackGripLevel` | uint8 | 0-4 | 0=Green, 1=Low, 2=Medium, 3=High, 4=Saturated |
+| `mCloudCoverage` | uint8 | 0-10 | 0=Clear → 10=Overcast&Storm |
+| `mGameMode` | ubyte | 1-3 | 1=Server, 2=Client, 3=ServerAndClient |
+
+### Bloque 2: Vehicle scoring (hasta 104 vehículos) — `data.scoring.vehScoringInfo[i]`
+
+| Campo LMU | Tipo | Descripción |
+|-----------|------|-------------|
+| `mID` | int | Slot ID del vehículo |
+| `mDriverName` | char[32] | Nombre del piloto |
+| `mVehicleName` | char[64] | Nombre del coche |
+| `mTotalLaps` | short | Vueltas completadas |
+| `mSector` | byte | 0=sector3, 1=sector1, 2=sector2 |
+| `mLapDist` | double | Distancia en vuelta actual (metros) |
+| `mBestLapTime` | double | Mejor tiempo de vuelta (segundos) |
+| `mLastLapTime` | double | Último tiempo de vuelta |
+| `mBestSector1` / `mBestSector2` | double | Mejores sectores |
+| `mLastSector1` / `mLastSector2` | double | Últimos sectores |
+| `mCurSector1` / `mCurSector2` | double | Sectores actuales |
+| `mNumPitstops` | short | Paradas en boxes realizadas |
+| `mNumPenalties` | short | Penalizaciones pendientes |
+| `mIsPlayer` | bool | ¿Es el jugador local? |
+| `mPlace` | ubyte | Posición (1-based) |
+| `mVehicleClass` | char[32] | Clase del vehículo (Hypercar, GT3, etc.) |
+| `mInPits` | bool | ¿Está en pits? |
+| `mPitState` | ubyte | 0=none, 1=request, 2=entering, 3=stopped, 4=exiting |
+| `mTimeBehindNext` | double | Gap con el siguiente (segundos) |
+| `mTimeBehindLeader` | double | Gap con el líder |
+| `mLapsBehindNext` / `mLapsBehindLeader` | int | Vueltas perdidas |
+| `mTimeIntoLap` | double | Tiempo estimado en vuelta actual |
+| `mEstimatedLapTime` | double | Tiempo estimado de vuelta |
+| `mFuelFraction` | ubyte | Combustible restante (0x00=0%, 0xFF=100%) |
+| `mFlag` | ubyte | Bandea primary (0=Green, 6=Blue) |
+| `mUnderYellow` | bool | ¿Ha pasado bajo bandera amarilla? |
+| `mDRSState` | bool | ¿DRS activo? |
+| `mInGarageStall` | bool | ¿En plaza de garaje? |
+| `mFinishStatus` | byte | 0=none, 1=finished, 2=dnf, 3=dq |
+
+### Bloque 3: Vehicle telemetry (hasta 104 vehículos) — `data.telemetry.telemInfo[i]`
+
+| Grupo | Campos | Key para embedding |
+|-------|--------|-------------------|
+| **Posición** | `mPos` xyz, `mLocalVel` xyz, `mLocalAccel` xyz | Velocidad (`S`) |
+| **Motor** | `mGear` (-1=R,0=N,1+), `mEngineRPM`, `mEngineMaxRPM`, `mEngineWaterTemp`, `mEngineOilTemp`, `mEngineTorque`, `mTurboBoostPressure` | — (no embed, útil para contexto) |
+| **Inputs** | `mFilteredThrottle`, `mFilteredBrake`, `mFilteredSteering`, `mFilteredClutch` (0.0-1.0) | — |
+| **Combustible** | `mFuel`, `mFuelCapacity` | `F` (litros) |
+| **Híbrido** | `mStateOfCharge` (%), `mBatteryChargeFraction`, `mElectricBoostMotorState` (0-3), `mRegen` (kW), `mVirtualEnergy` | `BAT` (%) |
+| **Ruedas (4×)** | `mBrakeTemp`, `mBrakePressure`, `mWear`, `mPressure`, `mTemperature[3]`, `mTireCarcassTemperature`, `mOptimalTemp`, `mCompoundIndex`, `mCompoundType` (0=Soft,1=Medium,2=Hard,3=Wet), `mSurfaceType`, `mFlat`, `mCamber`, `mToe`, `mGripFract` | `T` (wear FL/FR/RL/RR) |
+| **Aero** | `mDrag`, `mFrontDownforce`, `mRearDownforce`, `mFrontWingHeight`, `mFrontRideHeight`, `mRearRideHeight` | — |
+| **Daños** | `mDentSeverity[8]`, `mDetached`, `mLastImpactMagnitude` (N), `mLastImpactPos` | `D` (daño aero %) |
+| **Electrónica** | `mABSActive`, `mTCActive`, `mABS` (0-Max), `mTC`, `mTCSlip`, `mMotorMap`, `mRearFlapActivated`, `mWiperState`, `mHeadlights`, `mIgnitionStarter` | `DRS` (rear flap) |
+| **Gaps** | `mTimeGapCarAhead`, `mTimeGapCarBehind`, `mTimeGapPlaceAhead`, `mTimeGapPlaceBehind`, `mDeltaBest` | `G` (gap adelante/atrás) |
+| **Penalizaciones** | `mLapInvalidated`, `mTrackLimitsSteps`, `mSpeedLimiterActive`, `mOverheating` | — |
+| **Vuelta** | `mLapNumber`, `mCurrentSector`, `mDeltaTime`, `mElapsedTime`, `mScheduledStops` | `L` (vuelta) |
+
+### Prefijos del formato de embedding
+
+| Prefijo | Campo LMU | Ejemplo | Notas |
+|---------|-----------|---------|-------|
+| `L` | `mLapNumber` | `L26` | Vuelta actual |
+| `P` | `mPlace` | `P3` | Posición |
+| `F` | `mFuel` | `F42.3` | Combustible en litros (1 decimal) |
+| `T` | `mWheels[i].mWear` | `T72/68/65/63` | Desgaste neumáticos FL/FR/RL/RR (%). Omitir si lap ≤ 3 |
+| `SC` | `mGamePhase == 6` | `SCS` o `SCN` | Safety Car activo |
+| `YF` | `mSectorFlag` + `mYellowFlagState` | `YFS` o `YFN` | Bandera amarilla activa |
+| `G` | `mTimeGapPlaceAhead`/`Behind` | `G+2.1` o `G-1.2` | Gap con siguiente/anterior. Signo + = por delante |
+| `S` | `mLocalVel` (magnitud) | `S180` | Velocidad en m/s (entero) |
+| `CLD` | `mCloudCoverage` | `CLD4` | Cobertura nubes 0-10 |
+| `RAIN` | `mRaining` | `RAIN0.3` | Lluvia 0.0-1.0 |
+| `WET` | `mAvgPathWetness` | `WET0.4` | Mojado pista 0.0-1.0 |
+| `A` | `mAmbientTemp` | `A22` | Temperatura ambiente °C |
+| `TEMP` | `mTrackTemp` | `TEMP30` | Temperatura pista °C |
+| `DRS` | `mDRSState` / `mRearFlapActivated` | `DRSS` o `DRSN` | DRS activo |
+| `PIT` | `mPitState` | `PIT0` | 0=none, 1=request, 2=entering, 3=stopped, 4=exiting |
+| `BAT` | `mStateOfCharge` | `BAT85` | Batería híbrido % |
+| `D` | `mDentSeverity` (promedio) | `D12` | Daños acumulados % (proxy) |
+| `E` | Tipo de evento StateChangeDetector | `Elap_completed` | Tipo de evento que disparó este embedding |
+
+---
+
+## v1.1 — Recopilación centralizada de datos de carrera (post-MVP)
+
+### Visión general
+Acumular embeddings + eventos de carreras de TODOS los clientes para construir un dataset creciente que mejore la calidad del RAG con el tiempo. En Le Mans Ultimate hay carreras semanales que la gente corre regularmente. Almacenar estos datos permite que el LLM encuentre patrones estadísticos ("¿cuándo fue la última vez que pasó X en condiciones similares?") a través de cientos de carreras.
+
+### Estado actual (MVP)
+- ChromaDB se crea por sesión y **se elimina al cerrar la aplicación**
+- No hay recopilación externa de datos
+- El RAG solo funciona intra-carrera (una sola sesión)
+
+### Objetivo v1.1
+1. Al final de cada carrera, exportar la colección ChromaDB a JSON
+2. Enviar al servidor central vía HTTP POST
+3. El servidor central acumula en una ChromaDB maestra
+4. Los clients pueden consultar la DB maestra para búsqueda cross-carrera
+
+### Arquitectura
+
+```
+Cliente (Windows):
+  ChromaDB local (se borra al cerrar)
+    └→ Detectar fin de carrera (mGamePhase == 8)
+         └→ Exportar race_id, track, eventos + embeddings
+              └→ POST /api/v1/collect → Servidor central
+
+Servidor central:
+  POST /api/v1/collect
+    └→ Verificar API key
+    └→ Almacenar en ChromaDB maestra
+         └→ Metadata adicional: client_id, game_version, date
+```
+
+### Formato del payload de exportación
+
+```json
+{
+  "race_id": "uuid-v4",
+  "client_id": "anon-client-hash",
+  "track": "spa",
+  "date": "2026-06-01T20:00:00Z",
+  "session_type": "race",
+  "total_events": 92,
+  "game_version": "1.5.2",
+  "events": [
+    {
+      "text": "L26|P3|F42.3|T72/68/65/63|SCS|YFS|G+2.1|S180|...|Egap_change",
+      "embedding": [0.123, -0.456, ...],
+      "metadata": {
+        "type": "gap_change",
+        "lap": 26,
+        "timestamp": 1234.5
+      }
+    }
+  ]
+}
+```
+
+**Tamaño típico por carrera**: ~92 eventos × 4.9 KB = **~450 KB**.
+**Tamaño anual (52 carreras)**: ~23 MB.
+
+### Endpoint del servidor central
+
+```python
+@router.post("/api/v1/collect")
+async def collect_race(data: dict, api_key: str = Header(...)):
+    """Recibe datos de carrera de un cliente para la ChromaDB maestra."""
+    verify_api_key(api_key)
+    
+    # Enriquecer metadata con info del cliente
+    enriched_metadatas = []
+    for e in data["events"]:
+        enriched_metadatas.append({
+            **e["metadata"],
+            "race_id": data["race_id"],
+            "track": data["track"],
+            "date": data["date"],
+            "client_id": data["client_id"],
+            "session_type": data["session_type"],
+        })
+    
+    master_collection.add(
+        documents=[e["text"] for e in data["events"]],
+        embeddings=[e["embedding"] for e in data["events"]],
+        metadatas=enriched_metadatas,
+    )
+    return {"stored": len(data["events"]), "total_in_db": master_collection.count()}
+```
+
+### Detección de fin de carrera en el sidecar
+
+```python
+def check_race_end(frame: TelemetryFrame, scoring_info) -> Optional[str]:
+    """Detecta si la carrera terminó. Devuelve race_id o None."""
+    # Opción 1: Game phase cambió a 8 (SessionOver)
+    if scoring_info.mGamePhase == 8:
+        return str(uuid.uuid4())
+    # Opción 2: El piloto cruzó la línea después de mMaxLaps
+    if frame.lap_number > scoring_info.mMaxLaps and scoring_info.mMaxLaps > 0:
+        return str(uuid.uuid4())
+    return None
+```
+
+### Tareas concretas (cuando se implemente)
+
+| Tarea | Archivo | Tiempo |
+|-------|---------|--------|
+| T1.1: Método `export_race()` en EventStore | `event_store.py` | 30 min |
+| T1.2: Detectar fin de carrera en sidecar | `strategy_runner.py` | 30 min |
+| T1.3: Endpoint `POST /api/v1/collect` | `collect_router.py` | 30 min |
+| T1.4: Subida asíncrona al finalizar carrera | `event_store.py` | 30 min |
+| T1.5: Autenticación API key simple | `collect_router.py` | 15 min |
+| **Total** | | **~2 horas** |
+
+### Consideraciones futuras
+- **Privacidad**: `client_id` debe ser anónimo (hash de hardware, no Steam ID)
+- **Versiones**: Embeddings de distintas versiones del modelo no son compatibles. Al actualizar el modelo, re-indexar
+- **Consentimiento**: Opción en configuración para desactivar la recopilación
+- **Frecuencia**: Una subida por carrera al finalizar (no tiempo real)
+- **Servidor**: Podría ser un simple VPS con ChromaDB + FastAPI. Coste mínimo (~5€/mes)
+- **Recompensa**: A futuro, el dataset permite fine-tuning de un modelo pequeño para predicción de estrategia
+

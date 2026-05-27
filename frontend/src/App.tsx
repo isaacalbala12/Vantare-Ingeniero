@@ -33,7 +33,7 @@ export const App: React.FC = () => {
   } = useAppStore();
 
   // 1. Inicializar WebSocket (se conecta automáticamente en useEffect interno)
-  const { sendBinary, sendJson } = useWebSocket();
+  const { sendJson } = useWebSocket();
 
   // 2. Inicializar AudioContext global (compartido entre beeps y captura)
   const { audioCtx, ensureResumed, playBeep } = useAudioContext();

@@ -47,11 +47,12 @@ class VLLMClient:
         )
 
     def _get_client(self) -> AsyncOpenAI:
-        """Devuelve (y cachea) el cliente OpenAI asíncrono."""
+        """Devuelve (y cachea) el cliente OpenAI asíncrono con timeout."""
         if self._client is None:
             self._client = AsyncOpenAI(
                 base_url=self._base_url,
                 api_key=self._api_key,
+                timeout=httpx.Timeout(25.0, connect=10.0, read=20.0),
             )
         return self._client
 
