@@ -58,11 +58,7 @@ Section "Principal" SEC01
   ; Copiar archivos del build
   File /r "backend/dist/vantare-engine/*.*"
   File /r "sidecar/dist/strategy-sidecar/*.*"
-  
-  ; Si existe el build de Tauri (compile-time check)
-  !ifexist "frontend/src-tauri/target/release/vantare.exe"
-    File /r "frontend/src-tauri/target/release/vantare.exe"
-  !endif
+
 
   ; Copiar archivos de configuración de ejemplo
   SetOutPath "$INSTDIR\config"
