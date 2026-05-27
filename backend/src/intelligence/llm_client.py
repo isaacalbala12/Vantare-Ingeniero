@@ -10,7 +10,7 @@ from openai import AsyncOpenAI
 from src.config import settings
 from src.models.messages import AdviceStartMessage, AdviceTokenMessage, AdviceEndMessage, UIAction
 from src.transport.broadcaster import send
-from src.intelligence.prompt_templates import UI_TOOLS
+
 
 logger = logging.getLogger("vantare.llm_client")
 
@@ -92,7 +92,6 @@ class VLLMClient:
         send(start_msg)
 
         # 2. Configurar parámetros según el tier
-        tier_upper = tier.upper()
         max_tokens = 500
 
         full_text = ""
@@ -109,7 +108,6 @@ class VLLMClient:
                 temperature=0.2,
                 max_tokens=max_tokens,
                 stream=True,
-                tools=UI_TOOLS if UI_TOOLS else None,
             )
 
             tool_call_name: Optional[str] = None
@@ -208,7 +206,6 @@ class VLLMClient:
         
         Usa httpx.stream() directamente para manejar respuestas SSE de LiteLLM.
         """
-        tier_upper = tier.upper()
         max_tokens = 500
         full_text = ""
 
