@@ -1,12 +1,12 @@
 # Fase 7: Sidecar Windows + Integración Tauri
 
 **Fecha:** 27 mayo 2026
-**Estado:** Aprobado
+**Estado:** Aprobado (v2 — corregida)
 **Autor:** Brainstorming session
 
 ## Resumen
 
-Unificar el sidecar de estrategia dentro del backend FastAPI y empaquetar todo como un único ejecutable (`vantare-engine.exe`) que Tauri gestiona como proceso hijo en Windows. El LLM sigue remoto vía Cloudflare tunnel.
+Empaquetar backend + sidecar como dos ejecutables independientes. Tauri spawna ambos en Windows. El sidecar lee shared memory de LMU y envía datos al backend vía WebSocket localhost. El LLM sigue remoto vía Cloudflare tunnel.
 
 ## Arquitectura
 
@@ -14,138 +14,122 @@ Unificar el sidecar de estrategia dentro del backend FastAPI y empaquetar todo c
 Windows (todo local excepto LLM):
 
 Tauri app
-  └── spawn → vantare-engine.exe (PyInstaller --onefile --noconsole)
-                ├── FastAPI (main.py)
-                ├── backend/src/sidecar/        ← movido de sidecar/src/sidecar/
-                │   ├── strategy_runner.py      (lee shared memory LMU)
-                │   └── event_detector.py       (detecta cambios estado)
-                ├── WebSocket hub (frontend)
-                └── GET /health (para health check Tauri)
-                     │
-                     └── Cloudflare tunnel → LiteLLM → Hipfire (LLM remoto)
+├── spawn → vantare-engine.exe (FastAPI + LLM + TTS + WS hub)
+│              PyInstaller --onedir
+│              Puerto :8008
+│              GET /health cada 5s desde Tauri
+│
+├── spawn → strategy-sidecar.exe (LMU shared memory reader)
+│              PyInstaller --onedir
+│              WS → ws://127.0.0.1:8008/ws/sidecar
+│              Envía strategy_frame cada 2s
+│
+└── Gestión de procesos:
+    ├── Tauri monitorea backend vía health check TCP :8008
+    ├── Backend detecta caída del sidecar vía WS disconnect
+    ├── Auto-reinicio: backend (hasta 3 intentos Tauri)
+    └── Cleanup: matar ambos procesos al cerrar Tauri
+         │
+         └── Cloudflare tunnel → LiteLLM → Hipfire (LLM remoto)
 ```
 
 ### Principios
 
-- **Un solo ejecutable:** El sidecar NO es un proceso separado. Vive dentro de `vantare-engine.exe`.
-- **Comunicación directa:** El sidecar module llama a `StrategyService` en memoria. Sin WebSocket interno.
-- **Detección de LMU:** Variable de entorno `LMU_AVAILABLE=true/false`. Si true → shared memory real. Si false/ausente → simulado (modo dev actual).
-- **Tauri gestiona un solo proceso:** health check vía `GET /health`, reinicio si no responde.
+- **Dos procesos independientes:** Cada uno con su propio event loop asyncio. Sin bloqueo mutuo.
+- **Comunicación vía localhost WebSocket:** Sub-ms latencia, sin riesgo de bloqueo del event loop.
+- **Aislamiento de fallos:** Si el sidecar crashea (C extension bug), el backend sigue vivo y viceversa.
+- **PyInstaller --onedir:** Arranque instantáneo, sin extracción a temp directory.
+- **LMU_AVAILABLE env var:** Si true → shared memory real (Windows). Si false/ausente → simulado (Linux dev).
 
-## Cambios Estructurales
+## Por qué dos procesos (no fusionados)
 
-### 1. Mover sidecar a backend/
+Decisión revisada versus el diseño v1. Razones:
+
+1. **process_cycle() es síncrono.** Dentro de una tarea asyncio compartida con WebSocket/LLM, bloquearía el event loop ~20-50ms cada 2s.
+2. **Tauri soporta múltiples sidecars nativamente.** No hay complejidad extra.
+3. **Aislamiento de fallos.** Bug en C extensions de shared memory no tumba el backend.
+4. **Startup independiente.** El backend arranca en segundos; el sidecar espera a que LMU esté disponible.
+5. **Debugging.** Cada proceso se puede correr standalone.
+
+## Comunicación
 
 ```
-ANTES:
-sidecar/
-├── src/sidecar/
-│   ├── main.py
-│   ├── strategy_runner.py
-│   ├── event_detector.py
-│   └── __init__.py
-├── pyproject.toml
-└── README.md
-
-DESPUÉS:
-backend/src/sidecar/            ← MOVER
-├── strategy_runner.py          ← (sin main.py, se integra en backend)
-├── event_detector.py
-└── __init__.py
+strategy-sidecar.exe                    vantare-engine.exe
+       │                                      │
+       │  WS connect ws://127.0.0.1:8008/ws/sidecar
+       │─────────────────────────────────────→│
+       │                                      │
+       │  WS send (cada 2s):                  │
+       │  {                                    │
+       │    "event": "strategy_frame",         │
+       │    "data": {                          │
+       │      "advice": {...},                 │
+       │      "frame": {...},                  │
+       │      "events": [...]                  │
+       │    }                                  │
+       │  }                                    │
+       │─────────────────────────────────────→│
+       │                                      │
+       │  Si WS disconnect → esperar 2s       │
+       │  y reconectar (backoff exponencial)   │
+       │                                      │
+       │  Si reconexión exitosa → reanudar     │
 ```
 
-Eliminar carpeta `sidecar/` raíz.
+## Empaquetado
 
-### 2. Integración en backend/main.py
+### backend/build.py → vantare-engine.exe
+- `--onedir --noconsole --name=vantare-engine`
+- Incluye: src/, shared-telemetry, shared-strategy, C extensions .pyd
+- Salida: `backend/dist/vantare-engine/`
 
-```python
-# pseudocódigo
-LMU_AVAILABLE = os.getenv("LMU_AVAILABLE", "false").lower() == "true"
+### sidecar/build.py → strategy-sidecar.exe
+- `--onedir --noconsole --name=strategy-sidecar`
+- Incluye: src/sidecar/, shared-telemetry, shared-strategy, C extensions .pyd
+- Salida: `sidecar/dist/strategy-sidecar/`
 
-if LMU_AVAILABLE:
-    reader = TelemetryReader(offline=False, poll_rate=0.05)
-    reader.start()
-    strategy_runner = StrategyRunner(reader)
-    event_detector = StateChangeDetector()
-    app.state.sidecar_runner = strategy_runner
-    app.state.sidecar_detector = event_detector
-    # Arrancar loop interno cada 2s (sin WebSocket)
-else:
-    reader = TelemetryReader(offline=True)  # modo dev actual
-```
-
-### 3. Comunicación interna
-
-El sidecar ya no envía WebSocket. En su lugar:
-
-```python
-# Cada 2s dentro del backend (asyncio loop)
-runner.process_cycle()
-if runner.latest_frame and runner.latest_advice:
-    events = detector.detect(runner.latest_frame)
-    # Llamada directa a StrategyService
-    strategy_service.update(runner.latest_advice, runner.latest_frame, events)
-    # RAG: store_events(events)
-```
-
-### 4. PyInstaller
-
-- Archivo: `backend/build.py`
-- Modo: `--onefile --noconsole`
-- Output: `backend/dist/vantare-engine.exe`
-- C extensions de `pyLMUSharedMemory` → incluir como `binaries` en el spec
-- shared-strategy → incluir como `datas`
-
-### 5. Tauri
+## Tauri
 
 **tauri.conf.json:**
-- `"externalBin"`: renombrar `"backend"` → `"vantare-engine"`
-- Ajustar ruta relativa
+```json
+"externalBin": [
+    "../backend/dist/vantare-engine",
+    "../sidecar/dist/strategy-sidecar"
+]
+```
 
 **main.rs:**
-- Renombrar `shell.sidecar("backend")` → `shell.sidecar("vantare-engine")`
-- El resto del patrón (spawn en release, skip en dev, kill al cerrar) se mantiene
+- Spawn secuencial: backend primero, sidecar después
+- Health check vía `TcpStream::connect_timeout("127.0.0.1:8008", 2s)` cada 5s
+- Matar ambos procesos en CloseRequested y menú "Salir"
+- En debug mode: skip spawn, instrucciones para ejecución manual
 
-**capabilities/default.json:**
-- Añadir `"shell:allow-spawn"` si no existe
-
-### 6. Health Check (simplificado)
-
-Un solo proceso → un solo health check:
+## Health Check
 
 ```
-Tauri → GET http://127.0.0.1:8008/health cada 5s
-  ├── Si 200 OK → todo bien
-  └── Si timeout/error → reiniciar vantare-engine.exe (máx 3 intentos, backoff)
+Tauri → TCP :8008 cada 5s
+  ├── Conecta → failures=0
+  └── 3 fallos seguidos → emitir evento "backend-crashed"
+       └── (futuro: reinicio automático)
 ```
 
-## Deuda Técnica Documentada
+## Archivos
 
-### REST API de LMU (brake wear, aero, suspension, weather)
-
-El sidecar no incluye poller REST a `localhost:6397`. El brake wear se envía como 0.0. El motor de estrategia calcula sobre datos incompletos de frenos. Pendiente: mini poller HTTP en `strategy_runner.py` que consuma `/rest/garage/UIScreen/RepairAndRefuel` y `/rest/sessions/weather`.
-
-### Modo "solo local"
-
-Futuro modo donde la app funciona completamente sin conexión a internet: spotter + estrategia + TTS local sin LLM. Requiere separar la lógica de LLM para que sea opcional.
-
-## Archivos Afectados
-
-| Archivo | Cambio |
-|---------|--------|
-| `sidecar/src/sidecar/` → `backend/src/sidecar/` | Mover (3 archivos) |
-| `sidecar/` (raíz) | Eliminar |
-| `backend/src/main.py` | Añadir detección LMU_AVAILABLE + integración sidecar |
-| `backend/build.py` | Nuevo — spec PyInstaller |
-| `backend/pyproject.toml` | Añadir dependencias sidecar |
-| `frontend/src-tauri/tauri.conf.json` | Renombrar externalBin |
-| `frontend/src-tauri/src/main.rs` | Renombrar sidecar + health check |
+| Archivo | Rol |
+|---------|-----|
+| `backend/build.py` | Build script para vantare-engine.exe |
+| `backend/src/main.py` | FastAPI entrypoint (sin cambios estructurales) |
+| `backend/src/routers/websocket.py` | Handler /ws/sidecar (nuevo o existente) |
+| `sidecar/build.py` | Build script para strategy-sidecar.exe |
+| `sidecar/src/sidecar/main.py` | Sidecar entrypoint (sin cambios, ya funciona) |
+| `sidecar/src/sidecar/strategy_runner.py` | Lector shared memory + estrategia (sin cambios) |
+| `sidecar/src/sidecar/event_detector.py` | Detector de eventos (sin cambios) |
+| `frontend/src-tauri/tauri.conf.json` | externalBin con dos entries |
+| `frontend/src-tauri/src/main.rs` | Spawn dual + health check |
 | `frontend/src-tauri/capabilities/default.json` | Permisos shell |
-| `backend/tests/` | Tests nuevos para integración sidecar |
 
-## No Cambia
+## Deuda Técnica
 
-- LLM sigue remoto vía Cloudflare tunnel
-- Frontend React/TypeScript no cambia
-- Estrategia determinista (`shared-strategy`) no cambia
-- Formato ticker, RAG, LiveContext no cambian
+- **REST API de LMU (brake wear):** El sidecar no incluye poller REST a `localhost:6397`. Brake wear se reporta como 0.0. Pendiente para cuando se pueda probar contra datos reales.
+- **Modo "solo local":** Futuro modo donde spotter + estrategia + TTS funcionan sin LLM. Requiere hacer opcional la conexión al LLM remoto.
+- **Auto-reinicio del backend:** Tauri detecta caída pero no reinicia automáticamente (post-MVP).
