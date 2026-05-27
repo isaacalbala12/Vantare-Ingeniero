@@ -720,6 +720,23 @@ Telemetry 20Hz
 
 ---
 
+## Quality Analysis (27 mayo 2026)
+
+> **Documento completo:** `docs/ai/2026-05-27-quality-analysis-findings.md`
+> **TL;DR:** 285 tests ✅, 69% cobertura, 15 funciones con complejidad alta,
+> Rust 149 líneas ✅ con 3 unwrap a corregir, TS 0 errores.
+
+### Prioridad de refactor
+
+| Fase | Descripción | Esfuerzo | Impacto |
+|:----:|-------------|:--------:|:-------:|
+| **R1** | Seguridad (unwrap Rust, strategy_service) | ~2.5h | 🔴 Crítico |
+| **R2** | Reducir complejidad (6 módulos) | ~4.5h | 🟠 Alto |
+| **R3** | Tests faltantes (strategy, sidecar, spotter) | ~3h | 🟡 Medio |
+| **R4** | Limpieza menor (f-strings, lib.rs, gitignore) | ~30min | 🟢 Bajo |
+
+---
+
 ## Dependencias entre fases (orden de implementación)
 
 ```
