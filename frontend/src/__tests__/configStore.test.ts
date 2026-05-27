@@ -8,7 +8,7 @@
  * - La configuración se persiste en localStorage.
  */
 import { describe, it, expect, beforeEach } from "vitest";
-import { useAppStore, type AppConfig } from "../store/config";
+import { useAppStore } from "../store/config";
 
 describe("AppStore", () => {
   // Resetear el store antes de cada test

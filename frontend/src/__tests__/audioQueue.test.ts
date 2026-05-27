@@ -7,7 +7,7 @@
  * - La cola reproduce en orden FIFO.
  * - Los callbacks de cambio de estado se disparan.
  */
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { audioQueue } from "../services/audioQueue";
 
 describe("AudioQueue", () => {

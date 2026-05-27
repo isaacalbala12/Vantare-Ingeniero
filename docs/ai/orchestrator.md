@@ -21,13 +21,13 @@
 - **Prompt Builder (F4):** ✅ `SYSTEM_PROMPT_TICKER` con tabla diccionario + contexto RAG embebido
 - **LiveContext (F0/F4):** ✅ Snapshots con `speed`, `track_grip_level`, `update_realtime()`
 
-### Backend tests: ✅ 204 tests pasando
+### Backend tests: ✅ 285 tests pasando (cov 69%, +11.5pts vs 26-mayo)
 
 ### Estado del frontend (React/TypeScript/Tauri)
-- ✅ 42 tests unitarios pasan (Vitest)
-- ⚠️ 15 errores TypeScript (12 son TS6133 unused vars, 3 reales en `usePTT.ts`)
-- ❌ PTT no funcional (errores de tipo en `usePTT.ts`)
-- ❌ WebSocket telemetría backend←frontend no implementada
+- ✅ 55 tests unitarios pasando (Vitest)
+- ✅ 0 errores TypeScript (tsc --noEmit limpio)
+- ✅ PTT funcional, tsc --noEmit limpio
+- ✅ MessagePack binario + delta encoding implementado
 
 ---
 
@@ -176,47 +176,40 @@ cd frontend && npx vitest run
 
 ## 🗺️ Roadmap Completo — Todas las Fases Detalladas
 
-### Fase 0: WebSocket Telemetría (F0) — CRÍTICO
+### Fase 0: WebSocket Telemetría (F0) — ✅ COMPLETADA
 **Objetivo**: Que el frontend Windows envíe telemetría real al backend Linux para estrategias reales.
-
-#### ¿Por qué?
-El backend Linux no tiene acceso a la shared memory de LMU. Usa `TelemetryReader(offline=True)` que genera datos simulados. El StrategyService calcula estrategia (combustible, neumáticos, pits) con datos falsos. Hasta que no reciba telemetría real, todo lo que haga el LLM es sobre datos inventados.
 
 #### Tareas concretas
 
-**T0.1: Handler `telemetry` en websocket.py**
+**T0.1: Handler `telemetry` en websocket.py** ✅
 - El backend ya recibe WebSocket del frontend
 - Falta un `if event == "telemetry": app_state.latest_client_frame = data`
 - Ya está el health check que reporta `frontend_telemetry.received`
 - Archivo: `backend/src/routers/websocket.py` (~línea 183)
 
-**T0.2: Strategy loop use latest_client_frame**
+**T0.2: Strategy loop use latest_client_frame** ✅
 - `strategy_sender_loop` usa `reader.get_state()` (simulado)
 - Cambiar a: intentar `latest_client_frame` primero, fallback a reader
 - Archivo: `backend/src/routers/websocket.py` (~línea 105)
 
-**T0.3: Inicializar latest_client_frame en main.py**
+**T0.3: Inicializar latest_client_frame en main.py** ✅
 - `app.state.latest_client_frame = None`
 - Cambiar `TelemetryReader(offline=True)` explícitamente
 - Archivo: `backend/src/main.py` (~línea 59)
-- ✅ YA IMPLEMENTADO (lo verificamos antes)
 
-**T0.4: Frontend enviar telemetría a 20Hz**
+**T0.4: Frontend enviar telemetría a 20Hz** ✅
 - `useWebSocket.ts`: añadir `useEffect` con `setInterval(sendJson("telemetry", lastTelemetry), 50)`
 - Archivo: `frontend/src/hooks/useWebSocket.ts`
-- ⚠️ Antes de esto hay que arreglar los errores TypeScript de `usePTT.ts`
 
-**T0.5: Test de integración WebSocket**
+**T0.5: Test de integración WebSocket** ✅
 - Script Python que envía telemetría simulada y verifica `health`
 - Verificar que `frontend_telemetry.received: true`
 
-**Dependencias**: ❌ Ninguna directa, pero el PTT/captura de telemetría del frontend necesita que `usePTT.ts` compile.
-
-**Orden**: F0.1 → F0.2 → F0.4 → F0.5 (F0.3 ya hecho)
+**Nota de implementación**: Implementada junto con Fase 5 como transporte MessagePack binario + delta
 
 ---
 
-### Fase 0b: Reparar errores TypeScript del frontend — CRÍTICO
+### Fase 0b: Reparar errores TypeScript del frontend — ✅ COMPLETADA
 **Objetivo**: Que el frontend compile sin errores para poder desarrollar.
 
 #### ¿Por qué?
@@ -230,6 +223,8 @@ Además, 12 errores TS6133 (variables declaradas pero no usadas) que no rompen l
 **Archivo**: `frontend/src/hooks/usePTT.ts`
 
 **Dependencias**: ❌ Ninguna. Se puede hacer ahora mismo.
+
+**Nota de implementación**: 3 errores TS6133 corregidos. `tsc --noEmit`: 0 errores.
 
 ---
 
@@ -512,7 +507,7 @@ Total: ~700-800 tokens
 
 ---
 
-### Fase 5: Transporte Eficiente (MessagePack + Delta)
+### Fase 5: Transporte Eficiente (MessagePack + Delta) — ✅ COMPLETADA
 **Objetivo**: Reducir ancho de banda WebSocket para telemetría 20Hz.
 
 #### ¿Por qué?
@@ -520,22 +515,22 @@ Telemetría completa como JSON a 20Hz: ~200 bytes × 20 = ~4 KB/s por cliente. C
 
 #### Tareas concretas
 
-**T5.1: Instalar librerías**
+**T5.1: Instalar librerías** ✅
 ```bash
 pip install msgpack
 npm install @msgpack/msgpack
 ```
 
-**T5.2: Serialización MessagePack**
+**T5.2: Serialización MessagePack** ✅
 - Frontend: `encode(frame)` → Uint8Array → WebSocket binario
 - Backend: `decode(data)` → dict → `latest_client_frame`
 
-**T5.3: Delta encoding**
+**T5.3: Delta encoding** ✅
 - Frontend: comparar frame actual con anterior, enviar solo campos que cambiaron
 - Campo `_t`: timestamp del frame (para que backend sepa si perdió algún delta)
 - Backend: aplicar delta sobre `latest_client_frame` existente
 
-**T5.4: Snapshot completo cada 5s**
+**T5.4: Snapshot completo cada 5s** ✅
 - Cada 100 frames (~5s), enviar frame completo (no delta)
 - Backend: si detecta gap en `_t`, pedir resync (o esperar al próximo snapshot)
 
@@ -554,6 +549,23 @@ Frontend                           Backend
    └── Si gap detectado ────────────→ │
        (re-sync en próximo snapshot)  │
 ```
+
+#### Detalle técnico (implementación final)
+- **20-50 bytes/frame delta**, snapshot 120 bytes cada 100 frames (5s a 20Hz)
+- **Total ~650 B/s vs ~4 KB/s anteriores (~6× reducción)**
+- Soporte sidecar priority en el flujo binario
+- Delta tracking con sequence numbers para detección de gaps
+
+#### Archivos creados
+- `backend/src/services/msgpack_codec.py` (62 líneas, mypy strict)
+- `frontend/src/services/msgpack.ts` (64 líneas)
+- `backend/tests/test_msgpack_codec.py` (21 tests)
+- `frontend/src/__tests__/msgpack.test.ts` (13 tests)
+- `backend/tests/test_ws_integration.py` (11 tests)
+
+#### Archivos modificados
+- `backend/src/routers/websocket.py` (binario, delta, sidecar priority)
+- `frontend/src/hooks/useWebSocket.ts` (binario, delta, tracking)
 
 **Dependencias**: Fase 0 (telemetría básica funcionando primero).
 
@@ -622,6 +634,41 @@ Frontend                           Backend
 
 ---
 
+## Arquitectura de Voz — 3 Niveles (27 mayo 2026)
+
+```
+Telemetry 20Hz
+  │
+  ├→ Nivel 1: Reglas duras → TTS DIRECTO (20Hz, <50ms)
+  │    ├── fuel < 3 vueltas → "Combustible crítico" 🗣️
+  │    ├── SC activo → "Safety Car desplegado" 🗣️
+  │    ├── gap < 0.5s → "Coche pegado" 🗣️
+  │    ├── pit limiter → "Pit limiter no activado" 🗣️
+  │    ├── daños → "Daños detectados" 🗣️
+  │    ├── última vuelta → "Última vuelta" 🗣️
+  │    └── entrada/salida pits → "Entrando en boxes" 🗣️
+  │
+  └→ Nivel 3: LLM + TTS (0.5Hz, ~1-3s)
+       ├── Preguntas del piloto (PTT)
+       └── Análisis estratégico complejo
+```
+
+**Flujo:** SpotterService/triggers `ALERT_ONLY` → AlertMessage → WebSocket → frontend → TTS queue → Edge TTS → 🗣️
+
+### Deuda Técnica — Nivel 2 (Heurísticas programadas, p/mvp)
+
+| Caso | Descripción | Por qué es deuda |
+|------|-------------|:----------------:|
+| Fuel + ventana pits | "Ventana de pits con combustible justo" | Combina 2 variables |
+| Degradación acelerada | "Neumáticos cayendo rápido" | Requiere media móvil por vuelta |
+| Rival en boxes | "Rival directo paró — undercut posible" | Requiere tracking de oponentes |
+| Temperatura excesiva | "Neumáticos sobrecalentados" | Requiere umbral dinámico |
+| Batería + tendencia | "Batería baja y descargando" | Requiere tendencia en ventana |
+
+**Criterio de activación:** Si la condición necesita >1 fuente de datos o cálculo en ventana de N vueltas, es Nivel 2 → post-MVP.
+
+---
+
 ### Fase 7: Soporte Windows Sidecar (Tauri)
 
 **T7.1: Sidecar con PyInstaller**
@@ -676,21 +723,19 @@ Frontend                           Backend
 ## Dependencias entre fases (orden de implementación)
 
 ```
-Fase 0b (TypeScript fixes) ─→ Fase 0 (WS Telemetría)
-                                    │
-                                    ├→ Fase 1 (Correcciones robustez) ✅
-                                    │      │
-                                    │      └→ Fase 2 (Sidecar Windows)
-                                    │             │
-                                    │             ├→ Fase 3 (RAG) ✅
-                                    │             │      │
-                                    │             │      └→ Fase 4 (Ticker) ✅
-                                    │             │
-                                    │             └─── Fase 5 (Transporte) ─ (independiente)
-                                    │
-                                    └→ Fase 7 (Tauri sidecar)
+Fase 0b (TypeScript fixes) ✅ ─→ Fase 0 (WS Telemetría) ✅
+                                      │
+                                      ├→ Fase 1 (Correcciones robustez) ✅
+                                      │      │
+                                      │      └→ Fase 2 (Sidecar Windows)
+                                      │             │
+                                      │             ├→ Fase 3 (RAG) ✅
+                                      │             │      │
+                                      │             │      └→ Fase 4 (Ticker) ✅
+                                      │             │
+                                      │             └─── Fase 5 (Transporte) ✅
 
-Fase 6 (Tests/código) ─→ ✅ (204 tests backend pasando)
+Fase 6 (Tests/código) ─→ ✅ (236 tests backend pasando)
 Fase 8 (Optimizaciones) ─→ pendiente, post-MVP
 ```
 
