@@ -1,0 +1,224 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., v0.1.0)'
+        required: true
+        default: 'v0.1.0'
+
+jobs:
+  build-backend:
+    name: Build Backend (vantare-engine)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: vantare-engine-windows
+            target: backend
+          - os: ubuntu-latest
+            artifact: vantare-engine-linux
+            target: backend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -e ../shared-telemetry -e ../shared-strategy
+          pip install pyinstaller
+
+      - name: Build backend (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          cd backend
+          pyinstaller build.py --noconfirm
+          # Rename output folder
+          mv dist/vantare-engine dist/vantare-engine-win
+
+      - name: Build backend (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd backend
+          pyinstaller build.py --noconfirm
+          mv dist/vantare-engine dist/vantare-engine-linux
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: backend/dist/vantare-engine-*
+
+  build-sidecar:
+    name: Build Sidecar (strategy-sidecar)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: strategy-sidecar-windows
+          - os: ubuntu-latest
+            artifact: strategy-sidecar-linux
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install -e ../shared-telemetry -e ../shared-strategy
+          pip install pyinstaller
+
+      - name: Build sidecar
+        run: |
+          cd sidecar
+          pyinstaller build.py --noconfirm
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: sidecar/dist/strategy-sidecar
+
+  build-frontend:
+    name: Build Frontend (Tauri)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Tauri
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  create-release:
+    name: Create Release
+    needs: [build-backend, build-sidecar]
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Linux build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev nsis
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List artifacts
+        run: ls -la artifacts/
+
+      - name: Prepare installer directory
+        run: |
+          mkdir -p installer/build/windows
+          mkdir -p installer/build/linux
+
+      - name: Copy artifacts for Windows installer
+        run: |
+          cp -r artifacts/vantare-engine-windows installer/build/windows/backend || true
+          cp -r artifacts/strategy-sidecar-windows installer/build/windows/sidecar || true
+
+      - name: Build Windows NSIS installer
+        run: |
+          cd installer/build/windows
+          cp ../../installer/windows.nsi .
+          cp ../../LICENSE . 2>/dev/null || true
+          if [ -d "backend" ]; then
+            mkdir -p backend/vantare-engine
+            cp -r backend/* backend/vantare-engine/
+          fi
+          if [ -d "sidecar" ]; then
+            mkdir -p sidecar/strategy-sidecar
+            cp -r sidecar/* sidecar/strategy-sidecar/
+          fi
+          makensis windows.nsi || echo "NSIS build skipped"
+
+      - name: Build Linux DEB package
+        run: |
+          cd installer
+          chmod +x build.sh
+          ./build.sh --linux-only
+
+      - name: List generated installers
+        run: |
+          echo "=== Windows Installers ==="
+          ls -la installer/build/*.exe 2>/dev/null || echo "No .exe found"
+          echo ""
+          echo "=== Linux Installers ==="
+          ls -la installer/build/*.deb 2>/dev/null || echo "No .deb found"
+          ls -la installer/build/*.AppImage 2>/dev/null || echo "No AppImage found"
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installers
+          path: |
+            installer/build/*.exe
+            artifacts/vantare-engine-windows/**/*.exe
+          if-no-artifact-found: ignore
+
+      - name: Upload Linux installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-installers
+          path: |
+            installer/build/*.deb
+            installer/build/*.AppImage
+          if-no-artifact-found: ignore
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            installer/build/*.exe
+            installer/build/*.deb
+            installer/build/*.AppImage
+            artifacts/vantare-engine-windows/**/*.exe
+            artifacts/vantare-engine-linux/vantare-engine
+            artifacts/strategy-sidecar-linux/strategy-sidecar
+          draft: false
+          prerelease: true
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
