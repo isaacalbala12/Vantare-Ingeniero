@@ -216,11 +216,10 @@ jobs:
       - name: Build DEB package
         run: |
           cd installer-build/linux
-          dpkg-deb --build . ../../../vantare-engine-${{ env.VERSION }}_amd64.deb
-          cd ../../..
+          dpkg-deb --build . ../vantare-engine-${{ env.VERSION }}_amd64.deb
           
           echo "=== Generated DEB ==="
-          ls -la *.deb
+          ls -la ../*.deb
 
       - name: Create portable archives
         run: |
@@ -231,14 +230,14 @@ jobs:
             echo "Found NSIS installer"
           else
             echo "Creating ZIP for Windows"
-            zip -r ../../vantare-engine-win-portable.zip windows/ 2>/dev/null || true
+            zip -r vantare-engine-win-portable.zip windows/ 2>/dev/null || true
           fi
           
           # Create Linux portable tarball
-          tar -czf ../../vantare-engine-linux.tar.gz linux/ 2>/dev/null || true
+          tar -czf vantare-engine-linux.tar.gz linux/ 2>/dev/null || true
           
           echo "=== All generated packages ==="
-          ls -la ../../*.zip ../../*.deb ../../*.tar.gz 2>/dev/null || echo "Packages created"
+          find . -type f \( -name "*.exe" -o -name "*.deb" -o -name "*.zip" -o -name "*.tar.gz" \) | head -20
 
       - name: Upload all installers
         uses: actions/upload-artifact@v4
@@ -248,9 +247,7 @@ jobs:
             installer-build/**/*.exe
             installer-build/**/*.zip
             installer-build/**/*.deb
-            vantare-*.deb
-            vantare-*.tar.gz
-            vantare-*.zip
+            installer-build/**/*.tar.gz
 
   create-release:
     name: Create Release
@@ -280,10 +277,10 @@ jobs:
         with:
           tag: ${{ github.ref }}
           files: |
-            artifacts/**/*.exe
-            artifacts/**/*.deb
-            artifacts/**/*.tar.gz
-            artifacts/**/*.zip
+            artifacts/all-installers/**/*.exe
+            artifacts/all-installers/**/*.deb
+            artifacts/all-installers/**/*.tar.gz
+            artifacts/all-installers/**/*.zip
           draft: false
           prerelease: true
           generate_release_notes: true
