@@ -127,33 +127,19 @@ jobs:
           name: strategy-sidecar-windows
           path: artifacts/strategy-sidecar-windows
 
-      - name: Build Windows NSIS installer
+      - name: Build Windows portable ZIP
         run: |
-          mkdir -p installer-build/windows/backend installer-build/windows/sidecar
-          cp -r artifacts/vantare-engine-windows/* installer-build/windows/backend/
-          cp -r artifacts/strategy-sidecar-windows/* installer-build/windows/sidecar/
-          cp installer/windows.nsi installer-build/windows/
-          echo "Vantare Ingeniero IA v${{ env.VERSION }}" > installer-build/windows/LICENSE.txt
+          mkdir -p pkg/backend pkg/sidecar
+          cp -r artifacts/vantare-engine-windows/* pkg/backend/
+          cp -r artifacts/strategy-sidecar-windows/* pkg/sidecar/
+          echo "Vantare Ingeniero IA v${{ env.VERSION }}" > pkg/LICENSE.txt
           
-          cd installer-build/windows
-          mkdir -p backend/dist/vantare-engine sidecar/dist/strategy-sidecar
-          cp -r backend/* backend/dist/vantare-engine/ 2>/dev/null || true
-          cp -r sidecar/* sidecar/dist/strategy-sidecar/ 2>/dev/null || true
-          
-          if command -v makensis &> /dev/null; then
-            makensis windows.nsi || echo "NSIS failed, falling back to ZIP"
-          fi
-          if ! ls *.exe &>/dev/null; then
-            echo "Creating ZIP instead"
-            zip -r vantare-instalador-${{ env.VERSION }}.exe.zip backend sidecar LICENSE.txt
-            mv vantare-instalador-${{ env.VERSION }}.exe.zip vantare-instalador-${{ env.VERSION }}.exe
-          fi
-          
-          cp vantare-instalador-${{ env.VERSION }}.exe ../../../
-          cd ../../..
+          cd pkg
+          zip -r ../vantare-instalador-${{ env.VERSION }}.zip backend sidecar LICENSE.txt
+          cd ..
           
           # Clean Windows artifacts immediately
-          rm -rf artifacts/vantare-engine-windows artifacts/strategy-sidecar-windows installer-build/windows
+          rm -rf artifacts/vantare-engine-windows artifacts/strategy-sidecar-windows pkg
           echo "=== Disk after Windows build ==="
           df -h .
 
@@ -242,7 +228,7 @@ jobs:
       - name: Create portable archives
         run: |
           echo "=== All generated packages ==="
-          ls -la vantare-instalador-*.exe vantare-engine-*.deb 2>/dev/null
+          ls -la vantare-*.zip vantare-engine-*.deb 2>/dev/null
           echo "Package generation complete"
 
       - name: Upload all installers
@@ -250,7 +236,7 @@ jobs:
         with:
           name: all-installers
           path: |
-            vantare-instalador-*.exe
+            vantare-*.zip
             vantare-engine-*.deb
             vantare-engine-*.tar.gz
 
@@ -282,7 +268,7 @@ jobs:
         with:
           tag: ${{ github.ref }}
           files: |
-            artifacts/**/*.exe
+            artifacts/**/*.zip
             artifacts/**/*.deb
             artifacts/**/*.tar.gz
           draft: false
