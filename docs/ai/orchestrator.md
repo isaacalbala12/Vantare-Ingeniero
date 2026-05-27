@@ -730,10 +730,231 @@ Telemetry 20Hz
 
 | Fase | Descripción | Esfuerzo | Impacto |
 |:----:|-------------|:--------:|:-------:|
-| **R1** | Seguridad (unwrap Rust, strategy_service) | ~2.5h | 🔴 Crítico |
-| **R2** | Reducir complejidad (6 módulos) | ~4.5h | 🟠 Alto |
+| **R1** | Seguridad (unwrap Rust, .env gitignore, transcribe limit) | ~2.5h | 🔴 Crítico |
+| **R2** | Reducir complejidad (6 módulos Python) | ~4.5h | 🟠 Alto |
 | **R3** | Tests faltantes (strategy, sidecar, spotter) | ~3h | 🟡 Medio |
 | **R4** | Limpieza menor (f-strings, lib.rs, gitignore) | ~30min | 🟢 Bajo |
+
+---
+
+## 📋 Próxima Sesión — Plan Detallado
+
+### Resumen del Estado Actual (27 mayo 2026)
+
+```
+Backend:  ✅ 285 tests | 69% cobertura | 0 ruff errors en src/
+Frontend: ✅ 55 tests | tsc --noEmit 0 errores | React 19 + Zustand
+Rust:     ✅ 149 líneas | 0 errores de compilación | 3 unwrap a corregir
+Sidecar:  ⚠️ Escrito pero sin tests | 519 líneas
+Seguridad: 🟢 0 CRITICAL | 0 HIGH | 2 MEDIUM | 3 LOW
+```
+
+### Fase 7: Sidecar Windows + Tauri — PRÓXIMA PRIORIDAD
+
+**Objetivo:** Empaquetar el sidecar Python como .exe y que Tauri lo gestione como proceso hijo.
+
+**Arquitectura confirmada (Opción A):**
+```
+Windows (sidecar) ──WS :8008──→ Linux (backend FastAPI + LLM)
+```
+
+#### T7.1: PyInstaller — Empaquetar sidecar (2h)
+
+| Paso | Descripción | Archivos |
+|:----:|-------------|----------|
+| 1 | Crear `sidecar/build.py` con spec de PyInstaller | `sidecar/build.py` (nuevo) |
+| 2 | Configurar `--onefile --noconsole` | `sidecar/build.py` |
+| 3 | Incluir shared-telemetry + shared-strategy como datos | `sidecar/build.py` |
+| 4 | Crear `.env.example` para sidecar | `sidecar/.env.example` (nuevo) |
+| 5 | Build de prueba: `cd sidecar && pyinstaller build.py` | — |
+| 6 | Verificar que `sidecar/dist/strategy_sidecar.exe` funciona | — |
+
+**Problema conocido:** shared-telemetry y shared-strategy son dependencias locales (editable installs). PyInstaller no las resuelve automáticamente. Solución: copiar los source dirs dentro del build o usar `--paths`.
+
+**Dependencias:** sidecar/.env.example, confirmar ruta de shared libs.
+
+#### T7.2: Integración Tauri (3h)
+
+| Paso | Descripción | Archivos |
+|:----:|-------------|----------|
+| 1 | Registrar `strategy_sidecar` en `externalBin` | `frontend/src-tauri/tauri.conf.json:48` |
+| 2 | Añadir permiso `shell:allow-spawn` para sidecar | `frontend/src-tauri/capabilities/default.json` |
+| 3 | Refactor `main.rs`: extraer `fn spawn_sidecar()` y `fn kill_sidecar()` | `frontend/src-tauri/src/main.rs` |
+| 4 | Mover lógica de sidecar a `lib.rs` (actualmente placeholder) | `frontend/src-tauri/src/lib.rs` |
+| 5 | Arranque: `app.shell().sidecar("strategy_sidecar").spawn()` en `setup()` | `frontend/src-tauri/src/main.rs:35` |
+| 6 | En dev (`cfg!debug_assertions`), saltar spawn (como ahora) | `frontend/src-tauri/src/main.rs:27` |
+| 7 | Matar sidecar en `CloseRequested` y menú "Salir" | `frontend/src-tauri/src/main.rs:97,133` |
+| 8 | Fix: eliminar lib.rs placeholder | `frontend/src-tauri/src/lib.rs` |
+
+#### T7.3: Health Check + Auto-reinicio (1.5h)
+
+| Paso | Descripción | Archivos |
+|:----:|-------------|----------|
+| 1 | Añadir health check cada 5s vía WS ping/pong | `sidecar/src/sidecar/main.py` |
+| 2 | Si backend no responde → reconectar con backoff (ya implementado) | `sidecar/src/sidecar/main.py:116` |
+| 3 | Tauri monitor: check periódico de proceso vivo | `frontend/src-tauri/src/main.rs` (nuevo) |
+| 4 | Si sidecar muerto → reiniciar con backoff (máx 3 intentos) | `frontend/src-tauri/src/main.rs` |
+| 5 | Logging de estado del sidecar | Ambos lados |
+
+**Total Fase 7:** ~6.5h
+
+### R1: Correcciones de Seguridad (2.5h)
+
+#### R1.1: Rust unwrap → expect (15min)
+
+| Archivo | Línea | Cambio |
+|---------|:-----:|--------|
+| `frontend/src-tauri/src/main.rs` | 93 | `.unwrap()` → `.expect("default_window_icon configurado en tauri.conf.json")` |
+| `frontend/src-tauri/src/main.rs` | 98 | `.unwrap()` → `if let Ok(guard) = lock { ... }` |
+| `frontend/src-tauri/src/main.rs` | 134 | `.unwrap()` → `if let Ok(guard) = lock { ... }` |
+
+#### R1.2: .env no versionado (15min)
+
+| Archivo | Cambio |
+|---------|--------|
+| `backend/.gitignore` | Añadir `backend/.env` |
+| `backend/.env` | Renombrar a `backend/.env.example`, limpiar valores reales |
+| `backend/.env` (nuevo) | Crear .env local no versionado |
+
+#### R1.3: /transcribe con límite de tamaño (30min)
+
+| Archivo | Cambio |
+|---------|--------|
+| `backend/src/routers/transcribe.py` | Validar `content_type` y `max_size` (10MB) |
+
+#### R1.4: Refactor StrategyService._process_cycle (1.5h)
+
+| Archivo | Cambio |
+|---------|--------|
+| `backend/src/services/strategy_service.py:164-247` | Extraer 5 sub-funciones de `_process_cycle()` (E/40) |
+| `backend/tests/test_strategy_service.py` | Crear tests primero (R3.1) |
+
+**Las 5 sub-funciones a extraer:**
+1. `_parse_session_info(scoring_info) → dict`
+2. `_parse_player_telemetry(player_tele, race_state) → dict`
+3. `_parse_tyre_data(race_state, player_tele) → dict`
+4. `_parse_competitors(data, scoring_info) → list[CompetitorTelemetry]`
+5. `_assemble_frame(...) → TelemetryFrame`
+
+### R2: Reducción de Complejidad (4.5h)
+
+#### R2.1: engine.py — evaluate_cycle (1h)
+
+| Archivo | Líneas | Grado | Refactor |
+|---------|:------:|:-----:|----------|
+| `engine.py:evaluate_cycle` | 118-220 | D (29) | Extraer `_process_llm_trigger()`, `_process_alert_trigger()`, `_process_deterministic_trigger()` |
+
+#### R2.2: context_builder.py — _build_ticker_data (1h)
+
+| Archivo | Líneas | Grado | Refactor |
+|---------|:------:|:-----:|----------|
+| `context_builder.py:_build_ticker_data` | 18-150 | D (30) | Extraer normalizadores por fuente: `_normalize_telemetry()`, `_normalize_strategy()`, `_normalize_lmu_api()` |
+
+#### R2.3: live_context.py — on_lap_completed (30min)
+
+| Archivo | Líneas | Grado | Refactor |
+|---------|:------:|:-----:|----------|
+| `live_context.py:on_lap_completed` | 20-80 | D (26) | Extraer método por buffer: `_update_pace_buffer()`, `_update_wear_buffer()` |
+
+#### R2.4: spotter.py — evaluate (30min)
+
+| Archivo | Líneas | Grado | Refactor |
+|---------|:------:|:-----:|----------|
+| `spotter.py:evaluate` | 36-149 | C (17) | Cada condición → método propio (patrón monitor CrewChief) |
+
+#### R2.5: llm_client.py — ask_streaming (30min)
+
+| Archivo | Líneas | Grado | Refactor |
+|---------|:------:|:-----:|----------|
+| `llm_client.py:ask_streaming` | 82-200 | D (24) | Extraer `_parse_tool_calls()` de la lógica de streaming |
+| `llm_client.py:ask_streaming_text` | 206-287 | C (14) | Extraer `_parse_sse_line()` compartida |
+
+#### R2.6: lmu_api.py — CacheManager (1h)
+
+| Archivo | Cambio |
+|---------|--------|
+| `lmu_api.py` | Refactor: eliminar vars globales (`_weather_cache`, etc.) → clase `CacheManager` |
+| `lmu_api.py` | Tests ya creados en `test_lmu_api.py` ✅ |
+
+### R3: Tests Faltantes (3h)
+
+#### R3.1: strategy_service.py (2h)
+
+| Archivo | Estado actual | Objetivo |
+|---------|:-------------:|:--------:|
+| `test_strategy_service.py` | ❌ No existe | 20+ tests, ≥80% cobertura |
+
+**Tests necesarios:**
+- Inicialización y ciclo de vida (start/stop)
+- `get_latest_advice()` con datos simulados
+- `_process_cycle()` con telemetría completa
+- `_process_cycle()` con datos parciales (sin telemetría)
+- `get_race_summary()` con diferentes estados
+- Fallback cuando no hay datos
+
+#### R3.2: sidecar (1h)
+
+| Archivo | Tests necesarios |
+|---------|------------------|
+| `sidecar/tests/test_strategy_runner.py` | Process cycle, assembly de TelemetryFrame |
+| `sidecar/tests/test_event_detector.py` | Detección de eventos (pit, SC, gap, vuelta) |
+
+### R4: Limpieza Menor (30min)
+
+| # | Archivo | Cambio |
+|:-:|---------|--------|
+| R4.1 | `build_backend.py:140`, `run_dev.py:41,46` | 3 f-strings sin placeholder → `print("texto")` |
+| R4.2 | `test_ws_integration.py`, varios | Eliminar F401 (imports no usados) con `ruff --fix` |
+| R4.3 | `frontend/src-tauri/src/lib.rs` | Eliminar placeholder |
+| R4.4 | `sidecar/README.md` | Actualizar con estado real |
+| R4.5 | `.gitignore` | Añadir `backend/.chroma_db/` |
+
+### Security Audit Findings (docs/ai/2026-05-27-security-audit.md)
+
+```
+CRITICAL: 0   HIGH: 0   MEDIUM: 2   LOW: 3
+```
+
+| ID | Severidad | Hallazgo | Fix | Hecho |
+|:--:|:---------:|----------|-----|:-----:|
+| M1 | 🟡 | `.env` trackeado en git | Añadir a `.gitignore`, crear `.env.example` | ❌ R1.2 |
+| M2 | 🟡 | `/transcribe` sin límite de tamaño | Validar content_type y max_size | ❌ R1.3 |
+| L1 | 🟢 | 3 `unwrap()` en Rust | `expect()` o `if let Ok` | ❌ R1.1 |
+| L2 | 🟢 | CORS `allow_methods=["*"]` | Restringir a GET, POST, OPTIONS | ❌ R1.x |
+| L3 | 🟢 | Sin rate limiting | Añadir si se expone públicamente | 🟡 Post-MVP |
+
+### Orden de Ejecución Recomendado
+
+```
+1. R1.1 (Rust unwrap) ─── 15min ─── seguridad
+2. R1.2 (.env gitignore) ─ 15min ─── seguridad
+3. R1.3 (transcribe) ──── 30min ──── seguridad
+4. R4.1 (f-strings) ───── 5min ───── limpieza
+5. R4.3 (lib.rs) ──────── 2min ───── limpieza
+6. R4.5 (gitignore) ───── 2min ───── limpieza
+7. R3.1 (strategy tests) ─ 2h ────── tests (prerreq R1.4)
+8. R1.4 (strategy refactor) 1.5h ──── crítica
+9. R2.1-R2.6 (complejidad) ─ 4.5h ── calidad
+10. Fase 7 (sidecar) ──── 6.5h ───── feature
+11. R3.2 (sidecar tests) ─ 1h ────── tests
+12. R4.2 (ruff fix) ────── 5min ──── limpieza
+13. R4.4 (README) ──────── 10min ──── docs
+
+Total estimado: ~16h
+```
+
+### Documentos de Referencia
+
+| Documento | Contenido |
+|-----------|-----------|
+| `docs/ai/2026-05-27-quality-analysis-findings.md` | Análisis de calidad completo (Python/TS/Rust) |
+| `docs/ai/2026-05-27-security-audit.md` | Auditoría de seguridad OWASP/LLM |
+| `docs/ai/orchestrator.md` (este) | Estado del proyecto y roadmap |
+| `LMU/rag-dictionary.md` | Formato ticker + embeddings |
+| `LMU/rest-api.md` | API REST de LMU |
+| `LMU/shared-memory.md` | Mapeo de shared memory de LMU |
+| `.planning/2026-05-26-fase-2-sidecar/` | Planes de implementación del sidecar |
+| `.planning/2026-05-27-fase-05-transporte/` | Planes de MessagePack + delta |
 
 ---
 
