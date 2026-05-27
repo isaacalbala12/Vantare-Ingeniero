@@ -8,7 +8,7 @@
 |-----------|--------|--------|-------|
 | **Hipfire** (Qwen 3.5 4B) | `:11435` | ✅ `hipfire serve` | Usa puerto 11435 por defecto |
 | **LiteLLM** (proxy) | `:4000` | ✅ Config YAML | Expone modelo como `hipfire-qwen` |
-| **Cloudflare Tunnel** | — | ✅ Activo | URL cambia cada reinicio |
+| **Cloudflare Tunnel** | — | ✅ Activo | `https://senior-bearing-proposed-processed.trycloudflare.com` |
 | **Backend (FastAPI)** | `:8008` | ✅ LLM responde vía `/ask` | `.env` con tunnel URL + `/v1` |
 
 ### Servicios backend
@@ -42,6 +42,131 @@
 | Hipfire no arranca con `nohup` | nohup rompe procesos con TTY | Usar `&` directamente |
 | LiteLLM `Exit 127` | litellm no está en PATH global | Activar virtualenv primero |
 | **Regla clave** | Hipfire usa puerto 11435 por defecto | Configurar LiteLLM para 11435 |
+
+---
+
+## 🚀 Cómo Abrir la Aplicación — Paso a Paso
+
+### Requisitos Previos
+
+1. **LMU corriendo** en tu máquina Windows (para telemetría real)
+2. **PC LLM** (Linux con GPU RX 6600 XT) accesible en red
+
+### Paso 1: Arrancar Hipfire (PC LLM)
+
+En el PC LLM (Linux):
+
+```bash
+cd ~ && .hipfire/bin/daemon server > /tmp/hipfire.log 2>&1 &
+sleep 5
+curl -s http://localhost:11435/v1/models
+# Debería mostrar: ["qwen3.5-4b.mq4", ...]
+```
+
+### Paso 2: Arrancar LiteLLM (PC LLM)
+
+```bash
+source ~/litellm_env/bin/activate
+nohup litellm --config ~/litellm_config.yaml --port 4000 > /tmp/litellm.log 2>&1 &
+sleep 3
+curl -s http://localhost:4000/v1/models
+# Debería mostrar: ["hipfire-qwen"]
+```
+
+### Paso 3: Crear Cloudflare Tunnel (PC LLM)
+
+```bash
+cloudflared tunnel --url http://localhost:4000
+# Esperar a que muestre: "Your quick Tunnel has been created! Visit it at: https://xxxx.trycloudflare.com"
+# COPIAR esta URL — es la que se usa en el backend
+```
+
+**Importante:** Cada vez que reinicies el tunnel, la URL cambia. Anótala porque hay que actualizar `.env`.
+
+### Paso 4: Actualizar .env con la URL del tunnel
+
+En el PC Backend:
+
+```bash
+cd /home/isaac-albala/Vantare-Ingeniero/backend
+nano .env
+# Cambiar: LLM_BASE_URL=https://AQUI_LA_NUEVA_URL/v1
+```
+
+### Paso 5: Arrancar Backend (PC Backend)
+
+```bash
+cd /home/isaac-albala/Vantare-Ingeniero/backend
+.venv/bin/python run_dev.py
+# Debería mostrar: "Application startup complete"
+```
+
+**Verificar que funciona:**
+```bash
+curl -s http://127.0.0.1:8008/health | grep status
+# Debería devolver: "status":"ok"
+```
+
+### Paso 6: Arrancar Tauri App (Windows)
+
+En Windows, abre una terminal y ejecuta:
+
+```bash
+cd Vantare-Ingeniero\frontend
+npm run tauri dev
+```
+
+O si ya está compilado:
+```bash
+.\src-tauri\target\release\vantare.exe
+```
+
+### Verificación Rápida
+
+| Check | Comando | Esperado |
+|-------|---------|----------|
+| Backend OK | `curl http://127.0.0.1:8008/health` | `{"status":"ok",...}` |
+| LLM responde | `curl -X POST http://127.0.0.1:8008/ask -d "{\"question\":\"Di OK\"}"` | `OK.` |
+| TTS funciona | `curl "http://127.0.0.1:8008/tts?text=Hola"` | Archivo MP3 |
+| WebSocket | Conectar a `ws://127.0.0.1:8008/ws` | Recibe strategy frames |
+
+### Si algo no funciona...
+
+| Problema | Solución |
+|----------|----------|
+| **"Connection error" en LLM** | El tunnel se cayó. Crear nuevo: `cloudflared tunnel --url http://localhost:4000` |
+| **"Address already in use"** | Matar proceso anterior: `lsof -ti:8008 \| xargs kill -9` |
+| **Backend no responde** | Ver logs: `tail -30 /tmp/backend.log` |
+| **TTS vacío** | Verificar que Edge TTS funciona: `curl "http://127.0.0.1:8008/tts?text=test"` |
+| **WebSocket no conecta** | Verificar firewall y que el backend está en la IP correcta |
+
+### Reiniciar Todo Desde Cero
+
+```bash
+# 1. Matar procesos anteriores
+pkill -f "hipfire" 2>/dev/null
+pkill -f "litellm" 2>/dev/null
+pkill -f "cloudflared" 2>/dev/null
+pkill -f "python.*run_dev" 2>/dev/null
+sleep 2
+
+# 2. Arrancar en orden (PC LLM)
+cd ~ && .hipfire/bin/daemon server > /tmp/hipfire.log 2>&1 &
+sleep 30  # Esperar carga del modelo
+source ~/litellm_env/bin/activate && litellm --config ~/litellm_config.yaml --port 4000 > /tmp/litellm.log 2>&1 &
+sleep 3
+cloudflared tunnel --url http://localhost:4000
+# Copiar nueva URL
+
+# 3. Actualizar .env (PC Backend)
+# Editar backend/.env con la nueva URL
+
+# 4. Arrancar backend (PC Backend)
+cd /home/isaac-albala/Vantare-Ingeniero/backend && .venv/bin/python run_dev.py
+
+# 5. Verificar
+curl http://127.0.0.1:8008/health
+```
 
 ---
 
@@ -102,8 +227,8 @@ cd frontend && npx vitest run
 ```
 
 ### URL actual del túnel
-**Actual**: `https://sunny-longer-cube-ruling.trycloudflare.com`
-**En `.env`**: `LLM_BASE_URL=https://sunny-longer-cube-ruling.trycloudflare.com/v1`
+**Actual**: `https://senior-bearing-proposed-processed.trycloudflare.com`
+**En `.env`**: `LLM_BASE_URL=https://senior-bearing-proposed-processed.trycloudflare.com/v1`
 **Cuando cambie**: copiar nueva URL de terminal cloudflared → editar `.env` → reiniciar backend
 
 ---
