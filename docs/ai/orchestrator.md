@@ -21,7 +21,7 @@
 - **Prompt Builder (F4):** ✅ `SYSTEM_PROMPT_TICKER` con tabla diccionario + contexto RAG embebido
 - **LiveContext (F0/F4):** ✅ Snapshots con `speed`, `track_grip_level`, `update_realtime()`
 
-### Backend tests: ✅ 285 tests pasando (cov 69%, +11.5pts vs 26-mayo)
+### Backend tests: ✅ 290 tests pasando (cov 70%, +5 tests sidecar)
 
 ### Estado del frontend (React/TypeScript/Tauri)
 - ✅ 55 tests unitarios pasando (Vitest)
@@ -111,19 +111,24 @@ cd frontend && npx vitest run
 ## Arquitectura
 
 ```
-┌─ Windows (Tauri/React + LMU) ──────────────────────────────────┐
+┌─ Windows (LMU + strategy-sidecar.exe + Tauri) ─────────────────┐
 │                                                                 │
-│  LMU Shared Memory ─→ TelemetryReader (20Hz, real)              │
-│                        │                                        │
-│                        ├→ SpotterService (20Hz, 8 alertas)     │
-│                        │    → TTS directo, bypass LLM          │
-│                        │                                        │
-│                        ├→ StateChangeDetector (Fase 1)          │
-│                        │    → Eventos + snapshots               │
-│                        │    → WebSocket al backend              │
-│                        │                                        │
-│                        └→ WebSocket 20Hz → Backend (FASE 0)    │
-│                             (telemetría real para estrategia)    │
+│  LMU Shared Memory ←──→ strategy-sidecar.exe (FASE 7)           │
+│    │                      ├→ StrategyRunner (2s)                │
+│    │                      ├→ StateChangeDetector               │
+│    │                      └→ WS cliente → :8008/ws/sidecar     │
+│    │                                                           │
+│    └── (opcional) → vantare-engine.exe via /ws/sidecar         │
+│                                                                 │
+│  Tauri app                                                      │
+│    ├── spawn → vantare-engine.exe (FastAPI + LLM + TTS)        │
+│    │              └── puerto :8008                              │
+│    │              └── Health check TCP :8008 cada 5s            │
+│    │                                                            │
+│    ├── spawn → strategy-sidecar.exe (LMU reader)                │
+│    │              └── WS → ws://127.0.0.1:8008/ws/sidecar      │
+│    │                                                            │
+│    └── Cleanup: kill ambos en CloseRequested / menú "Salir"    │
 │                                                                 │
 │  PTT (Push-To-Talk) ─→ WebSocket pila pregunta ──────────────┐ │
 │  TTS audio ←── playback cola ←── WebSocket advice_* ◄───────┐│ │
@@ -132,13 +137,12 @@ cd frontend && npx vitest run
 ┌─ Linux (FastAPI + LLM) ─────────────────────────────────────┐││ │
 │                                                              ▼▼ ▼
 │  WebSocket handler (websocket.py)                            ││ │
-│    ├→ telemetry event (FASE 0) → latest_client_frame         │ │
-│    ├→ pilot_question → IntelligenceEngine                    │ │
-│    ├→ strategy_frame (FASE 1) → strategy_service.update()    │ │
+│    ├→ /ws (frontend): telemetry + pilot_question             │ │
+│    ├→ /ws/sidecar: strategy_frame desde strategy-sidecar.exe │ │
 │    └→ advice streaming → advice_token / advice_end          │ │
 │                                                              │ │
-│  StrategyService ─→ Fuel/Tyre/Brake/Hybrid/PitWindow calc    │ │
-│    └→ get_latest_advice() para WebSocket loop (2s)           │ │
+│  StrategyService (fallback offline)                           │ │
+│    └→ Fuel/Tyre/Brake/Hybrid/PitWindow calc                  │ │
 │                                                              │ │
 │  IntelligenceEngine (0.5s triggers + pilot questions)         │ │
 │    ├→ 12 triggers automáticos                                │ │
@@ -154,16 +158,11 @@ cd frontend && npx vitest run
 │                                                              │ │
 │  Ticker (FASE 4): formato compacto para prompts ✅            │ │
 │    └→ DRV|TYR|BRK|GAP|SES|WTH|RIV en ~400 tokens             │ │
-│    └→ generate_ticker() + SYSTEM_PROMPT_TICKER                │ │
-│    └→ _build_ticker_data() normaliza 3 fuentes + REST API     │ │
 │                                                              │ │
-│  LiveContextManager (F0/F4): snapshots mejorados ✅           │ │
-│    └→ speed, track_grip, cloud_coverage, raining              │ │
-│    └→ update_realtime() entre vueltas                         │ │
-│    └→ damage[aero] corregido (no brake_wear)                 │ │
+│  LiveContext (F0/F4): snapshots velocidad, grip, clima        │ │
 │                                                              │ │
 │  Transporte (FASE 5): MessagePack + Delta encoding            │ │
-│    └→ 20-50 bytes por frame delta, snapshot 5s cada 30       │ │
+│    └→ 20-50 bytes/frame delta, snapshot 5s c/30              │ │
 └──────────────────────────────────────────────────────────────┘ │
                                                                │ │
 ┌─ PC LLM (Linux, GPU) ───────────────────────────────────────┘ │
@@ -671,21 +670,97 @@ Telemetry 20Hz
 
 ### Fase 7: Sidecar Windows + Tauri — ✅ COMPLETADA (27 mayo 2026)
 
-**Arquitectura final:** Dos procesos independientes. Tauri spawna `vantare-engine.exe` (FastAPI backend)
-y `strategy-sidecar.exe` (lector LMU + estrategia). Comunicación vía WebSocket localhost. LLM remoto.
+**Arquitectura final:** Dos procesos independientes. `vantare-engine.exe` (FastAPI backend) +
+`strategy-sidecar.exe` (lector LMU + estrategia determinista). Tauri spawna ambos en Windows.
+Comunicación vía WebSocket localhost (sub-ms latencia). LLM remoto vía Cloudflare tunnel.
 
-**Implementado:**
-- `backend/build.py`: PyInstaller --onedir para vantare-engine.exe
-- `sidecar/build.py`: PyInstaller --onedir para strategy-sidecar.exe
-- `tauri.conf.json`: externalBin con ambos ejecutables
-- `main.rs`: BackendChild + SidecarChild, spawn dual, health check TCP :8008
-- `/ws/sidecar` endpoint (ya existía): recibe strategy_frame del sidecar
-- Tests de integración para /ws/sidecar
-- `.gitignore` para backend/ y sidecar/ (dist/, build/, *.spec)
+#### ¿Por qué dos procesos? (decisión corregida v2)
 
-**Deuda técnica:**
-- REST API de LMU (brake wear): pendiente de verificación contra datos reales
-- Modo "solo local" (sin LLM): post-MVP
+El diseño original proponía fusionar el sidecar dentro del backend. Se corrigió por:
+
+1. **Aislamiento del event loop:** `process_cycle()` es síncrono y bloquearía el event loop asyncio de FastAPI cada 2s.
+2. **Aislamiento de fallos:** Bug en C extensions de shared memory no tumba el backend.
+3. **Startup independiente:** Backend arranca en segundos; sidecar espera a LMU.
+4. **Debugging:** Cada proceso se corre standalone.
+5. **Tauri soporta múltiples sidecars nativamente** (`externalBin` + `shell.sidecar()`).
+
+#### Comunicación
+
+```
+strategy-sidecar.exe                      vantare-engine.exe
+       │                                         │
+       │  WS connect ws://127.0.0.1:8008/ws/sidecar
+       │────────────────────────────────────────→│
+       │                                         │
+       │  WS send (cada 2s):                     │
+       │  {                                       │
+       │    "event": "strategy_frame",            │
+       │    "data": {                             │
+       │      "advice": {...},     ← StrategyAdvice│
+       │      "frame": {...},      ← TelemetryFrame│
+       │      "events": [...]      ← StateChange  │
+       │    }                                      │
+       │  }                                        │
+       │────────────────────────────────────────→│
+       │                                         │
+       │  Si WS disconnect → backoff exponencial  │
+       │  (1s, 2s, 4s... max 30s, 10 intentos)   │
+```
+
+#### Archivos creados/modificados
+
+| Archivo | Acción | Propósito |
+|---------|--------|-----------|
+| `backend/build.py` | Creado | PyInstaller `--onedir --noconsole` para `vantare-engine.exe` |
+| `backend/.gitignore` | Creado | Ignorar `dist/`, `build/`, `*.spec` |
+| `sidecar/build.py` | Creado | PyInstaller `--onedir --noconsole` para `strategy-sidecar.exe` |
+| `sidecar/.gitignore` | Creado | Ignorar `dist/`, `build/`, `*.spec` |
+| `frontend/src-tauri/tauri.conf.json` | Modificado | `externalBin` con ambos ejecutables |
+| `frontend/src-tauri/src/main.rs` | Modificado | `BackendChild` + `SidecarChild`, spawn dual, health check TCP :8008 |
+| `frontend/src-tauri/capabilities/default.json` | Verificado | Permisos `shell:allow-spawn` existentes |
+| `backend/src/routers/health.py` | Modificado | Añadido campo `sidecar` a la respuesta |
+| `backend/tests/test_sidecar_integration.py` | Creado | 5 tests para `/ws/sidecar` |
+| `docs/ai/orchestrator.md` | Modificado | Fase 7 marcada completada |
+| `docs/superpowers/specs/2026-05-27-fase-7-sidecar-windows-design.md` | Actualizado | Spec con arquitectura corregida |
+| `docs/superpowers/plans/2026-05-27-fase-7-sidecar-windows.md` | Actualizado | Plan con tasks de implementación |
+
+#### C extensions (pyLMUSharedMemory)
+
+Los builds de PyInstaller incluyen `.pyd` de `pyLMUSharedMemory` como `--add-binary`. El build solo funciona en Windows (donde existen los `.pyd`). En Linux, `build.py` omite el paso silenciosamente.
+
+#### Detección de LMU
+
+El sidecar usa `TelemetryReader(offline=False)` directamente (siempre intenta shared memory real).
+Si LMU no está corriendo, el reader falla al conectar y el sidecar espera con backoff.
+Variable de entorno `LMU_AVAILABLE` planeada para control manual (futuro).
+
+#### Empaquetado (producción)
+
+```bash
+# Backend
+cd backend && pyinstaller build.py
+# → backend/dist/vantare-engine/
+
+# Sidecar
+cd sidecar && pyinstaller build.py
+# → sidecar/dist/strategy-sidecar/
+
+# Tauri (incluye ambos en el bundle)
+cd frontend && npm run tauri build
+```
+
+#### Health Check
+
+Tauri verifica que `vantare-engine` responda en `127.0.0.1:8008` cada 5s vía `TcpStream::connect_timeout`. Tras 3 fallos consecutivos, emite evento `"backend-crashed"` a la ventana principal.
+
+#### Deuda técnica documentada
+
+| Deuda | Impacto | Plan |
+|-------|---------|------|
+| REST API de LMU (brake wear) | Brake wear siempre 0.0 → estrategia de frenos incompleta | Mini poller HTTP en sidecar a `localhost:6397` cuando se pueda verificar estructura real |
+| Modo "solo local" | Spotter + estrategia + TTS funcionan pero LLM requiere internet | Hacer LLM opcional, graceful degradation |
+| Auto-reinicio automático | Tauri detecta caída del backend pero no lo reinicia | Implementar reinicio con backoff en main.rs (post-MVP) |
+| `cargo check` en Linux | Fallan placeholders de externalBin (no hay .exe compilado) | Ignorar, solo Windows tiene los binarios reales |
 
 ---
 
@@ -723,8 +798,8 @@ y `strategy-sidecar.exe` (lector LMU + estrategia). Comunicación vía WebSocket
 ## Quality Analysis (27 mayo 2026)
 
 > **Documento completo:** `docs/ai/2026-05-27-quality-analysis-findings.md`
-> **TL;DR:** 285 tests ✅, 69% cobertura, 15 funciones con complejidad alta,
-> Rust 149 líneas ✅ con 3 unwrap a corregir, TS 0 errores.
+> **TL;DR:** 290 tests ✅, 70% cobertura, 15 funciones con complejidad alta,
+> Rust 220+ líneas ✅ con 3 unwrap a corregir, TS 0 errores.
 
 ### Prioridad de refactor
 
@@ -742,63 +817,24 @@ y `strategy-sidecar.exe` (lector LMU + estrategia). Comunicación vía WebSocket
 ### Resumen del Estado Actual (27 mayo 2026)
 
 ```
-Backend:  ✅ 285 tests | 69% cobertura | 0 ruff errors en src/
+Backend:  ✅ 290 tests | 70% cobertura | 0 ruff errors en src/
 Frontend: ✅ 55 tests | tsc --noEmit 0 errores | React 19 + Zustand
-Rust:     ✅ 149 líneas | 0 errores de compilación | 3 unwrap a corregir
-Sidecar:  ✅ Empaquetado + integrado en Tauri | Tests de integración
+Rust:     ✅ 220+ líneas | 0 errores de compilación | 3 unwrap a corregir
+Sidecar:  ✅ Empaquetado + integrado en Tauri | 5 tests de integración
 Seguridad: 🟢 0 CRITICAL | 0 HIGH | 2 MEDIUM | 3 LOW
 ```
 
 ### Prioridades post-MVP
 
-**Fase 8:** Optimizaciones y Mejoras
-
-**Objetivo:** Empaquetar el sidecar Python como .exe y que Tauri lo gestione como proceso hijo.
-
-**Arquitectura confirmada (Opción A):**
-```
-Windows (sidecar) ──WS :8008──→ Linux (backend FastAPI + LLM)
-```
-
-#### T7.1: PyInstaller — Empaquetar sidecar (2h)
-
-| Paso | Descripción | Archivos |
-|:----:|-------------|----------|
-| 1 | Crear `sidecar/build.py` con spec de PyInstaller | `sidecar/build.py` (nuevo) |
-| 2 | Configurar `--onefile --noconsole` | `sidecar/build.py` |
-| 3 | Incluir shared-telemetry + shared-strategy como datos | `sidecar/build.py` |
-| 4 | Crear `.env.example` para sidecar | `sidecar/.env.example` (nuevo) |
-| 5 | Build de prueba: `cd sidecar && pyinstaller build.py` | — |
-| 6 | Verificar que `sidecar/dist/strategy_sidecar.exe` funciona | — |
-
-**Problema conocido:** shared-telemetry y shared-strategy son dependencias locales (editable installs). PyInstaller no las resuelve automáticamente. Solución: copiar los source dirs dentro del build o usar `--paths`.
-
-**Dependencias:** sidecar/.env.example, confirmar ruta de shared libs.
-
-#### T7.2: Integración Tauri (3h)
-
-| Paso | Descripción | Archivos |
-|:----:|-------------|----------|
-| 1 | Registrar `strategy_sidecar` en `externalBin` | `frontend/src-tauri/tauri.conf.json:48` |
-| 2 | Añadir permiso `shell:allow-spawn` para sidecar | `frontend/src-tauri/capabilities/default.json` |
-| 3 | Refactor `main.rs`: extraer `fn spawn_sidecar()` y `fn kill_sidecar()` | `frontend/src-tauri/src/main.rs` |
-| 4 | Mover lógica de sidecar a `lib.rs` (actualmente placeholder) | `frontend/src-tauri/src/lib.rs` |
-| 5 | Arranque: `app.shell().sidecar("strategy_sidecar").spawn()` en `setup()` | `frontend/src-tauri/src/main.rs:35` |
-| 6 | En dev (`cfg!debug_assertions`), saltar spawn (como ahora) | `frontend/src-tauri/src/main.rs:27` |
-| 7 | Matar sidecar en `CloseRequested` y menú "Salir" | `frontend/src-tauri/src/main.rs:97,133` |
-| 8 | Fix: eliminar lib.rs placeholder | `frontend/src-tauri/src/lib.rs` |
-
-#### T7.3: Health Check + Auto-reinicio (1.5h)
-
-| Paso | Descripción | Archivos |
-|:----:|-------------|----------|
-| 1 | Añadir health check cada 5s vía WS ping/pong | `sidecar/src/sidecar/main.py` |
-| 2 | Si backend no responde → reconectar con backoff (ya implementado) | `sidecar/src/sidecar/main.py:116` |
-| 3 | Tauri monitor: check periódico de proceso vivo | `frontend/src-tauri/src/main.rs` (nuevo) |
-| 4 | Si sidecar muerto → reiniciar con backoff (máx 3 intentos) | `frontend/src-tauri/src/main.rs` |
-| 5 | Logging de estado del sidecar | Ambos lados |
-
-**Total Fase 7:** ~6.5h
+| Prioridad | Descripción | Esfuerzo | Impacto |
+|:---------:|-------------|:--------:|:-------:|
+| **R1** | Seguridad (unwrap Rust, .env gitignore, transcribe limit, CORS) | ~2.5h | 🔴 Crítico |
+| **R2** | Reducir complejidad (6 módulos Python engine/context/spotter/llm) | ~4.5h | 🟠 Alto |
+| **R3** | Tests faltantes (strategy, spotter, event_detector) | ~3h | 🟡 Medio |
+| **R4** | Limpieza menor (f-strings, lib.rs, gitignore, README) | ~30min | 🟢 Bajo |
+| **F8** | Audios pregrabados, time jump, logging, reconnect | ~4h | 🟡 Medio |
+| **Solo local** | Spotter + estrategia + TTS sin LLM | ~2h | 🟡 Medio |
+| **REST API** | Mini poller brake wear en sidecar | ~1h | 🟡 Medio |
 
 ### R1: Correcciones de Seguridad (2.5h)
 
@@ -944,6 +980,52 @@ CRITICAL: 0   HIGH: 0   MEDIUM: 2   LOW: 3
 Total estimado: ~14h
 ```
 
+## Windows Build & Deploy
+
+### Requisitos
+
+- Python 3.12+ instalado
+- PyInstaller 6+ (`pip install pyinstaller`)
+- Rust toolchain (para Tauri build)
+- Node.js + npm
+
+### Build para producción
+
+```bash
+# 1. Construir backend
+cd backend
+pyinstaller build.py
+# → dist/vantare-engine/ (vantare-engine.exe)
+
+# 2. Construir sidecar
+cd ../sidecar
+pyinstaller build.py
+# → dist/strategy-sidecar/ (strategy-sidecar.exe)
+
+# 3. Construir frontend + Tauri
+cd ../frontend
+npm install
+npm run tauri build
+# → src-tauri/target/release/Vantare Ingeniero IA.exe
+#   (incluye ambos sidecars en el bundle)
+```
+
+### Notas sobre PyInstaller + C extensions
+
+`pyLMUSharedMemory` incluye código C que produce `.pyd` específicos de Windows.
+Los build scripts (`backend/build.py`, `sidecar/build.py`) los incluyen automáticamente via `--add-binary`.
+Si no hay `.pyd` (Linux), el build script omite el paso silenciosamente.
+
+### Dev en Linux (sin Windows)
+
+```bash
+# Backend solo (simulado)
+cd backend && python run_dev.py
+
+# Sidecar solo (require LMU en Windows)
+cd sidecar && python src/sidecar/main.py
+```
+
 ### Documentos de Referencia
 
 | Documento | Contenido |
@@ -951,6 +1033,8 @@ Total estimado: ~14h
 | `docs/ai/2026-05-27-quality-analysis-findings.md` | Análisis de calidad completo (Python/TS/Rust) |
 | `docs/ai/2026-05-27-security-audit.md` | Auditoría de seguridad OWASP/LLM |
 | `docs/ai/orchestrator.md` (este) | Estado del proyecto y roadmap |
+| `docs/superpowers/specs/2026-05-27-fase-7-sidecar-windows-design.md` | Spec Fase 7 — Sidecar Windows |
+| `docs/superpowers/plans/2026-05-27-fase-7-sidecar-windows.md` | Plan implementación Fase 7 |
 | `LMU/rag-dictionary.md` | Formato ticker + embeddings |
 | `LMU/rest-api.md` | API REST de LMU |
 | `LMU/shared-memory.md` | Mapeo de shared memory de LMU |
@@ -962,21 +1046,22 @@ Total estimado: ~14h
 ## Dependencias entre fases (orden de implementación)
 
 ```
-Fase 0b (TypeScript fixes) ✅ ─→ Fase 0 (WS Telemetría) ✅
-                                      │
-                                      ├→ Fase 1 (Correcciones robustez) ✅
-                                      │      │
-                                      │      └→ Fase 2 (Sidecar Windows)
-                                      │             │
-                                      │             ├→ Fase 3 (RAG) ✅
-                                      │             │      │
-                                      │             │      └→ Fase 4 (Ticker) ✅
-                                      │             │
-                                      │             └─── Fase 5 (Transporte) ✅
-                                      │
-                                      └→ Fase 7 (Sidecar Windows + Tauri) ✅
+Fase 0b (TS fixes) ✅ ─→ Fase 0 (WS Telemetría) ✅
+                               │
+                               ├→ Fase 1 (Robustez) ✅
+                               │      │
+                               │      ├→ Fase 3 (RAG) ✅
+                               │      │      │
+                               │      │      └→ Fase 4 (Ticker) ✅
+                               │      │
+                               │      └→ Fase 5 (Transporte) ✅
+                               │
+                               ├→ Fase 2 (Sidecar code) ⚠️ escrito sin tests
+                               │      │
+                               │      └→ Fase 7 (Sidecar + Tauri) ✅
+                               │
+                               └→ Fase 6 (Tests/código) ⚠️ parcial
 
-Fase 6 (Tests/código) ─→ ✅ (285 tests backend pasando)
 Fase 8 (Optimizaciones) ─→ pendiente, post-MVP
 ```
 
