@@ -5,11 +5,6 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version tag (e.g., v0.1.0)'
-        required: true
-        default: 'v0.1.0'
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
@@ -41,22 +36,27 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -e shared-telemetry -e shared-strategy
+          pip install -e ./shared-telemetry -e ./shared-strategy
           pip install pyinstaller
 
       - name: Build backend
         run: |
           cd backend
           python build.py --noconfirm
+          dir dist
 
-      - name: List dist contents
-        run: ls -la backend/dist/
+      - name: List and fix dist contents
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path backend/dist -Recurse | Select-Object FullName
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: backend/dist/vantare-engine/
+          path: |
+            backend/dist/
 
   build-sidecar:
     name: Build Sidecar (strategy-sidecar)
@@ -83,7 +83,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -e shared-telemetry -e shared-strategy
+          pip install -e ./shared-telemetry -e ./shared-strategy
           pip install pyinstaller
 
       - name: Build sidecar
@@ -91,14 +91,12 @@ jobs:
           cd sidecar
           python build.py --noconfirm
 
-      - name: List dist contents
-        run: ls -la sidecar/dist/
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact }}
-          path: sidecar/dist/strategy-sidecar/
+          path: |
+            sidecar/dist/
 
   build-installers:
     name: Build Installers
@@ -114,7 +112,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg-dev nsis
+          sudo apt-get install -y dpkg-dev nsis zip
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -122,61 +120,53 @@ jobs:
           path: artifacts
 
       - name: List artifacts
-        run: ls -laR artifacts/
-
-      - name: Prepare Windows installer directory
         run: |
-          mkdir -p installer/build/windows
-          mkdir -p installer/build/windows/backend
-          mkdir -p installer/build/windows/sidecar
-          cp -r artifacts/vantare-engine-windows/* installer/build/windows/backend/
-          cp -r artifacts/strategy-sidecar-windows/* installer/build/windows/sidecar/
-          ls -laR installer/build/windows/
+          echo "=== Artifacts ==="
+          find artifacts -type f | head -50
 
-      - name: Build Windows NSIS installer
+      - name: Create portable ZIP for Windows
         run: |
-          cd installer/build/windows
-          cp ../../../../installer/windows.nsi .
-          echo "Vantare Ingeniero IA Alpha v0.1.0" > LICENSE.txt
-          ls -la
-          if command -v makensis &> /dev/null; then
-            makensis windows.nsi || echo "NSIS build may have issues"
-          else
-            echo "NSIS not installed, skipping Windows installer"
+          mkdir -p release
+          
+          # Copy Windows builds to release folder
+          if [ -d "artifacts/vantare-engine-windows" ]; then
+            echo "Found Windows backend"
+            cp -r artifacts/vantare-engine-windows release/vantare-engine-win
           fi
-
-      - name: Prepare Linux package directory
-        run: |
-          mkdir -p installer/build/linux/usr/bin
-          cp -r artifacts/vantare-engine-linux/* installer/build/linux/usr/bin/ 2>/dev/null || true
-          cp -r artifacts/strategy-sidecar-linux/* installer/build/linux/usr/bin/ 2>/dev/null || true
-          ls -la installer/build/linux/usr/bin/
-
-      - name: Build Linux DEB package
-        run: |
-          cd installer
-          chmod +x build.sh
-          ./build.sh --linux-only
-
-      - name: List generated installers
-        run: |
-          echo "=== All generated files ==="
-          find installer/build -type f 2>/dev/null
-          echo ""
-          echo "=== Windows .exe files ==="
-          find installer/build -name "*.exe" -type f 2>/dev/null
-          echo ""
-          echo "=== Linux packages ==="
-          find installer/build -name "*.deb" -type f 2>/dev/null
-          find installer/build -name "*.AppImage" -type f 2>/dev/null
+          
+          if [ -d "artifacts/strategy-sidecar-windows" ]; then
+            echo "Found Windows sidecar"
+            cp -r artifacts/strategy-sidecar-windows release/strategy-sidecar-win
+          fi
+          
+          # Copy Linux builds
+          if [ -d "artifacts/vantare-engine-linux" ]; then
+            echo "Found Linux backend"
+            cp -r artifacts/vantare-engine-linux release/vantare-engine-linux
+          fi
+          
+          if [ -d "artifacts/strategy-sidecar-linux" ]; then
+            echo "Found Linux sidecar"
+            cp -r artifacts/strategy-sidecar-linux release/strategy-sidecar-linux
+          fi
+          
+          ls -laR release/
+          
+          # Create ZIPs
+          zip -r release/vantare-engine-win.zip release/vantare-engine-win 2>/dev/null || true
+          zip -r release/strategy-sidecar-win.zip release/strategy-sidecar-win 2>/dev/null || true
+          tar -czf release/vantare-engine-linux.tar.gz -C release vantare-engine-linux 2>/dev/null || true
+          tar -czf release/strategy-sidecar-linux.tar.gz -C release strategy-sidecar-linux 2>/dev/null || true
+          
+          echo "=== Generated packages ==="
+          ls -la release/
 
       - name: Upload all artifacts
         uses: actions/upload-artifact@v4
         with:
           name: all-installers
           path: |
-            installer/build/**/*
-            artifacts/**/*
+            release/**
 
   create-release:
     name: Create Release
@@ -195,22 +185,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          pattern: '*'
-          merge-multiple: false
 
       - name: List all files
         run: |
-          echo "=== artifacts directory ==="
-          find artifacts -type f 2>/dev/null | head -50
+          echo "=== All files ==="
+          find artifacts -type f 2>/dev/null
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/**/*exe
-            artifacts/**/*.AppImage
-            artifacts/**/*linux*/**
-            artifacts/**/*windows*/**
+            artifacts/**/*.zip
+            artifacts/**/*.tar.gz
           draft: false
           prerelease: true
           generate_release_notes: true
