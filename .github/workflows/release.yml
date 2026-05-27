@@ -170,52 +170,44 @@ jobs:
           cp -r artifacts/strategy-sidecar-linux/* installer-build/linux/usr/bin/ 2>/dev/null || true
           
           # Create DEBIAN/control
-          cat > installer-build/linux/DEBIAN/control << EOF
-Package: vantare-engine
-Version: ${{ env.VERSION }}
-Section: games
-Priority: optional
-Architecture: amd64
-Depends: python3.12
-Maintainer: Vantare <info@vantare.es>
-Description: Vantare Ingeniero IA - Race Strategy Assistant
- A real-time race strategy assistant for Le Mans Ultimate (LMU).
- Provides pit strategies, tire recommendations, and voice advice.
-EOF
+          echo "Package: vantare-engine" > installer-build/linux/DEBIAN/control
+          echo "Version: ${{ env.VERSION }}" >> installer-build/linux/DEBIAN/control
+          echo "Section: games" >> installer-build/linux/DEBIAN/control
+          echo "Priority: optional" >> installer-build/linux/DEBIAN/control
+          echo "Architecture: amd64" >> installer-build/linux/DEBIAN/control
+          echo "Depends: python3.12" >> installer-build/linux/DEBIAN/control
+          echo "Maintainer: Vantare <info@vantare.es>" >> installer-build/linux/DEBIAN/control
+          echo "Description: Vantare Ingeniero IA - Race Strategy Assistant" >> installer-build/linux/DEBIAN/control
+          echo " A real-time race strategy assistant for Le Mans Ultimate (LMU)." >> installer-build/linux/DEBIAN/control
+          echo " Provides pit strategies, tire recommendations, and voice advice." >> installer-build/linux/DEBIAN/control
 
           # Create postinst
-          cat > installer-build/linux/DEBIAN/postinst << 'EOF'
-#!/bin/bash
-chmod +x /usr/bin/vantare-engine 2>/dev/null || true
-chmod +x /usr/bin/vantare-sidecar 2>/dev/null || true
-mkdir -p ~/.config/vantare
-echo "Vantare Ingeniero IA installed!"
-EOF
+          echo '#!/bin/bash' > installer-build/linux/DEBIAN/postinst
+          echo 'chmod +x /usr/bin/vantare-engine 2>/dev/null || true' >> installer-build/linux/DEBIAN/postinst
+          echo 'chmod +x /usr/bin/vantare-sidecar 2>/dev/null || true' >> installer-build/linux/DEBIAN/postinst
+          echo 'mkdir -p ~/.config/vantare' >> installer-build/linux/DEBIAN/postinst
+          echo 'echo "Vantare Ingeniero IA installed!"' >> installer-build/linux/DEBIAN/postinst
           chmod 755 installer-build/linux/DEBIAN/postinst
           
           # Create postrm
-          cat > installer-build/linux/DEBIAN/postrm << 'EOF'
-#!/bin/bash
-if [ "$1" = "purge" ]; then
-  rm -rf ~/.config/vantare 2>/dev/null || true
-fi
-EOF
+          echo '#!/bin/bash' > installer-build/linux/DEBIAN/postrm
+          echo 'if [ "$1" = "purge" ]; then' >> installer-build/linux/DEBIAN/postrm
+          echo '  rm -rf ~/.config/vantare 2>/dev/null || true' >> installer-build/linux/DEBIAN/postrm
+          echo 'fi' >> installer-build/linux/DEBIAN/postrm
           chmod 755 installer-build/linux/DEBIAN/postrm
           
           # Copy LICENSE
           cp installer-build/windows/LICENSE.txt installer-build/linux/usr/share/doc/vantare-engine/LICENSE 2>/dev/null || echo "v${{ env.VERSION }}" > installer-build/linux/usr/share/doc/vantare-engine/copyright
           
           # Create desktop entry
-          cat > installer-build/linux/usr/share/applications/vantare-engine.desktop << 'EOF'
-[Desktop Entry]
-Name=Vantare Ingeniero IA
-Comment=Race Strategy Assistant for Le Mans Ultimate
-Exec=/usr/bin/vantare-engine
-Icon=utilities-terminal
-Terminal=true
-Type=Application
-Categories=Game;
-EOF
+          echo '[Desktop Entry]' > installer-build/linux/usr/share/applications/vantare-engine.desktop
+          echo 'Name=Vantare Ingeniero IA' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
+          echo 'Comment=Race Strategy Assistant for Le Mans Ultimate' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
+          echo 'Exec=/usr/bin/vantare-engine' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
+          echo 'Icon=utilities-terminal' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
+          echo 'Terminal=true' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
+          echo 'Type=Application' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
+          echo 'Categories=Game;' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
 
           echo "=== Linux DEB contents ==="
           ls -laR installer-build/linux/
