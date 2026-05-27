@@ -56,16 +56,16 @@ Section "Principal" SEC01
   SetOutPath "$INSTDIR"
 
   ; Copiar archivos del build
-  File /r "backend\dist\vantare-engine\*.*"
-  File /r "sidecar\dist\strategy-sidecar\*.*"
+  File /r "backend/dist/vantare-engine/*.*"
+  File /r "sidecar/dist/strategy-sidecar/*.*"
   
   ; Si existe el build de Tauri
-  IfFileExists "frontend\src-tauri\target\release\vantare.exe" 0 +2
-    File /r "frontend\src-tauri\target\release\vantare.exe"
+  IfFileExists "frontend/src-tauri/target/release/vantare.exe" 0 +2
+    File /r "frontend/src-tauri/target/release/vantare.exe"
 
   ; Copiar archivos de configuración de ejemplo
   SetOutPath "$INSTDIR\config"
-  File "backend\.env.example"
+  File "backend/.env.example"
 
   ; Crear archivo de versión
   FileOpen $0 "$INSTDIR\VERSION.txt" w

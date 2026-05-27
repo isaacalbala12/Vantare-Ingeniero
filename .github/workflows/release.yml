@@ -153,8 +153,7 @@ jobs:
           fi
           if ! ls *.exe &>/dev/null; then
             echo "Creating ZIP instead"
-            zip -r vantare-instalador-${{ env.VERSION }}.exe.zip backend sidecar LICENSE.txt
-            mv vantare-instalador-${{ env.VERSION }}.exe.zip vantare-instalador-${{ env.VERSION }}.exe
+            zip -r vantare-instalador-${{ env.VERSION }}.zip backend sidecar LICENSE.txt
           fi
           
           echo "=== Generated files ==="
@@ -248,6 +247,7 @@ jobs:
           path: |
             installer-build/**/*.exe
             installer-build/**/*.zip
+            installer-build/**/*.deb
             vantare-*.deb
             vantare-*.tar.gz
             vantare-*.zip
