@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useAppStore } from "../store/config";
 import { audioQueue } from "../services/audioQueue";
+import { encodeMsgpack, decodeMsgpack, computeDelta, SNAPSHOT_INTERVAL } from "../services/msgpack";
 
 /**
  * Hook para la conexión y parseo de mensajes en tiempo real vía WebSocket.
@@ -32,6 +33,8 @@ export function useWebSocket() {
   const manuallyClosedRef = useRef<boolean>(false);
   const ttsQueueRef = useRef<string[]>([]);
   const isTtsProcessingRef = useRef<boolean>(false);
+  const previousFrameRef = useRef<Record<string, unknown> | null>(null);
+  const frameCountRef = useRef<number>(0);
 
   // Guardar referencias del store para evitar recrear funciones
   const currentTokensRef = useRef("");
@@ -106,14 +109,76 @@ export function useWebSocket() {
           clearTimeout(reconnectTimeoutRef.current);
           reconnectTimeoutRef.current = null;
         }
+        // Reset delta tracking on reconnect
+        previousFrameRef.current = null;
+        frameCountRef.current = 0;
       };
 
       ws.onmessage = (event) => {
+        // Handle binary (MessagePack telemetry)
+        if (event.data instanceof ArrayBuffer) {
+          try {
+            const decoded: any = decodeMsgpack(new Uint8Array(event.data as ArrayBuffer));
+            const player: any = decoded.player || {};
+            const engine: any = decoded.engine || {};
+            const tyres: any = decoded.tyres || {};
+
+            // 1. Detección robusta de velocidad en km/h
+            let speed = 0;
+            if (typeof decoded.speed === "number") {
+              speed = decoded.speed;
+            } else if (typeof player.speed === "number") {
+              speed = player.speed;
+            } else if (typeof engine.rpm === "number" && engine.rpm > 500) {
+              if (player.in_pits === true || (engine.gear <= 0 && engine.rpm < 3000)) {
+                speed = 0;
+              } else {
+                const rpmVal = engine.rpm;
+                const gearVal = typeof engine.gear === "number" ? engine.gear : 1;
+                const gearFactor = gearVal <= 0 ? 1 : gearVal;
+                speed = Math.round(rpmVal * 0.03 * gearFactor);
+              }
+            }
+
+            // 2. Mapeo de desgaste de neumáticos (0.0 nuevo, 1.0 gastado)
+            let fl = 100, fr = 100, rl = 100, rr = 100;
+            if (Array.isArray(tyres.wear) && tyres.wear.length === 4) {
+              fl = Math.round((1.0 - tyres.wear[0]) * 100);
+              fr = Math.round((1.0 - tyres.wear[1]) * 100);
+              rl = Math.round((1.0 - tyres.wear[2]) * 100);
+              rr = Math.round((1.0 - tyres.wear[3]) * 100);
+            } else if (tyres.wear && typeof tyres.wear === "object") {
+              fl = Math.round((1.0 - (tyres.wear.fl ?? 0)) * 100);
+              fr = Math.round((1.0 - (tyres.wear.fr ?? 0)) * 100);
+              rl = Math.round((1.0 - (tyres.wear.rl ?? 0)) * 100);
+              rr = Math.round((1.0 - (tyres.wear.rr ?? 0)) * 100);
+            }
+
+            setLastTelemetry(decoded);
+            updateTelemetry({
+              speed: Math.round(speed),
+              rpm: Math.round(engine.rpm ?? 0),
+              gear: engine.gear ?? 0,
+              fuel: Number((player.fuel ?? decoded.fuel ?? 0).toFixed(1)),
+              lap: player.current_lap ?? player.lap ?? 1,
+              position: player.place ?? player.position ?? 1,
+              gaps: decoded.gaps ?? { ahead: 0.0, behind: 0.0 },
+              tyreWear: { fl, fr, rl, rr },
+              alerts: decoded.alerts ?? [],
+            });
+            return;
+          } catch (e) {
+            console.error("[useWebSocket] Error decoding MessagePack:", e);
+            return;
+          }
+        }
+        
+        // Handle text JSON (all other events: strategy, advice, alert, etc)
         let parsed: any;
         try {
           parsed = JSON.parse(event.data);
         } catch (e) {
-          console.error("[useWebSocket] Error parseando JSON:", e);
+          console.error("[useWebSocket] Error parsing JSON:", e);
           return;
         }
 
@@ -248,6 +313,12 @@ export function useWebSocket() {
             updateTelemetry({
               alerts: [alertMsg]
             });
+            
+            // Encolar en TTS para que se hable la alerta
+            if (alertMsg) {
+              ttsQueueRef.current.push(alertMsg);
+              processTtsQueue();
+            }
             break;
           }
 
@@ -352,12 +423,20 @@ export function useWebSocket() {
     return false;
   }, []);
 
-  // Enviar telemetría al backend a 20Hz (50ms) para que el backend Linux tenga datos reales
+  // Enviar telemetría al backend a 20Hz (50ms) usando MessagePack + delta encoding
   useEffect(() => {
     if (!lastTelemetry) return;
 
     const interval = setInterval(() => {
-      sendJson("telemetry", lastTelemetry);
+      if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) return;
+      
+      const isFull = frameCountRef.current % SNAPSHOT_INTERVAL === 0;
+      const delta = computeDelta(lastTelemetry, previousFrameRef.current, isFull);
+      const binary = encodeMsgpack(delta);
+      socketRef.current.send(binary.buffer);
+      
+      previousFrameRef.current = lastTelemetry;
+      frameCountRef.current++;
     }, 50);
 
     return () => clearInterval(interval);

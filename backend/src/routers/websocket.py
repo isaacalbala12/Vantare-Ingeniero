@@ -5,6 +5,7 @@ from typing import Set
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from src.models.messages import BaseMessage
+from src.services.msgpack_codec import encode as mp_encode, decode as mp_decode, apply_delta, is_full_frame
 
 logger = logging.getLogger("vantare.websocket")
 
@@ -81,19 +82,34 @@ async def telemetry_sender_loop(websocket: WebSocket, app_state) -> None:
 
     while True:
         try:
-            state = reader.get_state()
-            if state is not None:
-                # 1. Evaluar el SpotterService de ultra-baja latencia (20Hz)
-                spotter = getattr(app_state, "spotter_service", None)
-                if spotter:
-                    spotter.evaluate_tick(state)
+            # 1. Preferir telemetry del sidecar si está disponible
+            sidecar_frame = getattr(app_state, "latest_strategy_frame", None)
+            if sidecar_frame and sidecar_frame.get("frame"):
+                # El sidecar envía frame como dict, usar directamente
+                state_dict = sidecar_frame["frame"]
+                logger.debug("Usando telemetry del sidecar")
+            else:
+                # 2. Fallback: usar TelemetryReader local (simulated/offline)
+                state = reader.get_state()
+                if state is not None:
+                    state_dict = state.model_dump(mode="json")
+                else:
+                    await asyncio.sleep(0.05)
+                    continue
+                logger.debug("Usando TelemetryReader (offline)")
 
-                # Serializar el modelo Pydantic a JSON compatible
-                state_dict = state.model_dump(mode="json")
-                await websocket.send_json({
-                    "event": "telemetry",
-                    "data": state_dict
-                })
+            # 3. Evaluar el SpotterService de ultra-baja latencia (20Hz)
+            # Spotter requiere RaceState (Pydantic model), no dict
+            spotter = getattr(app_state, "spotter_service", None)
+            if spotter:
+                reader_state = reader.get_state()
+                if reader_state is not None:
+                    spotter.evaluate_tick(reader_state)
+
+            # 4. Enviar datos al frontend vía MessagePack
+            raw = mp_encode(state_dict)
+            await websocket.send_bytes(raw)
+
             await asyncio.sleep(0.05)  # 20Hz (50ms)
         except asyncio.CancelledError:
             break
@@ -238,7 +254,29 @@ async def websocket_endpoint(websocket: WebSocket):
                 if "text" in raw:
                     data = raw["text"]
                 elif "bytes" in raw:
-                    # Mensaje binario (WAV Blob del frontend) — ignorar
+                    # Mensaje binario (MessagePack telemetry del frontend)
+                    try:
+                        frame = mp_decode(raw["bytes"])
+                        
+                        # Detectar gap de timestamps para diagnóstico
+                        frame_ts = frame.get("_t", 0)
+                        last_ts = getattr(app_state, "_last_telemetry_t", 0)
+                        if last_ts > 0 and frame_ts - last_ts > 0.5:
+                            logger.warning(f"Telemetry gap detected: {frame_ts - last_ts:.2f}s since last frame")
+                        app_state._last_telemetry_t = frame_ts
+                        
+                        # Aplicar delta o snapshot completo
+                        if is_full_frame(frame):
+                            app_state.latest_client_frame = frame
+                        else:
+                            mp_delta = {k: v for k, v in frame.items() if not k.startswith("_")}
+                            if getattr(app_state, "latest_client_frame", None) is not None:
+                                app_state.latest_client_frame = apply_delta(app_state.latest_client_frame, mp_delta)
+                            else:
+                                # Primer frame tras conexión, guardar como está
+                                app_state.latest_client_frame = frame
+                    except Exception as e:
+                        logger.warning(f"Error decoding MessagePack telemetry: {e}")
                     continue
                 else:
                     continue
