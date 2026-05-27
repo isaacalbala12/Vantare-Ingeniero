@@ -128,6 +128,9 @@ jobs:
           # Copy NSIS script
           cp installer/windows.nsi installer-build/windows/
           
+          # Copy .env.example for NSIS File command
+          cp backend/.env.example installer-build/windows/backend/
+          
           # Create LICENSE
           echo "Vantare Ingeniero IA v${{ env.VERSION }}" > installer-build/windows/LICENSE.txt
           
