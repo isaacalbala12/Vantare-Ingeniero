@@ -2,179 +2,40 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Unificar el sidecar de estrategia dentro del backend FastAPI y empaquetar todo como un único ejecutable (`vantare-engine.exe`) gestionado por Tauri.
+**Goal:** Empaquetar backend + sidecar como dos ejecutables independientes, gestionados por Tauri en Windows. El sidecar lee shared memory de LMU y envía datos al backend vía localhost WebSocket.
 
-**Arquitectura:** El sidecar (strategy_runner.py + event_detector.py) se mueve a `backend/src/sidecar/` y se integra en `main.py`. La comunicación con StrategyService es directa (sin WebSocket). Tauri spawns un solo proceso con health check vía GET /health. El LLM sigue remoto.
+**Arquitectura:** Dos procesos separados, cada uno con su propio event loop asyncio. Comunicación vía WebSocket localhost (sub-ms latencia). Tauri spawna ambos al arrancar. PyInstaller `--onedir` para arranque instantáneo.
 
-**Tech Stack:** Python 3.12+, FastAPI, PyInstaller 6+, Tauri 2 + Rust, Tauri plugin shell
+```
+Tauri app
+├── spawn → vantare-engine.exe (FastAPI + LLM + TTS + WS hub)
+│              └── puerto :8008, REST + WebSocket
+│              └── GET /health cada 5s desde Tauri
+│
+├── spawn → strategy-sidecar.exe (LMU shared memory reader)
+│              └── WS → ws://127.0.0.1:8008/ws/sidecar
+│              └── Envía strategy_frame cada 2s
+│
+└── Health: backend monitorea, Tauri monitorea backend
+    └── Si sidecar se cae → backend detecta WS disconnect → espera reconexión
+    └── Si backend se cae → Tauri detecta health check → reinicia
+```
+
+**Tech Stack:** Python 3.12+, FastAPI, PyInstaller 6+, Tauri 2 + Rust, websockets, shared-telemetry (C extensions)
 
 ---
 
-### Task 1: Mover archivos del sidecar a backend/
+### Task 1: build.py para backend (vantare-engine.exe)
 
 **Files:**
-- Move: `sidecar/src/sidecar/strategy_runner.py` → `backend/src/sidecar/strategy_runner.py`
-- Move: `sidecar/src/sidecar/event_detector.py` → `backend/src/sidecar/event_detector.py`
-- Move: `sidecar/src/sidecar/__init__.py` → `backend/src/sidecar/__init__.py`
-- Move: `sidecar/pyproject.toml` (fusionar dependencias en `backend/pyproject.toml`)
-- Modify: `backend/src/sidecar/strategy_runner.py` (eliminar import de shared_telemetry.sync que ya no existe)
+- Modify: `backend/build.py`
+- Add: `backend/.gitignore` entries
 
-- [ ] **Step 1: Crear directorio y mover archivos**
-
-```bash
-mkdir -p backend/src/sidecar
-cp sidecar/src/sidecar/strategy_runner.py backend/src/sidecar/strategy_runner.py
-cp sidecar/src/sidecar/event_detector.py backend/src/sidecar/event_detector.py
-cp sidecar/src/sidecar/__init__.py backend/src/sidecar/__init__.py
-```
-
-- [ ] **Step 2: Verificar imports en strategy_runner.py**
-
-Leer archivo movido para confirmar que los imports funcionan dentro del backend. La línea `from shared_telemetry.sync import TelemetrySync` debe resolverse desde `shared-telemetry/src/`.
-
-```bash
-cd backend && python -c "from src.sidecar.strategy_runner import StrategyRunner; print('OK')"
-```
-
-Expected output: `OK`
-
-- [ ] **Step 3: Fusionar dependencias del sidecar en backend/pyproject.toml**
-
-Verificar que `backend/pyproject.toml` ya tiene `websockets` y `python-dotenv`. Si faltan, añadirlas.
-
-```bash
-cd backend && grep -E "websockets|python-dotenv" pyproject.toml
-```
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add backend/src/sidecar/ sidecar/src/sidecar/
-git commit -m "feat: move sidecar modules to backend/src/sidecar/"
-```
-
----
-
-### Task 2: Integrar sidecar en backend/main.py
-
-**Files:**
-- Modify: `backend/src/main.py`
-- Modify: `backend/src/routers/websocket.py`
-
-- [ ] **Step 1: Leer main.py actual**
-
-```bash
-cat backend/src/main.py
-```
-
-- [ ] **Step 2: Añadir flag LMU_AVAILABLE y carga condicional del sidecar**
-
-Al inicio de `main.py`, después de `load_dotenv()`:
+- [ ] **Step 1: Reescribir build.py con --onedir**
 
 ```python
-import os
-
-# Detección de LMU real vs simulado
-LMU_AVAILABLE = os.getenv("LMU_AVAILABLE", "false").strip().lower() == "true"
-```
-
-- [ ] **Step 3: Registrar sidecar runner en app.state si LMU_AVAILABLE**
-
-Dentro del lifespan handler, después de inicializar `reader`:
-
-```python
-from src.sidecar.strategy_runner import StrategyRunner
-from src.sidecar.event_detector import StateChangeDetector
-
-if LMU_AVAILABLE:
-    logger.info("LMU_AVAILABLE=true — iniciando sidecar con shared memory real")
-    reader = TelemetryReader(offline=False, poll_rate=0.05)
-    reader.start()
-    app.state.sidecar_runner = StrategyRunner(reader)
-    app.state.sidecar_detector = StateChangeDetector()
-    app.state.lmu_available = True
-else:
-    logger.info("LMU_AVAILABLE=false — modo simulado (offline)")
-    reader = TelemetryReader(offline=True)
-    app.state.sidecar_runner = None
-    app.state.sidecar_detector = None
-    app.state.lmu_available = False
-```
-
-- [ ] **Step 4: Arrancar loop de sidecar como tarea asyncio de background**
-
-Después de inicializar el reader, añadir tarea:
-
-```python
-async def _sidecar_loop():
-    """Cada 2s: process_cycle + detect + update strategy_service directamente."""
-    runner = app.state.sidecar_runner
-    detector = app.state.sidecar_detector
-    if runner is None or detector is None:
-        return
-    
-    while True:
-        try:
-            runner.process_cycle()
-            if runner.latest_frame is not None and runner.latest_advice is not None:
-                events = detector.detect(runner.latest_frame)
-                # Llamada directa a StrategyService
-                from src.services.strategy_service import strategy_service
-                strategy_service.update(runner.latest_advice, runner.latest_frame, events)
-        except Exception as e:
-            logger.exception("Error en sidecar_loop: %s", e)
-        await asyncio.sleep(2.0)
-
-if LMU_AVAILABLE:
-    task = asyncio.create_task(_sidecar_loop())
-    # Guardar referencia para cancelación en shutdown
-    app.state._sidecar_task = task
-```
-
-Añadir cancelación en shutdown:
-
-```python
-# Al final del lifespan, en shutdown:
-if LMU_AVAILABLE and hasattr(app.state, "_sidecar_task"):
-    app.state._sidecar_task.cancel()
-    try:
-        await app.state._sidecar_task
-    except asyncio.CancelledError:
-        pass
-    reader.stop()
-```
-
-- [ ] **Step 5: Añadir LMU status al endpoint /health**
-
-```python
-# En health endpoint o router existente:
-"sidecar": {
-    "lmu_available": getattr(app.state, "lmu_available", False),
-    "active": getattr(app.state, "sidecar_runner", None) is not None
-}
-```
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add backend/src/main.py
-git commit -m "feat: integrate sidecar into backend with LMU_AVAILABLE flag"
-```
-
----
-
-### Task 3: Crear build.py para PyInstaller
-
-**Files:**
-- Create: `backend/build.py`
-- Modify: `backend/.gitignore`
-
-- [ ] **Step 1: Crear spec de PyInstaller**
-
-```python
-# backend/build.py
 """
-Build script para empaquetar backend como vantare-engine.exe.
+Build script para empaquetar backend FastAPI como vantare-engine.exe.
 Uso: cd backend && pyinstaller build.py
 """
 import sys
@@ -186,203 +47,294 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 SHARED_TELEMETRY = REPO_ROOT / "shared-telemetry" / "src"
 SHARED_STRATEGY = REPO_ROOT / "shared-strategy" / "src"
 
-# Localizar .pyd de pyLMUSharedMemory (C extension)
-PYLMU_DIR = SHARED_TELEMETRY / "shared_telemetry" / "pyLMUSharedMemory"
-PYD_FILES = list(PYLMU_DIR.glob("*.pyd"))
-
-binaries = []
-if PYD_FILES:
-    for pyd in PYD_FILES:
-        binaries.append((str(pyd), "shared_telemetry/pyLMUSharedMemory"))
-
 args = [
-    "--onefile",
-    "--noconsole",
+    "--onedir",                          # Arranque instantáneo (no temp extract)
+    "--noconsole",                       # Sin ventana de terminal
     "--name=vantare-engine",
     "--add-data", f"{SHARED_TELEMETRY}{Path.pathsep}shared_telemetry",
     "--add-data", f"{SHARED_STRATEGY}{Path.pathsep}shared_strategy",
     "--hidden-import=uvicorn.logging",
     "--hidden-import=uvicorn.loops.auto",
     "--hidden-import=uvicorn.protocols.http.auto",
+    "--distpath=./dist",
+    "--workpath=./build",
 ]
 
-for src, dest in binaries:
-    args.extend(["--add-binary", f"{src}{Path.pathsep}{dest}"])
+# Incluir .pyd de pyLMUSharedMemory si existen (Windows build)
+PYLMU_DIR = SHARED_TELEMETRY / "shared_telemetry" / "pyLMUSharedMemory"
+for pyd_file in PYLMU_DIR.glob("*.pyd"):
+    args.extend(["--add-binary", f"{str(pyd_file)}{Path.pathsep}shared_telemetry/pyLMUSharedMemory"])
 
 args.append("src/main.py")
 
 PyInstaller.__main__.run(args)
 ```
 
-- [ ] **Step 2: Añadir backend/.gitignore para dist/ y build/**
+- [ ] **Step 2: Actualizar backend/.gitignore**
 
 ```gitignore
-# backend/.gitignore
+# backend/.gitignore (añadir al existente)
 dist/
 build/
 *.spec
 ```
 
-- [ ] **Step 3: Verificar que build.py es sintácticamente válido**
+- [ ] **Step 3: Verificar sintaxis**
 
 ```bash
-cd backend && python -c "import ast; ast.parse(open('build.py').read()); print('build.py sintaxis OK')"
+cd backend && python -c "import ast; ast.parse(open('build.py').read()); print('OK')"
 ```
 
 - [ ] **Step 4: Commit**
 
 ```bash
 git add backend/build.py backend/.gitignore
-git commit -m "feat: add PyInstaller build script for vantare-engine.exe"
+git commit -m "feat: backend PyInstaller build.py (--onedir)"
 ```
 
 ---
 
-### Task 4: Renombrar externalBin en Tauri de backend a vantare-engine
+### Task 2: build.py para sidecar (strategy-sidecar.exe)
 
 **Files:**
-- Modify: `frontend/src-tauri/tauri.conf.json`
+- Create: `sidecar/build.py`
 
-- [ ] **Step 1: Leer tauri.conf.json**
+- [ ] **Step 1: Crear build.py para el sidecar**
 
-```bash
-cat frontend/src-tauri/tauri.conf.json
+```python
+"""
+Build script para empaquetar el sidecar de estrategia como strategy-sidecar.exe.
+Uso: cd sidecar && pyinstaller build.py
+"""
+from pathlib import Path
+
+import PyInstaller.__main__
+
+SIDECAR_SRC = Path(__file__).resolve().parent / "src"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+SHARED_TELEMETRY = REPO_ROOT / "shared-telemetry" / "src"
+SHARED_STRATEGY = REPO_ROOT / "shared-strategy" / "src"
+
+args = [
+    "--onedir",
+    "--noconsole",
+    "--name=strategy-sidecar",
+    "--add-data", f"{SHARED_TELEMETRY}{Path.pathsep}shared_telemetry",
+    "--add-data", f"{SHARED_STRATEGY}{Path.pathsep}shared_strategy",
+    "--distpath=./dist",
+    "--workpath=./build",
+]
+
+# Incluir .pyd de pyLMUSharedMemory
+PYLMU_DIR = SHARED_TELEMETRY / "shared_telemetry" / "pyLMUSharedMemory"
+for pyd_file in PYLMU_DIR.glob("*.pyd"):
+    args.extend(["--add-binary", f"{str(pyd_file)}{Path.pathsep}shared_telemetry/pyLMUSharedMemory"])
+
+args.append("src/sidecar/main.py")
+
+PyInstaller.__main__.run(args)
 ```
 
-- [ ] **Step 2: Cambiar externalBin**
+- [ ] **Step 2: Añadir sidecar/.gitignore**
 
-Localizar `"externalBin"` en tauri.conf.json. Cambiar:
-
-```json
-// ANTES
-"externalBin": ["../backend/dist/backend"],
-
-// DESPUÉS
-"externalBin": ["../backend/dist/vantare-engine"],
+```gitignore
+# sidecar/.gitignore
+dist/
+build/
+*.spec
 ```
 
-- [ ] **Step 3: Verificar que el JSON es válido**
+- [ ] **Step 3: Verificar sintaxis**
 
 ```bash
-cd frontend/src-tauri && python -c "import json; json.load(open('tauri.conf.json')); print('JSON válido')"
+cd sidecar && python -c "import ast; ast.parse(open('build.py').read()); print('OK')"
 ```
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add frontend/src-tauri/tauri.conf.json
-git commit -m "feat: rename externalBin from backend to vantare-engine"
+git add sidecar/build.py sidecar/.gitignore
+git commit -m "feat: sidecar PyInstaller build.py (--onedir)"
 ```
 
 ---
 
-### Task 5: Actualizar main.rs (Rust) — rename + health check
+### Task 3: Configurar Tauri para dos sidecars
 
 **Files:**
+- Modify: `frontend/src-tauri/tauri.conf.json`
 - Modify: `frontend/src-tauri/src/main.rs`
-
-- [ ] **Step 1: Leer main.rs actual**
-
-```bash
-cat -n frontend/src-tauri/src/main.rs
-```
-
-- [ ] **Step 2: Renombrar sidecar de "backend" a "vantare-engine"**
-
-En la línea `shell.sidecar("backend")`, cambiar a `shell.sidecar("vantare-engine")`. También en mensajes de log.
-
-```rust
-// Línea 35
-match shell.sidecar("vantare-engine") {
-// ...
-println!("[Rust] Iniciando el sidecar vantare-engine...");
-println!("[Rust] MODO DEBUG: Sidecar vantare-engine desactivado.");
-// ...
-println!("[Rust] Backend vantare-engine confirmado y LISTO en el puerto 8008!");
-```
-
-- [ ] **Step 3: Añadir health check periódico**
-
-Añadir un loop de health check dentro del spawn de monitoreo. Después de la confirmación de "LISTO":
-
-```rust
-// Health check periódico cada 5s
-let health_url = "http://127.0.0.1:8008/health".to_string();
-let app_handle = app.handle().clone();
-
-tauri::async_runtime::spawn(async move {
-    let mut consecutive_failures = 0;
-    let max_failures = 3;
-    loop {
-        tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
-        let ok = reqwest::get(&health_url)
-            .await
-            .map(|r| r.status().is_success())
-            .unwrap_or(false);
-        if ok {
-            consecutive_failures = 0;
-        } else {
-            consecutive_failures += 1;
-            eprintln!("[Rust] Health check falló ({}/{})", consecutive_failures, max_failures);
-            if consecutive_failures >= max_failures {
-                eprintln!("[Rust] Backend no responde — solicitando reinicio...");
-                // Emitir evento a la ventana principal para reinicio
-                if let Some(window) = app_handle.get_webview_window("main") {
-                    let _ = window.emit("backend-crashed", ());
-                }
-                break;
-            }
-        }
-    }
-});
-```
-
-Nota: reqwest puede no estar en Cargo.toml. Alternativa: usar `tauri_plugin_http` o un simple `TcpStream` para probar el puerto.
-
-**Opción simplificada sin reqwest:**
-
-```rust
-use std::net::TcpStream;
-
-// En lugar de reqwest::get
-let ok = TcpStream::connect_timeout(
-    &"127.0.0.1:8008".parse().unwrap(),
-    std::time::Duration::from_secs(2),
-).is_ok();
-```
-
-- [ ] **Step 4: Verificar que compila**
-
-```bash
-cd frontend/src-tauri && cargo check 2>&1 | head -30
-```
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add frontend/src-tauri/src/main.rs
-git commit -m "feat: rename backend to vantare-engine, add health check"
-```
-
----
-
-### Task 6: Permisos Tauri para shell
-
-**Files:**
 - Modify: `frontend/src-tauri/capabilities/default.json`
 
-- [ ] **Step 1: Leer capabilities/default.json**
+- [ ] **Step 1: Leer tauri.conf.json**
 
 ```bash
-cat frontend/src-tauri/capabilities/default.json
+cat frontend/src-tauri/tauri.conf.json | grep -A 5 externalBin
 ```
 
-- [ ] **Step 2: Añadir permiso shell:allow-spawn si no existe**
+- [ ] **Step 2: Añadir ambos ejecutables a externalBin**
+
+```json
+"externalBin": [
+    "../backend/dist/vantare-engine",
+    "../sidecar/dist/strategy-sidecar"
+],
+```
+
+- [ ] **Step 3: Reescribir main.rs para spawn de ambos procesos**
+
+```rust
+// frontend/src-tauri/src/main.rs
+// Cambios clave respecto al actual:
+
+fn main() {
+    tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .plugin(tauri_plugin_websocket::init())
+        .setup(|app| {
+            if cfg!(debug_assertions) {
+                println!("[Rust] MODO DEBUG: Sidecars desactivados.");
+                println!("[Rust] Ejecutar manualmente:");
+                println!("  Backend:  python backend/run_dev.py");
+                println!("  Sidecar:  python sidecar/src/sidecar/main.py");
+                app.manage(BackendChild(Mutex::new(None)));
+                app.manage(SidecarChild(Mutex::new(None)));
+            } else {
+                let shell = app.shell();
+                
+                // 1. Spawn backend
+                println!("[Rust] Iniciando vantare-engine...");
+                let backend_child = match shell.sidecar("vantare-engine") {
+                    Ok(cmd) => cmd.env("PORT", "8008").spawn().ok(),
+                    Err(e) => {
+                        eprintln!("[Rust] Error resolving vantare-engine: {:?}", e);
+                        None
+                    }
+                };
+                
+                if let Some((mut rx, child)) = backend_child {
+                    app.manage(BackendChild(Mutex::new(Some(child))));
+                    // Monitor STDOUT para confirmar arranque
+                    tauri::async_runtime::spawn(async move {
+                        while let Some(event) = rx.recv().await {
+                            if let tauri_plugin_shell::process::CommandEvent::Stdout(line) = event {
+                                let s = String::from_utf8_lossy(&line);
+                                if s.contains("Uvicorn running") {
+                                    println!("[Rust] Backend LISTO en :8008");
+                                    break;
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    app.manage(BackendChild(Mutex::new(None)));
+                }
+                
+                // 2. Spawn sidecar (solo si backend arrancó)
+                println!("[Rust] Iniciando strategy-sidecar...");
+                let sidecar_child = match shell.sidecar("strategy-sidecar") {
+                    Ok(cmd) => cmd.spawn().ok(),
+                    Err(e) => {
+                        eprintln!("[Rust] Error resolving strategy-sidecar: {:?}", e);
+                        None
+                    }
+                };
+                
+                if let Some((mut rx, child)) = sidecar_child {
+                    app.manage(SidecarChild(Mutex::new(Some(child))));
+                    tauri::async_runtime::spawn(async move {
+                        while let Some(event) = rx.recv().await {
+                            if let tauri_plugin_shell::process::CommandEvent::Stdout(line) = event {
+                                let s = String::from_utf8_lossy(&line);
+                                println!("[Sidecar STDOUT] {}", s.trim());
+                            }
+                        }
+                    });
+                } else {
+                    app.manage(SidecarChild(Mutex::new(None)));
+                }
+                
+                // 3. Health check del backend cada 5s
+                let app_handle = app.handle().clone();
+                tauri::async_runtime::spawn(async move {
+                    let mut failures = 0;
+                    loop {
+                        tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+                        let ok = std::net::TcpStream::connect_timeout(
+                            &"127.0.0.1:8008".parse().unwrap(),
+                            std::time::Duration::from_secs(2),
+                        ).is_ok();
+                        if ok {
+                            failures = 0;
+                        } else {
+                            failures += 1;
+                            eprintln!("[Rust] Health check falló ({}/3)", failures);
+                            if failures >= 3 {
+                                eprintln!("[Rust] Backend caído — solicitando reinicio...");
+                                if let Some(window) = app_handle.get_webview_window("main") {
+                                    let _ = window.emit("backend-crashed", ());
+                                }
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // Resto del código existente (tray menu, mic preheat, etc.)
+            // ...
+        })
+        .on_window_event(|window, event| {
+            // Matar ambos procesos al cerrar
+            if let tauri::WindowEvent::CloseRequested { .. } = event {
+                // Matar backend
+                if let Some(child) = window.state::<BackendChild>().0.lock().unwrap().take() {
+                    let _ = child.kill();
+                }
+                // Matar sidecar
+                if let Some(child) = window.state::<SidecarChild>().0.lock().unwrap().take() {
+                    let _ = child.kill();
+                }
+            }
+        })
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
+
+// Estructuras para almacenar los procesos hijos
+struct BackendChild(Mutex<Option<CommandChild>>);
+struct SidecarChild(Mutex<Option<CommandChild>>);
+```
+
+- [ ] **Step 4: Añadir SidecarChild al menú "Salir" del tray**
+
+En el manejador del menú tray, añadir matado del sidecar además del backend:
+
+```rust
+"quit" => {
+    // Matar backend
+    let backend = app.state::<BackendChild>();
+    if let Some(child) = backend.0.lock().unwrap().take() {
+        let _ = child.kill();
+    }
+    // Matar sidecar
+    let sidecar = app.state::<SidecarChild>();
+    if let Some(child) = sidecar.0.lock().unwrap().take() {
+        let _ = child.kill();
+    }
+    app.exit(0);
+}
+```
+
+- [ ] **Step 5: Verificar permisos en capabilities/default.json**
+
+Asegurar que `shell:allow-spawn` y `shell:allow-execute` están presentes:
 
 ```json
 {
     "identifier": "default",
-    "description": "Capability for the main window",
     "windows": ["main"],
     "permissions": [
         "core:default",
@@ -396,137 +348,191 @@ cat frontend/src-tauri/capabilities/default.json
 }
 ```
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 6: Verificar compilación Rust**
 
 ```bash
-git add frontend/src-tauri/capabilities/default.json
-git commit -m "feat: add shell:allow-spawn permission for sidecar"
+cd frontend/src-tauri && cargo check 2>&1 | head -30
+```
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add frontend/src-tauri/tauri.conf.json frontend/src-tauri/src/main.rs frontend/src-tauri/capabilities/default.json
+git commit -m "feat: Tauri spawns vantare-engine + strategy-sidecar with health check"
 ```
 
 ---
 
-### Task 7: Tests de integración del sidecar
+### Task 4: Añadir endpoint /ws/sidecar en backend (si no existe)
+
+**Files:**
+- Modify: `backend/src/routers/websocket.py`
+
+- [ ] **Step 1: Verificar si /ws/sidecar ya existe**
+
+```bash
+grep -n "sidecar" backend/src/routers/websocket.py
+```
+
+- [ ] **Step 2: Si no existe, añadir handler**
+
+El backend debe aceptar conexiones del sidecar en `/ws/sidecar`. El sidecar envía:
+```json
+{
+    "event": "strategy_frame",
+    "data": {
+        "advice": {...},
+        "frame": {...},
+        "events": [...]
+    }
+}
+```
+
+El handler debe:
+1. Aceptar la conexión WebSocket
+2. Almacenar `latest_strategy_frame` en `app.state`
+3. `strategy_sender_loop` usa `latest_strategy_frame` primero, fallback a `StrategyService`
+
+```python
+# En websocket.py, dentro del router
+@router.websocket("/ws/sidecar")
+async def sidecar_websocket(websocket: WebSocket):
+    await websocket.accept()
+    app.state.sidecar_connected = True
+    try:
+        while True:
+            data = await websocket.receive_json()
+            if data.get("event") == "strategy_frame":
+                app.state.latest_strategy_frame = data.get("data")
+    except WebSocketDisconnect:
+        app.state.sidecar_connected = False
+        app.state.latest_strategy_frame = None
+```
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add backend/src/routers/websocket.py
+git commit -m "feat: add /ws/sidecar endpoint for strategy-sidecar communication"
+```
+
+---
+
+### Task 5: Tests de integración
 
 **Files:**
 - Create: `backend/tests/test_sidecar_integration.py`
+- Create: `sidecar/tests/test_strategy_runner.py` (existente o nuevo)
 
-- [ ] **Step 1: Escribir test de inicialización sin LMU (modo simulado)**
+- [ ] **Step 1: Test de health endpoint con estado del sidecar**
 
 ```python
-"""Tests de integración del sidecar dentro del backend."""
+"""Tests de integración del sidecar en el backend."""
 import pytest
-from unittest.mock import patch, MagicMock
+from starlette.testclient import TestClient
 
 
-def test_sidecar_not_available_by_default(app):
-    """Sin LMU_AVAILABLE, sidecar debe estar desactivado."""
-    assert app.state.lmu_available is False
-    assert app.state.sidecar_runner is None
-
-
-@pytest.mark.asyncio
-async def test_health_reports_sidecar_status(app):
+class TestSidecarHealth:
     """El health endpoint debe reportar estado del sidecar."""
-    from starlette.testclient import TestClient
-    with TestClient(app) as client:
-        resp = client.get("/health")
-        assert resp.status_code == 200
-        data = resp.json()
-        assert "sidecar" in data
-        assert data["sidecar"]["lmu_available"] is False
-        assert data["sidecar"]["active"] is False
+
+    def test_health_contains_sidecar_status(self, app):
+        """GET /health debe incluir campo sidecar."""
+        with TestClient(app) as client:
+            resp = client.get("/health")
+            assert resp.status_code == 200
+            data = resp.json()
+            assert "sidecar" in data
+            assert "connected" in data["sidecar"]
+            assert "lmu_available" in data["sidecar"]
+
+
+class TestSidecarWebSocket:
+    """Endpoint /ws/sidecar debe aceptar conexiones y strategy_frames."""
+
+    @pytest.mark.asyncio
+    async def test_sidecar_ws_connect(self, app):
+        """Sidecar debe poder conectarse a /ws/sidecar."""
+        from fastapi.testclient import TestClient as ASGIClient
+        with TestClient(app) as client:
+            with client.websocket_connect("/ws/sidecar") as ws:
+                # Enviar strategy_frame
+                ws.send_json({
+                    "event": "strategy_frame",
+                    "data": {
+                        "advice": {"fuel_advice": "OK"},
+                        "frame": {"lap_number": 1},
+                        "events": []
+                    }
+                })
+                # Verificar que se almacenó
+                assert app.state.latest_strategy_frame is not None
+                assert app.state.sidecar_connected is True
+
+    @pytest.mark.asyncio
+    async def test_sidecar_ws_disconnect_clears_state(self, app):
+        """Al desconectarse, debe limpiar latest_strategy_frame."""
+        from fastapi.testclient import TestClient as ASGIClient
+        with TestClient(app) as client:
+            with client.websocket_connect("/ws/sidecar") as ws:
+                ws.send_json({"event": "strategy_frame", "data": {}})
+            # Después del context manager, la conexión se cerró
+            assert app.state.sidecar_connected is False
+            assert app.state.latest_strategy_frame is None
 ```
 
-- [ ] **Step 2: Test con LMU_AVAILABLE=true simulado**
-
-```python
-@pytest.mark.asyncio
-async def test_sidecar_initializes_with_lmu():
-    """Con LMU_AVAILABLE=true, sidecar debe inicializar runner y detector."""
-    from src.main import app as main_app
-    assert main_app.state.lmu_available is False  # Sin env var, debe ser False
-```
-
-- [ ] **Step 3: Ejecutar tests**
+- [ ] **Step 2: Ejecutar tests**
 
 ```bash
 cd backend && python -m pytest tests/test_sidecar_integration.py -v
 ```
 
-- [ ] **Step 4: Commit**
-
-```bash
-git add backend/tests/test_sidecar_integration.py
-git commit -m "test: add sidecar integration tests"
+Expected:
 ```
-
----
-
-### Task 8: Eliminar carpeta sidecar/ raíz
-
-**Files:**
-- Delete: `sidecar/src/sidecar/main.py`
-- Delete: `sidecar/src/sidecar/__init__.py`
-- Delete: `sidecar/src/sidecar/strategy_runner.py`
-- Delete: `sidecar/src/sidecar/event_detector.py`
-- Delete: `sidecar/pyproject.toml`
-- Delete: `sidecar/README.md`
-
-- [ ] **Step 1: Verificar que los archivos se movieron correctamente**
-
-```bash
-ls -la backend/src/sidecar/
-```
-
-Expected: `__init__.py`, `strategy_runner.py`, `event_detector.py`
-
-- [ ] **Step 2: Eliminar carpeta sidecar/ raíz**
-
-```bash
-rm -rf sidecar/
+test_health_contains_sidecar_status PASSED
+test_sidecar_ws_connect PASSED
+test_sidecar_ws_disconnect_clears_state PASSED
 ```
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add -A
-git commit -m "clean: remove standalone sidecar directory (moved to backend/src/sidecar/)"
+git add backend/tests/test_sidecar_integration.py
+git commit -m "test: sidecar WebSocket integration tests"
 ```
 
 ---
 
-### Task 9: Actualizar orchestrator.md con estado de Fase 7
+### Task 6: Actualizar orchestrator.md
 
 **Files:**
 - Modify: `docs/ai/orchestrator.md`
 
 - [ ] **Step 1: Marcar Fase 7 como completada**
 
-Cambiar sección Fase 7 de pendiente a completada. Añadir fecha de implementación y resumen de decisiones.
+En el roadmap, cambiar Fase 7 a ✅ COMPLETADA con fecha. Añadir resumen de la arquitectura final.
 
 - [ ] **Step 2: Commit**
 
 ```bash
 git add docs/ai/orchestrator.md
-git commit -m "docs: update orchestrator with Fase 7 completion"
+git commit -m "docs: mark Fase 7 complete in orchestrator.md"
 ```
 
 ---
 
-## Resumen de Archivos
+## Resumen de Archivos (versión corregida)
 
 | Archivo | Acción |
 |---------|--------|
-| `backend/src/sidecar/strategy_runner.py` | Movido desde sidecar/ |
-| `backend/src/sidecar/event_detector.py` | Movido desde sidecar/ |
-| `backend/src/sidecar/__init__.py` | Movido desde sidecar/ |
-| `backend/src/main.py` | Modificado |
-| `backend/build.py` | Creado |
-| `backend/.gitignore` | Modificado |
-| `backend/pyproject.toml` | Modificado (verificar dependencias) |
+| `backend/build.py` | Modificado (--onedir) |
+| `backend/.gitignore` | Modificado (dist/build/*.spec) |
+| `sidecar/build.py` | Creado (--onedir) |
+| `sidecar/.gitignore` | Creado |
+| `frontend/src-tauri/tauri.conf.json` | Modificado (dos externalBin) |
+| `frontend/src-tauri/src/main.rs` | Modificado (spawn dual + health check) |
+| `frontend/src-tauri/capabilities/default.json` | Modificado (permisos shell) |
+| `backend/src/routers/websocket.py` | Modificado (/ws/sidecar handler) |
 | `backend/tests/test_sidecar_integration.py` | Creado |
-| `frontend/src-tauri/tauri.conf.json` | Modificado |
-| `frontend/src-tauri/src/main.rs` | Modificado |
-| `frontend/src-tauri/capabilities/default.json` | Modificado |
-| `sidecar/` (raíz) | Eliminado |
 | `docs/ai/orchestrator.md` | Modificado |
+
+**NO se mueve sidecar/ a backend/.** Cada proceso mantiene su propio directorio y entrypoint.
