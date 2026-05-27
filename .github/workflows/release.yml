@@ -2,9 +2,11 @@ name: Build Release
 
 on:
   push:
+    branches:
+      - master
     tags:
       - 'v*'
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
