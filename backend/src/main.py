@@ -66,6 +66,7 @@ async def lifespan(app: FastAPI):
     app.state.telemetry_reader = reader
     app.state.latest_client_frame = None  # Se poblará desde el frontend vía WebSocket
     app.state.latest_strategy_frame = None  # Se poblará desde el sidecar Windows vía /ws/sidecar
+    app.state._last_telemetry_t = 0.0  # Para gap detection en websocket_endpoint
     logger.info(f"TelemetryReader started (offline_mode={reader.offline}). Waiting for frontend telemetry.")
 
     # 2. Iniciar el Poller REST de la API de LMU en background

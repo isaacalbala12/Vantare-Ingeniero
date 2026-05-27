@@ -41,7 +41,6 @@ export async function getHealth(): Promise<HealthResponse> {
   const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeoutId);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
     const data = await res.json();
     return {
@@ -70,6 +69,8 @@ export async function getHealth(): Promise<HealthResponse> {
       llm: { configured: false, model: "" },
       websocket: false,
     };
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 

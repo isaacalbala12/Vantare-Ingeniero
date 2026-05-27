@@ -82,17 +82,34 @@ async def telemetry_sender_loop(websocket: WebSocket, app_state) -> None:
 
     while True:
         try:
-            state = reader.get_state()
-            if state is not None:
-                # 1. Evaluar el SpotterService de ultra-baja latencia (20Hz)
-                spotter = getattr(app_state, "spotter_service", None)
-                if spotter:
-                    spotter.evaluate_tick(state)
+            # 1. Preferir telemetry del sidecar si está disponible
+            sidecar_frame = getattr(app_state, "latest_strategy_frame", None)
+            if sidecar_frame and sidecar_frame.get("frame"):
+                # El sidecar envía frame como dict, usar directamente
+                state_dict = sidecar_frame["frame"]
+                logger.debug("Usando telemetry del sidecar")
+            else:
+                # 2. Fallback: usar TelemetryReader local (simulated/offline)
+                state = reader.get_state()
+                if state is not None:
+                    state_dict = state.model_dump(mode="json")
+                else:
+                    await asyncio.sleep(0.05)
+                    continue
+                logger.debug("Usando TelemetryReader (offline)")
 
-                # Serializar el modelo Pydantic a MessagePack binario
-                state_dict = state.model_dump(mode="json")
-                raw = mp_encode(state_dict)
-                await websocket.send_bytes(raw)
+            # 3. Evaluar el SpotterService de ultra-baja latencia (20Hz)
+            # Spotter requiere RaceState (Pydantic model), no dict
+            spotter = getattr(app_state, "spotter_service", None)
+            if spotter:
+                reader_state = reader.get_state()
+                if reader_state is not None:
+                    spotter.evaluate_tick(reader_state)
+
+            # 4. Enviar datos al frontend vía MessagePack
+            raw = mp_encode(state_dict)
+            await websocket.send_bytes(raw)
+
             await asyncio.sleep(0.05)  # 20Hz (50ms)
         except asyncio.CancelledError:
             break

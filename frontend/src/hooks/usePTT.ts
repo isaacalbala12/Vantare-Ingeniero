@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback } from "react";
 import { useAppStore } from "../store/config";
 import { useAudioCapture } from "./useAudioCapture";
 import { useAudioContext } from "./useAudioContext";
@@ -14,18 +14,11 @@ import { useWebSocket } from "./useWebSocket";
  */
 export function usePTT() {
   const { audioCtx, ensureResumed } = useAudioContext();
-  const { startCapture, stopCapture } = useAudioCapture(audioCtx);
-  const { sendBinary, sendJson } = useWebSocket();
-
-  const pilotWsRef = useRef<WebSocket | null>(null);
-  const processingRef = useRef(false);
+  const { stopCapture } = useAudioCapture(audioCtx);
+  const { sendBinary } = useWebSocket();
 
   const setRadioMode = useAppStore((s) => s.setRadioMode);
   const setMicLevel = useAppStore((s) => s.setMicLevel);
-  const addMessageToHistory = useAppStore((s) => s.addMessageToHistory);
-  const setLatestAdvice = useAppStore((s) => s.setLatestAdvice);
-  const setCurrentTokens = useAppStore((s) => s.setCurrentTokens);
-  const wsStatus = useAppStore((s) => s.connectivity.wsStatus);
   const config = useAppStore((s) => s.config);
 
   /**
@@ -53,7 +46,6 @@ export function usePTT() {
       },
     });
 
-    const audioTrack = stream.getAudioTracks()[0];
     const audioContext = new AudioContext({ sampleRate: 16000 });
     const source = audioContext.createMediaStreamSource(stream);
     const analyser = audioContext.createAnalyser();
@@ -74,7 +66,7 @@ export function usePTT() {
     const chunks: Uint8Array[] = [];
     const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
 
-    mediaRecorder.ondataavailable = (e) => {
+    mediaRecorder.ondataavailable = async (e) => {
       if (e.data.size > 0) chunks.push(new Uint8Array(await e.data.arrayBuffer()));
     };
 
@@ -86,7 +78,7 @@ export function usePTT() {
         combined.set(chunk, offset);
         offset += chunk.length;
       }
-      sendBinary(combined);
+      sendBinary(combined.buffer.slice(combined.byteOffset, combined.byteOffset + combined.byteLength));
       chunks.length = 0;
     };
 
@@ -96,8 +88,7 @@ export function usePTT() {
     (window as any).__PTT_STREAM__ = stream;
     (window as any).__PTT_SEND_AUDIO__ = sendAudio;
 
-    startCapture(stream);
-  }, [audioCtx, ensureResumed, startCapture, setRadioMode, setMicLevel, sendBinary, config.micDevice]);
+  }, [audioCtx, ensureResumed, setRadioMode, setMicLevel, sendBinary, config.micDevice]);
 
   /**
    * Detiene la captura de audio PTT y envía el audio al backend

@@ -16,45 +16,14 @@
 |------|--------|---------------|
 | `backend/src/routers/websocket.py` | Modify | Añadir handler `"telemetry"` entrante, usar `latest_client_frame` en strategy loop |
 | `backend/src/main.py` | Modify | Inicializar `latest_client_frame`, cambiar `TelemetryReader(offline=True)` en Linux |
-| `backend/src/models/messages.py` | Modify | Añadir `TelemetryIncomingMessage` para validar telemetría entrante |
 | `frontend/src/hooks/useWebSocket.ts` | Modify | Añadir loop que reenvía `sendJson("telemetry", lastTelemetry)` al backend |
 | `frontend/src/store/config.ts` | Read-only | Referencia: `TelemetryState` interface para asegurar compatibilidad |
 
 ---
 
-### Task 1: Modelo de mensaje para telemetría entrante
+### Task 1: Handler de telemetría entrante en el WebSocket
 
-**Files:**
-- Modify: `backend/src/models/messages.py` (append)
-
-- [ ] **Step 1: Añadir TelemetryIncomingMessage**
-
-Al final de `backend/src/models/messages.py`, añadir:
-
-```python
-class TelemetryIncomingMessage(BaseModel):
-    """Mensaje de telemetría entrante desde el frontend (Windows) hacia el backend (Linux)."""
-    event: str = "telemetry"
-    data: Dict[str, Any] = Field(default_factory=dict)
-```
-
-- [ ] **Step 2: Verificar que no rompe nada**
-
-```bash
-cd backend && python -c "from src.models.messages import TelemetryIncomingMessage; print('OK')"
-```
-Expected: `OK`
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add backend/src/models/messages.py
-git commit -m "feat: add TelemetryIncomingMessage for frontend → backend telemetry"
-```
-
----
-
-### Task 2: Handler de telemetría entrante en el WebSocket
+**Nota**: La telemetría entrante del frontend llega como JSON `{event: "telemetry", data: {...}}`. No se usa modelo Pydantic para validación (acceso directo a `msg.get("data", {})` — más rápido para ruta de 20Hz).
 
 **Files:**
 - Modify: `backend/src/routers/websocket.py:183-198`
@@ -89,7 +58,7 @@ git commit -m "feat: add telemetry handler in websocket to store frontend teleme
 
 ---
 
-### Task 3: Strategy loop usando telemetría del frontend
+### Task 2: Strategy loop usando telemetría del frontend
 
 **Files:**
 - Modify: `backend/src/routers/websocket.py:105-151`
@@ -142,7 +111,7 @@ git commit -m "feat: strategy_sender_loop uses latest_client_frame from frontend
 
 ---
 
-### Task 4: Inicializar latest_client_frame en main.py
+### Task 3: Inicializar latest_client_frame en main.py
 
 **Files:**
 - Modify: `backend/src/main.py:59-63`
@@ -190,7 +159,7 @@ git commit -m "feat: initialize latest_client_frame and set TelemetryReader(offl
 
 ---
 
-### Task 5: Frontend — Enviar telemetría al backend cada 50ms
+### Task 4: Frontend — Enviar telemetría al backend cada 50ms
 
 **Files:**
 - Modify: `frontend/src/hooks/useWebSocket.ts` (add useEffect)
@@ -232,7 +201,7 @@ git commit -m "feat: send telemetry to backend at 20Hz from frontend WebSocket"
 
 ---
 
-### Task 6: Health endpoint — reportar latest_client_frame
+### Task 5: Health endpoint — reportar latest_client_frame
 
 **Files:**
 - Modify: `backend/src/routers/health.py` (read first)
@@ -269,7 +238,7 @@ git commit -m "feat: health endpoint reports frontend telemetry reception status
 
 ---
 
-### Task 7: Test de integración — flujo completo
+### Task 6: Test de integración — flujo completo
 
 - [ ] **Step 1: Arrancar backend en Linux**
 
