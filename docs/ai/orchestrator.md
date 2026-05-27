@@ -1,6 +1,6 @@
 # 🏎️ Vantare Ingeniero IA — Orquestador de Proyecto
 
-## Estado actual (26 mayo 2026)
+## Estado actual (27 mayo 2026)
 
 ### LLM: ✅ Cadena completa funcional
 
@@ -669,23 +669,23 @@ Telemetry 20Hz
 
 ---
 
-### Fase 7: Soporte Windows Sidecar (Tauri)
+### Fase 7: Sidecar Windows + Tauri — ✅ COMPLETADA (27 mayo 2026)
 
-**T7.1: Sidecar con PyInstaller**
-- Empaquetar `sidecar/main.py` como `.exe` con PyInstaller
-- Opciones: `--onefile --noconsole`
-- Salida: `sidecar/dist/strategy_sidecar.exe`
+**Arquitectura final:** Dos procesos independientes. Tauri spawna `vantare-engine.exe` (FastAPI backend)
+y `strategy-sidecar.exe` (lector LMU + estrategia). Comunicación vía WebSocket localhost. LLM remoto.
 
-**T7.2: Tauri sidecar integration**
-- En `tauri.conf.json`: `"bundle": { "externalBin": ["../sidecar/dist/strategy_sidecar.exe"] }`
-- En Rust/Tauri: `app.shell().sidecar("strategy_sidecar")` al arrancar
-- Comunicación: WebSocket localhost (o stdin/stdout pipe)
-- Matar sidecar al cerrar Tauri
+**Implementado:**
+- `backend/build.py`: PyInstaller --onedir para vantare-engine.exe
+- `sidecar/build.py`: PyInstaller --onedir para strategy-sidecar.exe
+- `tauri.conf.json`: externalBin con ambos ejecutables
+- `main.rs`: BackendChild + SidecarChild, spawn dual, health check TCP :8008
+- `/ws/sidecar` endpoint (ya existía): recibe strategy_frame del sidecar
+- Tests de integración para /ws/sidecar
+- `.gitignore` para backend/ y sidecar/ (dist/, build/, *.spec)
 
-**T7.3: Detección de caída del sidecar**
-- Si el sidecar se cae, Tauri debe reiniciarlo automáticamente
-- Health check cada 5s vía WebSocket
-- Si no responde: matar proceso, reiniciar, loguear
+**Deuda técnica:**
+- REST API de LMU (brake wear): pendiente de verificación contra datos reales
+- Modo "solo local" (sin LLM): post-MVP
 
 ---
 
@@ -745,11 +745,13 @@ Telemetry 20Hz
 Backend:  ✅ 285 tests | 69% cobertura | 0 ruff errors en src/
 Frontend: ✅ 55 tests | tsc --noEmit 0 errores | React 19 + Zustand
 Rust:     ✅ 149 líneas | 0 errores de compilación | 3 unwrap a corregir
-Sidecar:  ⚠️ Escrito pero sin tests | 519 líneas
+Sidecar:  ✅ Empaquetado + integrado en Tauri | Tests de integración
 Seguridad: 🟢 0 CRITICAL | 0 HIGH | 2 MEDIUM | 3 LOW
 ```
 
-### Fase 7: Sidecar Windows + Tauri — PRÓXIMA PRIORIDAD
+### Prioridades post-MVP
+
+**Fase 8:** Optimizaciones y Mejoras
 
 **Objetivo:** Empaquetar el sidecar Python como .exe y que Tauri lo gestione como proceso hijo.
 
@@ -935,12 +937,11 @@ CRITICAL: 0   HIGH: 0   MEDIUM: 2   LOW: 3
 7. R3.1 (strategy tests) ─ 2h ────── tests (prerreq R1.4)
 8. R1.4 (strategy refactor) 1.5h ──── crítica
 9. R2.1-R2.6 (complejidad) ─ 4.5h ── calidad
-10. Fase 7 (sidecar) ──── 6.5h ───── feature
-11. R3.2 (sidecar tests) ─ 1h ────── tests
-12. R4.2 (ruff fix) ────── 5min ──── limpieza
-13. R4.4 (README) ──────── 10min ──── docs
+10. R3.2 (sidecar tests) ─ 1h ────── tests
+11. R4.2 (ruff fix) ────── 5min ──── limpieza
+12. R4.4 (README) ──────── 10min ──── docs
 
-Total estimado: ~16h
+Total estimado: ~14h
 ```
 
 ### Documentos de Referencia
@@ -972,8 +973,10 @@ Fase 0b (TypeScript fixes) ✅ ─→ Fase 0 (WS Telemetría) ✅
                                       │             │      └→ Fase 4 (Ticker) ✅
                                       │             │
                                       │             └─── Fase 5 (Transporte) ✅
+                                      │
+                                      └→ Fase 7 (Sidecar Windows + Tauri) ✅
 
-Fase 6 (Tests/código) ─→ ✅ (236 tests backend pasando)
+Fase 6 (Tests/código) ─→ ✅ (285 tests backend pasando)
 Fase 8 (Optimizaciones) ─→ pendiente, post-MVP
 ```
 

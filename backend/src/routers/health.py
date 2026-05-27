@@ -35,6 +35,9 @@ async def health_check(request: Request):
         "frontend_telemetry": {
             "received": getattr(request.app.state, "latest_client_frame", None) is not None,
         },
+        "sidecar": {
+            "connected": getattr(request.app.state, "latest_strategy_frame", None) is not None
+        },
         "lmu_api": {
             "status": "active" if cache_info.get("drivers", 0) > 0 or cache_info.get("brakes", 0) > 0 else "idle",
             "cache": cache_info
