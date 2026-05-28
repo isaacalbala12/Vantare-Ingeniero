@@ -32,7 +32,7 @@ def build():
         "--onedir",
         "--name=backend",
         "--noconsole",
-        "--noconfirm",
+        "-y",
     ]
     
     # --clean SOLO si se pasa explicitamente (evita re-analisis completo en builds iterativos)

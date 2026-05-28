@@ -46,7 +46,7 @@ jobs:
       - name: Build backend
         run: |
           cd backend
-          python build.py --noconfirm
+          python build_backend.py --clean
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
