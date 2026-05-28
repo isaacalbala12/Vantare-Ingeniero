@@ -14,8 +14,8 @@ env:
   VERSION: '0.1.0-alpha'
 
 jobs:
-  build-backend:
-    name: Build Backend (vantare-engine)
+  build-installers:
+    name: Build Installers
     runs-on: windows-2022
 
     steps:
@@ -37,97 +37,50 @@ jobs:
       - name: Build backend
         run: |
           cd backend
-          python3 -B build_backend.py --clean
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: vantare-engine-windows
-          path: |
-            backend/dist/
-
-  build-sidecar:
-    name: Build Sidecar (strategy-sidecar)
-    runs-on: windows-2022
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install dependencies
-        run: |
-          pip install -e ./shared-telemetry -e ./shared-strategy
-          pip install pyinstaller
+          python -B build_backend.py --clean
 
       - name: Build sidecar
         run: |
           cd sidecar
           python build.py --noconfirm
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: strategy-sidecar-windows
-          path: |
-            sidecar/dist/
-
-  build-installers:
-    name: Build Installers (ZIP)
-    runs-on: ubuntu-24.04
-    needs: [build-backend, build-sidecar]
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Install build dependencies
+      - name: Install NSIS
         run: |
-          sudo apt-get update
-          sudo apt-get install -y zip
-          df -h .
+          choco install nsis -y
 
-      - name: Download Windows backend
-        uses: actions/download-artifact@v4
-        with:
-          name: vantare-engine-windows
-          path: artifacts/vantare-engine-windows
-
-      - name: Download Windows sidecar
-        uses: actions/download-artifact@v4
-        with:
-          name: strategy-sidecar-windows
-          path: artifacts/strategy-sidecar-windows
-
-      - name: Build Windows portable ZIP
+      - name: Create NSIS Installer
         run: |
-          mkdir -p pkg/backend pkg/sidecar
-          cp -r artifacts/vantare-engine-windows/* pkg/backend/
-          cp -r artifacts/strategy-sidecar-windows/* pkg/sidecar/
-          echo "Vantare Ingeniero IA v${{ env.VERSION }}" > pkg/LICENSE.txt
+          # Copiar archivos a la estructura que espera NSIS
+          mkdir -p installer_build/backend
+          mkdir -p installer_build/sidecar
+          mkdir -p installer_build/config
           
-          cd pkg
-          zip -r ../vantare-instalador-${{ env.VERSION }}.zip backend sidecar LICENSE.txt
-          cd ..
+          # Backend
+          cp -r backend/dist/backend/* installer_build/backend/
           
-          echo "=== Generated ZIP ==="
-          ls -la vantare-instalador-*.zip
-          echo "Package generation complete"
+          # Sidecar
+          cp -r sidecar/dist/strategy-sidecar/* installer_build/sidecar/
+          
+          # Config ejemplo
+          cp backend/.env.example installer_build/config/.env.example 2>$null
+          
+          # Copiar NSIS script con rutas correctas
+          (Get-Content installer/windows.nsi) -replace 'backend\\dist\\vantare-engine', 'installer_build\backend' -replace 'sidecar\\dist\\strategy-sidecar', 'installer_build\sidecar' | Set-Content installer_build/windows.nsi
+          
+          # Compilar instalador
+          cd installer_build
+          & "C:\Program Files (x86)\NSIS\makensis.exe" windows.nsi
+          
+          # Mover el exe generado a la raíz
+          mv installer/*.exe ./
+          mv vantare-instalador-*.exe ../vantare-instalador-${{ env.VERSION }}.exe
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
-          name: vantare-instalador
+          name: vantare-instalador-exe
           path: |
-            vantare-instalador-*.zip
+            vantare-instalador-*.exe
 
   create-release:
     name: Create Release
@@ -142,22 +95,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Download all artifacts
+      - name: Download installer
         uses: actions/download-artifact@v4
         with:
+          name: vantare-instalador-exe
           path: artifacts
 
-      - name: List all files
+      - name: List files
         run: |
-          echo "=== All installer files ==="
-          find artifacts -type f 2>/dev/null | grep -E "\.(exe|zip)$" | head -20
+          echo "=== Installer files ==="
+          ls -la artifacts/
+          find artifacts -name "*.exe" -type f
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag: ${{ github.ref }}
           files: |
-            artifacts/**/*.zip
+            artifacts/**/*.exe
           draft: false
           prerelease: true
           generate_release_notes: true
