@@ -16,15 +16,7 @@ env:
 jobs:
   build-backend:
     name: Build Backend (vantare-engine)
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-2022
-            artifact: vantare-engine-windows
-          - os: ubuntu-24.04
-            artifact: vantare-engine-linux
+    runs-on: windows-2022
 
     steps:
       - name: Checkout
@@ -50,7 +42,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact }}
+          name: vantare-engine-windows
           path: |
             backend/dist/
 
