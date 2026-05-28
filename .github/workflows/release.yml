@@ -54,103 +54,64 @@ jobs:
           mkdir -p installer_build
           
           # Backend
-          cp -r backend/dist/backend installer_build/backend
+          cp -r backend/dist/backend installer_build/
           
           # Sidecar
-          cp -r sidecar/dist/strategy-sidecar installer_build/sidecar
+          cp -r sidecar/dist/strategy-sidecar installer_build/
           
-          # LICENSE.txt (requerido por NSIS)
-          cp LICENSE installer_build/LICENSE.txt
+          # LICENSE.txt
+          cp LICENSE installer_build/
           
-          # Crear NSIS script con rutas correctas
-          $nsisScript = @"
-; Vantare Ingeniero IA - NSIS Installer Script
+          # Crear NSIS script
+          $nsis = @"
 !include "MUI2.nsh"
-
 !define PRODUCT_NAME "Vantare Ingeniero IA"
-!define PRODUCT_VERSION "${{ env.VERSION }}"
+!define PRODUCT_VERSION "$env:VERSION"
 !define PRODUCT_PUBLISHER "Vantare"
-!define PRODUCT_WEB_SITE "https://github.com/isaac-albala/Vantare-Ingeniero"
-!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\vantare-engine.exe"
-!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
-!define PRODUCT_UNINST_ROOT_KEY "HKLM"
-
-Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "vantare-instalador-${PRODUCT_VERSION}.exe"
+Name "`${PRODUCT_NAME} `${PRODUCT_VERSION}"
+OutFile "vantare-instalador-${env:VERSION}.exe"
 InstallDir "`$PROGRAMFILES\Vantare Ingeniero IA"
-InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
+InstallDirRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\vantare-engine.exe" ""
 ShowInstDetails show
 ShowUnInstDetails show
-
 !define MUI_ABORTWARNING
 !define MUI_ICON "`$NSISDIR\Contrib\Graphics\Icons\modern-install.ico"
 !define MUI_UNICON "`$NSISDIR\Contrib\Graphics\Icons\modern-uninstall.ico"
-
 !insertmacro MUI_PAGE_WELCOME
-!insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
+!insertmacro MUI_PAGE_LICENSE "LICENSE"
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
-
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
-
 !insertmacro MUI_LANGUAGE "Spanish"
 !insertmacro MUI_LANGUAGE "English"
-
-Section "Principal" SEC01
+Section "Main" SEC01
   SetOutPath "`$INSTDIR"
-
-  ; Copiar archivos del build
   File /r "backend\*.*"
-  File /r "sidecar\*.*"
-  
-  ; Copiar LICENSE
-  File "LICENSE.txt"
-  
-  ; Crear archivo de versión
-  FileOpen `$0 "`$INSTDIR\VERSION.txt" w
-  FileWrite `$0 "${PRODUCT_NAME} v${PRODUCT_VERSION}`r`n"
-  FileWrite `$0 "Fecha de instalacion: "
-  FileWrite `$0 __DATE__
-  FileClose `$0
-
-  ; ACCESOS DIRECTOS
-  CreateDirectory "`$SMPROGRAMS\Vantare Ingeniero IA"
-  CreateShortCut "`$SMPROGRAMS\Vantare Ingeniero IA\Vantare Engine.lnk" "`$INSTDIR\backend\backend.exe"
-  CreateShortCut "`$SMPROGRAMS\Vantare Ingeniero IA\Desinstalar.lnk" "`$INSTDIR\uninstall.exe"
-  CreateShortCut "`$DESKTOP\Vantare Engine.lnk" "`$INSTDIR\backend\backend.exe"
-
-  ; REGISTRO DE WINDOWS
-  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "`$INSTDIR\backend\backend.exe"
-  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "DisplayName" "`$(^Name)"
-  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "UninstallString" "`$INSTDIR\uninstall.exe"
-  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "DisplayIcon" "`$INSTDIR\backend\backend.exe"
-  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
-  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
-  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
-
-  ; Escribir desinstalador
+  File /r "strategy-sidecar\*.*"
+  File "LICENSE"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\vantare-engine.exe" "" "`$INSTDIR\backend\backend.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Vantare Ingeniero IA" "DisplayName" "`$(^Name)"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Vantare Ingeniero IA" "UninstallString" "`$INSTDIR\uninstall.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Vantare Ingeniero IA" "DisplayIcon" "`$INSTDIR\backend\backend.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Vantare Ingeniero IA" "Publisher" "Vantare"
   WriteUninstaller "`$INSTDIR\uninstall.exe"
 SectionEnd
-
 Section "Uninstall"
   RMDir /r "`$INSTDIR"
-  Delete "`$DESKTOP\Vantare Engine.lnk"
-  RMDir /r "`$SMPROGRAMS\Vantare Ingeniero IA"
-  DeleteRegKey `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}"
-  DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Vantare Ingeniero IA"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\App Paths\vantare-engine.exe"
 SectionEnd
 "@
+          $nsis | Out-File -FilePath installer_build/windows.nsi -Encoding utf8
           
-          $nsisScript | Out-File -FilePath "installer_build/windows.nsi" -Encoding utf8
-          
-          # Compilar instalador
+          # Compilar
           cd installer_build
           & "C:\Program Files (x86)\NSIS\makensis.exe" windows.nsi
           
-          # Mover el exe generado
-          Move-Item -Path "*.exe" -Destination ..\ -Force
+          # Copiar resultado
+          Copy-Item *.exe ..\ -Force
           cd ..
 
       - name: Upload installer
