@@ -48,15 +48,7 @@ jobs:
 
   build-sidecar:
     name: Build Sidecar (strategy-sidecar)
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-2022
-            artifact: strategy-sidecar-windows
-          - os: ubuntu-24.04
-            artifact: strategy-sidecar-linux
+    runs-on: windows-2022
 
     steps:
       - name: Checkout
@@ -82,12 +74,12 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact }}
+          name: strategy-sidecar-windows
           path: |
             sidecar/dist/
 
   build-installers:
-    name: Build Installers (NSIS + DEB)
+    name: Build Installers (ZIP)
     runs-on: ubuntu-24.04
     needs: [build-backend, build-sidecar]
 
@@ -100,12 +92,9 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y dpkg-dev nsis zip
+          sudo apt-get install -y zip
           df -h .
 
-      # =====================================================================
-      # WINDOWS INSTALLER (download, build, cleanup)
-      # =====================================================================
       - name: Download Windows backend
         uses: actions/download-artifact@v4
         with:
@@ -129,107 +118,16 @@ jobs:
           zip -r ../vantare-instalador-${{ env.VERSION }}.zip backend sidecar LICENSE.txt
           cd ..
           
-          # Clean Windows artifacts immediately
-          rm -rf artifacts/vantare-engine-windows artifacts/strategy-sidecar-windows pkg
-          echo "=== Disk after Windows build ==="
-          df -h .
-
-      # =====================================================================
-      # LINUX DEB (download, build, cleanup)
-      # =====================================================================
-      - name: Download Linux backend
-        uses: actions/download-artifact@v4
-        with:
-          name: vantare-engine-linux
-          path: artifacts/vantare-engine-linux
-
-      - name: Download Linux sidecar
-        uses: actions/download-artifact@v4
-        with:
-          name: strategy-sidecar-linux
-          path: artifacts/strategy-sidecar-linux
-
-      - name: Build Linux DEB package
-        run: |
-          mkdir -p installer-build/linux/DEBIAN
-          mkdir -p installer-build/linux/usr/bin
-          mkdir -p installer-build/linux/usr/share/doc/vantare-engine
-          mkdir -p installer-build/linux/usr/share/applications
-          
-          cp -r artifacts/vantare-engine-linux/* installer-build/linux/usr/bin/ 2>/dev/null || true
-          cp -r artifacts/strategy-sidecar-linux/* installer-build/linux/usr/bin/ 2>/dev/null || true
-          
-          # Create DEBIAN/control
-          echo "Package: vantare-engine" > installer-build/linux/DEBIAN/control
-          echo "Version: ${{ env.VERSION }}" >> installer-build/linux/DEBIAN/control
-          echo "Section: games" >> installer-build/linux/DEBIAN/control
-          echo "Priority: optional" >> installer-build/linux/DEBIAN/control
-          echo "Architecture: amd64" >> installer-build/linux/DEBIAN/control
-          echo "Depends: python3.12" >> installer-build/linux/DEBIAN/control
-          echo "Maintainer: Vantare <info@vantare.es>" >> installer-build/linux/DEBIAN/control
-          echo "Description: Vantare Ingeniero IA - Race Strategy Assistant" >> installer-build/linux/DEBIAN/control
-          echo " A real-time race strategy assistant for Le Mans Ultimate (LMU)." >> installer-build/linux/DEBIAN/control
-          echo " Provides pit strategies, tire recommendations, and voice advice." >> installer-build/linux/DEBIAN/control
-
-          # Create postinst
-          echo '#!/bin/bash' > installer-build/linux/DEBIAN/postinst
-          echo 'chmod +x /usr/bin/vantare-engine 2>/dev/null || true' >> installer-build/linux/DEBIAN/postinst
-          echo 'chmod +x /usr/bin/vantare-sidecar 2>/dev/null || true' >> installer-build/linux/DEBIAN/postinst
-          echo 'mkdir -p ~/.config/vantare' >> installer-build/linux/DEBIAN/postinst
-          echo 'echo "Vantare Ingeniero IA installed!"' >> installer-build/linux/DEBIAN/postinst
-          chmod 755 installer-build/linux/DEBIAN/postinst
-          
-          # Create postrm
-          echo '#!/bin/bash' > installer-build/linux/DEBIAN/postrm
-          echo 'if [ "$1" = "purge" ]; then' >> installer-build/linux/DEBIAN/postrm
-          echo '  rm -rf ~/.config/vantare 2>/dev/null || true' >> installer-build/linux/DEBIAN/postrm
-          echo 'fi' >> installer-build/linux/DEBIAN/postrm
-          chmod 755 installer-build/linux/DEBIAN/postrm
-          
-          # Copy LICENSE
-          echo "Vantare Ingeniero IA v${{ env.VERSION }}" > installer-build/linux/usr/share/doc/vantare-engine/copyright
-          
-          # Create desktop entry
-          echo '[Desktop Entry]' > installer-build/linux/usr/share/applications/vantare-engine.desktop
-          echo 'Name=Vantare Ingeniero IA' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
-          echo 'Comment=Race Strategy Assistant for Le Mans Ultimate' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
-          echo 'Exec=/usr/bin/vantare-engine' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
-          echo 'Icon=utilities-terminal' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
-          echo 'Terminal=true' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
-          echo 'Type=Application' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
-          echo 'Categories=Game;' >> installer-build/linux/usr/share/applications/vantare-engine.desktop
-
-          echo "=== Linux DEB contents ==="
-          ls -laR installer-build/linux/
-
-      - name: Build DEB package
-        run: |
-          cd installer-build/linux
-          dpkg-deb --build . ../../vantare-engine-${{ env.VERSION }}_amd64.deb
-          cd ../..
-          
-          echo "=== Generated DEB ==="
-          ls -la vantare-engine-*.deb
-          
-          # Cleanup Linux artifacts and installer-build/linux (no longer needed)
-          rm -rf artifacts/vantare-engine-linux artifacts/strategy-sidecar-linux installer-build/linux
-          echo "=== Disk space after cleanup ==="
-          df -h .
-
-      - name: Create portable archives
-        run: |
-          echo "=== All generated packages ==="
-          ls -la vantare-*.zip vantare-engine-*.deb 2>/dev/null
+          echo "=== Generated ZIP ==="
+          ls -la vantare-instalador-*.zip
           echo "Package generation complete"
 
-      - name: Upload all installers
+      - name: Upload installer
         uses: actions/upload-artifact@v4
         with:
-          name: all-installers
+          name: vantare-instalador
           path: |
-            vantare-*.zip
-            vantare-engine-*.deb
-            vantare-engine-*.tar.gz
+            vantare-instalador-*.zip
 
   create-release:
     name: Create Release
@@ -252,7 +150,7 @@ jobs:
       - name: List all files
         run: |
           echo "=== All installer files ==="
-          find artifacts -type f 2>/dev/null | grep -E "\.(exe|deb|zip|tar\.gz)$" | head -20
+          find artifacts -type f 2>/dev/null | grep -E "\.(exe|zip)$" | head -20
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
@@ -260,8 +158,6 @@ jobs:
           tag: ${{ github.ref }}
           files: |
             artifacts/**/*.zip
-            artifacts/**/*.deb
-            artifacts/**/*.tar.gz
           draft: false
           prerelease: true
           generate_release_notes: true
