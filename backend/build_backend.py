@@ -5,6 +5,10 @@ import subprocess
 import argparse
 
 def build():
+    # Skip if no arguments (called during import)
+    if len(sys.argv) < 2:
+        return
+    
     parser = argparse.ArgumentParser(description="Compila el backend con PyInstaller")
     parser.add_argument("--clean", action="store_true", help="Forzar limpieza de cache de PyInstaller (lento)")
     args = parser.parse_args()
