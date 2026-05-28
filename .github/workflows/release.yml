@@ -51,29 +51,107 @@ jobs:
       - name: Create NSIS Installer
         run: |
           # Copiar archivos a la estructura que espera NSIS
-          mkdir -p installer_build/backend
-          mkdir -p installer_build/sidecar
-          mkdir -p installer_build/config
+          mkdir -p installer_build
           
           # Backend
-          cp -r backend/dist/backend/* installer_build/backend/
+          cp -r backend/dist/backend installer_build/backend
           
           # Sidecar
-          cp -r sidecar/dist/strategy-sidecar/* installer_build/sidecar/
+          cp -r sidecar/dist/strategy-sidecar installer_build/sidecar
           
-          # Config ejemplo
-          cp backend/.env.example installer_build/config/.env.example 2>$null
+          # LICENSE.txt (requerido por NSIS)
+          cp LICENSE installer_build/LICENSE.txt
           
-          # Copiar NSIS script con rutas correctas
-          (Get-Content installer/windows.nsi) -replace 'backend\\dist\\vantare-engine', 'installer_build\backend' -replace 'sidecar\\dist\\strategy-sidecar', 'installer_build\sidecar' | Set-Content installer_build/windows.nsi
+          # Crear NSIS script con rutas correctas
+          $nsisScript = @"
+; Vantare Ingeniero IA - NSIS Installer Script
+!include "MUI2.nsh"
+
+!define PRODUCT_NAME "Vantare Ingeniero IA"
+!define PRODUCT_VERSION "${{ env.VERSION }}"
+!define PRODUCT_PUBLISHER "Vantare"
+!define PRODUCT_WEB_SITE "https://github.com/isaac-albala/Vantare-Ingeniero"
+!define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\vantare-engine.exe"
+!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
+!define PRODUCT_UNINST_ROOT_KEY "HKLM"
+
+Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+OutFile "vantare-instalador-${PRODUCT_VERSION}.exe"
+InstallDir "`$PROGRAMFILES\Vantare Ingeniero IA"
+InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
+ShowInstDetails show
+ShowUnInstDetails show
+
+!define MUI_ABORTWARNING
+!define MUI_ICON "`$NSISDIR\Contrib\Graphics\Icons\modern-install.ico"
+!define MUI_UNICON "`$NSISDIR\Contrib\Graphics\Icons\modern-uninstall.ico"
+
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_LICENSE "LICENSE.txt"
+!insertmacro MUI_PAGE_DIRECTORY
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+
+!insertmacro MUI_LANGUAGE "Spanish"
+!insertmacro MUI_LANGUAGE "English"
+
+Section "Principal" SEC01
+  SetOutPath "`$INSTDIR"
+
+  ; Copiar archivos del build
+  File /r "backend\*.*"
+  File /r "sidecar\*.*"
+  
+  ; Copiar LICENSE
+  File "LICENSE.txt"
+  
+  ; Crear archivo de versión
+  FileOpen `$0 "`$INSTDIR\VERSION.txt" w
+  FileWrite `$0 "${PRODUCT_NAME} v${PRODUCT_VERSION}`r`n"
+  FileWrite `$0 "Fecha de instalacion: "
+  FileWrite `$0 __DATE__
+  FileClose `$0
+
+  ; ACCESOS DIRECTOS
+  CreateDirectory "`$SMPROGRAMS\Vantare Ingeniero IA"
+  CreateShortCut "`$SMPROGRAMS\Vantare Ingeniero IA\Vantare Engine.lnk" "`$INSTDIR\backend\backend.exe"
+  CreateShortCut "`$SMPROGRAMS\Vantare Ingeniero IA\Desinstalar.lnk" "`$INSTDIR\uninstall.exe"
+  CreateShortCut "`$DESKTOP\Vantare Engine.lnk" "`$INSTDIR\backend\backend.exe"
+
+  ; REGISTRO DE WINDOWS
+  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "`$INSTDIR\backend\backend.exe"
+  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "DisplayName" "`$(^Name)"
+  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "UninstallString" "`$INSTDIR\uninstall.exe"
+  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "DisplayIcon" "`$INSTDIR\backend\backend.exe"
+  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
+  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+  WriteRegStr `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+
+  ; Escribir desinstalador
+  WriteUninstaller "`$INSTDIR\uninstall.exe"
+SectionEnd
+
+Section "Uninstall"
+  RMDir /r "`$INSTDIR"
+  Delete "`$DESKTOP\Vantare Engine.lnk"
+  RMDir /r "`$SMPROGRAMS\Vantare Ingeniero IA"
+  DeleteRegKey `${PRODUCT_UNINST_ROOT_KEY}` "${PRODUCT_UNINST_KEY}"
+  DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+SectionEnd
+"@
+          
+          $nsisScript | Out-File -FilePath "installer_build/windows.nsi" -Encoding utf8
           
           # Compilar instalador
           cd installer_build
           & "C:\Program Files (x86)\NSIS\makensis.exe" windows.nsi
           
-          # Mover el exe generado a la raíz
-          mv installer/*.exe ./
-          mv vantare-instalador-*.exe ../vantare-instalador-${{ env.VERSION }}.exe
+          # Mover el exe generado
+          Move-Item -Path "*.exe" -Destination ..\ -Force
+          cd ..
 
       - name: Upload installer
         uses: actions/upload-artifact@v4
