@@ -1,6 +1,7 @@
 import uuid
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from src.models.messages import AlertMessage
+from src.services.audio_queue import AudioQueueManager
 
 
 class SpotterService:
@@ -9,8 +10,9 @@ class SpotterService:
     Sin estado interno (stateless).
     """
 
-    def __init__(self, broadcast_callback=None) -> None:
+    def __init__(self, broadcast_callback=None, audio_queue: Optional[AudioQueueManager] = None) -> None:
         self.broadcast_callback = broadcast_callback
+        self.audio_queue = audio_queue
 
     def evaluate_tick(self, state: Any) -> None:
         """Convierte el estado de telemetría a dict, evalúa alertas, y las transmite a través de la envoltura sync."""
@@ -29,7 +31,12 @@ class SpotterService:
                     pass
 
         alerts = self.evaluate(tick_dict)
-        if alerts and self.broadcast_callback:
+        if not alerts:
+            return
+        if self.audio_queue:
+            for alert in alerts:
+                self.audio_queue.enqueue_alert(alert)
+        elif self.broadcast_callback:
             for alert in alerts:
                 self.broadcast_callback(alert)
 

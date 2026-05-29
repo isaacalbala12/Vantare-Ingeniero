@@ -57,10 +57,12 @@ interface AppState {
   radioMode: RadioMode;
   currentTranscript: string;
   radioHistory: RadioMessage[];
+  keepQuiet: boolean;
   setRadioMode: (mode: RadioMode) => void;
   setCurrentTranscript: (text: string) => void;
   appendRadioMessage: (message: Omit<RadioMessage, 'id' | 'timestamp'>) => void;
   clearTranscript: () => void;
+  setKeepQuiet: (enabled: boolean) => void;
 
   // Telemetría
   telemetry: TelemetryData | null;
@@ -108,6 +110,8 @@ export const useAppStore = create<AppState>((set) => ({
       ],
     })),
   clearTranscript: () => set({ currentTranscript: '' }),
+  keepQuiet: false,
+  setKeepQuiet: (enabled) => set({ keepQuiet: enabled }),
 
   // Telemetría
   telemetry: null,

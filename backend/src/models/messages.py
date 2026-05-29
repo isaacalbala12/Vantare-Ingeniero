@@ -1,6 +1,7 @@
 import time
+from enum import IntEnum
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer
 
 
 class UIAction(BaseModel):
@@ -41,15 +42,79 @@ class AdviceEndMessage(BaseMessage):
     actions: List[UIAction] = Field(default_factory=list)
 
 
+# ---------------------------------------------------------------------------
+# Enums para el sistema de colas de audio CrewChief-style
+# ---------------------------------------------------------------------------
+
+class SoundType(IntEnum):
+    """Lower value = more urgent, goes to immediate queue.
+    Matches CrewChiefV4 SoundType order (SPOTTER=0, CRITICAL=1, VOICE_COMMAND_RESPONSE=2, IMPORTANT=3, REGULAR=4, AUTO=5, OTHER=6)."""
+    SPOTTER = 0
+    CRITICAL = 1
+    VOICE_RESPONSE = 2    # CrewChiefV4: VOICE_COMMAND_RESPONSE=2 (between CRITICAL and IMPORTANT)
+    IMPORTANT = 3
+    REGULAR = 4
+    AUTO = 5               # CrewChiefV4: AUTO=5 (system sounds, beeps)
+    OTHER = 6              # CrewChiefV4: OTHER=6 (catch-all)
+
+
+class MessagePriority(IntEnum):
+    """Higher value = plays first within queue."""
+    CRITICAL = 20
+    HIGH = 15
+    MEDIUM = 10
+    LOW = 5
+    BACKGROUND = 1
+
+
+# ---------------------------------------------------------------------------
+# Mensajes de alerta y cola
+# ---------------------------------------------------------------------------
+
 class AlertMessage(BaseMessage):
-    """Alerta determinista instantánea del Spotter (20Hz) que no requiere LLM."""
+    """Alerta determinista instantánea del Spotter (20Hz) que no requiere LLM.
+
+    NOTA: audio_priority es el campo legacy que los eventos existentes setean
+    (como string "CRITICAL"/"HIGH"/str(4)/etc.). El EventAdapter lo normaliza
+    a SoundType + MessagePriority. Los nuevos componentes del plan usan
+    priority y sound_type directamente. El @field_serializer convierte
+    los IntEnum a int para transporte JSON."""
     alert_id: str
     category: str  # e.g. "fuel", "tyres", "safety_car", "limiter", "gaps", "damage"
     message: str
-    audio_priority: str  # CRITICAL, HIGH, MEDIUM, LOW
     payload: Dict[str, Any] = Field(default_factory=dict)
     # Campos extra para serialización correcta
     severity: str = "INFO"
     ttl: int = 10
     dismissable: bool = True
+    # Legacy: usado solo por eventos existentes como entrada. Nueva fuente de verdad: priority + sound_type
+    audio_priority: str = "MEDIUM"
+    # Nuevos campos fuente de verdad para el sistema de colas
+    sound_type: SoundType = SoundType.REGULAR
+    priority: MessagePriority = MessagePriority.MEDIUM
 
+    @field_serializer('sound_type', 'priority')
+    def serialize_enum(self, value, _info):
+        """Serialize IntEnum as int for JSON transport."""
+        return value.value
+
+
+class QueuedMessage(BaseModel):
+    message_id: str
+    text: Optional[str] = None
+    audio_file_id: Optional[str] = None
+    sound_type: SoundType = SoundType.REGULAR
+    priority: MessagePriority = MessagePriority.MEDIUM
+    ttl_seconds: float = 0.0
+    due_time: float = 0.0
+    event_type: str = ""
+    session_data_snapshot: Optional[dict] = None
+    created_at: float = 0.0
+
+    def is_expired(self, now: Optional[float] = None) -> bool:
+        if self.ttl_seconds <= 0:
+            return False
+        return ((now or time.time()) - self.created_at) > self.ttl_seconds
+
+    def is_due(self, now: Optional[float] = None) -> bool:
+        return (now or time.time()) >= self.due_time
