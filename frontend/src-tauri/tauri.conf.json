@@ -46,8 +46,8 @@
     "active": true,
     "targets": "all",
     "externalBin": [
-      "../backend/dist/vantare-engine",
-      "../sidecar/dist/strategy-sidecar"
+      "binaries/backend",
+      "binaries/sidecar"
     ],
     "icon": [
       "icons/32x32.png",
