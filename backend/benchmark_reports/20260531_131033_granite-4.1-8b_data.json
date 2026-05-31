@@ -1,0 +1,2046 @@
+{
+  "1": {
+    "name": "Extraccion de campos",
+    "prompts": [
+      {
+        "level": 1,
+        "index": 1,
+        "prompt": "Cual es la posicion actual?",
+        "ticker_id": "A",
+        "response": "La posición actual del piloto es la tercera (P3).",
+        "ttft_ms": 1266.631899998174,
+        "tokens_per_second": 10.182912258579512,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 2,
+        "prompt": "Cuanto combustible queda en el tanque?",
+        "ticker_id": "A",
+        "response": "El combustible restante en el tanque es de **42.3 litros**.",
+        "ttft_ms": 183.44010000146227,
+        "tokens_per_second": 41.828513661008984,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 3,
+        "prompt": "Cual es el consumo promedio por vuelta?",
+        "ticker_id": "A",
+        "response": "El consumo promedio por vuelta es de 3.2 litros, según los datos del ticker DRV.",
+        "ttft_ms": 154.8553000029642,
+        "tokens_per_second": 47.14055633183523,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 4,
+        "prompt": "Cuantas vueltas restantes de combustible estimadas?",
+        "ticker_id": "A",
+        "response": "Hay **13** vueltas restantes estimadas de combustible.",
+        "ttft_ms": 216.23489999910817,
+        "tokens_per_second": 40.98363055269034,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 5,
+        "prompt": "Cual es el desgaste del neumatico delantero izquierdo?",
+        "ticker_id": "A",
+        "response": "El desgaste del neumático delantero izquierdo (FL) es de **72%**.",
+        "ttft_ms": 216.8840000013006,
+        "tokens_per_second": 44.67876803555172,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 6,
+        "prompt": "Cual es la temperatura del neumatico trasero derecho?",
+        "ticker_id": "A",
+        "response": "La temperatura del neumático trasero derecho (TRD) es de 96 grados Celsius.",
+        "ttft_ms": 122.49450000672368,
+        "tokens_per_second": 46.05563125442618,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 7,
+        "prompt": "Que desgaste de freno tiene la rueda delantera izquierda?",
+        "ticker_id": "A",
+        "response": "El desgaste de frenos en la rueda delantera izquierda (FL) es del 38%.",
+        "ttft_ms": 218.4105000051204,
+        "tokens_per_second": 44.091625218770965,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 8,
+        "prompt": "Quien va delante y a que distancia?",
+        "ticker_id": "A",
+        "response": "El piloto VST está adelante con un gap de +2.1 segundos respecto al conductor actual.",
+        "ttft_ms": 216.77899999485817,
+        "tokens_per_second": 45.33599744137544,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 9,
+        "prompt": "Quien va detras y a que distancia?",
+        "ticker_id": "A",
+        "response": "El piloto detrás es ALO, con un gap de -1.2 segundos respecto al líder VST.",
+        "ttft_ms": 169.2135999983293,
+        "tokens_per_second": 47.952919823498306,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 10,
+        "prompt": "Cual es la diferencia de ritmo con el coche de detras?",
+        "ticker_id": "A",
+        "response": "La diferencia de ritmo con el coche detrás, indicada por `d{delta}`, es **-0.3 segundos**. Esto significa que tu ritmo es 0.3 segundos más rápido que el del piloto detrás (Alonso).",
+        "ttft_ms": 169.3054999996093,
+        "tokens_per_second": 53.04500947636913,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 1,
+        "index": 11,
+        "prompt": "De que clase es la sesion?",
+        "ticker_id": "A",
+        "response": "La sesión pertenece a la clase **HY**, que indica Hypercar.",
+        "ttft_ms": 156.96899999602465,
+        "tokens_per_second": 42.62818762325929,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 12,
+        "prompt": "Cuantas vueltas totales tiene la carrera?",
+        "ticker_id": "A",
+        "response": "La carrera tiene un total de **38 vueltas**.",
+        "ttft_ms": 139.74269999744138,
+        "tokens_per_second": 40.197503735196634,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 13,
+        "prompt": "Cuanto tiempo resta de carrera?",
+        "ticker_id": "A",
+        "response": "El tiempo restante de la carrera es de **45 minutos y 22 segundos**.",
+        "ttft_ms": 156.2534000040614,
+        "tokens_per_second": 44.16742201119288,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 14,
+        "prompt": "Cual es el nivel de agarre de la pista?",
+        "ticker_id": "A",
+        "response": "El nivel de agarre de la pista es **MEDIO (Medium)**.",
+        "ttft_ms": 200.58880000578938,
+        "tokens_per_second": 41.65616073780935,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 15,
+        "prompt": "Cuantos coches hay en total?",
+        "ticker_id": "A",
+        "response": "Hay 20 coches en total.",
+        "ttft_ms": 202.67759999842383,
+        "tokens_per_second": 33.9540703290934,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 16,
+        "prompt": "Esta activo el Safety Car?",
+        "ticker_id": "B",
+        "response": "El Safety Car no está activo. Según los datos de clima (WTH), SC: N indica que el Safety Car está inactivo.",
+        "ttft_ms": 311.5666000012425,
+        "tokens_per_second": 40.70584994265545,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 17,
+        "prompt": "Cual es la probabilidad de lluvia?",
+        "ticker_id": "B",
+        "response": "La probabilidad de lluvia es del 80%, con una posibilidad de que comience en aproximadamente 3 minutos.",
+        "ttft_ms": 154.10590000101365,
+        "tokens_per_second": 47.91914655690834,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 18,
+        "prompt": "En cuantos minutos llegara la lluvia?",
+        "ticker_id": "B",
+        "response": "La lluvia se espera aproximadamente en 3 minutos, según el clima indicado con una probabilidad del 80% y un tiempo mínimo hasta su inicio de +3 minutos.",
+        "ttft_ms": 219.20420000242302,
+        "tokens_per_second": 49.68399703949745,
+        "score": 0.6666666666666666,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6666666666666666
+        }
+      },
+      {
+        "level": 1,
+        "index": 19,
+        "prompt": "En que vuelta estamos?",
+        "ticker_id": "B",
+        "response": "Estamos en la vuelta **25**.",
+        "ttft_ms": 202.1212999970885,
+        "tokens_per_second": 35.54058112402949,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 1,
+        "index": 20,
+        "prompt": "Cuantas vueltas de combustible restan?",
+        "ticker_id": "B",
+        "response": "Restan aproximadamente 7 vueltas de combustible.",
+        "ttft_ms": 169.57900000124937,
+        "tokens_per_second": 40.22530191611116,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 21,
+        "prompt": "Esta activo el Safety Car?",
+        "ticker_id": "C",
+        "response": "Sí, el Safety Car está activo según la información meteorológica (WTH: SC:S).",
+        "ttft_ms": 357.9410999955144,
+        "tokens_per_second": 34.0959195711495,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 22,
+        "prompt": "Cual es la temperatura ambiente?",
+        "ticker_id": "C",
+        "response": "La temperatura ambiente es de 26 grados Celsius.",
+        "ttft_ms": 122.39189999672817,
+        "tokens_per_second": 38.955800395258656,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 23,
+        "prompt": "El coche de delante es...",
+        "ticker_id": "C",
+        "response": "El piloto que está adelante es **BOT**, con un gap de +0.8 segundos respecto al conductor actual (posición 8).",
+        "ttft_ms": 199.76070000120671,
+        "tokens_per_second": 48.15006642275342,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 24,
+        "prompt": "Por que no hay datos de desgaste de neumaticos?",
+        "ticker_id": "D",
+        "response": "Los datos de desgaste de neumáticos (TYR) están ausentes porque se omite la sección TYR cuando el piloto está en las primeras tres vueltas de la carrera, ya que el desgaste no es representativo en ese momento. En este caso, dado que estamos en la vuelta 2 (L2), los valores de desgaste de neumáticos no se proporcionan.",
+        "ttft_ms": 345.8823000037228,
+        "tokens_per_second": 50.340734055133005,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 1,
+        "index": 25,
+        "prompt": "Cual es la posicion?",
+        "ticker_id": "D",
+        "response": "La posición actual del piloto es **5ª** en la pista, según el ticker DRV: P5.",
+        "ttft_ms": 153.6664999948698,
+        "tokens_per_second": 46.3037634929672,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 26,
+        "prompt": "Cuantas vueltas de combustible restan?",
+        "ticker_id": "D",
+        "response": "Según los datos del ticker, el piloto está en la vuelta 2 y tiene **96.8 litros** de combustible con un consumo promedio de **3.2 L/vuelta**, lo que da un total de **28 vueltas restantes** estimadas.",
+        "ttft_ms": 139.5252000002074,
+        "tokens_per_second": 54.86648834447165,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 27,
+        "prompt": "Cuantos coches hay en total?",
+        "ticker_id": "E",
+        "response": "Hay 22 coches en total.",
+        "ttft_ms": 344.49570000288077,
+        "tokens_per_second": 21.202724549908563,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 28,
+        "prompt": "Que desgaste de freno tiene la rueda trasera izquierda?",
+        "ticker_id": "E",
+        "response": "El desgaste de frenos en la rueda trasera izquierda (wRL) es del 68%.",
+        "ttft_ms": 217.3257999966154,
+        "tokens_per_second": 45.44729867668553,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 29,
+        "prompt": "Cuantas vueltas de combustible quedan?",
+        "ticker_id": "E",
+        "response": "Hay 0 vueltas restantes de combustible, según el dato F:5.2L/3.4(0L) en la entrada DRV.",
+        "ttft_ms": 201.89160000154516,
+        "tokens_per_second": 50.14142160026453,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 30,
+        "prompt": "Cual es la temperatura del neumatico delantero derecho?",
+        "ticker_id": "F",
+        "response": "La temperatura del neumático delantero derecho (wDR) es de 94 grados Celsius.",
+        "ttft_ms": 296.1046999989776,
+        "tokens_per_second": 34.33252958822007,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 31,
+        "prompt": "Cual es la temperatura del neumatico trasero derecho?",
+        "ticker_id": "F",
+        "response": "La temperatura del neumático trasero derecho (TRD) es de 101 grados Celsius.",
+        "ttft_ms": 153.06640000198968,
+        "tokens_per_second": 44.853565922460284,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      }
+    ]
+  },
+  "2": {
+    "name": "Interpretacion de campos",
+    "prompts": [
+      {
+        "level": 2,
+        "index": 1,
+        "prompt": "Vas ganando o perdiendo tiempo respecto al coche de detras?",
+        "ticker_id": "A",
+        "response": "Estoy ganando tiempo respecto al coche detrás; el gap es de -1.2 segundos con ALO, y mi mejor tiempo supera el suyo por 0.3 segundos (diferencia de ritmo).",
+        "ttft_ms": 376.9968999986304,
+        "tokens_per_second": 43.74465950618243,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 2,
+        "index": 2,
+        "prompt": "Deberias preocuparte por la lluvia?",
+        "ticker_id": "B",
+        "response": "Sí, deberías estar preocupado por la lluvia. La probabilidad de precipitación es del 80% y se espera dentro de los próximos 3 minutos, lo cual podría afectar significativamente las condiciones de pista debido al agarre bajo (LOW). Mantén un seguimiento cercano a las actualizaciones meteorológicas y prepárate para ajustes en la estrategia de carrera.",
+        "ttft_ms": 354.9624000006588,
+        "tokens_per_second": 50.638435326446036,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.75
+        }
+      },
+      {
+        "level": 2,
+        "index": 3,
+        "prompt": "Acabas de salir de boxes?",
+        "ticker_id": "C",
+        "response": "Sí, basándome en los datos del ticker, el piloto está en la vuelta 8 (L8), con una posición pista (P8) y ha recién salido de boxes, ya que se muestra el desgaste neumático típico después de un pit stop. La información GAP indica que está justo detrás de BOT (+0.8s) y adelante de SAI (-0.4s), lo cual es consistente con una salida inmediata de boxes.",
+        "ttft_ms": 375.67919999855803,
+        "tokens_per_second": 51.60030385343246,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 2,
+        "index": 4,
+        "prompt": "Es normal que no haya datos de desgaste de neumaticos?",
+        "ticker_id": "D",
+        "response": "Sí, es normal que no haya datos de desgaste de neumáticos (TYR) en la primera vuelta (lap <= 3), ya que el desgaste no es representativo en las primeras vueltas. Por lo tanto, se omite esa sección según las reglas del formato ticker compacto.",
+        "ttft_ms": 359.37070000363747,
+        "tokens_per_second": 48.037803280753536,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 2,
+        "index": 5,
+        "prompt": "Queda mucho tiempo de carrera?",
+        "ticker_id": "E",
+        "response": "Sí, queda considerable tiempo. La sesión es una **RACE** de **GT3** con **38 vueltas**, y actualmente quedan **3 minutos y 45 segundos** en el cronómetro. Por lo tanto, aún faltan muchas vueltas por recorrer.",
+        "ttft_ms": 327.34720000007655,
+        "tokens_per_second": 48.08120900426467,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 2,
+        "index": 6,
+        "prompt": "Las temperaturas de los neumaticos son normales?",
+        "ticker_id": "F",
+        "response": "Basado en el ticker, las temperaturas de los neumáticos están dentro del rango normal: 92°C (FL), 94°C (FR), 98°C (RL) y 96°C (RR). Estas lecturas indican un desgaste adecuado sin exceso de calor.",
+        "ttft_ms": 357.8544999982114,
+        "tokens_per_second": 47.924011687160046,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 7,
+        "prompt": "Tienes combustible suficiente para terminar la carrera?",
+        "ticker_id": "E",
+        "response": "Sí, el piloto tiene 5.2 litros restantes con un consumo de 3.4 L/vuelta y 0 vueltas estimadas restantes, lo que indica que tiene más de suficiente combustible para completar la carrera.",
+        "ttft_ms": 357.04940000141505,
+        "tokens_per_second": 46.20218469576844,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 2,
+        "index": 8,
+        "prompt": "Que implica que el Safety Car este activo para tu estrategia",
+        "ticker_id": "H",
+        "response": "El Safety Car activo (SC:S) indica condiciones de pista difíciles o peligrosas, como lluvia o incidentes. Esto obliga a reducir la velocidad y ajustar la estrategia: mantener un consumo de combustible controlado, evitar adelantamientos arriesgados y estar preparado para posibles pit stops bajo el Safety Car. En resumen, prioriza la conservación del equipo y espera las indicaciones del colectivo para optimizar tu posición al reiniciar la carrera.",
+        "ttft_ms": 361.54139999416657,
+        "tokens_per_second": 50.99390424537084,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 9,
+        "prompt": "El coche de delante esta lejos o cerca?",
+        "ticker_id": "C",
+        "response": "El coche que está adelante (BOT) está a **+0.8 segundos** del piloto en posición 8, lo cual indica que está relativamente cercano.",
+        "ttft_ms": 354.96960000455147,
+        "tokens_per_second": 41.049536805898015,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 10,
+        "prompt": "Estas en zona de podio?",
+        "ticker_id": "A",
+        "response": "Sí, está en la zona de podio. La posición actual es 3ª con un gap positivo frente al líder (VST) de +2.1 segundos y detrás del segundo (ALO) de -1.2 segundos, lo que indica una buena oportunidad para clasificarse entre los tres primeros.",
+        "ttft_ms": 379.66460000461666,
+        "tokens_per_second": 47.915175972253586,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 2,
+        "index": 11,
+        "prompt": "Cuantos rivales tienes a menos de 5 segundos?",
+        "ticker_id": "A",
+        "response": "Tienes **tres** rivales dentro de un gap menor a 5 segundos: VST, ALO y LEC.",
+        "ttft_ms": 184.06279999908293,
+        "tokens_per_second": 46.45791457894602,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 12,
+        "prompt": "Como esta el agarre de la pista?",
+        "ticker_id": "A",
+        "response": "El agarre de la pista está evaluado como **MEDIO (Medium)**, lo que indica condiciones moderadas para las neumáticos. Esto sugiere un nivel aceptable pero no óptimo de adherencia en la superficie actual.",
+        "ttft_ms": 186.33350000163773,
+        "tokens_per_second": 53.659212610908114,
+        "score": 0.6666666666666666,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6666666666666666
+        }
+      },
+      {
+        "level": 2,
+        "index": 13,
+        "prompt": "De que clase es tu coche?",
+        "ticker_id": "E",
+        "response": "Mi coche pertenece a la clase GT3, según los datos de la sesión (SES:GT3|...).",
+        "ttft_ms": 344.78459999809274,
+        "tokens_per_second": 36.857260759847236,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 14,
+        "prompt": "Hay coches doblados?",
+        "ticker_id": "A",
+        "response": "Sí, hay cuatro pilotos doblados: PER (1 vuelta atrás), TSU (2 vueltas atrás), STR (2 vueltas atrás) y ZHO (3 vueltas atrás).",
+        "ttft_ms": 406.6625999985263,
+        "tokens_per_second": 42.471129095989866,
+        "score": 0.6666666666666666,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6666666666666666
+        }
+      },
+      {
+        "level": 2,
+        "index": 15,
+        "prompt": "Deberias preocuparte por los frenos?",
+        "ticker_id": "E",
+        "response": "Sí, deberías estar preocupado por los frenos. El desgaste de los frenos está en niveles bajos a moderados (75-65%), lo que indica un uso intensivo durante la carrera. Mantén un ojo en su estado para evitar problemas críticos en las vueltas siguientes.",
+        "ttft_ms": 361.29300000175135,
+        "tokens_per_second": 48.1851712325393,
+        "score": 0.42857142857142855,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.42857142857142855
+        }
+      },
+      {
+        "level": 2,
+        "index": 16,
+        "prompt": "Si la lluvia llega en 3 minutos y estas con slicks, que debe",
+        "ticker_id": "B",
+        "response": "Con solo 3 minutos hasta la lluvia y utilizando neumáticos slicks (desgaste alto bajo condiciones húmedas), deberías cambiar a neumáticos de lluvia lo antes posible para mantener el agarre. Prioriza una parada rápida en boxes, incluso si eso significa perder tiempo en la pista, ya que conducir con slicks en condiciones húmedas aumenta significativamente el riesgo de pérdida de control y accidentes. Mantén la velocidad baja hasta encontrar un lugar seguro para realizar la transición de neumáticos.",
+        "ttft_ms": 341.6958000016166,
+        "tokens_per_second": 45.23876912902478,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 2,
+        "index": 17,
+        "prompt": "Estas en los puntos?",
+        "ticker_id": "E",
+        "response": "Sí, estoy en los puntos. Estoy en la posición 12 después de 35 vueltas, con un tiempo de gap positivo frente a Albon de +15.2 segundos y un tiempo de gap negativo detrás de Tsunoda de -8.3 segundos. Hay 22 rivales en total, cuatro dentro de los cinco segundos más cercanos y catorce más adelante por más de 90 segundos. La sesión es una carrera GT3 con 38 vueltas restantes y el clima actual muestra un agarre bajo a temperatura de 15°C con alta probabilidad de lluvia inminente.",
+        "ttft_ms": 346.5684000038891,
+        "tokens_per_second": 43.195118009240716,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 2,
+        "index": 18,
+        "prompt": "La sesion es de que tipo?",
+        "ticker_id": "E",
+        "response": "La sesión es una **RACE** dentro de la clase **GT3**, con un total de 38 vueltas y quedan **3 minutos y 45 segundos** de tiempo restante.",
+        "ttft_ms": 170.04489999817451,
+        "tokens_per_second": 51.266217907852784,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 2,
+        "index": 19,
+        "prompt": "Hay trafico significativo de doblados?",
+        "ticker_id": "A",
+        "response": "Sí, hay tráfico significativo. Se reportan 4 pilotos doblando: PER (1 vuelta atrás), TSU y STR (2 vueltas atrás cada uno), y ZHO (3 vueltas atrás). Además, hay 8 rivales a más de 45 segundos detrás.",
+        "ttft_ms": 385.8318999991752,
+        "tokens_per_second": 47.434419579266915,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 20,
+        "prompt": "La temperatura ambiente de 18C es normal?",
+        "ticker_id": "B",
+        "response": "La temperatura ambiente de **18°C** está dentro del rango típico para condiciones climáticas en una carrera, por lo que se considera normal. Sin embargo, dado el alto riesgo de lluvia (80% en 3 minutos) y el agarre bajo (LOW), los pilotos deberán ajustar su estrategia de manera conservadora.",
+        "ttft_ms": 298.253000000841,
+        "tokens_per_second": 49.504147568018176,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      }
+    ]
+  },
+  "3": {
+    "name": "Respuesta a triggers",
+    "prompts": [
+      {
+        "level": 3,
+        "index": 1,
+        "prompt": "Combustible criticamente bajo. Evalua la situacion.",
+        "ticker_id": "E",
+        "response": "La situación es crítica: el piloto está en la vuelta 35 con solo **5,2 litros** de combustible restantes y un consumo promedio de **3,4 L/vuelta**, lo que deja **0 vueltas** estimadas para completar la carrera. Los neumáticos están desgastados (88-80%) y los frenos también presentan un alto desgaste (75%). Con 15,2 segundos de ventaja sobre Albani pero 8,3 segundos detrás de Tsunoda, y con 14 rivales a más de 90 segundos, la prioridad es buscar una parada rápida para repostar. La pista está en condiciones bajas de agarre (LOW) a **15°C** con alta probabilidad de lluvia inminente (90% en 0 minutos), y el Safety Car no está activado. Se debe considerar una estrategia defensiva para conservar el combustible restante mientras se busca una oportunidad segura para repostar.",
+        "ttft_ms": 312.6334999979008,
+        "tokens_per_second": 55.64997164996399,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.5,
+          "rubric_score": 0.5
+        }
+      },
+      {
+        "level": 3,
+        "index": 2,
+        "prompt": "Combustible criticamente bajo. Evalua la situacion.",
+        "ticker_id": "A",
+        "response": "**Resumen rápido:**  \n- **Piloto en pista:** Posición 3, vuelta 10, combustible 42.3 L con un consumo de 3.2 L/vuelta; quedan aproximadamente 13 vueltas (539 km).  \n- **Desgaste neumáticos:** 72/68/65/63 % (temperaturas 92/94/98/96 °C).  \n- **Frenos:** Desgaste 38/35/22/20 %.  \n- **Gap con rivales:** Adelante a VST (+2.1 s), detrás de ALO (-1.2 s); diferencia de ritmo d‑0.3 s.  \n- **Sesión:** Carrera HY (Hypercar) – 38 vueltas totales, 45:22 restantes.  \n- **Clima:** Agarre medio, temperatura 22 °C, 30 % probabilidad de lluvia en +15 min; Safety Car no activado.  \n- **Rivales:** 3 cerca (<5 s), 5 intermedios (5‑30 s), 8 distantes (>30 s); 4 rivales doblados (PER, TSU, STR, ZHO).  \n\n**Evaluación de combustible crítico:**  \nCon solo 42.3 L restantes y un consumo de 3.2 L por vuelta, quedan ~13 vueltas antes de agotar el tanque (~44 km más). Dado que la carrera tiene 38 vueltas totales, se enfrenta a una situación crítica: debe buscar repostaje rápido o ajustar la estrategia para conservar combustible. **Acción recomendada:** priorizar un pit‑stop breve para reponer combustible antes de las próximas 10‑12 vueltas, manteniendo el ritmo para no perder demasiado tiempo en el grid.",
+        "ttft_ms": 359.3209000027855,
+        "tokens_per_second": 54.86356556650576,
+        "score": 0.125,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 3,
+        "prompt": "Safety Car desplegado. Que recomiendas?",
+        "ticker_id": "C",
+        "response": "Con el Safety Car activado (SC:S), mantén una velocidad controlada dentro del límite de la pista, observa las señales de tráfico y prepárate para un posible cambio de ritmo cuando se retire el vehículo de seguridad. Mantén la concentración en tus rivales cercanos, especialmente a BOT (+0.8s) y SAI (-0.4s), y ajusta tu estrategia según los cambios de agarre del GRN (Green).",
+        "ttft_ms": 357.45930000121007,
+        "tokens_per_second": 50.631858289874124,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 4,
+        "prompt": "Safety Car desplegado. Que recomiendas?",
+        "ticker_id": "A",
+        "response": "**Recomendación:** Mantén la velocidad dentro de los límites establecidos por el Safety Car, centrándote en conservar el combustible y preservar los neumáticos para las vueltas críticas que vendrán después del despegue. Observa detenidamente a tus rivales en CLS1 y ajusta tu posición según la información de GAP para mantener una ventaja estratégica al regresar a la carrera activa.",
+        "ttft_ms": 374.85990000277525,
+        "tokens_per_second": 50.3234995847307,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 5,
+        "prompt": "Desgaste critico de frenos (>80%). Evalua.",
+        "ticker_id": "E",
+        "response": "El desgaste de los frenos está críticamente alto, con valores en el rango del 75 al 85%, superando el umbral del 80%. Esto indica un riesgo significativo de sobrecalentamiento y posible fallo durante la próxima vuelta. Se recomienda reducir la velocidad inmediatamente y considerar una parada en boxes para inspección o cambio de frenos si es necesario. La situación requiere atención urgente debido al alto desgaste y las condiciones climáticas adversas (lluvia probable).",
+        "ttft_ms": 354.8123000000487,
+        "tokens_per_second": 52.12949902293315,
+        "score": 0.125,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 6,
+        "prompt": "Desgaste critico de frenos (>80%). Evalua.",
+        "ticker_id": "A",
+        "response": "El desgaste de los frenos está críticamente alto, con valores de 38/35/22/20%, superando el umbral del 80%. Esto indica un riesgo significativo de sobrecalentamiento y posible fallo durante la carrera. Se recomienda reducir la velocidad y considerar una estrategia de parada para inspección o repostaje si es necesario, dado que el desgaste continuará aumentando a este ritmo.",
+        "ttft_ms": 376.3881999984733,
+        "tokens_per_second": 50.40013593635398,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.5,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 7,
+        "prompt": "Degradacion acelerada de neumaticos. Analiza.",
+        "ticker_id": "F",
+        "response": "La degradación de los neumáticos está siendo más severa del esperado, especialmente en el sector izquierdo (TYR: 60/58). Con un agarre medio y una probabilidad de lluvia creciente (40% en 20 minutos), la temperatura de los neumáticos está aumentando rápidamente, lo que podría provocar una pérdida prematura de adherencia. El piloto debe ajustar su estrategia de giro para compensar esta degradación acelerada y mantener un rendimiento óptimo en las próximas vueltas.",
+        "ttft_ms": 355.2328000005218,
+        "tokens_per_second": 52.59214781149353,
+        "score": 0.16666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.3333333333333333,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 8,
+        "prompt": "Degradacion acelerada de neumaticos. Analiza.",
+        "ticker_id": "C",
+        "response": "La degradación de los neumáticos está siendo más severa del esperado, especialmente en el sector derecho (TYR: 96.85%). Esto se debe a la combinación de un agarre bajo (GRN) y una temperatura ambiente alta (26°C), lo que provoca un mayor desgaste. Además, el Safety Car activo (SC:S) ha forzado carreras más cerradas, aumentando la presión sobre los neumáticos. Se recomienda monitorear de cerca el estado de los compuestos y considerar una estrategia de parada para repostaje y cambio de neumáticos antes de que se vuelva crítico.",
+        "ttft_ms": 347.1008999986225,
+        "tokens_per_second": 53.41963195044707,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 9,
+        "prompt": "Bateria hibrida baja. Evalua el estado.",
+        "ticker_id": "F",
+        "response": "La batería híbrida muestra un nivel bajo de combustible en el tanque (35.1L con un consumo promedio de 3.2 L/vuelta, quedando aproximadamente 9 vueltas más). Los neumáticos tienen un desgaste moderado (65-58%) y temperaturas normales (100-103°C). El rival más cercano, RUS, está a +6.2 segundos, mientras que BOT está detrás a -4.1 segundos. La sesión es una carrera HY de 38 vueltas con 30 minutos restantes. Las condiciones climáticas son medianas, temperatura 24°C, 40% probabilidad de lluvia en 20 minutos, sin Safety Car activado. Hay 20 rivales; seis están dentro de un margen de 5-30 segundos, y ocho se encuentran más distantes (+55s). Seis rivales han sido doblados recientemente. Evaluar la estrategia híbrida es crucial para mantener la velocidad y gestionar el consumo bajo estas condiciones.",
+        "ttft_ms": 401.8267999999807,
+        "tokens_per_second": 55.42821588580166,
+        "score": 0.08333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.16666666666666666,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 10,
+        "prompt": "Amenaza de lluvia inminente. Que hago?",
+        "ticker_id": "B",
+        "response": "En condiciones de baja adherencia (LOW grip) y con una probabilidad del 80% de lluvia que llega en aproximadamente 3 minutos, mantén la velocidad prudente, prepárate para posibles ajustes de línea y considera activar el ABS si es necesario. Prioriza la seguridad sobre el rendimiento.",
+        "ttft_ms": 299.86929999722634,
+        "tokens_per_second": 48.80993022695022,
+        "score": 0.16666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.3333333333333333,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 11,
+        "prompt": "Amenaza de lluvia inminente. Que hago?",
+        "ticker_id": "A",
+        "response": "En condiciones de agarre medio y con una probabilidad del 30% de lluvia en los próximos 15 minutos, mantén la velocidad dentro de las líneas de seguridad. Prepárate para ajustar el ritmo si se activa el Safety Car debido a la posible reducción de adherencia.",
+        "ttft_ms": 313.69619999895804,
+        "tokens_per_second": 47.22961119154131,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 12,
+        "prompt": "Ventana de paradas abierta. Recomienda estrategia.",
+        "ticker_id": "G",
+        "response": "**Resumen rápido:**  \n- **Posición:** 4º, vuelta 14, combustible 53.1 L (consumo 3.2 L/vuelta, 15 vueltas restantes).  \n- **Desgaste neumáticos TYR:** 45/42/40/38 % (temperaturas 92/93/91 °C).  \n- **Frenos BRK:** 25/22/18/15 %.  \n- **Gap:** adelante a LEC +3.1 s, detrás a RUS -1.8 s; diferencia de ritmo d‑0.5 s.  \n- **Sesión:** HYpercar, carrera, 38 vueltas, 40:00 restantes.  \n- **Clima WTH:** agarre medio, 21 °C, 50 % probabilidad de lluvia en +10 m, Safety Car No.  \n- **Rivales RIV:** 20 carros; dos cercanos (LEC +3.1 s, RUS -1.8 s), cuatro más lejanos (7‑19 s), siete muy distantes (+42 s).  \n\n**Estrategia recomendada:**  \nDado que la ventana de paradas está abierta y los neumáticos TYR están en un desgaste moderado, planifique una primera parada alrededor de las vueltas 20‑22 para recuperar el agarre y ajustar el balance. Mantenga presión constante en el sector líder frente a LEC mientras monitoriza la evolución de RUS; si los neumáticos superan el 50 % antes de la parada, acelere hacia ella. Con la lluvia probable en +10 m, prepárese para posibles cambios de agarre y mantenga un ritmo que no exceda el consumo promedio (3.2 L/vuelta).",
+        "ttft_ms": 385.0529999981518,
+        "tokens_per_second": 54.619931862136006,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 13,
+        "prompt": "Ventana de paradas cerrándose. Quedan 2 vueltas.",
+        "ticker_id": "E",
+        "response": "**Resumen rápido:**  \n- **Piloto en la posición 12**, vuelta 35, tanque con 5.2 L (consumo 3.4 L/vuelta, 0 vueltas restantes).  \n- **Desgaste neumáticos**: 88/85/83/80 % (temperaturas 97/98/94 °C).  \n- **Frenos**: 75/72/68/65 %.  \n- **Gap:** adelante a ALB +15.2 s, detrás a TSU -8.3 s; diferencia de ritmo d+0.3 s.  \n- **Sesión:** GT3, carrera, 38 vueltas restantes, 3:45 minutos.  \n- **Clima:** bajo agarre, 15 °C, 90 % probabilidad de lluvia en 0 min, Safety Car sin activar.  \n- **Rivales:** 22 en total; cuatro cerca (<5 s), catorce distantes (>30 s); cuatro rivales doblados (PER, ZHO, NOR, STR).  \n\n**Pregunta:** ¿Cuál es la ventana de paradas?  \n**Respuesta:** Quedan **2 vueltas**, por lo que la ventana de paradas está cerrándose; cualquier decisión de repostar o cambios rápidos debe tomarse ahora.",
+        "ttft_ms": 295.8357000024989,
+        "tokens_per_second": 54.58286894328037,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 14,
+        "prompt": "Rival directo (SAI) ha entrado a boxes. Que hago?",
+        "ticker_id": "C",
+        "response": "Mantén tu posición actual en la pista, aprovecha el adelanto de 0.8 segundos sobre BOT y prepárate para acelerar suavemente al salir del boxeo de SAI, manteniendo un ritmo constante para maximizar tu ventaja y minimizar el riesgo de fallos mecánicos.",
+        "ttft_ms": 355.14120000152616,
+        "tokens_per_second": 48.27632115121259,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 15,
+        "prompt": "Brecha cerrada con rival < 1.5s. Evalua.",
+        "ticker_id": "C",
+        "response": "La brecha con el rival más cercano, BOT, ha disminuido a **+0.8 segundos**, y con SAI está en **-0.4 segundos**. Dado que ambos gaps están dentro de los **1.5 segundos**, se considera una situación crítica donde la competencia es intensa. Es fundamental mantener la concentración y optimizar el rendimiento para intentar adelantar o al menos conservar la posición actual en las próximas vueltas.",
+        "ttft_ms": 235.4191000049468,
+        "tokens_per_second": 54.70071694210583,
+        "score": 0.42857142857142855,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.8571428571428571,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 16,
+        "prompt": "Brecha cerrada con rival < 1.5s. Evalua.",
+        "ticker_id": "B",
+        "response": "La brecha con el rival HAM se ha reducido a menos de 1.5 segundos, lo que indica una aceleración efectiva y un manejo óptimo de la pista. Es crucial mantener la presión para intentar adelantar en la próxima curva.",
+        "ttft_ms": 327.8680000003078,
+        "tokens_per_second": 47.91474618540265,
+        "score": 0.125,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 17,
+        "prompt": "La fase de carrera ha cambiado. Evalua.",
+        "ticker_id": "A",
+        "response": "La transición a la nueva fase indica un cambio significativo en el desarrollo de la carrera, probablemente debido a condiciones climáticas o estrategias de equipo. Se debe monitorear de cerca los parámetros del piloto, desgaste de frenos y neumáticos, así como las posiciones relativas de los rivales para ajustar tácticamente. El Safety Car aún está inactivo, pero la probabilidad de lluvia en 15 minutos podría influir en futuras decisiones de pista.",
+        "ttft_ms": 361.4372000010917,
+        "tokens_per_second": 51.43999003743637,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.5,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 18,
+        "prompt": "Temperatura excesiva de neumaticos (>105C). Analiza.",
+        "ticker_id": "F",
+        "response": "**Resumen rápido:**  \n- **Posición:** 6º, vuelta 18, combustible 35.1 L (consumo 3.2 L/vuelta, 9 vueltas restantes).  \n- **Desgaste neumáticos:** FL 65 %, FR 62 %, RL 60 %, RR 58 % (temperaturas: 100‑103 °C).  \n- **Gap:** adelante a RUS +6.2 s, detrás a BOT -4.1 s; diferencia de ritmo d+0.5 s.  \n- **Sesión:** Carrera HY (Hypercar), 38 vueltas, 30:00 restantes.  \n- **Clima:** Agarre medio, 24 °C, 40 % probabilidad de lluvia en +20 m, Safety Car sin activación.  \n- **Rivales:** 6 cerca (<5 s), 8 lejanos (>55 s); 6 rivales doblados (PER, ZHO, NOR, LEC, HAM, PIA).  \n\n**Análisis de sobrecalentamiento neumático:**  \nLas temperaturas actuales de los neumáticos están cerca del límite crítico (>105 °C), especialmente en el flanco izquierdo (100‑103 °C) y con un alto porcentaje de desgaste (65‑62 %). Esto indica que los neumáticos están operando al límite de su capacidad térmica. Dado el motivo **tires_overheating**, es probable una pérdida de adherencia en las próximas vueltas, especialmente en curvas de alta carga lateral. Se recomienda monitorear la temperatura con más frecuencia y considerar un cambio estratégico si las temperaturas superan los 105 °C durante la siguiente vuelta o si el desgaste continúa aumentando rápidamente.  \n\n**Conclusión:** Priorizar la gestión térmica de los neumáticos; evaluar posibles paradas en box para fresar o cambiar si las temperaturas no disminuyen adecuadamente.",
+        "ttft_ms": 340.4461999962223,
+        "tokens_per_second": 55.18096881098177,
+        "score": 0.5142857142857142,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.42857142857142855,
+          "rubric_score": 0.3
+        }
+      },
+      {
+        "level": 3,
+        "index": 19,
+        "prompt": "Temperatura excesiva de neumaticos (>105C). Analiza.",
+        "ticker_id": "C",
+        "response": "**Resumen rápido:**  \n- Temperatura neumáticos: 92‑98 °C (máximo 98 °C).  \n- Desgaste TYR: 72/68/65/63 % (cercano al límite, pero aún bajo el umbral de sobrecalentamiento).  \n- Grip climático: GRN (buen agarre), temperatura ambiente 26 °C, sin lluvia inminente.  \n\n**Análisis:**  \nLa temperatura actual no supera los 105 °C, por lo que un sobrecalentamiento de neumáticos es poco probable en este momento. Sin embargo, el desgaste ya está elevado (≈70 %), lo que indica que los neumáticos están trabajando cerca de su capacidad máxima. Mantener la presión y la estrategia de giro dentro de los límites permitirá evitar un fallo prematuro.\n\n**Recomendación:**  \n- Continuar monitoreando la temperatura del neumático en cada vuelta; si supera 100 °C, reducir el consumo de frenos y ajustar la línea de carrera para disipar calor.  \n- Considerar una parada breve para revisión de neumáticos si los valores de desgaste continúan ascendiendo rápidamente.\n\n**Estado actual:** Neumáticos operando dentro de límites seguros, pero vigilancia necesaria debido al alto desgaste.",
+        "ttft_ms": 342.50069999689003,
+        "tokens_per_second": 55.16579805664035,
+        "score": 0.08333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.16666666666666666,
+          "rubric_score": 0.0
+        }
+      }
+    ]
+  },
+  "4": {
+    "name": "Razonamiento multicampo",
+    "prompts": [
+      {
+        "level": 4,
+        "index": 1,
+        "prompt": "80% de lluvia en 3 min y llevas slicks. Que recomiendas?",
+        "ticker_id": "B",
+        "response": "Con una probabilidad del 80 % de lluvia en tan solo 3 minutos y teniendo neumáticos slick (deslizantes), la recomendación es cambiar urgentemente a neumáticos intermedios o húmedos para mantener el agarre. Los slicks perderían adherencia rápidamente bajo estas condiciones, aumentando el riesgo de deslizamiento. Prioriza la seguridad y realiza la sustitución lo antes posible.",
+        "ttft_ms": 308.6178999947151,
+        "tokens_per_second": 51.37440692707737,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 4,
+        "index": 2,
+        "prompt": "VST esta 2.1s adelante, llevais 10 vueltas, quedan 45 min. E",
+        "ticker_id": "A",
+        "response": "El undercut podría ser una opción viable. VST está a solo 2.1 segundos del piloto detrás (ALO) y ambos tienen 10 vueltas restantes. Con 45 minutos de tiempo libre y el agarre medio de la pista, si tu equipo puede realizar un repostaje rápido sin perder demasiado tiempo, podría adelantar a VST sobre ALO antes de que este tenga oportunidad de recuperar terreno. Sin embargo, debes considerar el desgaste de los neumáticos (72% en el flanco izquierdo delantera) y la posibilidad de una posible lluvia en 15 minutos, lo cual podría complicar el undercut. En resumen, es un momento riesgoso pero potencialmente beneficioso si se ejecuta con precisión.",
+        "ttft_ms": 345.21010000025854,
+        "tokens_per_second": 53.95102389522495,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 4,
+        "index": 3,
+        "prompt": "SC activo, estas P2 a 1.5s de VER. Entras a boxes?",
+        "ticker_id": "H",
+        "response": "**Respuesta:** Con el Safety Car activo y posicionándose en **P2**, a solo **1.5 segundos detrás de VER**, es recomendable entrar al box para asegurar una salida limpia y aprovechar la protección del SC, manteniendo la ventaja sobre los rivales que están más distantes.",
+        "ttft_ms": 372.4865000040154,
+        "tokens_per_second": 46.998796490119375,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 4,
+        "index": 4,
+        "prompt": "Quedan 40 min de carrera, tienes 53.1L y consumes 3.2L/v. Ll",
+        "ticker_id": "G",
+        "response": "**Respuesta:** Sí, llegas. Con 53.1 L restantes y un consumo de 3.2 L por vuelta, tienes suficiente combustible para las 15 vueltas restantes (53.1 L ÷ 3.2 L ≈ 16.6 vueltas). Dado que quedan 40 minutos (aproximadamente 13-14 vueltas a la velocidad actual), alcanzarás la meta sin problema.",
+        "ttft_ms": 344.66059999977006,
+        "tokens_per_second": 48.35786461037482,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 4,
+        "index": 5,
+        "prompt": "Tus neumaticos estan al 72% y el de detras es 0.3s mas rapid",
+        "ticker_id": "A",
+        "response": "Sí, deberías considerar la estrategia de ahorro de neumáticos (tyre saving). Con un desgaste del 72% y una ventaja de 0.3 segundos en velocidad para el rival detrás, es prudente conservar algo de agarre para las vueltas finales, especialmente si el circuito permite tal estrategia sin penalización significativa. Mantén la presión de los neumáticos dentro del rango óptimo y ajusta tu línea para maximizar la eficiencia del combustible mientras proteges los radiales.",
+        "ttft_ms": 392.9556000002776,
+        "tokens_per_second": 51.99631027475344,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.25
+        }
+      },
+      {
+        "level": 4,
+        "index": 6,
+        "prompt": "Frenos al 75% y combustible para 0 vueltas. Prioridad?",
+        "ticker_id": "E",
+        "response": "Prioridad máxima: frenos en estado crítico (75%). Reforzar el plan de repostaje inmediato, ya que el combustible alcanza cero vueltas. Acelerar la entrada al pit lane para reabastecer y revisar los frenos antes del siguiente giro.",
+        "ttft_ms": 357.4628999995184,
+        "tokens_per_second": 47.29087665116489,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 4,
+        "index": 7,
+        "prompt": "Es carrera HYpercar y hay 80% lluvia en 3 min. Impacto?",
+        "ticker_id": "B",
+        "response": "Impacto significativo: la alta probabilidad de lluvia (80%) en tres minutos, junto con el agarre bajo (LOW), reducirá drásticamente la adherencia del asfalto para los Hypercar. Esto afectará negativamente las tasas de aceleración y frenado, aumentando el riesgo de deslizamientos y posibles incidentes entre los 20 rivales en pista. La presencia del Safety Car (SC:N) sugiere que podría activarse pronto para manejar cualquier emergencia relacionada con la lluvia.",
+        "ttft_ms": 311.0092999995686,
+        "tokens_per_second": 53.23037159979124,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 4,
+        "index": 8,
+        "prompt": "ALO esta 1.2s detras y es 0.3s mas rapido. Ademas hay 3 coch",
+        "ticker_id": "A",
+        "response": "En la posición actual, ALO está a solo 1.2 segundos detrás del piloto VST y tiene un ritmo superior de 0.3 segundos, lo que indica una ventaja competitiva significativa. Con tres rivales en CLS1 (VST, ALO y LEC) dentro de un margen de 5 segundos, es crucial mantener la concentración para aprovechar esta brecha y presionar a VST mientras se asegura de no ser superado por LEC o otros rivales cercanos. Mantener el ritmo constante y buscar oportunidades de adelantamiento en las curvas clave será fundamental para maximizar este ventajoso escenario.",
+        "ttft_ms": 343.1665000025532,
+        "tokens_per_second": 53.05765753538111,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.75
+        }
+      },
+      {
+        "level": 4,
+        "index": 9,
+        "prompt": "Pista MED (nivel 2), neumaticos a 100-103C. Hay sobrecalenta",
+        "ticker_id": "F",
+        "response": "Basado en los datos del ticker, los neumáticos están operando al límite de temperatura con valores entre 100°C y 103°C bajo un agarre medio (MED). Dado que el desgaste de los neumáticos está por debajo del 70% (65-63%) y la temperatura no supera los umbrales críticos, no se evidencia sobrecalentamiento significativo en este momento. Sin embargo, es necesario monitorear estrechamente las temperaturas y el desgaste en las vueltas siguientes para asegurar que permanezcan dentro de rangos seguros.",
+        "ttft_ms": 353.33340000215685,
+        "tokens_per_second": 53.07058142068612,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 4,
+        "index": 10,
+        "prompt": "Sin combustible, P12, GT3. Entrar a boxes ahora o esperar?",
+        "ticker_id": "E",
+        "response": "**Respuesta rápidamente:** Con solo 5.2 L restantes y un consumo de 3.4 L/vuelta, quedan aproximadamente 0 vueltas (5.2 ÷ 3.4 ≈ 1.5). **Entrar a boxes ahora** para repostar; esperar es riesgoso y probablemente terminará en abandono de pista.",
+        "ttft_ms": 339.7992000027443,
+        "tokens_per_second": 47.268427109715475,
+        "score": 0.6666666666666666,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6666666666666666
+        }
+      },
+      {
+        "level": 4,
+        "index": 11,
+        "prompt": "BOT +0.8s (1:49.5), SAI -0.4s (1:49.1). Estrategia?",
+        "ticker_id": "C",
+        "response": "**Respuesta rápidamente:**  \nCon un margen de **+0.8 s** sobre BOT y **-0.4 s** respecto a SAI, mantén la línea actual. Prioriza conservar el agarre del neumático (GRN) bajo condiciones secas; no ajustes la estrategia hasta que los rivales de CLS2 se acerquen más de 5 s. Mantén el ritmo estable y observa las vueltas restantes para cualquier cambio en el Safety Car.",
+        "ttft_ms": 345.0172000011662,
+        "tokens_per_second": 50.69528129677312,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 4,
+        "index": 12,
+        "prompt": "Hay 3 coches en CLS1. Eres P3. Describe la situacion.",
+        "ticker_id": "A",
+        "response": "En la posición tercera, con solo diez vueltas completadas (L10), tengo un depósito de combustible de 42.3 litros y un consumo promedio de 3.2 L por vuelta, lo que me deja aproximadamente trece vueltas más. Los neumáticos están desgastados alrededor del 65-72%, con temperaturas entre 92°C y 98°C. El líder, VST, está a +2.1 segundos de mi tiempo mejor (1:48.2), mientras que ALO, que me sigue, está a -1.2 segundos de mi mejor tiempo (1:47.9), mostrando una diferencia de ritmo (d-0.3). La sesión es una carrera HYPERCAR con 38 vueltas totales y quedan 45 minutos y 22 segundos en el cronómetro. El clima es medio (MED) a 22°C, con un 30% de probabilidad de lluvia en 15 minutos más, y no hay Safety Car activo. Entre los rivales cercanos, tengo tres en CLS1: VST adelante a +2.1s, ALO detrás a -1.2s, y LEC en GT3 a +4.8s. Hay otros cinco rivales en CLS2 con gaps entre 8.5 y 25.3 segundos, ocho más distantes en FAR, y cuatro rivales que ya han doblado la vuelta: PER (-1L), TSU (-2L), STR (-2L) y ZHO (-3L).",
+        "ttft_ms": 329.6064000023762,
+        "tokens_per_second": 56.560086137538384,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 13,
+        "prompt": "SC activo, tienes 82.4L. Entrar ahora o esperar?",
+        "ticker_id": "H",
+        "response": "**Respuesta rápidamente:** Con el Safety Car activo y un tanque de 82.4 L (suficiente para las vueltas restantes), es mejor **esperar** hasta que el SC se retire para evitar penalizaciones y mantener la estrategia de combustible óptima.",
+        "ttft_ms": 372.5747999997111,
+        "tokens_per_second": 45.79099720811815,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 14,
+        "prompt": "20:15 restantes, 7 vueltas de combustible. Suficiente?",
+        "ticker_id": "B",
+        "response": "Sí, es suficiente. Con 7 vueltas restantes y un consumo promedio de 3.3 litros por vuelta, tendrás aproximadamente 23.1 vueltas más (7 × 3.3 ≈ 23.1), lo que cubre las 13 vueltas restantes para completar las 38 del total (25 + 13). Por lo tanto, tienes un pequeño margen adicional.",
+        "ttft_ms": 357.5684999959776,
+        "tokens_per_second": 50.670561543940615,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 15,
+        "prompt": "Frenos 75/72/68/65, neumaticos 88/85/83/80, combustible 5.2L",
+        "ticker_id": "E",
+        "response": "**Resumen de telemetría:**  \n- **Neumáticos:** Desgaste moderado (88/85/83/80 %).  \n- **Frenos:** Baja desgaste (75/72/68/65 %).  \n- **Combustible:** 5.2 L restantes, consumo de 3.4 L/vuelta, vueltas finales estimadas cero.  \n\n**Prioridades de riesgo:**  \n1. **Neumáticos:** Monitorear el desgaste rápido en los lados izquierdos (85/83).  \n2. **Combustible:** Acelerar la entrada a boxes para repostar antes del final de carrera.  \n3. **Frenos:** No inmediato, pero revisar presión después de vueltas críticas.  \n\n**Acción sugerida:** Planear parada en el próximo giro para repostar y evaluar estado de los neumáticos.",
+        "ttft_ms": 357.73499999777414,
+        "tokens_per_second": 54.04416913584324,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 4,
+        "index": 16,
+        "prompt": "80% lluvia en 3 min, liderando. Abres ventana de lluvia?",
+        "ticker_id": "B",
+        "response": "**Resumen rápido:**  \n- Lider (posición 1), vuelta 25, combustible 28.5 L, consumo 3.3 L/vuelta, 7 vueltas restantes.  \n- Neumáticos: 55‑52‑50‑48 % desgaste; temperaturas 90‑91‑89 °C.  \n- Gap detrás de HAM: -5.3 s (mejor tiempo 47.5).  \n- Clase HY, carrera de 38 vueltas, 20:15 restantes.  \n- Condiciones climáticas: agarre bajo, 18 °C, 80 % probabilidad de lluvia en 3 min, Safety Car sin activar.  \n\n**Respuesta a la pregunta:**  \nSí, abro la ventana de lluvia para mantener el agarre y evitar una posible frenada brusca al entrar en las condiciones húmedas que se avecinan en poco tiempo.",
+        "ttft_ms": 323.24009999865666,
+        "tokens_per_second": 52.518466621812436,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 4,
+        "index": 17,
+        "prompt": "P12 en GT3, ultimos compases. Que dices al piloto?",
+        "ticker_id": "E",
+        "response": "Piloto P12 en la clase GT3, ya está en la vuelta 35 con solo 5.2 litros de combustible restantes y un consumo de 3.4 L/vuelta, lo que indica poca resistencia para completar la carrera. Los neumáticos están desgastados al 88-80% y las temperaturas son altas (97-98°C). Detrás, ALB está a +15.2 segundos y TSU a -8.3 segundos, con un delta de ritmo de +0.3 segundos. El Safety Car no está activado, pero hay una lluvia probable en 0 minutos con baja adherencia (LOW). Mantén la calma, conserva el combustible y prepárate para posibles cambios climáticos.",
+        "ttft_ms": 358.3005999971647,
+        "tokens_per_second": 54.712921776622196,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.25
+        }
+      },
+      {
+        "level": 4,
+        "index": 18,
+        "prompt": "ALB va +15.2s, TSU viene -8.3s, quedan 3:45. Que haces?",
+        "ticker_id": "E",
+        "response": "Mantén la posición actual en relación a Albavilla, que está a +15.2 segundos. Monitorea el TSU cercano con un gap de -8.3 segundos y ajusta la estrategia para aprovechar las últimas 3 minutos y 45 segundos de carrera, considerando el bajo agarre del suelo (LOW) y la alta probabilidad de lluvia inminente.",
+        "ttft_ms": 218.04079999856185,
+        "tokens_per_second": 54.50149797694983,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 4,
+        "index": 19,
+        "prompt": "50% lluvia en 10 min, neumaticos al 45%, combustible 53.1L. ",
+        "ticker_id": "G",
+        "response": "**Plan de parada:** Con 53.1 L restantes y un consumo de 3.2 L/vuelta (13 vueltas por delante), se pueden completar las 13 vueltas restantes sin repostar. Dado el 50 % de probabilidad de lluvia en 10 min y los neumáticos al 45 %, es recomendable realizar la parada ahora para cambiar a neumáticos más resistentes al agua y asegurar la seguridad ante la posible lluvia.",
+        "ttft_ms": 390.0750999964657,
+        "tokens_per_second": 49.38461142597884,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 4,
+        "index": 20,
+        "prompt": "Hay 4 doblados. Eres P3. Como gestionas el trafico?",
+        "ticker_id": "A",
+        "response": "Como ocupado en la tercera posición, con cuatro rivales doblados (PER, TSU, STR y ZHO), mantengo una línea de carrera estable, priorizando mi consumo de combustible y el desgaste de los neumáticos para mantener la presión de frenos baja. Observo constantemente los datos del rival más cercano, VST, con un margen de +2.1 segundos, y ALO detrás a -1.2 segundos, ajustando mi velocidad para optimizar el tiempo de vuelta mientras conservo el agarre en condiciones de gripe medio y temperatura ambiente de 22°C sin lluvia inminente.",
+        "ttft_ms": 360.61850000260165,
+        "tokens_per_second": 53.346909428103395,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      }
+    ]
+  },
+  "5": {
+    "name": "Razonamiento con RAG",
+    "prompts": [
+      {
+        "level": 5,
+        "index": 1,
+        "prompt": "Hemos perdido tiempo desde el SC de la vuelta 8?",
+        "ticker_id": "A",
+        "response": "Sí, se ha registrado una pérdida de tiempo desde el Safety Car en la vuelta 8. La última actualización indica que el piloto está en la vuelta 10 con un consumo de combustible de 42.3L y un desgaste de neumáticos del 72% en el flanco frontal izquierdo, entre otros datos. El Safety Car fue activado durante esa etapa, lo que explica la pérdida de tiempo relativa a la línea de llegada.",
+        "ttft_ms": 249.75260000064736,
+        "tokens_per_second": 54.80036202746664,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.5,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 2,
+        "prompt": "ALO paro en V9. Ha ganado o perdido con el undercut?",
+        "ticker_id": "A",
+        "response": "Basándome en la información proporcionada:\n\n1. **Posición de ALO antes del boxeo (V9):** Se indica que ALO pasó por los boxes en la vuelta 9, moviéndose de la posición P4 a P5.\n2. **Condición del rival:** VST está adelante con un gap de +2.1 segundos respecto al mejor tiempo de VST (1:48.2).\n3. **Gap actual:** ALO tiene un gap negativo de -1.2 segundos respecto al mejor tiempo de ALO (1:47.9), lo que significa que ALO está más cerca del mejor tiempo que VST.\n4. **Diferencia de ritmo:** La diferencia de ritmo (d-0.3) sugiere que ALO tiene un ritmo ligeramente mejor que el de VST.\n\n**Conclusión:** Dado que ALO pasó por los boxes en la vuelta 9 y ahora está más cerca del mejor tiempo que VST, es probable que haya ganado con el undercut, ya que ha reducido su gap respecto al rival tras la parada. Por lo tanto, **ALO ha ganado con el undercut**.",
+        "ttft_ms": 218.3350000050268,
+        "tokens_per_second": 57.54707524968395,
+        "score": 0.6000000000000001,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.75,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 3,
+        "prompt": "Nuestro consumo es consistente con vueltas anteriores?",
+        "ticker_id": "E",
+        "response": "El consumo promedio de combustible se mantiene consistente en aproximadamente 3.4 litros por vuelta, similar a las vueltas anteriores (V30 y V32). Con solo 5.2 litros restantes y un total estimado de 0 vueltas adicionales, el patrón de consumo es coherente con los datos históricos.",
+        "ttft_ms": 731.5400000006775,
+        "tokens_per_second": 39.56792219756481,
+        "score": 0.26666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.3333333333333333,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 4,
+        "prompt": "Ya habia aviso de lluvia antes? Cuanto ha cambiado?",
+        "ticker_id": "B",
+        "response": "Sí, había un aviso previo de lluvia. La probabilidad inicial era del **80 %** con **15 minutos** hasta la precipitación. Ahora se informa una probabilidad de **40 %** con **20 minutos** hasta la lluvia, indicando una reducción significativa en el riesgo de lluvia y un cambio notable en las condiciones climáticas previstas para la sesión.",
+        "ttft_ms": 392.12419999967096,
+        "tokens_per_second": 49.22369633077283,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 5,
+        "prompt": "VST esta mas lento que en vueltas anteriores?",
+        "ticker_id": "A",
+        "response": "Sí, VST está más lento que en vueltas anteriores. En la vuelta actual (L10), el piloto ocupa la tercera posición (P3) con un gap de +2.1 segundos detrás del líder (VST best 1:48.2). Esto indica una ligera pérdida de tiempo comparada con las vueltas anteriores donde VST mostraba mejores tiempos (por ejemplo, en la vuelta V9, mejor tiempo fue 1:48.5). Además, el desgaste de los neumáticos y el consumo de combustible también sugieren un ritmo más exigente que podría afectar negativamente su rendimiento relativo a vueltas previas.",
+        "ttft_ms": 453.5302999938722,
+        "tokens_per_second": 52.61175052158736,
+        "score": 0.6000000000000001,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.75,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 6,
+        "prompt": "La degradacion de neumaticos se esta acelerando?",
+        "ticker_id": "F",
+        "response": "Sí, la desgaste de los neumáticos está acelerándose. En las vueltas V12, V14 y V16, el desgaste ha pasado de niveles moderados (22/20/18/17) a valores más altos (38/36/34/32 y luego 52/50/48/45), indicando un aumento progresivo del desgaste en las ruedas. Esto sugiere que la degradación de los neumáticos se está acelerando a medida que avanza la carrera.",
+        "ttft_ms": 470.09600000455976,
+        "tokens_per_second": 47.17352920301369,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.5,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 7,
+        "prompt": "La ultima vez que paramos, funciono la estrategia?",
+        "ticker_id": "G",
+        "response": "**Resumen rápido:**  \n- **Posición actual:** P4, vuelta 14.  \n- **Combustible:** 53.1 L restantes, consumo 3.2 L/vuelta, ~15 vueltas más.  \n- **Desgaste neumáticos:** TYR 45/42/40/38 % (temperaturas 92‑91 °C).  \n- **Frenos:** 25/22/18/15 %.  \n- **Gap:** LEC adelante +3.1 s, RUS detrás –1.8 s; diferencia de ritmo d‑0.5 s.  \n- **Sesión:** Carrera HYPERCAR, 38 vueltas totales, 40:00 restantes.  \n- **Clima:** Agarre medio, 21 °C, 50 % probabilidad de lluvia en ~10 min, Safety Car sin activación.  \n- **Rivales:** 2 cercanos (<5 s), 4 intermedios (5‑30 s), 7 distantes (>30 s); PER y ZHO ya doblados.\n\n**Estrategia anterior:** Entrada a boxes en vuelta 7, cambio de posición P6 → P8, tiempo de boxeo 28.3 s; salida con neumáticos nuevos.\n\n**Respuesta:** Sí, la estrategia funcionó: lograste subir dos posiciones y saliste con neumáticos frescos listos para mantener el ritmo en las siguientes vueltas. Mantén el consumo bajo y observa el desgaste de los neumáticos; el agarre medio y la lluvia potencial podrían afectar la tracción a mitad de carrera.",
+        "ttft_ms": 404.1828999979771,
+        "tokens_per_second": 54.399805820750885,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 8,
+        "prompt": "Cuantas veces ha salido el SC en esta carrera?",
+        "ticker_id": "H",
+        "response": "El Safety Car (SC) ha salido una vez en esta carrera, según la información histórica proporcionada.",
+        "ttft_ms": 373.44630000006873,
+        "tokens_per_second": 33.37947925398755,
+        "score": 0.26666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.3333333333333333,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 9,
+        "prompt": "SAI nos esta alcanzando o alejando?",
+        "ticker_id": "C",
+        "response": "**Resumen rápido:**  \n- **Posición actual:** P8 (octavo).  \n- **Gap detrás de SAI:** -0.4 segundos (ligeramente más lento que SAI).  \n- **Tendencia histórica:** En las vueltas 5 y 6, el gap con SAI disminuyó desde -1.8 s hasta -1.2 s; en la vuelta 7 bajó a -0.6 s.  \n\n**Respuesta a la pregunta:**  \nSAI **está alcanzando** (cercano) y, de hecho, ya está **ligeramente adelante** debido al gap negativo (-0.4 s). La tendencia indica que SAI podría acercarse aún más o incluso superar en las próximas vueltas.  \n\n**Condiciones adicionales:**  \n- Clima: agarre verde (GRN), 26 °C, posibilidad de lluvia insignificante (+0 min).  \n- Safety Car activo (SC:S).  \n\n**Estado general:** Mantener la presión; SAI está ganando terreno y podría convertirse en el nuevo líder del grupo.",
+        "ttft_ms": 389.21799999661744,
+        "tokens_per_second": 53.75430188673906,
+        "score": 0.5333333333333333,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.6666666666666666,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 10,
+        "prompt": "Resume los eventos importantes de la carrera hasta ahora.",
+        "ticker_id": "A",
+        "response": "Hasta el momento, el piloto está en la posición 3 (P3), en la vuelta 10 con 42.3 litros de combustible restantes y un consumo promedio de 3.2 L/vuelta, lo que le da aproximadamente 13 vueltas más. Los neumáticos tienen un desgaste del 72-63% con temperaturas de 92-98°C. El piloto tiene un gap de +2.1 segundos detrás de VST y -1.2 segundos frente a ALO, con una diferencia de ritmo de -0.3 segundos. La sesión es una carrera HY (Hypercar) con 38 vueltas totales y quedan 45 minutos y 22 segundos. El clima es medio (MED) a 22°C con un 30% de probabilidad de lluvia en 15 minutos, sin Safety Car activado. Hay 20 rivales: 3 muy cerca (<5s), 5 entre 5-30s, 8 más distantes (+45s) y 4 rivales doblados (PER, TSU, STR, ZHO).",
+        "ttft_ms": 387.46050000190735,
+        "tokens_per_second": 55.15027387308791,
+        "score": 0.13333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.16666666666666666,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 11,
+        "prompt": "Ya empezo a llover? El forecast anterior era 40%, ahora 80%.",
+        "ticker_id": "B",
+        "response": "El clima ha cambiado drásticamente. Según el último reporte, la probabilidad de lluvia aumentó del 40% al 80%, con precipitación esperada en aproximadamente 3 minutos. Por lo tanto, ya está lloviendo o se avecina una fuerte lluvia pronto.",
+        "ttft_ms": 373.0137000020477,
+        "tokens_per_second": 47.80195525245362,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 12,
+        "prompt": "Nuestro consumo de combustible ha sido consistente?",
+        "ticker_id": "A",
+        "response": "El consumo de combustible ha sido bastante consistente, con valores cercanos a 3.2 litros por vuelta en las últimas tres vueltas (V5, V7, V9). Esto sugiere una gestión eficiente del suministro de combustible durante la carrera.",
+        "ttft_ms": 404.8024000003352,
+        "tokens_per_second": 44.742598033934016,
+        "score": 0.6000000000000001,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.75,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 13,
+        "prompt": "Hemos ganado o perdido posiciones desde el inicio?",
+        "ticker_id": "C",
+        "response": "Desde el inicio de la sesión, has mantenido tu posición en el octavo lugar. No has ganado ni perdido posiciones significativas; el rival más cercano, BOT, está a +0.8 segundos adelante, mientras que SAI te separa por -0.4 segundos detrás. La pista tiene agarre verde y no se espera lluvia inmediata, con un Safety Car activo actualmente. En total hay 20 rivales en la carrera, con cuatro cerca de ti (gap < 5s) y tres más distantes (gap 5-30s). Has doblado a PER, ZHO, NOR, LEC y HAM en las últimas vueltas.",
+        "ttft_ms": 341.9705999986036,
+        "tokens_per_second": 53.774471079021495,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 14,
+        "prompt": "Estoy rindiendo mejor o peor que al inicio de carrera?",
+        "ticker_id": "A",
+        "response": "**Respuesta concisa y técnica:**  \nHas mejorado tu rendimiento desde el inicio de la carrera. En las vueltas V2, V5 y V8 has mantenido posiciones P6, P5 y P3 respectivamente, con tiempos de vuelta mejores (1:49.1 → 1:48.2). Actualmente ocupas la tercera posición con un mejor tiempo registrado en la vuelta V8 (1:48.2), indicando una tendencia ascendente respecto a los primeros segmentos de carrera.",
+        "ttft_ms": 422.58429999492364,
+        "tokens_per_second": 50.387703229882376,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.5,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 15,
+        "prompt": "La temperatura de la pista esta subiendo o bajando?",
+        "ticker_id": "F",
+        "response": "La temperatura ambiente está establecida en 24°C según los datos meteorológicos (WTH: MED|24), por lo que no hay indicación de un aumento o disminución significativa en el momento actual. Sin embargo, con una probabilidad de lluvia del 40% llegando en aproximadamente 20 minutos (WTH: 40%+20m), es posible que la temperatura de la pista experimente cambios debido a la condición de humedad y posibles precipitaciones. En resumen, no hay tendencia clara de aumento o disminución de la temperatura de la pista en este instante.",
+        "ttft_ms": 326.0716000004322,
+        "tokens_per_second": 52.832199182551825,
+        "score": 0.6400000000000001,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.8,
+          "rag_references": 0
+        }
+      }
+    ]
+  },
+  "6": {
+    "name": "Estrategia multi-trigger",
+    "prompts": [
+      {
+        "level": 6,
+        "index": 1,
+        "prompt": "Combustible critico (0L rest), ventana cerrándose y ALB paro",
+        "ticker_id": "E",
+        "response": "**Respuesta rápidamente:**  \nCon tan poco combustible (0 L) y el rival **ALB** ya en boxes, tu mejor opción es entrar a pitar ahora mismo para reabastecer. Prioriza la seguridad; una parada ahora evita un abandono de pista debido al suministro crítico.",
+        "ttft_ms": 371.651399997063,
+        "tokens_per_second": 47.12360154172365,
+        "score": 0.7,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.6,
+          "rubric_score": 0.4
+        }
+      },
+      {
+        "level": 6,
+        "index": 2,
+        "prompt": "SC activo, gap con VER solo 1.5s, ventana abierta. Entro?",
+        "ticker_id": "H",
+        "response": "Sí, puede entrar. El Safety Car está activo, pero el gap con VER ha cerrado a 1.5 segundos y la ventana de pit lane ya está abierta, por lo que tiene permiso para ingresar a la pista.",
+        "ttft_ms": 375.28730000485666,
+        "tokens_per_second": 44.58820520186089,
+        "score": 0.4666666666666667,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.3333333333333333,
+          "rubric_score": 0.3
+        }
+      },
+      {
+        "level": 6,
+        "index": 3,
+        "prompt": "Degradacion alta (45%), lluvia 50% en 10 min, ventana abiert",
+        "ticker_id": "G",
+        "response": "Plan: Mantener la estrategia actual durante las primeras vueltas para preservar el desgaste de los neumáticos hasta que se acerque la probabilidad de lluvia (en ~10 minutos). Considerar una parada breve en boxes alrededor de la vuelta 12-13 para ajustar los neumáticos y aprovechar la ventana de pit stop abierta, priorizando el cambio si el desgaste alcanza aproximadamente el 50% (45/42/40/38). Ajustar la línea de ataque según las posiciones de LEC (+3.1) y RUS (-1.8), manteniendo vigilancia sobre los rivales cercanos en CLS1 y CLS2, especialmente VER (+7.5) y HAM (+11.3), mientras se prepara para adelantar a PER, ZHO, STR, TSU, PIA, BOT y MAG que están rezagados entre 42 y 48 segundos.",
+        "ttft_ms": 392.26150000467896,
+        "tokens_per_second": 54.602848361403446,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 4,
+        "prompt": "Neumaticos sobrecalentados (100-103C), bateria baja (no se m",
+        "ticker_id": "F",
+        "response": "**Respuesta rápida:**  \nCon neumáticos al límite de temperatura (100‑103 °C) y la posibilidad de que la batería esté baja, el mejor enfoque es **mantener un ritmo moderado para evitar más sobrecalentamiento**, mientras se planea una parada breve para revisar los neumáticos y cargar la batería. Dado que BOT ya ha pitied, aprovechar ese momento para realizar las ajustes necesarios y seguir el orden de rivales (RUS a +6.2 s) manteniendo presión constante en el grupo de 5‑30 s.",
+        "ttft_ms": 375.6842000002507,
+        "tokens_per_second": 51.629083293991535,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 5,
+        "prompt": "90% lluvia ahora, combustible 0L, ventana cerrándose. Priori",
+        "ticker_id": "E",
+        "response": "Prioridad máxima: garantizar seguridad con Safety Car activado, planificar parada obligatoria debido a falta de combustible y prever condiciones climáticas adversas para evitar deslizamientos.",
+        "ttft_ms": 343.20210000441875,
+        "tokens_per_second": 42.94095252445309,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 6,
+        "prompt": "SC activo, SAI entro a boxes, BOT esta a +0.8s. Entro ahora?",
+        "ticker_id": "C",
+        "response": "**Respuesta:** No entre ahora. El Safety Car está activo y el piloto SAI acaba de entrar al boxeo, lo que probablemente causará un adelanto en la pista. Además, el rival BOT está solo a +0.8 segundos detrás, por lo que ingresar ahora aumentaría el riesgo de colisión o perder tiempo valioso. Mantenga posición hasta que el Safety Car se retire y SAI salga al circuito.",
+        "ttft_ms": 345.8695000008447,
+        "tokens_per_second": 50.13713812938556,
+        "score": 0.3,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.6,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 7,
+        "prompt": "0L combustible, frenos 75%, neumaticos 88%. Que es mas criti",
+        "ticker_id": "E",
+        "response": "El desgaste de los frenos al 75% y el nivel de desgaste de los neumáticos a 88% son críticos, pero los frenos están más cerca del límite de seguridad debido a su menor capacidad de recuperación en comparación con los neumáticos. Priorizar la revisión o sustitución de los frenos es fundamental para mantener el control de la carrera.",
+        "ttft_ms": 356.2703999996302,
+        "tokens_per_second": 49.87275282409017,
+        "score": 0.125,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 8,
+        "prompt": "SC en V6, combustible lleno (82.4L), neumaticos nuevos. Espe",
+        "ticker_id": "H",
+        "response": "El Safety Car está activado en la vuelta 6 y tienes el combustible casi completo (82.4 L). Con los neumáticos nuevos (TYR alrededor del 90 %) y un consumo bajo, es probable que puedas esperar al SC para mantener tu posición o incluso intentar adelantar si las condiciones lo permiten. Mantén la calma y observa el tráfico.",
+        "ttft_ms": 363.95880000054603,
+        "tokens_per_second": 47.33118489645115,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 9,
+        "prompt": "BOT +0.8s (CLS1), SAI en boxes, ventana cerrándose. Riesgo d",
+        "ticker_id": "C",
+        "response": "**Resumen rápido:**  \n- **Bot** está a **+0.8 s** del líder **SAI**, ambos están en el boxeo y la ventana de repostaje se cierra pronto.  \n- **Riesgo de undercut:** Moderado. Si SAI tarda un poco más en salir, Bot podría adelantarlo al regresar; sin embargo, dado que ambos están en boxes casi simultáneamente, el tiempo disponible para un undercut es limitado y depende del tiempo exacto de salida de SAI.\n\n**Conclusión:** Mantener la presión en la vuelta actual; si SAI sale con retraso, aprovechar el undercut podría ser viable, pero actuar rápidamente es crucial.",
+        "ttft_ms": 340.38679999503074,
+        "tokens_per_second": 53.01433118515056,
+        "score": 0.3,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.6,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 10,
+        "prompt": "50% lluvia en 10 min, combustible para 15 vueltas pero neuma",
+        "ticker_id": "G",
+        "response": "**Plan:**  \n1. **Pit Window:** Utilizar el momento de mayor probabilidad de lluvia (en ~10 minutos) para realizar una parada breve y cambiar a neumáticos más resistentes, compensando la alta desgaste actual (~45%).  \n2. **Combustible:** Con 53.1 L restantes y un consumo de 3.2 L/vuelta, hay suficiente para ~15 vueltas adicionales; planear una parada que no exceda este límite.  \n3. **Tactica de Lluvia:** Si la lluvia llega, priorizar la adherencia (grip MED) y ajustar el setup para maximizar la eficiencia del combustible restante.  \n\n**Acción clave:** Realizar una parada estratégica ahora para neumáticos y revisar el plan de carrera bajo condiciones cambiantes.",
+        "ttft_ms": 406.7501999961678,
+        "tokens_per_second": 53.82454737767522,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      }
+    ]
+  },
+  "7": {
+    "name": "Casos limite y anomalias",
+    "prompts": [
+      {
+        "level": 7,
+        "index": 1,
+        "prompt": "Neumaticos nuevos? Como estan?",
+        "ticker_id": "D",
+        "response": "Los neumáticos están en un desgaste moderado: 72/68/65/63%. La temperatura es de 92-98°C, lo que indica un buen agarre sin sobrecalentamiento. No se reporta información sobre neumáticos nuevos; asumimos que son los actuales del equipo. Están en buenas condiciones para la primera vuelta.",
+        "ttft_ms": 377.4757999999565,
+        "tokens_per_second": 49.737908852508525,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 7,
+        "index": 2,
+        "prompt": "Como estan los frenos?",
+        "ticker_id": "D",
+        "response": "Los datos de desgaste de frenos no están disponibles en este reporte, ya que la sección BRK está omitida. Por lo tanto, no hay información específica sobre el estado de los frenos en este momento.",
+        "ttft_ms": 141.409100004239,
+        "tokens_per_second": 53.63051790993083,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 7,
+        "index": 3,
+        "prompt": "Como esta la bateria?",
+        "ticker_id": "B",
+        "response": "La batería está en un estado de carga de **28.5 litros**, con un consumo promedio de **3.3 litros por vuelta** y aproximadamente **7 vueltas restantes** antes de necesitar repostar.",
+        "ttft_ms": 328.4660999997868,
+        "tokens_per_second": 45.74783720386006,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 4,
+        "prompt": "El gap con BOT es exactamente 1.5s? Que tan cerca esta?",
+        "ticker_id": "C",
+        "response": "El gap con BOT está indicado como +0.8 segundos en la información de GAP. Por lo tanto, no es exactamente 1.5 segundos; está aproximadamente **0.7 segundos más corto** que el valor solicitado.",
+        "ttft_ms": 326.52959999541054,
+        "tokens_per_second": 45.63625258026475,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.75
+        }
+      },
+      {
+        "level": 7,
+        "index": 5,
+        "prompt": "Voy a 0 km/h y estoy en la pista. Que pasa?",
+        "ticker_id": "H",
+        "response": "Estás detenido en la pista, posicionado en la segunda plaza (P2), en la sexta vuelta de una carrera de Hypercar (HY). Tienes 82.4 litros de combustible restantes con un consumo de 3.1 L por vuelta, lo que te deja aproximadamente 25 vueltas más. Los neumáticos están desgastados alrededor del 92-95% y la temperatura está entre los 86-98°C. Los frenos tienen un desgaste moderado (10-8%). Tu rival directo adelante, VER, tiene un gap de +1.5 segundos, mientras que NOR está detrás a -3.2 segundos. Hay un Safety Car activo (SC:S) debido al agarre verde (GRN) y temperatura de 23°C con una pequeña probabilidad de lluvia. En total hay 20 rivales: dos cerca de ti (CLS1), cinco en el rango intermedio (CLS2) y seis más distantes (FAR). Siete pilotos han sido doblados recientemente (LAP). Mantén la calma y prepárate para salir al ritmo cuando sea tu turno.",
+        "ttft_ms": 375.4611999975168,
+        "tokens_per_second": 55.3767984392988,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 6,
+        "prompt": "Si tengo el deposito lleno (89.7L) pero estoy P8, que estrat",
+        "ticker_id": "C",
+        "response": "Con 89.7 litros de combustible restantes y posicionado P8 en la vuelta 8, mantén un ritmo constante para conservar el tanque. Prioriza mantener tu posición evitando adelantamientos costosos y observa los rivales cercanos (BOT, SAI) para ajustar tu estrategia de consumo según sus movimientos. Espera a que la pista se calme o mejore las condiciones climáticas antes de intentar un movimiento agresivo hacia adelante.",
+        "ttft_ms": 419.845800002804,
+        "tokens_per_second": 50.63665136576833,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 7,
+        "prompt": "Que datos faltan en este ticker?",
+        "ticker_id": "D",
+        "response": "En el ticker proporcionado, los siguientes datos están presentes:\n\n- **Telemetry (DRV)**: Posición, vuelta actual, combustible y desgaste de neumáticos.\n- **Gap (GAP)**: Diferencias con rivales adelante e izquierda.\n- **Sesion (SES)**: Clase, tipo de sesión, vueltas totales y tiempo restante.\n- **Clima (WTH)**: Agarre, temperatura, probabilidad de lluvia y estado del Safety Car.\n- **Rivales (RIV)**: Número total de rivales y detalles por clase y gap.\n\nSin embargo, falta la información sobre el desgaste de frenos (**BRK**), que no se incluyó en este ticker. Si hay datos disponibles desde la API REST para los frenos, deberían agregarse en una línea separada con el formato `BRK:{wFL}/{wFR}/{wRL}/{wRR}`.",
+        "ttft_ms": 326.66859999881126,
+        "tokens_per_second": 54.649247599260285,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 7,
+        "index": 8,
+        "prompt": "Las temperaturas de neumaticos estan cerca del limite (105C)",
+        "ticker_id": "F",
+        "response": "No, las temperaturas de los neumáticos están lejos del límite. Las lecturas son 92°C, 94°C, 98°C y 96°C, todas significativamente por debajo del umbral cercano a 105°C mencionado en la condición.",
+        "ttft_ms": 344.28760000446346,
+        "tokens_per_second": 46.509984530899864,
+        "score": 0.2857142857142857,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2857142857142857
+        }
+      },
+      {
+        "level": 7,
+        "index": 9,
+        "prompt": "Es una sesion de practica. Cambia la estrategia?",
+        "ticker_id": "D",
+        "response": "**Respuesta rápidamente:** No, no cambiamos la estrategia. La sesión está marcada como **RACE**, no como práctica, y los datos indican que estamos en carrera con 38 vueltas restantes y condiciones de grip verde a 20 °C sin lluvia inminente. Mantenemos el plan actual.",
+        "ttft_ms": 325.59089999995194,
+        "tokens_per_second": 47.3635526452803,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 7,
+        "index": 10,
+        "prompt": "Solo tengo 2 rivales en CLS1. Es buena senal?",
+        "ticker_id": "B",
+        "response": "Sí, es una señal favorable. Tener solo dos rivales dentro de un intervalo de gap menor a 5 segundos (CLS1) indica que estás en una posición competitiva y que tus principales oponentes están cerca, lo cual sugiere un buen rendimiento relativo en la carrera.",
+        "ttft_ms": 357.89919999660924,
+        "tokens_per_second": 46.64634635212964,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 11,
+        "prompt": "Por que no hay seccion '>' en el GAP?",
+        "ticker_id": "B",
+        "response": "La sección `>` del GAP está omitida porque el piloto está en la primera posición (liderando la carrera). Según las reglas, si un piloto es líder, se omite la parte `>` que indica el gap con los rivales adelante. Por lo tanto, no aparece ninguna información sobre el gap con otros pilotos adelante en este caso.",
+        "ttft_ms": 197.92420000158018,
+        "tokens_per_second": 54.72264109976115,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 7,
+        "index": 12,
+        "prompt": "Hay rivales muy lejanos?",
+        "ticker_id": "B",
+        "response": "Sí, hay rivales muy lejanos: 10 pilotos están a más de 50 segundos detrás.",
+        "ttft_ms": 218.1951999955345,
+        "tokens_per_second": 45.511815868600394,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 7,
+        "index": 13,
+        "prompt": "Hay coches doblados?",
+        "ticker_id": "D",
+        "response": "Sí, según el segmento LAP del reporte de rivales (RIV), hay dos rivales doblados: \"---\". Por lo tanto, se han doblado al menos dos pilotos en la sesión actual.",
+        "ttft_ms": 385.47779999498744,
+        "tokens_per_second": 42.77421937751273,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.75
+        }
+      },
+      {
+        "level": 7,
+        "index": 14,
+        "prompt": "Que tiempo hace?",
+        "ticker_id": "D",
+        "response": "El clima actual es verde (GRN), con una temperatura de 20°C, baja probabilidad de lluvia del 5% sin precipitación inminente y el Safety Car no está activado.",
+        "ttft_ms": 166.82260000379756,
+        "tokens_per_second": 50.91991349935169,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 7,
+        "index": 15,
+        "prompt": "Las temperaturas de neumaticos son muy uniformes. Que indica",
+        "ticker_id": "C",
+        "response": "Las temperaturas de los neumáticos están bastante uniformes, lo que sugiere un manejo equilibrado del coche y condiciones de pista estables. Esto puede indicar una temperatura ambiente moderada y un desgaste de los neumáticos predecible a lo largo de la carrera.",
+        "ttft_ms": 328.21639999747276,
+        "tokens_per_second": 47.223180399607315,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      }
+    ]
+  },
+  "8": {
+    "name": "Razonamiento temporal",
+    "prompts": [
+      {
+        "level": 8,
+        "index": 1,
+        "prompt": "Analiza la tendencia de degradacion de neumaticos en los 3 t",
+        "ticker_id": "A",
+        "response": "La tendencia de degradación de neumáticos en los tres ticks muestra un aumento progresivo del desgaste en todas las ruedas:\n\n1. **Tick 1 (V10):** Los valores iniciales son relativamente bajos, con TYR:72/68/65/63 y temperaturas cercanas a 92-98°C.\n2. **Tick 2 (V12):** Se observa un incremento significativo en el desgaste de TYR a 55/52/50/48, junto con un ligero aumento en las temperaturas (98-101°C).\n3. **Tick 3 (V14):** El desgaste continúa ascendiendo a TYR:42/40/38/35, y las temperaturas alcanzan niveles máximos de 105-105°C.\n\nEste patrón indica una degradación acelerada de los neumáticos a medida que avanza la carrera, probablemente debido al aumento de temperatura y el uso continuo. Es crucial monitorear estos valores para tomar decisiones informadas sobre cambios de neumáticos si es necesario.",
+        "ttft_ms": 924.9091000019689,
+        "tokens_per_second": 48.18296583050898,
+        "score": 0.5714285714285714,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5714285714285714
+        }
+      },
+      {
+        "level": 8,
+        "index": 2,
+        "prompt": "VST se esta alejando o acercando? Y ALO?",
+        "ticker_id": "A",
+        "response": "VST está **alejándose** del líder, con un gap de +2.1 segundos. ALO, por otro lado, está **acercándose**, ya que tiene un gap negativo de -1.2 segundos detrás de VST. Ambos datos indican una evolución en curso durante la carrera.",
+        "ttft_ms": 217.2158000030322,
+        "tokens_per_second": 53.31243691835712,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 8,
+        "index": 3,
+        "prompt": "La degradacion de frenos se esta acelerando?",
+        "ticker_id": "A",
+        "response": "Basado en los datos del ticker, el desgaste de frenos (BRK: 38/35/22/20) muestra una degradación moderada pero no indica un aumento acelerado. Los valores están dentro de un rango típico para este punto de carrera, por lo que la degradación de los frenos parece estar controlada. Sin embargo, se debe monitorear estrechamente en las próximas vueltas para asegurarse de que no aumente inesperadamente.",
+        "ttft_ms": 203.79720000346424,
+        "tokens_per_second": 55.840804730501596,
+        "score": 0.16666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.16666666666666666
+        }
+      },
+      {
+        "level": 8,
+        "index": 4,
+        "prompt": "Recomienda estrategia basada en la tendencia de los 3 ticks.",
+        "ticker_id": "A",
+        "response": "Basado en los tres ticks, sugiero una estrategia conservadora: mantén el ritmo actual para preservar el desgaste de neumáticos y frenos, aprovecha el gap positivo frente a VST y minimiza las paradas. Observa la lluvia potencial (+15m) y prepárate para ajustes si el agarre baja a LOW o MENOR. Mantén un seguimiento cercano a ALO para evitar que se acerque demasiado.",
+        "ttft_ms": 203.29340000171214,
+        "tokens_per_second": 55.90928138898367,
+        "score": 0.3333333333333333,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 8,
+        "index": 5,
+        "prompt": "Estamos ganando posiciones? Que esta cambiando?",
+        "ticker_id": "A",
+        "response": "Sí, estamos ganando posiciones. El piloto se ha movido desde la posición 5 hasta la 3 en la vuelta 10, y el gap positivo con VST indica que está adelantando al líder. Los cambios clave son la mejora de la posición en pista y la estabilidad del consumo de combustible, permitiendo mantener un ritmo constante mientras los rivales más cercanos muestran mayores gaps.",
+        "ttft_ms": 190.44429999485146,
+        "tokens_per_second": 55.615939049761586,
+        "score": 0.3333333333333333,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 8,
+        "index": 6,
+        "prompt": "Estamos alcanzando a VER?",
+        "ticker_id": "A",
+        "response": "Sí, estamos alcanzando a VER. El gap es de aproximadamente +12 segundos respecto al mejor tiempo de VER, y el piloto está en la vuelta 10.",
+        "ttft_ms": 201.94679999985965,
+        "tokens_per_second": 50.552673757576436,
+        "score": 0.16666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.16666666666666666
+        }
+      },
+      {
+        "level": 8,
+        "index": 7,
+        "prompt": "Como esta la degradacion de neumaticos en esta serie?",
+        "ticker_id": "A",
+        "response": "La degradación de los neumáticos está moderada, con valores entre 62% y 98% en las cuatro ruedas. El desgaste es más alto en el flanco izquierdo frontal (72%) y menor en el derecho trasero (63%). La temperatura está dentro del rango operativo, sin indicaciones de sobrecalentamiento significativo.",
+        "ttft_ms": 172.2784000012325,
+        "tokens_per_second": 54.72098828291955,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 8,
+        "index": 8,
+        "prompt": "Nuestro ritmo relativo a LEC esta mejorando o empeorando?",
+        "ticker_id": "A",
+        "response": "El ritmo relativo a LEC está **mejorando**: el gap ha pasado de +4.8 segundos en la vuelta 10 a +2.1 segundos ahora, lo que indica un acercamiento al piloto LEC.",
+        "ttft_ms": 201.429000000644,
+        "tokens_per_second": 51.984129245528564,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 8,
+        "index": 9,
+        "prompt": "Resume la evolucion de la carrera en estos 3 ticks.",
+        "ticker_id": "A",
+        "response": "En los tres ticks, el piloto se mantiene en la tercera posición (P3) durante la décima vuelta, con 42.3 litros de combustible restantes y un consumo promedio de 3.2 L/vuelta, permitiendo aproximadamente 13 vueltas más. Los neumáticos tienen un desgaste del 65-72% y temperaturas entre 92-98°C. Los frenos muestran un desgaste variable, con el lado izquierdo trasero (wRL) más bajo a 22%. El gap hacia adelante es de +2.1 segundos respecto a VST, mientras que detrás está ALO a -1.2 segundos, con una diferencia de ritmo de -0.3 segundos. La sesión es una carrera HY (Hypercar) de 38 vueltas, con 45:22 minutos restantes. Las condiciones climáticas son medianas (MED), temperatura de 22°C, 30% de probabilidad de lluvia en 15 minutos, y sin Safety Car activado. Hay 20 rivales: tres cerca (<5s) como VST (+2.1s), ALO (-1.2s) y LEC (GT3, +4.8s); cinco más distantes (5-30s) como HAM (+8.5s), VER (+12.3s), NOR (GT3, +15.1s), PIA (GT3, +18.7s) y RUS (GT3, +25.3s); ocho muy distantes (>30s). Cuatro rivales han sido doblados: PER (-1L), TSU (-2L), STR (-2L) y ZHO (-3L). En resumen, el piloto está en una posición estable con buen desgaste de neumáticos y frenos, enfrentándose a un campo competitivo bajo condiciones climáticas moderadas.",
+        "ttft_ms": 186.15270000009332,
+        "tokens_per_second": 57.66930741725218,
+        "score": 0.42857142857142855,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.42857142857142855
+        }
+      },
+      {
+        "level": 8,
+        "index": 10,
+        "prompt": "Compara la degradacion entre la Serie 1 y la Serie 2.",
+        "ticker_id": "A",
+        "response": "La degradación en la Serie 1 (rival más cercano) muestra diferencias máximas de ±4.8 segundos, indicando una competencia ajustada con pilotos dentro de un margen de cinco segundos. En contraste, la Serie 2 presenta disparidades que van desde +8.5 hasta +25.3 segundos, reflejando una mayor distancia entre rivales en clases distintas (HY vs GT3), lo cual sugiere una brecha más amplia en el rendimiento entre estas categorías.",
+        "ttft_ms": 185.6562999964808,
+        "tokens_per_second": 54.66707191882829,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      }
+    ]
+  }
+}
