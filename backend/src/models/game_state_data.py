@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional, Dict
 from src.models.enums import (
     SessionType, SessionPhase, FlagEnum,
     FullCourseYellowPhase, PitWindow, FrozenOrderPhase,

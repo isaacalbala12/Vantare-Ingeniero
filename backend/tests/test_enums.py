@@ -1,7 +1,8 @@
 import pytest
 from src.models.enums import (
     SessionType, SessionPhase, FlagEnum, FullCourseYellowPhase,
-    FrozenOrderPhase, PitWindow, TyreType, ControlType
+    FrozenOrderPhase, FrozenOrderColumn, FrozenOrderAction,
+    PitWindow, TyreType, ControlType
 )
 
 
@@ -47,3 +48,14 @@ def test_tyre_types():
 def test_control_type():
     assert ControlType.PLAYER.value == "Player"
     assert ControlType.AI.value == "AI"
+
+def test_frozen_order_column():
+    assert FrozenOrderColumn.NONE.value == "None"
+    assert FrozenOrderColumn.LEFT.value == "Left"
+    assert FrozenOrderColumn.RIGHT.value == "Right"
+
+def test_frozen_order_action():
+    assert FrozenOrderAction.NONE.value == "None"
+    assert FrozenOrderAction.FOLLOW.value == "Follow"
+    assert FrozenOrderAction.CATCH_UP.value == "CatchUp"
+    assert FrozenOrderAction.ALLOW_TO_PASS.value == "AllowToPass"

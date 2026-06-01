@@ -56,4 +56,4 @@ def test_frame_id_increments():
     cache = FrameCache(MockReader())
     sf1 = cache.get_spotter_frame()
     sf2 = cache.get_spotter_frame()
-    assert sf2["_frame_id"] >= sf1["_frame_id"]
+    assert sf2["frame_id"] >= sf1["frame_id"]

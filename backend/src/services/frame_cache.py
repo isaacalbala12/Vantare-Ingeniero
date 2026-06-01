@@ -39,7 +39,7 @@ class FrameCache:
             "rivals": rivals,
             "session_phase": raw.get("session_phase", 0),
             "in_pits": raw.get("in_pits", False),
-            "_frame_id": self._frame_id,
+            "frame_id": self._frame_id,
         }
         return self._latest
 

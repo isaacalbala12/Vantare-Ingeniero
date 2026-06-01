@@ -1,3 +1,4 @@
+import time
 from copy import deepcopy
 from typing import Dict, Set, Optional
 from dataclasses import dataclass, field
@@ -28,8 +29,7 @@ class StateDiff:
         self._bounce_lag: float = 1.0
 
     def update(self, current: dict, now: float = 0.0) -> TickChanges:
-        import time as _time
-        now = now or _time.time()
+        now = now or time.time()
         c = TickChanges()
 
         if self._prev is None:

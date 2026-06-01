@@ -1,27 +1,19 @@
+import time
 from typing import Optional
 from src.models.game_state_data import (
     GameStateData,
     SessionData,
     PositionAndMotionData,
     PitData,
-    FlagData,
     TyreData,
-    CarDamageData,
     EngineData,
     FuelData,
     BatteryData,
     OpponentData,
-    PenaltiesData,
-    OvertakingAidsData,
-    FrozenOrderData,
-    Rotation,
 )
 from src.models.enums import (
     SessionType,
     SessionPhase,
-    FlagEnum,
-    FullCourseYellowPhase,
-    PitWindow,
 )
 from src.services.state_diff import TickChanges
 
@@ -55,10 +47,8 @@ def _session_phase(v: int) -> SessionPhase:
 
 
 def build(flat: dict, prev: Optional[GameStateData] = None) -> GameStateData:
-    import time as _time
-
     g = GameStateData()
-    g.now = flat.get("timestamp", 0) or _time.time()
+    g.now = flat.get("timestamp", 0) or time.time()
     s = g.session
 
     s.session_type = _session_type(flat.get("session_type", 0))
