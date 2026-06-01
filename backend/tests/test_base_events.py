@@ -389,3 +389,57 @@ class TestBugPlayWithInvalidMessage:
     def test_play_imm_with_none(self):
         ev = PositionEvent(ap=FakeAudioPlayer())
         ev.play_imm(None)  # No debe crashear
+
+
+# === BUGS ENCONTRADOS EN PASADAS 2-5 ===
+
+class TestBugConsistentlyLastSpam:
+    """consistently_last debe emitirse UNA vez, no cada tick."""
+
+    def test_emits_once_when_last_3_laps(self):
+        ap = FakeAudioPlayer()
+        ev = PositionEvent(ap=ap)
+        # P6 de 5 oponentes durante 5 vueltas
+        for lap in range(1, 6):
+            ev.trigger_internal(None, _gsd(pos=6, lap=lap, num_opponents=5))
+        # Solo debe emitirse 1 vez
+        count = sum(1 for m in ap.msgs if "consistently_last" in m.name)
+        assert count == 1, f"Esperado 1, emitido {count}: {[m.name for m in ap.msgs]}"
+
+    def test_does_not_emit_again_after_leaving_last(self):
+        ap = FakeAudioPlayer()
+        ev = PositionEvent(ap=ap)
+        # P6 3 vueltas (emite), luego P5 (sale del último)
+        for lap in range(1, 4):
+            ev.trigger_internal(None, _gsd(pos=6, lap=lap, num_opponents=5))
+        ap.clear()
+        ev.trigger_internal(None, _gsd(pos=5, lap=4, num_opponents=5))
+        # Ya no debe emitir (estamos fuera del último)
+        names = [m.name for m in ap.msgs]
+        assert "position/consistently_last" not in names
+
+
+class TestBugSessionMonitorFormationEndThroughCountdown:
+    """formation_end debe emitirse aunque la salida pase por COUNTDOWN."""
+
+    def test_formation_end_via_countdown(self):
+        ap = FakeAudioPlayer()
+        ev = SessionMonitor(ap=ap)
+        ev.trigger_internal(None, _gsd(phase=SessionPhase.FORMATION))
+        ev.trigger_internal(None, _gsd(phase=SessionPhase.COUNTDOWN))
+        ev.trigger_internal(None, _gsd(phase=SessionPhase.GREEN))
+        names = [m.name for m in ap.msgs]
+        assert "session/formation_start" in names
+        assert "session/formation_end" in names
+
+
+class TestBugShouldSuppressDefensive:
+    """should_suppress debe manejar curr=None sin crashear."""
+
+    def test_should_suppress_with_none_session(self):
+        from src.intelligence.events.flags_monitor import FlagsMonitor
+        ev = FlagsMonitor(ap=FakeAudioPlayer())
+        # No debe crashear
+        result = ev.should_suppress(None)
+        # Decisión: si curr es None, suprimir (no podemos validar)
+        assert result is True or result is False  # No crash

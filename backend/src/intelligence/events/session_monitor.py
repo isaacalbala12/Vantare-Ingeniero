@@ -38,10 +38,14 @@ class SessionMonitor(AbstractEvent):
         super().__init__(ap)
         self._prev_type: Optional[SessionType] = None
         self._prev_phase: Optional[SessionPhase] = None
+        # Flag local: ¿hemos visto la formación en algún momento de esta sesión?
+        # Se mantiene True hasta que sp==GREEN (no solo sp != FORMATION).
+        self._in_formation_session: bool = False
 
     def clear_state(self) -> None:
         self._prev_type = None
         self._prev_phase = None
+        self._in_formation_session = False
         event_flags.on_formation = False
 
     def trigger_internal(
@@ -61,28 +65,26 @@ class SessionMonitor(AbstractEvent):
         # Cubrimos dos casos:
         # 1. Transición desde otra fase -> FORMATION
         # 2. Primer tick y ya estamos en FORMATION (prev=None, sp=FORMATION)
-        is_first_tick = self._prev_phase is None
         in_formation_now = sp == SessionPhase.FORMATION
-        was_in_formation = self._prev_phase == SessionPhase.FORMATION
+        was_in_formation = self._in_formation_session
 
         if in_formation_now and not was_in_formation:
             event_flags.on_formation = True
+            self._in_formation_session = True
             self.play(QueuedMessage(
                 F_FORMATION_START, expires=10, priority=8,
                 fragments=contents("formation lap starting"),
             ))
 
-        # Detección de fin de formación
-        if (
-            self._prev_phase == SessionPhase.FORMATION
-            and sp != SessionPhase.FORMATION
-        ):
+        # Detección de fin de formación: cuando llegamos a GREEN
+        # y previamente estuvimos en formación (incluso si pasamos por COUNTDOWN).
+        if self._in_formation_session and sp == SessionPhase.GREEN:
             event_flags.on_formation = False
-            if sp == SessionPhase.GREEN:
-                self.play(QueuedMessage(
-                    F_FORMATION_END, expires=10, priority=8,
-                    fragments=contents("go go go, race start"),
-                ))
+            self._in_formation_session = False
+            self.play(QueuedMessage(
+                F_FORMATION_END, expires=10, priority=8,
+                fragments=contents("go go go, race start"),
+            ))
 
         self._prev_type = st
         self._prev_phase = sp
