@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""Test both temperature 0.3 for MM and original benchmark prompts"""
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
+import httpx, asyncio, time
+
+M = 'sk-cp-lVwmDjCdt5oqMiU5ySsVmOc_SrOQy0w3wawWINLKZOcbm0Q79cRhBp8ssD6ZmFqHVW9wZbBJnRsX93MuzzUl66UK6vglNxOo2czPx1sIXB79TFtfET-IUs0'
+S = '5vQAZ5OKkVI0TrH09d5do3bul1pww94VaRrj3MjcSa2o8dHYDoWdpGp1iltDpvOJo'
+
+def extract_mm(msg):
+    content = msg.get('content') or ''
+    if not content.strip(): content = msg.get('reasoning_content') or ''
+    if not content.strip(): content = msg.get('reasoning') or ''
+    return content.strip()
+
+def extract_sf(msg):
+    content = msg.get('content') or ''
+    if not content.strip(): content = msg.get('reasoning') or ''
+    return content.strip()
+
+def sc(t, k): return sum(1 for x in k if x.lower() in t.lower()) / len(k)
+
+TICKERS = {
+    'A': 'DRV:P3|L10|F:42.3L/3.2(13L)|TYR:72/68/65/63|92/94/98/96C|BRK:38/35/22/20%|GAP>VST:+2.1|d-0.3|<ALO:-1.2|SES:HY|RACE|38L|45:22|WTH:MED|22C|30%|+15min|SC:N',
+    'E': 'DRV:P12|L35|F:5.2L/3.4(0L)|TYR:88/85/83/80|95/97/98/94C|BRK:75/72/68/65%|GAP>ALB:+15.2|d+0.3|<TSU:-8.3|SES:GT3|RACE|38L|3:45|WTH:LOW|15C|90%|+0min|SC:N',
+}
+HIST_A = 'HISTORICO (ultimas 5 vueltas):\nV5: 1:48.2, Fuel 3.1L, TYR 52%, BRK 28%\nV6: 1:48.5, Fuel 3.2L, TYR 58%, BRK 32%\nV7: 1:48.1, Fuel 3.2L, TYR 64%, BRK 35%\nV8: 1:48.9, Fuel 3.3L, TYR 68%, BRK 38%\nV9: 1:49.2, Fuel 3.4L, TYR 72%, BRK 38%'
+HIST_E = 'STINT FINAL (ultimas 5 vueltas):\nV30: Lap 1:50.8, Fuel 32.1L, TYR 78/76/74/72%\nV31: Lap 1:51.2, Fuel 28.7L, TYR 82/80/78/76%\nV32: Lap 1:52.1, Fuel 25.3L, TYR 85/83/81/79%\nV33: Lap 1:52.8, Fuel 21.9L, TYR 87/85/83/81%\nV34: Lap 1:53.5, Fuel 18.5L, TYR 88/85/83/80%\n\nANALISIS: Degradacion acelerandose: 2.4s -> 2.7s -> 3.2s -> 3.5s'
+
+Q = [
+    ('L1', 'A', 'Cual es mi posicion y vuelta actual?', ['P3', 'L10', '3', '10']),
+    ('L1', 'A', 'Cuanto combustible tengo y para cuantas vueltas?', ['42.3', '13', 'L']),
+    ('L1', 'A', 'Cual es el consumo promedio por vuelta?', ['3.2', '3.2L']),
+    ('L1', 'A', 'Cual es el desgaste del neumatico trasero derecho?', ['63', '63%']),
+    ('L1', 'E', 'Tengo combustible para llegar a meta?', ['0', '0L', 'critico', 'no']),
+    ('L2', 'A', 'Estoy amenazado por ALO desde atras?', ['-1.2', 'si', 'cerca']),
+    ('L2', 'E', 'Los frenos estan criticos?', ['75', '72', 'critico']),
+    ('L3', 'E', 'Combustible 0L. Que hago?', ['entrar', 'inmediato', 'urgente']),
+    ('L3', 'A', 'STINT de 10 vueltas con neumaticos 72%. Estrategia?', ['15', 'entrar', 'gestionar']),
+    ('L4', 'A', 'P3 con VST +2.1s y ALO -1.2s. Neumaticos 72%, combustible 42.3L. Analiza la batalla.', ['P3', 'VST', 'ALO', '72%', '42.3']),
+    ('L5', 'A', 'El consumo de combustible esta aumentando? Cuanto he perdido?', ['3.1', '3.4', 'aumentando', '+0.3', 'si'], HIST_A),
+    ('L5', 'E', 'La degradacion de neumaticos se esta acelerando? Cuanto mas lento?', ['2.4', '3.5', 'acelerando', '+1.1', 'si'], HIST_E),
+    ('L6', 'E', 'Combustible 0L, lluvia 90% ahora, neumaticos 88%. Prioridad?', ['combustible', 'urgente', 'entrar', 'lluvia']),
+    ('L7', 'E', 'Fuel 5.2L en vuelta 35 de 38. Puedo hacer las 3 vueltas restantes?', ['3.4', '0', 'no', 'critico']),
+    ('L8', 'A', 'Fuel cayendo: 42.3L -> 39.1L -> 35.9L -> 32.7L -> 29.5L en 5 ticks. Cual es la tendencia?', ['3.2', '3.3', '3.4', 'aumentando']),
+]
+
+PROMPTS = [
+    ('ORIG', 'Eres un ingeniero de carrera. Maximo 2-3 frases. Estilo radio.'),
+    ('NEW2', 'Race engineer response: Data questions -> numbers only. Advice questions -> short action. Be concise. Example data: P3 L10 F42.3. Example advice: Entrar boxes urgente.'),
+]
+
+def build_content(tid, q, extra):
+    parts = ['### TELEMETRIA ###\n' + TICKERS.get(tid, '')]
+    if extra: parts.append('\n### HISTORICO ###\n' + extra)
+    parts.append('\n### PREGUNTA ###\n' + q)
+    return '\n'.join(parts)
+
+async def call(client, url, model, key, sys, content, is_sf, temp):
+    payload = {'model': model, 'messages': [{'role': 'system', 'content': sys}, {'role': 'user', 'content': content}], 'max_tokens': 200, 'temperature': temp}
+    if is_sf: payload['thinking'] = {'type': 'off'}
+    h = {'Authorization': f'Bearer {key}', 'Content-Type': 'application/json'}
+    try:
+        r = await client.post(url + '/chat/completions', headers=h, json=payload, timeout=30.0)
+        if r.status_code == 200: return r.json()['choices'][0]['message']
+    except: pass
+    return {}
+
+async def run():
+    configs = [
+        # (name, api, model, key, is_sf, temp)
+        ('MM-ORIG-t01', 'minimaxi', 'MiniMax-M2.7', M, False, 0.1),
+        ('MM-ORIG-t03', 'minimaxi', 'MiniMax-M2.7', M, False, 0.3),
+        ('MM-NEW2-t01', 'minimaxi', 'MiniMax-M2.7', M, False, 0.1),
+        ('MM-NEW2-t03', 'minimaxi', 'MiniMax-M2.7', M, False, 0.3),
+        ('SF-ORIG-t01', 'stepfun', 'step-3.7-flash', S, True, 0.1),
+        ('SF-ORIG-t03', 'stepfun', 'step-3.7-flash', S, True, 0.3),
+        ('SF-NEW2-t01', 'stepfun', 'step-3.7-flash', S, True, 0.1),
+        ('SF-NEW2-t03', 'stepfun', 'step-3.7-flash', S, True, 0.3),
+    ]
+    
+    results = []
+    t0 = time.time()
+    
+    for cfg_name, api_name, model, key, is_sf, temp in configs:
+        base_url = 'https://api.minimaxi.chat/v1' if api_name == 'minimaxi' else 'https://api.stepfun.ai/step_plan/v1'
+        prompt = PROMPTS[0][1] if 'ORIG' in cfg_name else PROMPTS[1][1]
+        
+        sc_total = 0
+        async with httpx.AsyncClient() as client:
+            tasks = []
+            for item in Q:
+                tid, q = item[1], item[2]
+                extra = item[4] if len(item) > 4 else None
+                content = build_content(tid, q, extra)
+                tasks.append(call(client, base_url, model, key, prompt, content, is_sf, temp))
+            
+            all_msgs = await asyncio.gather(*tasks)
+            
+            for i, item in enumerate(Q):
+                kw = item[3]
+                extractor = extract_mm if api_name == 'minimaxi' else extract_sf
+                text = extractor(all_msgs[i]) if all_msgs[i] else ''
+                sc_total += sc(text, kw)
+        
+        pct = sc_total / len(Q) * 100
+        results.append((cfg_name, pct))
+        print(f'{cfg_name}: {pct:.0f}%')
+    
+    print(f'\nDone in {time.time()-t0:.1f}s')
+    results.sort(key=lambda x: x[1], reverse=True)
+    print('\n--- RANKING ---')
+    for n, pct in results:
+        print(f'{n}: {pct:.0f}%')
+    
+    # Best MM + Best SF
+    mm_results = [(n, pct) for n, pct in results if 'MM' in n]
+    sf_results = [(n, pct) for n, pct in results if 'SF' in n]
+    best_mm = max(mm_results, key=lambda x: x[1])
+    best_sf = max(sf_results, key=lambda x: x[1])
+    combined = (best_mm[1] + best_sf[1]) / 2
+    print(f'\nBEST PAIR: {best_mm[0]}={best_mm[1]:.0f}% + {best_sf[0]}={best_sf[1]:.0f}% = AVG {combined:.0f}%')
+
+asyncio.run(run())
