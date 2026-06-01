@@ -79,25 +79,33 @@ class AbstractEvent(ABC):
     def P(ms: int):
         return Pause(ms)
 
-    def play(self, m: QueuedMessage) -> None:
-        if self.ap is None:
+    def play(self, m) -> None:
+        if m is None or not hasattr(m, "can_play"):
             return
         if not m.can_play:
+            return
+        if self.ap is None:
             return
         if hasattr(self.ap, "play") and callable(self.ap.play):
             try:
                 self.ap.play(m)
             except Exception as e:
-                logger.error(f"play() failed for {m.name}: {e}")
+                name = getattr(m, "name", "<unknown>")
+                logger.error(f"play() failed for {name}: {e}")
 
-    def play_imm(self, m: QueuedMessage) -> None:
+    def play_imm(self, m) -> None:
+        if m is None or not hasattr(m, "can_play"):
+            return
+        if not m.can_play:
+            return
         if self.ap is None:
             return
         if hasattr(self.ap, "play_imm") and callable(self.ap.play_imm):
             try:
                 self.ap.play_imm(m)
             except Exception as e:
-                logger.error(f"play_imm() failed for {m.name}: {e}")
+                name = getattr(m, "name", "<unknown>")
+                logger.error(f"play_imm() failed for {name}: {e}")
 
 
 class FakeAudioPlayer:

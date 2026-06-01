@@ -53,6 +53,8 @@ class FlagsMonitor(AbstractEvent):
     def trigger_internal(
         self, prev: Optional[GameStateData], curr: GameStateData
     ) -> None:
+        if curr is None:
+            return
         if self.should_suppress(curr):
             self._prev_phase = curr.session.session_phase
             return

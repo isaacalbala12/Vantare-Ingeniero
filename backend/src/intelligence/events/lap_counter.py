@@ -39,17 +39,23 @@ class LapCounter(AbstractEvent):
         self._prev_sector: int = 1
         self._was_pitting: bool = False
         self._played_first_lap_after_pit: bool = False
+        # Máximo de vueltas visto, para detectar glitches de decremento.
+        # Solo emitimos new_lap si current_lap == _max_lap_seen + 1.
+        self._max_lap_seen: int = 0
 
     def clear_state(self) -> None:
         self._prev_lap = 0
         self._prev_sector = 1
         self._was_pitting = False
         self._played_first_lap_after_pit = False
+        self._max_lap_seen = 0
         event_flags.last_lap_was_pit_lap = False
 
     def trigger_internal(
         self, prev: Optional[GameStateData], curr: GameStateData
     ) -> None:
+        if curr is None:
+            return
         if self.should_suppress(curr):
             self._prev_lap = curr.session.completed_laps
             return
@@ -66,13 +72,11 @@ class LapCounter(AbstractEvent):
             self._played_first_lap_after_pit = False
         self._was_pitting = in_pits
 
-        # Detección de vuelta nueva
-        if self._prev_lap > 0 and current_lap > self._prev_lap:
+        # Detección de vuelta nueva: SOLO si current_lap == _max_lap_seen + 1.
+        # Esto filtra glitches de decremento: 5→4→5→6 emite SOLO en el 6,
+        # no en el 4→5 (porque el 5 ya fue visto).
+        if self._max_lap_seen > 0 and current_lap == self._max_lap_seen + 1:
             new_lap = current_lap
-
-            # Si la vuelta anterior fue de pit, marcar
-            if self._prev_lap == event_flags.last_lap_was_pit_lap:
-                pass
 
             event_flags.last_lap_was_pit_lap = (
                 self._prev_lap if not in_pits else False
@@ -86,11 +90,14 @@ class LapCounter(AbstractEvent):
                     fragments=contents("warmup lap"),
                 ))
 
-            # Anunciar número de vuelta (cooldown: cada vuelta)
+            # Anunciar número de vuelta
             self.play(QueuedMessage(
                 F_LAP, expires=5, priority=5,
                 fragments=contents("lap", new_lap),
             ))
 
+        # Actualizar el máximo visto
+        if current_lap > self._max_lap_seen:
+            self._max_lap_seen = current_lap
         self._prev_lap = current_lap
         self._prev_sector = curr.session.sector_number

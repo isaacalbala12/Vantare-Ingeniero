@@ -47,6 +47,8 @@ class SessionMonitor(AbstractEvent):
     def trigger_internal(
         self, prev: Optional[GameStateData], curr: GameStateData
     ) -> None:
+        if curr is None:
+            return
         if self.should_suppress(curr):
             self._prev_type = curr.session.session_type
             self._prev_phase = curr.session.session_phase
@@ -55,12 +57,15 @@ class SessionMonitor(AbstractEvent):
         st = curr.session.session_type
         sp = curr.session.session_phase
 
-        # Detección de inicio de formación
-        if (
-            self._prev_phase is not None
-            and self._prev_phase != SessionPhase.FORMATION
-            and sp == SessionPhase.FORMATION
-        ):
+        # Detección de inicio de formación.
+        # Cubrimos dos casos:
+        # 1. Transición desde otra fase -> FORMATION
+        # 2. Primer tick y ya estamos en FORMATION (prev=None, sp=FORMATION)
+        is_first_tick = self._prev_phase is None
+        in_formation_now = sp == SessionPhase.FORMATION
+        was_in_formation = self._prev_phase == SessionPhase.FORMATION
+
+        if in_formation_now and not was_in_formation:
             event_flags.on_formation = True
             self.play(QueuedMessage(
                 F_FORMATION_START, expires=10, priority=8,

@@ -91,6 +91,8 @@ class PositionEvent(AbstractEvent):
     def trigger_internal(
         self, prev: Optional[GameStateData], curr: GameStateData
     ) -> None:
+        if curr is None:
+            return
         if self.should_suppress(curr):
             self.prev_pos = curr.session.class_position
             return
@@ -150,6 +152,10 @@ class PositionEvent(AbstractEvent):
         cooldown_ok = (now <= 0) or (now - self.last_overtake_time > 5)
         cooldown_ok2 = (now <= 0) or (now - self.last_overtaken_time > 5)
 
+        # lost_lead ya cubre la transición cuando P1 -> P_n. No emitir
+        # being_overtaken en ese caso (sería redundante).
+        just_lost_lead = (self.was_leader and not self.is_leader and new_pos > 1)
+
         # Detección de overtake (pos mejora)
         if self.pos < old_pos and old_pos > 0 and self.pos > 0 and cooldown_ok:
             self.last_overtake_time = now
@@ -158,8 +164,18 @@ class PositionEvent(AbstractEvent):
                 fragments=contents("overtaking, now p", self.pos),
             ))
 
-        # Detección de ser adelantado (pos empeora)
-        elif self.pos > old_pos and old_pos > 0 and self.pos > 0 and cooldown_ok2:
+        # Detección de ser adelantado (pos empeora).
+        # NO emitir si num_cars=1 (solo nosotros): el "incremento" de pos
+        # es un artefacto del juego, no un overtake real.
+        # NO emitir si acabamos de emitir lost_lead (redundante).
+        elif (
+            self.pos > old_pos
+            and old_pos > 0
+            and self.pos > 0
+            and cooldown_ok2
+            and num_cars > 1
+            and not just_lost_lead
+        ):
             self.last_overtaken_time = now
             self.play(QueuedMessage(
                 F_BEING_OVERTAKEN, expires=5, priority=8,

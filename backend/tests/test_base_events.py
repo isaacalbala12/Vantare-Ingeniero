@@ -283,3 +283,109 @@ class TestPositionEvent:
         # No debe haber overtake (estamos en el mismo pos)
         names = [m.name for m in ap.msgs]
         assert F_OVERTAKE not in names
+
+    def test_no_being_overtaken_with_no_opponents(self):
+        """Con num_cars=1 (solo nosotros), no debe emitir being_overtaken."""
+        ap = FakeAudioPlayer()
+        ev = PositionEvent(ap=ap)
+        ev.trigger_internal(None, _gsd(pos=2, num_opponents=0))
+        names = [m.name for m in ap.msgs]
+        assert F_BEING_OVERTAKEN not in names
+
+    def test_no_double_msg_on_lost_lead(self):
+        """P1->P2 NO debe emitir both lost_lead AND being_overtaken."""
+        ap = FakeAudioPlayer()
+        ev = PositionEvent(ap=ap)
+        ev.trigger_internal(None, _gsd(pos=1))
+        ap.clear()
+        ev.trigger_internal(None, _gsd(pos=2))
+        names = [m.name for m in ap.msgs]
+        # Solo lost_lead, no being_overtaken (es la misma transición)
+        assert F_LOST_LEAD in names
+        assert F_BEING_OVERTAKEN not in names
+
+
+# === TESTS DE BUGS ENCONTRADOS EN REVIEW ===
+
+class TestBugDefensiveCurrNone:
+    """Todos los eventos deben manejar curr=None sin crashear."""
+
+    def test_flags_monitor_curr_none(self):
+        ap = FakeAudioPlayer()
+        ev = FlagsMonitor(ap=ap)
+        ev.trigger_internal(None, None)
+        # No debe crashear
+        assert len(ap.msgs) == 0
+
+    def test_session_monitor_curr_none(self):
+        ap = FakeAudioPlayer()
+        ev = SessionMonitor(ap=ap)
+        ev.trigger_internal(None, None)
+
+    def test_lap_counter_curr_none(self):
+        ap = FakeAudioPlayer()
+        ev = LapCounter(ap=ap)
+        ev.trigger_internal(None, None)
+
+    def test_position_event_curr_none(self):
+        ap = FakeAudioPlayer()
+        ev = PositionEvent(ap=ap)
+        ev.trigger_internal(None, None)
+
+
+class TestBugLapCounterMonotonic:
+    """LapCounter no debe emitir new_lap si el incremento no es de 1."""
+
+    def test_no_new_lap_on_decrement(self):
+        ap = FakeAudioPlayer()
+        ev = LapCounter(ap=ap)
+        ev.trigger_internal(None, _gsd(lap=5))
+        ap.clear()
+        ev.trigger_internal(None, _gsd(lap=4))  # decremento
+        assert len(ap.msgs) == 0
+
+    def test_no_new_lap_on_decrement_then_increment(self):
+        ap = FakeAudioPlayer()
+        ev = LapCounter(ap=ap)
+        ev.trigger_internal(None, _gsd(lap=5))
+        ev.trigger_internal(None, _gsd(lap=4))  # glitch
+        ap.clear()
+        ev.trigger_internal(None, _gsd(lap=5))  # vuelta a 5
+        # No es vuelta nueva, es vuelta vieja
+        assert len(ap.msgs) == 0
+
+    def test_new_lap_on_strict_increment(self):
+        ap = FakeAudioPlayer()
+        ev = LapCounter(ap=ap)
+        ev.trigger_internal(None, _gsd(lap=5))
+        ap.clear()
+        ev.trigger_internal(None, _gsd(lap=6))  # +1
+        names = [m.name for m in ap.msgs]
+        assert F_LAP in names
+
+
+class TestBugSessionMonitorFirstTick:
+    """SessionMonitor debe emitir formation_start en el primer tick si ya estamos en formation."""
+
+    def test_formation_start_on_first_tick_if_already_in_formation(self):
+        ap = FakeAudioPlayer()
+        ev = SessionMonitor(ap=ap)
+        ev.trigger_internal(None, _gsd(phase=SessionPhase.FORMATION))
+        names = [m.name for m in ap.msgs]
+        assert F_FORMATION_START in names
+
+
+class TestBugPlayWithInvalidMessage:
+    """play() debe ser defensivo con argumentos inválidos."""
+
+    def test_play_with_none(self):
+        ev = PositionEvent(ap=FakeAudioPlayer())
+        ev.play(None)  # No debe crashear
+
+    def test_play_with_object_without_can_play(self):
+        ev = PositionEvent(ap=FakeAudioPlayer())
+        ev.play(object())  # No debe crashear
+
+    def test_play_imm_with_none(self):
+        ev = PositionEvent(ap=FakeAudioPlayer())
+        ev.play_imm(None)  # No debe crashear
