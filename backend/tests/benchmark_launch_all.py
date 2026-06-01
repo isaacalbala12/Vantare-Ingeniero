@@ -1,41 +1,39 @@
 #!/usr/bin/env python3
 """
-Run all 3 benchmarks in parallel with infinite tokens
+Run LOCAL LM Studio benchmarks SEQUENTIALLY (to avoid model reload issues)
 """
 
 import subprocess, time, os, sys
 
-# Change to tests directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 models = [
-    "MiniMax-M2.7",
-    "MiniMax-M3", 
-    "StepFun-3.7",
+    "smollm3-3b-128k",
+    "unsloth-granite-4.1-3b",
+    "ministral-3-3b",
+    "granite-4.1-8b",
+    "lfm2.5-8b-a1b",
+    "greg-0-mini",
+    "gemma-4-e4b-it-coder",
 ]
 
 print("="*60)
-print("LAUNCHING ALL 3 BENCHMARKS IN PARALLEL")
+print("LAUNCHING BENCHMARKS SEQUENTIALLY")
 print("="*60)
 
-processes = []
-for model in models:
-    print(f"\nLaunching: {model}")
-    p = subprocess.Popen([
+for i, model in enumerate(models, 1):
+    print(f"\n[{i}/{len(models)}] Running: {model}")
+    print("-"*40)
+    
+    result = subprocess.run([
         sys.executable, 
         "benchmark_v2_runner.py", 
         model
-    ])
-    processes.append((model, p))
-    time.sleep(1)  # Stagger slightly
-
-print(f"\n{len(processes)} processes launched. Waiting for completion...")
-print("Monitor benchmark_results folder for outputs.")
-
-# Wait for all
-for model, p in processes:
-    retcode = p.wait()
-    print(f"  {model} finished with code {retcode}")
+    ], capture_output=False)
+    
+    print(f"  Finished with code {result.returncode}")
+    print(f"  Next model in 5s...")
+    time.sleep(5)
 
 print("\n" + "="*60)
 print("ALL BENCHMARKS COMPLETE")
