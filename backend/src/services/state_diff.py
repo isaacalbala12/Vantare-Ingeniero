@@ -27,6 +27,7 @@ class StateDiff:
         self._prev_rivals: Dict[str, dict] = {}
         self._pending: Dict[str, dict] = {}
         self._bounce_lag: float = 1.0
+        self._last_confirmed_position: Optional[int] = None
 
     def update(self, current: dict, now: float = 0.0) -> TickChanges:
         now = now or time.time()
@@ -50,13 +51,31 @@ class StateDiff:
 
         old_pos = self._prev.get("place", 0)
         new_pos = current.get("place", 0)
-        if old_pos != new_pos and new_pos > 0:
+
+        # Initialize last confirmed on first run
+        if self._last_confirmed_position is None:
+            self._last_confirmed_position = old_pos if old_pos > 0 else new_pos
+
+        # Always check pending (even on stable position)
+        # Usar elif: si el pending se resolvió, no crear uno nuevo en el mismo tick
+        pending_player = self._pending.get("player")
+        if pending_player and now >= pending_player["settle"]:
+            settled = pending_player["new"]
+            if settled != self._last_confirmed_position:
+                c.position_changed = True
+                c.old_position = self._last_confirmed_position
+                c.new_position = settled
+                self._last_confirmed_position = settled
+            self._pending.pop("player", None)
+
+        elif old_pos != new_pos and new_pos > 0:
             p = self._pending.get("player")
             if p and p["new"] == new_pos:
                 if now >= p["settle"]:
                     c.position_changed = True
-                    c.old_position = old_pos
+                    c.old_position = self._last_confirmed_position
                     c.new_position = new_pos
+                    self._last_confirmed_position = new_pos
                     self._pending.pop("player", None)
             else:
                 self._pending["player"] = {
