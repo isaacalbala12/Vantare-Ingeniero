@@ -40,6 +40,7 @@ class PyAudioOutput(AudioOutput):
 
     def __init__(self):
         self._py_audio = None
+        self._owned_output: bool = False
 
     def play_wav(self, path: str, stop_flag: threading.Event) -> None:
         if not os.path.exists(path):
@@ -72,9 +73,9 @@ class PyAudioOutput(AudioOutput):
             wf.close()
 
     def close(self) -> None:
-        if self._owned_output and self._audio_output:
-            self._audio_output.close()
-            self._audio_output = None
+        if hasattr(self, '_py_audio') and self._py_audio:
+            self._py_audio.terminate()
+            self._py_audio = None
 
 
 class NullAudioOutput(AudioOutput):
@@ -212,6 +213,7 @@ class AudioPlayer:
                 continue
             # Broadcast del mensaje
             if self._broadcast:
+                logger.debug("Broadcasting crewchief event: %s", msg.name if hasattr(msg, 'name') else '?')
                 try:
                     self._broadcast(msg)
                 except Exception as e:

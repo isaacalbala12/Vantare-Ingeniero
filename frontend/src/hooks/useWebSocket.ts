@@ -19,6 +19,7 @@ export function useWebSocket() {
     addMessageToHistory,
     setLatestAdvice,
     setLatestAlert,
+    pushCrewchiefAlert,
   } = useAppStore();
 
   const [lastTelemetry, setLastTelemetry] = useState<any>(null);
@@ -35,6 +36,8 @@ export function useWebSocket() {
   const isTtsProcessingRef = useRef<boolean>(false);
   const previousFrameRef = useRef<Record<string, unknown> | null>(null);
   const frameCountRef = useRef<number>(0);
+  const lastTtsTimeRef = useRef<number>(0);
+  const lastTtsMessageRef = useRef<string>("");
 
   // Guardar referencias del store para evitar recrear funciones
   const currentTokensRef = useRef("");
@@ -81,6 +84,17 @@ export function useWebSocket() {
       processTtsQueue();
     }
   }, [setRadioMode]);
+
+  // Encolar mensaje TTS con rate limiting: max 1 cada 2s, ignorar duplicados consecutivos
+  const enqueueTts = useCallback((message: string) => {
+    const now = Date.now();
+    if (now - lastTtsTimeRef.current < 2000) return;
+    if (message === lastTtsMessageRef.current) return;
+    lastTtsTimeRef.current = now;
+    lastTtsMessageRef.current = message;
+    ttsQueueRef.current.push(message);
+    processTtsQueue();
+  }, []);
 
   const connect = useCallback(() => {
     if (socketRef.current && (socketRef.current.readyState === WebSocket.CONNECTING || socketRef.current.readyState === WebSocket.OPEN)) {
@@ -296,10 +310,9 @@ export function useWebSocket() {
             }
             setCurrentTokens("");
 
-            // Añadir a la cola TTS para procesar secuencialmente
+            // Añadir a la cola TTS para procesar secuencialmente (con rate limiting)
             if (fullText && !fullText.startsWith("---")) {
-              ttsQueueRef.current.push(fullText);
-              processTtsQueue();
+              enqueueTts(fullText);
             }
             break;
           }
@@ -314,13 +327,37 @@ export function useWebSocket() {
               alerts: [alertMsg]
             });
             
-            // Encolar en TTS para que se hable la alerta
+            // Encolar en TTS para que se hable la alerta (con rate limiting)
             if (alertMsg) {
-              ttsQueueRef.current.push(alertMsg);
-              processTtsQueue();
+              enqueueTts(alertMsg);
             }
             break;
           }
+          case "crewchief_alert": {
+            const { category, subtype, message, severity, audio_priority, payload: innerPayload } = payload;
+
+            // 1. Actualizar store
+            pushCrewchiefAlert({
+              category, subtype, message, severity, audioPriority: audio_priority,
+              payload: innerPayload || {},
+            });
+
+            // 2. Alertas criticas/altas tambien van al sistema de alertas visual
+            if (severity === "critical" || severity === "high") {
+              setLatestAlert(message || subtype || category);
+              updateTelemetry({
+                alerts: [message || subtype || category],
+              });
+            }
+
+            // 3. TODOS los mensajes CrewChief se encolan en TTS (con rate limiting)
+            if (message) {
+              enqueueTts(message);
+            }
+
+            break;
+          }
+
 
           default:
             console.log("[useWebSocket] Evento desconocido:", eventType, payload);
@@ -359,6 +396,7 @@ export function useWebSocket() {
     addMessageToHistory,
     setLatestAdvice,
     setLatestAlert,
+    pushCrewchiefAlert,
     processTtsQueue,
   ]);
 
