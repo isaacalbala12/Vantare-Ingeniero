@@ -1,0 +1,83 @@
+T8: Spotter tick flow E2E (frame -> AlertMessage)
+Command: cd backend && pytest tests/test_spotter_flow_e2e.py -v --tb=short
+Result: 32 passed in 0.21s
+
+Files Created:
+  - backend/tests/test_spotter_flow_e2e.py (32 tests, no mocks)
+
+Test Classes:
+  1. TestSpotterDeterministicConditions (14 tests) — all 8 deterministic
+     conditions in SpotterService.evaluate() + edge cases:
+       a. test_pit_limiter_not_active_emits_critical — in_pits=True, limiter off
+          -> category=limiter, severity=CRITICAL, audio_priority="4"
+       b. test_pit_limiter_not_disabled_emits_warning — in_pits=False, limiter on
+          -> category=limiter, severity=WARNING, audio_priority="3"
+       c. test_gap_ahead_narrow_emits_info — gap_ahead=0.3 -> gaps/INFO
+       d. test_gap_behind_narrow_emits_info — gap_behind=0.2 -> gaps/INFO
+       e. test_damage_aero_detected_emits_warning — damage_aero=0.5
+          -> category=damage, severity=WARNING
+       f. test_safety_car_emits_critical — safety_car_active=True
+          -> category=safety_car, severity=CRITICAL, dismissable=False
+       g. test_fcy_emits_safety_car_critical — full_course_yellow_active=True
+       h. test_last_lap_emits_high — session_laps_left=1.0
+          -> category=session, severity=HIGH, audio_priority="2"
+       i. test_fuel_critical_emits_critical — fuel_laps_remaining=0.5
+          -> category=fuel, severity=CRITICAL, dismissable=False
+       j. test_fuel_critical_via_estimated_laps_remaining_fallback — verifies
+          the fallback path in evaluate() line 137
+       k. test_multiple_threats_emit_multiple_alerts — 5 conditions in one
+          tick -> 5 distinct AlertMessage with unique alert_ids
+       l. test_normal_tick_emits_no_alerts — negative test, safe state
+       m. test_evaluate_returns_alerts_and_evaluate_tick_broadcasts_them
+          — direct evaluate() return vs callback captures match
+       n. test_evaluate_tick_with_none_state_does_not_crash
+
+  2. TestNoisyCartesianCoordinateSpotter (12 tests) — geometry-based:
+       a. test_rival_ahead_right_emits_car_right — ax>0 -> CAR_RIGHT
+       b. test_rival_ahead_left_emits_car_left — ax<0 -> CAR_LEFT
+       c. test_rival_on_left_and_right_emits_three_wide — THREE_WIDE
+       d. test_rival_behind_within_zone_detected — az<0 within car_len
+       e. test_rival_far_outside_zone_ignored — zone=20, rival 30m away
+       f. test_pilot_parked_emits_nothing — speed<min_speed
+       g. test_pilot_at_origin_emits_nothing — (0,0) origin
+       h. test_no_rivals_no_alerts_negative_test — empty opps list
+       i. test_clear_messages_after_rival_leaves — CLEAR_LEFT
+       j. test_clear_all_round_when_both_sides_cleared — CLEAR_ALL_ROUND
+       k. test_three_wide_on_right_when_multiple_left
+       l. test_three_wide_on_left_when_multiple_right
+
+  3. TestEndToEndPipeline (6 tests) — full chain:
+       a. test_full_chain_pit_limiter_critical_alert
+       b. test_full_chain_no_callback_set_does_not_crash
+       c. test_full_chain_combined_threats — 5 categories in one tick
+       d. test_full_chain_pydantic_model_via_evaluate_tick
+       e. test_full_chain_no_false_positives_on_safe_state
+       f. test_full_chain_alert_message_shape_complete — every field
+
+Test Pattern (NO unittest.mock):
+  - ListCallback: plain class with __call__ that appends to a list
+  - AudioRecorder: plain class with play_spotter_message / play methods
+  - Real SpotterService() and real NoisyCartesianCoordinateSpotter()
+  - Real AlertMessage instances (no dicts)
+
+Threats Covered:
+  - All 8 deterministic conditions in spotter.py evaluate()
+  - All major NoisyCartesianCoordinateSpotter geometries (left/right,
+    three_wide, clear, parked, origin, far)
+  - Multi-threat single tick (5 simultaneous alerts)
+  - Negative tests (no false positives)
+
+Key Findings:
+  - SpotterService.evaluate() line 137 uses fuel_laps_remaining FIRST
+    then falls back to estimated_laps_remaining. Tests that drive
+    the fuel alert must set fuel_laps_remaining directly, OR delete
+    the key to exercise the fallback.
+  - audio_priority is serialized as a string (str(audio_priority)) in
+    _create_alert, not an int.
+  - SpotterService.evaluate_tick() gracefully handles None, dict, and
+    Pydantic objects (any object with model_dump, dict, or vars).
+  - NoisyCartesianCoordinateSpotter ignores pilots at (0,0) origin and
+    those below min_speed (m/s). The zone check is per-axis (X and Z
+    separately, not Euclidean).
+
+Status: PASS [32/32]

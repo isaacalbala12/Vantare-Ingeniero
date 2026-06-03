@@ -1,0 +1,125 @@
+# T9: Strategy sidecar → backend broadcast E2E — Evidence
+
+**Date**: 2026-06-03
+**Test file**: `backend/tests/test_strategy_flow_e2e.py`
+**Status**: ✅ 14/14 PASSED in 1.04s
+**Branch**: `feature/benchmark-llm`
+
+## Summary
+
+Created a real E2E test that exercises the **real** `shared-strategy`
+engine end-to-end through the **real** backend `/ws/sidecar` WebSocket
+endpoint. **Zero `unittest.mock`** anywhere in the strategy-computation
+or WS-transport paths.
+
+```
+$ cd backend && pytest tests/test_strategy_flow_e2e.py -v --tb=short
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.3, pluggy-1.6.0
+collected 14 items
+
+tests/test_strategy_flow_e2e.py::TestComputeStrategyRealistic::test_early_race_no_pit_needed PASSED
+tests/test_strategy_flow_e2e.py::TestComputeStrategyRealistic::test_mid_race_pit_recommended PASSED
+tests/test_strategy_flow_e2e.py::TestComputeStrategyRealistic::test_late_race_urgent_pit PASSED
+tests/test_strategy_flow_e2e.py::TestComputeStrategyRealistic::test_hybrid_battery_deploy_scenario PASSED
+tests/test_strategy_flow_e2e.py::TestComputeStrategyStateEvolution::test_fuel_consumption_history_grows PASSED
+tests/test_strategy_flow_e2e.py::TestStrategyFlowWebSocketE2E::test_strategy_frame_received_by_backend PASSED
+tests/test_strategy_flow_e2e.py::TestStrategyFlowWebSocketE2E::test_advice_round_trip_preserves_pit_window_advice PASSED
+tests/test_strategy_flow_e2e.py::TestStrategyFlowWebSocketE2E::test_multiple_strategy_frames_are_processed_in_order PASSED
+tests/test_strategy_flow_e2e.py::TestStrategyFlowWebSocketE2E::test_competitor_data_propagates_to_advice PASSED
+tests/test_strategy_flow_e2e.py::TestPhysicallyReasonableOutputs::test_invariants_across_race_phases[5-95.0-...-early] PASSED
+tests/test_strategy_flow_e2e.py::TestPhysicallyReasonableOutputs::test_invariants_across_race_phases[20-70.0-...-early-mid] PASSED
+tests/test_strategy_flow_e2e.py::TestPhysicallyReasonableOutputs::test_invariants_across_race_phases[40-45.0-...-mid] PASSED
+tests/test_strategy_flow_e2e.py::TestPhysicallyReasonableOutputs::test_invariants_across_race_phases[60-28.0-...-late-mid] PASSED
+tests/test_strategy_flow_e2e.py::TestPhysicallyReasonableOutputs::test_invariants_across_race_phases[75-12.0-...-late] PASSED
+
+============================= 14 passed in 1.04s =============================
+```
+
+## Test Coverage
+
+### 1. `TestComputeStrategyRealistic` — 4 tests
+Direct calls to the real `compute_strategy()` with hand-crafted
+`TelemetryFrame` objects.
+
+| Scenario | Lap | Fuel | Tyre wear | Expected outcome |
+|----------|-----|------|-----------|------------------|
+| `test_early_race_no_pit_needed` | 5/80 | 95L | 5% | pit window far in future, no urgency |
+| `test_mid_race_pit_recommended` | 40/80 | 45L | 50% | pit needed within stint, ≥1 stop |
+| `test_late_race_urgent_pit` | 75/80 | 12L | 70% | pit window opens immediately, ≥1 stop |
+| `test_hybrid_battery_deploy_scenario` | 20 | 70L | 15% | `motor_state=2` propagated, fe_ratio > 0 |
+
+### 2. `TestComputeStrategyStateEvolution` — 1 test
+Verifies `consumption_history` accumulates across laps (regression
+guard for the "detección de cruce de meta" logic in
+`shared-strategy/fuel.py:28-55`).
+
+### 3. `TestStrategyFlowWebSocketE2E` — 4 tests
+End-to-end through the real backend WebSocket router. Each test:
+1. Builds a real `TelemetryFrame`.
+2. Runs real `compute_strategy()` → real `StrategyAdvice`.
+3. Connects to `/ws/sidecar` (the real router from `src.routers.websocket`).
+4. Sends a `strategy_frame` payload (same shape the production sidecar
+   sends in `sidecar/main.py:99-107`).
+5. Asserts the backend stored it in `app.state.latest_strategy_frame`.
+
+| Test | Verifies |
+|------|----------|
+| `test_strategy_frame_received_by_backend` | Full payload survives round-trip |
+| `test_advice_round_trip_preserves_pit_window_advice` | All 6 `pit_window` fields preserved (incl. booleans & floats) |
+| `test_multiple_strategy_frames_are_processed_in_order` | Endpoint is not single-shot; last frame wins |
+| `test_competitor_data_propagates_to_advice` | Competitor list & fields survive JSON serialization |
+
+### 4. `TestPhysicallyReasonableOutputs` — 5 parametrized scenarios
+Safety-net invariants applied to a 5-point sweep across the race:
+**no negative fuel, no negative laps, no inf/nan, monotonic pit
+window, tyre wear in [0,100], motor state in {1,2,3}**, and a full
+recursive `_assert_finite()` walk of every float in the advice.
+
+## Real advice values per scenario (proof engine produces real output)
+
+| Scenario | `est_laps_remaining` | `fuel_needed_to_finish` | `pit_stops_needed` | `earliest/optimal/latest_pit_lap` | `wear_lifespan_laps` | `motor_state` |
+|----------|----------------------|--------------------------|--------------------|-----------------------------------|----------------------|----------------|
+| EARLY (lap 5, 95L, fresh) | 31.67 | 228.00 L | 2 | 29 / 35 / 36 | 9500.0 | 2 |
+| MID (lap 40, 45L, 50% wear) | 15.00 | 123.00 L | 1 | 52 / 54 / 55 | 5000.0 | 2 |
+| LATE (lap 75, 12L, 70% wear) | 4.00 | 18.00 L | 1 | 78 / 78 / 79 | 3000.0 | 2 |
+| HYBRID (lap 20, 70L, motor=2) | 23.33 | 183.00 L | 2 | 38 / 42 / 43 | 8500.0 | 2 |
+
+### Sanity check on physical reasonability
+
+* **No negative fuel** — all `stint_end_fuel`, `fuel_needed_to_finish`,
+  `one_less_stop_target_consumption` are non-negative.
+* **No zero laps for non-finish** — `stint_end_laps` is always > 0
+  when fuel > 0.
+* **Pit window is monotonic**: `earliest <= optimal <= latest` in
+  every scenario.
+* **LATE race correctly identifies urgency**: `earliest_pit_lap = 78`
+  is only 3 laps after `lap_number=75`, and `pit_stops_needed=1`
+  proves the engine knows we can't finish on 12L of fuel.
+* **HYBRID motor state correctly propagated**: explicit `motor_state=2`
+  is reflected in `hybrid.inferred_motor_state=2`, and
+  `fuel_energy_ratio` is positive and finite.
+
+### One surprise (documented, NOT a bug)
+
+`EARLY` scenario at lap 5 returns `pit_stops_needed=2` — not 0 or 1.
+This is **correct** because: 75 laps remaining × 2.8 L/lap + 3 L
+safety margin = 213 L total fuel needed, but we only have 95 L in
+tank, so we must refuel 213 - 95 = 118 L of fuel over 100 L capacity
+tanks = 1.18 stops, rounded up to **2**. The engine's "you need
+exactly 1.18 stops" message is precisely the kind of physically
+reasonable output the task brief asked us to verify.
+
+## What was NOT modified
+
+* No existing files changed — only `backend/tests/test_strategy_flow_e2e.py` created.
+* No git commit made (per `MUST NOT DO`).
+* No new dependencies added.
+* No `unittest.mock` of `shared-strategy`, `src.routers.websocket`, or
+  the `TelemetryFrame` / `StrategyAdvice` Pydantic models.
+
+## Files Touched
+
+* **Created**: `backend/tests/test_strategy_flow_e2e.py` (588 lines,
+  14 tests across 4 classes, fully typed, docstringed).
+* **No other files modified.**

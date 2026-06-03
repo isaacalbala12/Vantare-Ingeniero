@@ -1,0 +1,109 @@
+TASK 10 — FrameCache dedup + spotter frame E2E
+==============================================
+
+Date: 2026-06-03
+File: backend/tests/test_frame_cache_flow_e2e.py
+Command: pytest tests/test_frame_cache_flow_e2e.py -v --tb=short
+
+RESULT
+------
+Total: 8 tests
+Passed: 7
+Failed: 1
+
+TEST BREAKDOWN
+--------------
+PASSED:
+  TestDedupIsReal::test_different_elapsed_time_reader_called_twice
+  TestZeroElapsedTimeBypass::test_zero_et_always_calls_reader
+  TestSpotterFrame::test_spotter_frame_has_rivals_session_phase_player_in_pits
+  TestSpotterFrame::test_frame_id_starts_at_1_and_increments
+  TestSpotterFrame::test_spotter_frame_lazy_init
+  TestRestMerge::test_rest_data_merged_into_flat_dict
+  TestRestMerge::test_missing_rest_data_does_not_crash
+
+FAILED:
+  TestDedupIsReal::test_same_elapsed_time_reader_called_once
+
+FAILURE DETAIL
+--------------
+AssertionError: Expected 1 reader call (dedup), got 2.
+FrameCache is calling the reader on every read_full() even when
+session_running_time is unchanged — dedup is incomplete.
+
+ROOT CAUSE
+----------
+backend/src/services/frame_cache.py:15-19
+    def read_full(self) -> dict:
+        raw = self._reader.get_flat_dict()          # ← ALWAYS called
+        et = raw.get("session_running_time", 0.0)
+        if et == self._last_et and self._latest is not None and et > 0:
+            return self._latest                     # ← cached dict returned,
+                                                    #   but reader was already invoked
+
+The dedup check happens AFTER the reader call. The cached dict is
+returned (so the downstream consumer sees stable data), but the reader
+is invoked on every read_full() regardless of whether ET changed.
+
+This is a real performance concern: the real reader (lmu_reader.py) reads
+from LMU shared memory, which is a cross-process / cross-platform IPC
+operation. Calling it on every engine tick (~1Hz+ for spotter, faster
+for ticker) wastes cycles and could contend with LMU's own memory writes.
+
+SEVERITY
+--------
+Medium. Functional behavior is correct (cached data is returned, frame_id
+isn't double-incremented, spotter isn't rebuilt). But the optimization
+intent of dedup — "don't pay the reader cost when nothing changed" — is
+not realized. This is also what the plan QA scenario explicitly asserts:
+"Expected Result: Dedup is real, not just 'called with same args'".
+
+REPRODUCTION
+------------
+reader = FakeReader(varying_data=[
+    _frame(et=10.0, speed_ms=100.0),
+    _frame(et=10.0, speed_ms=200.0),  # never reached on dedup, but proves
+                                     # the reader was called if call_count > 1
+])
+cache = FrameCache(reader=reader)
+cache.read_full()  # call_count → 1
+cache.read_full()  # call_count → 2 (should be 1 if dedup were real)
+
+PROPOSED FIX
+------------
+Move the reader call inside the dedup-miss branch:
+
+    def read_full(self) -> dict:
+        if (self._last_et is not None
+            and self._latest is not None
+            and self._last_et > 0
+            and self._last_et == self._peek_et()):  # or cache ET alongside
+            return self._latest
+        raw = self._reader.get_flat_dict()
+        ...
+
+The fix needs a way to know the current ET without calling the reader.
+Options:
+  (a) Cache ET alongside _latest in the dedup-hit path
+  (b) Read ET only (cheaper than full dict) — but still requires a reader call
+  (c) Accept the current behavior and update the test to assert
+      "call_count >= 1" instead of "call_count == 1"
+
+CURRENT DECISION
+----------------
+Leave the test as-is. It documents the intended dedup contract. The
+failure is a real finding for the pipeline review. The user can decide:
+fix FrameCache (preferred for perf), or relax the test.
+
+OTHER FINDINGS
+--------------
+- frame_id starts at 1 and increments correctly (1, 2, 3 per call when
+  ET changes)
+- Spotter frame includes all required fields: rivals (list of dicts
+  with world_x/world_z/speed/in_pits), session_phase, in_pits
+  (player_in_pits)
+- get_spotter_frame() lazy init works: no reader call before first
+  invocation, _spotter populated after
+- ET=0 correctly bypasses dedup (3 calls → 3 reader invocations)
+- REST merge: tire_wear/brake_wear/damage_aero all surface in flat dict
+- Missing REST data (empty dict from get_garage_wear) does not crash
