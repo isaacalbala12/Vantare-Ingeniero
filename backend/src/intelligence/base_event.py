@@ -31,8 +31,9 @@ class AbstractEvent(ABC):
     category: str = "ALL"
     sequence: int = 100
 
-    def __init__(self, ap: Any = None) -> None:
+    def __init__(self, ap: Any = None, audio_player: Any = None) -> None:
         self.ap = ap
+        self.audio_player = audio_player
         self._failed_count: int = 0
         self._psi: bool = False  # per-session-init
 
@@ -136,3 +137,14 @@ class FakeAudioPlayer:
         self.msgs.clear()
         self.imms.clear()
         self.spotter_calls.clear()
+
+    @property
+    def messages(self) -> List[QueuedMessage]:
+        return self.msgs
+
+    @property
+    def immediate_messages(self) -> List[QueuedMessage]:
+        return self.imms
+
+    play_message = play
+    play_message_immediately = play_imm

@@ -9,7 +9,7 @@ Patrón:
 
 import asyncio
 import logging
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 
 from src.models.game_state_data import GameStateData
 from src.intelligence.base_event import AbstractEvent
@@ -21,7 +21,9 @@ class EventEngine:
     MAX_FAIL = 10
     TIMEOUT = 2.0
 
-    def __init__(self, ap=None) -> None:
+    def __init__(self, ap: Any = None, audio_player: Any = None) -> None:
+        if ap is None and audio_player is not None:
+            ap = audio_player
         self._events: Dict[str, AbstractEvent] = {}
         self._fail_counts: Dict[str, int] = {}
         self._has_any_fail: bool = False
@@ -29,6 +31,8 @@ class EventEngine:
 
     def register(self, name: str, event: AbstractEvent) -> None:
         self._events[name] = event
+
+    register_event = register
 
     def unregister(self, name: str) -> None:
         self._events.pop(name, None)
@@ -42,6 +46,8 @@ class EventEngine:
                 logger.error(f"clear_state failed for {type(ev).__name__}: {e}")
         self._fail_counts.clear()
         self._has_any_fail = False
+
+    clear_all_state = clear_all
 
     async def tick(
         self,
@@ -114,3 +120,5 @@ class EventEngine:
 
     def registered_names(self) -> list:
         return list(self._events.keys())
+
+    tick_async = tick

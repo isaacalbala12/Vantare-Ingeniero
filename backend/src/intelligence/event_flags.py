@@ -45,6 +45,8 @@ class EventFlags:
             else:
                 setattr(self, fname, None)
 
+    reset_all = reset
+
 
 # Singleton global (mismo patrón que el plan)
 event_flags = EventFlags()

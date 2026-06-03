@@ -73,6 +73,7 @@ class PitData:
     driver_stint_seconds: float = 0.0
     driver_stint_total: float = 0.0
     is_electric_swap_allowed: bool = False
+    num_pitstops: int = 0
 
 
 @dataclass
@@ -126,6 +127,7 @@ class EngineData:
     oil_pressure: float = 0.0
     stalled: bool = False
     gear: int = 0
+    max_rpm: float = 9000.0
 
 
 @dataclass
