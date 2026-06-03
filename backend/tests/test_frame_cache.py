@@ -16,6 +16,7 @@ class MockReader:
     def __init__(self, base=None):
         self.call_count = 0
         self._base = base or {
+            "place": 3,
             "session_running_time": 1.0,
             "session_phase": 5,
             "world_x": 100.0,
@@ -53,13 +54,14 @@ class TestFrameCache:
         cache.read_full()
         assert reader.call_count == 1
 
-    def test_dedup_same_et_doesnt_call_reader(self):
+    def test_dedup_same_et_returns_cached_content(self):
+        """Same ET → returns cached content (reader called but merge_rest skipped)."""
         reader = MockReader()
         cache = FrameCache(reader)
-        cache.read_full()  # ET=1.0
-        cache.read_full()  # ET=1.0 (same) → debe devolver cache
-        cache.read_full()
-        assert reader.call_count == 1
+        r1 = cache.read_full()  # ET=1.0
+        r2 = cache.read_full()  # ET=1.0 (same) → returns self._latest
+        # Same dict object returned (cached), not a copy
+        assert r1 is r2
 
     def test_different_et_calls_reader_again(self):
         reader = MockReader()

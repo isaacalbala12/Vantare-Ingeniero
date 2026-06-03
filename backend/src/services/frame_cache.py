@@ -44,8 +44,7 @@ class FrameCache:
         return self._latest
 
     def get_spotter_frame(self) -> dict:
-        if self._spotter is None:
-            self.read_full()
+        self.read_full()  # Always refresh — read_full has dedup built-in
         return self._spotter
 
     def _merge_rest(self, raw: dict) -> None:
