@@ -286,32 +286,9 @@ test.describe("T14 — CrewChief alert visual rendering", () => {
     expect(snap.latestAlert, "low severity should not set radio.latestAlert").toBe("");
     expect(snap.telemetryAlerts, "low severity should not push to telemetry.alerts").toEqual([]);
 
-    // --- SOFT assertion on DOM rendering ---
-    // The current React tree does not render crewchief.events; this
-    // is a known gap (recorded in learnings.md). We surface it but
-    // do not fail the test on it — the store mutation is what we
-    // need to validate deterministically. When a renderer lands,
-    // promote this to a hard `expect(...).toBeVisible()`.
-    const domVisible = await page
-      .getByText(alertMessage)
-      .first()
-      .isVisible()
-      .catch(() => false);
-
-    if (!domVisible) {
-      // Soft log — does not fail the test.
-      // eslint-disable-next-line no-console
-      console.log(
-        `[T14-low][FINDING] Alert text not visible in DOM. ` +
-        `Store state correct (events=${snap.eventCount}, severity=low). ` +
-        `No component currently renders crewchief.events.`,
-      );
-    }
-    // Record via test annotation for CI consumption.
-    test.info().annotations.push({
-      type: "dom-rendering",
-      description: `low-severity alert DOM visible: ${domVisible}`,
-    });
+    // --- HARD assertion on DOM rendering ---
+    // The renderer was added in Plan 1 (Bug 4). Alert text must be visible.
+    await expect(page.getByText(alertMessage).first()).toBeVisible({ timeout: 5_000 });
 
     // --- Evidence ---
     fs.mkdirSync(EVIDENCE_DIR, { recursive: true });
@@ -336,11 +313,7 @@ test.describe("T14 — CrewChief alert visual rendering", () => {
       `  radio.latestAlert: ${JSON.stringify(snap.latestAlert)} (expected: "")`,
       `  telemetry.alerts: ${JSON.stringify(snap.telemetryAlerts)} (expected: [])`,
       "",
-      `DOM-rendering finding: low-severity alert text visible in DOM = ${domVisible}`,
-      domVisible
-        ? "  -> A component is rendering crewchief.events / latestByCategory."
-        : "  -> No component renders crewchief.events. Store mutation works; visual surface missing.",
-      "",
+      `DOM-rendering: low-severity alert rendered in DOM`,
       `Screenshot: ${png}`,
     ];
     fs.writeFileSync(txt, lines.join("\n") + "\n", "utf8");
@@ -409,25 +382,8 @@ test.describe("T14 — CrewChief alert visual rendering", () => {
     expect(snap.latestAlert).toBe(alertMessage);
     expect(snap.telemetryAlerts).toContain(alertMessage);
 
-    // --- SOFT assertion on DOM rendering ---
-    const domVisible = await page
-      .getByText(alertMessage)
-      .first()
-      .isVisible()
-      .catch(() => false);
-    if (!domVisible) {
-      // eslint-disable-next-line no-console
-      console.log(
-        `[T14-high][FINDING] Alert text not visible in DOM. ` +
-        `Store state correct (events=${snap.eventCount}, severity=high, ` +
-        `radio.latestAlert set, telemetry.alerts pushed). ` +
-        `No component currently renders crewchief.events or radio.latestAlert.`,
-      );
-    }
-    test.info().annotations.push({
-      type: "dom-rendering",
-      description: `high-severity alert DOM visible: ${domVisible}`,
-    });
+    // --- HARD assertion on DOM rendering ---
+    await expect(page.getByText(alertMessage).first()).toBeVisible({ timeout: 5_000 });
 
     // --- Evidence ---
     fs.mkdirSync(EVIDENCE_DIR, { recursive: true });
@@ -452,11 +408,7 @@ test.describe("T14 — CrewChief alert visual rendering", () => {
       `  radio.latestAlert: ${JSON.stringify(snap.latestAlert)}`,
       `  telemetry.alerts: ${JSON.stringify(snap.telemetryAlerts)}`,
       "",
-      `DOM-rendering finding: high-severity alert text visible in DOM = ${domVisible}`,
-      domVisible
-        ? "  -> A component is rendering crewchief.events / latestByCategory / radio.latestAlert."
-        : "  -> No component renders these fields. Store mutation works; visual surface missing.",
-      "",
+      `DOM-rendering: high-severity alert rendered in DOM`,
       `Screenshot: ${png}`,
     ];
     fs.writeFileSync(txt, lines.join("\n") + "\n", "utf8");
@@ -523,34 +475,13 @@ test.describe("T14 — CrewChief alert visual rendering", () => {
     // Critical alerts do NOT auto-remove (only low/medium do).
     // We don't wait the 8s here — the prompt explicitly excludes it.
 
-    // --- SOFT assertion on DOM rendering ---
-    // The task says "with optional visual highlight". We probe for
-    // both the text and any red/animate-pulse class which would
-    // indicate a critical visual style. None is expected to be
-    // present yet (no renderer), so this is a soft check.
-    const domVisible = await page
-      .getByText(alertMessage)
-      .first()
-      .isVisible()
-      .catch(() => false);
-    const hasHighlight = await page
-      .locator(".text-red-500, .text-[#ff0000], .animate-pulse, [data-severity=\"critical\"]")
-      .first()
-      .isVisible()
-      .catch(() => false);
-    if (!domVisible) {
-      // eslint-disable-next-line no-console
-      console.log(
-        `[T14-critical][FINDING] Alert text not visible in DOM. ` +
-        `Store state correct (events=${snap.eventCount}, severity=critical, ` +
-        `radio.latestAlert set, telemetry.alerts pushed). ` +
-        `No component currently renders crewchief.events or radio.latestAlert.`,
-      );
-    }
-    test.info().annotations.push({
-      type: "dom-rendering",
-      description: `critical-severity alert DOM visible: ${domVisible}, highlight: ${hasHighlight}`,
-    });
+    // --- HARD assertions on DOM rendering ---
+    // Alert text must be visible
+    await expect(page.getByText(alertMessage).first()).toBeVisible({ timeout: 5_000 });
+    // Critical severity must show red animated styling
+    await expect(
+      page.locator("[data-severity=\"critical\"]").first()
+    ).toBeVisible({ timeout: 5_000 });
 
     // --- Evidence ---
     fs.mkdirSync(EVIDENCE_DIR, { recursive: true });
@@ -575,12 +506,8 @@ test.describe("T14 — CrewChief alert visual rendering", () => {
       `  radio.latestAlert: ${JSON.stringify(snap.latestAlert)}`,
       `  telemetry.alerts: ${JSON.stringify(snap.telemetryAlerts)}`,
       "",
-      `DOM-rendering finding: critical-severity alert text visible = ${domVisible}`,
-      `DOM-rendering finding: critical-severity visual highlight present = ${hasHighlight}`,
-      domVisible
-        ? "  -> A component is rendering crewchief.events / latestByCategory / radio.latestAlert."
-        : "  -> No component renders these fields. Store mutation works; visual surface missing.",
-      "",
+      `DOM-rendering: critical-severity alert rendered in DOM`,
+      `DOM-rendering: critical-severity visual highlight ([data-severity="critical"]) present in DOM`,
       `Screenshot: ${png}`,
     ];
     fs.writeFileSync(txt, lines.join("\n") + "\n", "utf8");

@@ -12,7 +12,9 @@ class FrameCache:
         self._frame_id: int = 0
         self._last_et: float = -1.0
 
-    def read_full(self) -> dict:
+    def read_full(self, elapsed_time: Optional[float] = None) -> dict:
+        if elapsed_time is not None and elapsed_time == self._last_et and self._latest is not None and elapsed_time > 0:
+            return self._latest
         raw = self._reader.get_flat_dict()
         et = raw.get("session_running_time", 0.0)
         if et == self._last_et and self._latest is not None and et > 0:

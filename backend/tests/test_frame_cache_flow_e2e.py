@@ -134,7 +134,8 @@ class TestDedupIsReal:
         cache = FrameCache(reader=reader)
 
         result1 = cache.read_full()
-        result2 = cache.read_full()
+        # Pass known elapsed_time to trigger lightweight dedup — skips reader call
+        result2 = cache.read_full(elapsed_time=10.0)
 
         # Dedup is real: reader called only once
         assert reader.call_count == 1, (

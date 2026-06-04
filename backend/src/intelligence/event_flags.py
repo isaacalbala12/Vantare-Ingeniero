@@ -25,6 +25,8 @@ class EventFlags:
     green_for_n_laps: int = 0
     last_lap_was_pit_lap: bool = False
     fuel_warning_active: bool = False
+    is_pitting_this_lap: bool = False
+    waiting_for_driver_is_ok_response: bool = False
 
     def reset(self) -> None:
         """Reset todos los flags a su valor por defecto.

@@ -57,7 +57,7 @@ class SessionData:
     leader_name: str = ""
     is_new_session: bool = False
     is_disqualified: bool = False
-    is_dnf: bool = False
+    track_definition: Optional[str] = None
 
 
 @dataclass
@@ -128,6 +128,7 @@ class EngineData:
     stalled: bool = False
     gear: int = 0
     max_rpm: float = 9000.0
+    overheating: bool = False
 
 
 @dataclass
@@ -234,3 +235,4 @@ class GameStateData:
     opponents: Dict[str, OpponentData] = field(default_factory=dict)
     car_class: str = "UNKNOWN_RACE"
     multiclass: bool = False
+    weather: Optional[Dict] = None

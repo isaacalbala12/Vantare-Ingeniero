@@ -32,6 +32,21 @@ AbstractEvent.__init__ = _patched_ae_init
 
 
 # =========================================================================
+# Pollution guard: restore global patches after this module's tests complete
+# so subsequent test files see the original AbstractEvent/build_gsd.
+# =========================================================================
+
+import pytest
+
+@pytest.fixture(autouse=True, scope="module")
+def _restore_global_patches():
+    yield
+    AbstractEvent.__init__ = _orig_ae_init
+    import src.services.game_state_builder as gsb
+    gsb.build = _orig_build
+
+
+# =========================================================================
 # Workaround: event code calls play_message / play_message_immediately
 # but these methods don't exist on AbstractEvent (only play/play_imm do).
 # =========================================================================
@@ -91,15 +106,12 @@ def _gsd(**overrides) -> GameStateData:
 # =========================================================================
 
 def _ensure_flags():
-    """Dynamically create flags that events reference but EventFlags lacks."""
-    for flag in ("is_pitting_this_lap",
-                 "waiting_for_mandatory_stop_timer",
+    """Reset all event flags to prevent cross-test pollution."""
+    event_flags.reset()
+    # Legacy flags that events reference but are not yet on EventFlags declaration
+    for flag in ("waiting_for_mandatory_stop_timer",
                  "played_request_pit_on_this_lap"):
-        if not hasattr(event_flags, flag):
-            setattr(event_flags, flag, False)
-    event_flags.is_pitting_this_lap = False
-    event_flags.waiting_for_mandatory_stop_timer = False
-    event_flags.played_request_pit_on_this_lap = False
+        setattr(event_flags, flag, False)
 
 
 # =========================================================================

@@ -32,6 +32,9 @@ class AbstractEvent(ABC):
     sequence: int = 100
 
     def __init__(self, ap: Any = None, audio_player: Any = None) -> None:
+        # Normalize: if only audio_player given, mirror to ap so play() works
+        if ap is None and audio_player is not None:
+            ap = audio_player
         self.ap = ap
         self.audio_player = audio_player
         self._failed_count: int = 0
@@ -107,6 +110,11 @@ class AbstractEvent(ABC):
             except Exception as e:
                 name = getattr(m, "name", "<unknown>")
                 logger.error(f"play_imm() failed for {name}: {e}")
+
+    # Aliases for test compatibility (pre-existing tests call these directly)
+    play_message = play
+    play_message_immediately = play_imm
+    is_applicable = applicable
 
 
 class FakeAudioPlayer:

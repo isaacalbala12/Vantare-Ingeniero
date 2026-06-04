@@ -280,6 +280,8 @@ async def websocket_endpoint(websocket: WebSocket):
                     continue
                 else:
                     continue
+            elif raw.get("type") == "websocket.disconnect":
+                raise WebSocketDisconnect(code=raw.get("code", 1000))
             else:
                 continue
             

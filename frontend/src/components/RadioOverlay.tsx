@@ -29,6 +29,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onPTTStart, onPTTEnd, onTe
   const lap = useAppStore((s) => s.telemetry.lap ?? 1);
   const position = useAppStore((s) => s.telemetry.position ?? 1);
   const gapAhead = useAppStore((s) => s.telemetry.gaps?.ahead ?? 0.0);
+  const crewchiefEvents = useAppStore((s) => s.crewchief.events ?? []);
 
   // Mapear modo radio a texto y color
   let modeText = "IDLE";
@@ -106,7 +107,32 @@ export const Dashboard: React.FC<DashboardProps> = ({ onPTTStart, onPTTEnd, onTe
         </div>
       </div>
 
-      {/* Fila 4: Historial (últimos 3 mensajes) */}
+      {/* Fila 4: CrewChief alerts */}
+      {crewchiefEvents.length > 0 && (
+        <div className="px-3 py-1 border-t border-[#222]">
+          {crewchiefEvents.slice(0, 5).map((alert) => {
+            const sevClass =
+              alert.severity === "critical"
+                ? "text-red-500 animate-pulse"
+                : alert.severity === "high"
+                  ? "text-red-400"
+                  : alert.severity === "medium"
+                    ? "text-yellow-400"
+                    : "text-[#aaa]";
+            return (
+              <div
+                key={alert.id}
+                data-severity={alert.severity}
+                className={`text-[11px] py-0.5 ${sevClass}`}
+              >
+                {alert.message}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Fila 5: Historial (últimos 3 mensajes) */}
       <div className="px-3 py-2 text-[11px] flex flex-col gap-1 min-h-[50px] justify-end">
         <div className="text-[9px] uppercase font-bold text-[#555] tracking-wider mb-1">Historial:</div>
         {lastMessages.length === 0 ? (
@@ -118,7 +144,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onPTTStart, onPTTEnd, onTe
         )}
       </div>
 
-      {/* Fila 5: Botón PTT de emergencia (fallback para navegadores) */}
+      {/* Fila 6: Botón PTT de emergencia (fallback para navegadores) */}
       {mode === "IDLE" && onPTTStart && (
         <div className="px-3 pb-3 flex justify-center">
           <button

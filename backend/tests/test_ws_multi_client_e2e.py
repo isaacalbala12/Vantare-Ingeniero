@@ -83,7 +83,11 @@ def _reader_loop(ws_session, q: "Queue") -> None:
         while True:
             msg = ws_session.receive()
             mtype = msg.get("type")
-            if mtype == "websocket.receive" and "text" in msg:
+            # starlette WebSocketTestSession.receive() returns ASGI events.
+            # Server-to-client messages have type "websocket.send" (the
+            # server sends them); client-to-server messages have type
+            # "websocket.receive". We only care about server→client here.
+            if mtype == "websocket.send" and "text" in msg:
                 raw = msg["text"]
                 try:
                     q.put(json.loads(raw))
@@ -93,7 +97,7 @@ def _reader_loop(ws_session, q: "Queue") -> None:
             elif mtype in ("websocket.disconnect", "websocket.close"):
                 q.put(_SENTINEL_DISCONNECT)
                 return
-            # Binary websocket.receive frames from the backend are ignored here
+            # Binary websocket.send frames from the backend are ignored here
             # (we don't expect any in this test — sender loops are disabled).
     except WebSocketDisconnect:
         q.put(_SENTINEL_DISCONNECT)
