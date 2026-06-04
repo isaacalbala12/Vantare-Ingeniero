@@ -31,7 +31,7 @@ class LapCounter(AbstractEvent):
         SessionPhase.GREEN, SessionPhase.FULL_COURSE_YELLOW, SessionPhase.CHECKERED
     ]
     category = "ALL"
-    sequence = 30
+    sequence = 32
 
     def __init__(self, ap=None) -> None:
         super().__init__(ap)

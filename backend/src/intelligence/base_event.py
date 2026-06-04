@@ -138,6 +138,8 @@ class FakeAudioPlayer:
     def pause_q(self, s: float) -> None:
         self.paused_for = s
 
+    pause_queue = pause_q  # alias para compatibilidad con AudioPlayer real
+
     def unpause_q(self) -> None:
         self.paused_for = 0.0
 

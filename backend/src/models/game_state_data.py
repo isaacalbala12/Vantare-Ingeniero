@@ -57,7 +57,7 @@ class SessionData:
     leader_name: str = ""
     is_new_session: bool = False
     is_disqualified: bool = False
-    track_definition: Optional[str] = None
+    track_definition: Optional['TrackDefinition'] = None
 
 
 @dataclass
@@ -74,6 +74,7 @@ class PitData:
     driver_stint_total: float = 0.0
     is_electric_swap_allowed: bool = False
     num_pitstops: int = 0
+    pit_state: int = 0
 
 
 @dataclass

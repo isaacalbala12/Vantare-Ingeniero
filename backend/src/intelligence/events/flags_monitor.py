@@ -37,7 +37,7 @@ class FlagsMonitor(AbstractEvent):
         SessionPhase.FORMATION, SessionPhase.COUNTDOWN,
     ]
     category = "ALL"
-    sequence = 5  # Antes que todo lo demás
+    sequence = 1  # Antes que todo lo demás
 
     def __init__(self, ap=None) -> None:
         super().__init__(ap)
@@ -69,10 +69,12 @@ class FlagsMonitor(AbstractEvent):
             and current_phase == SessionPhase.FULL_COURSE_YELLOW
         ):
             self._laps_in_fcy = 0
-            self.play(QueuedMessage(
+            self.play_imm(QueuedMessage(
                 F_FCY_DEPLOYED, expires=10, priority=10,
                 fragments=contents("safety car deployed"),
             ))
+            if hasattr(self.ap, 'pause_queue'):
+                self.ap.pause_queue(30.0)
 
         # FCY terminando (LAST_LAP_NEXT)
         if (
@@ -80,7 +82,7 @@ class FlagsMonitor(AbstractEvent):
             and current_fcy_phase == FullCourseYellowPhase.LAST_LAP_NEXT
             and self._prev_fcy_phase != FullCourseYellowPhase.LAST_LAP_NEXT
         ):
-            self.play(QueuedMessage(
+            self.play_imm(QueuedMessage(
                 F_FCY_ENDING, expires=10, priority=10,
                 fragments=contents("safety car ending this lap"),
             ))
@@ -91,7 +93,7 @@ class FlagsMonitor(AbstractEvent):
             and current_phase == SessionPhase.GREEN
         ):
             self._laps_in_fcy = 0
-            self.play(QueuedMessage(
+            self.play_imm(QueuedMessage(
                 F_FCY_ENDED, expires=10, priority=10,
                 fragments=contents("green flag, go go go"),
             ))

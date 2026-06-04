@@ -67,6 +67,11 @@ def build(flat: dict, prev: Optional[GameStateData] = None) -> GameStateData:
 
     s.sector_number = int(flat.get("sector_number", 1))
 
+    tl = flat.get("track_length", 0)
+    if tl > 0 and not g.session.track_definition:
+        from src.services.track_definition import TrackDefinition
+        g.session.track_definition = TrackDefinition(name="", track_length=tl)
+
     m = g.motion
     m.world_x = flat.get("world_x", 0.0)
     m.world_y = flat.get("world_y", 0.0)
@@ -78,6 +83,8 @@ def build(flat: dict, prev: Optional[GameStateData] = None) -> GameStateData:
     m.distance_round_track = flat.get("lap_distance", 0.0)
 
     g.pit.in_pitlane = flat.get("in_pits", False)
+    g.pit.pit_state = flat.get("pit_state", 0)
+    g.pit.pit_state = flat.get("pit_state", 0)
 
     g.fuel.fuel_left = flat.get("fuel_left", 0.0)
     g.fuel.fuel_capacity = flat.get("fuel_capacity", 0.0)
@@ -95,6 +102,11 @@ def build(flat: dict, prev: Optional[GameStateData] = None) -> GameStateData:
     g.engine.water_temp = flat.get("water_temp", 0.0)
     g.engine.oil_temp = flat.get("oil_temp", 0.0)
     g.engine.gear = int(flat.get("gear", 0))
+    g.engine.overheating = flat.get("overheating", False)
+    g.engine.overheating = flat.get("overheating", False)
+
+    g.damage.last_impact_time = flat.get("last_impact_time", -1.0)
+    g.damage.last_impact_magnitude = flat.get("last_impact_mag", 0.0)
 
     tw = flat.get("tyre_wear", [])
     if len(tw) >= 4:
@@ -117,6 +129,19 @@ def build(flat: dict, prev: Optional[GameStateData] = None) -> GameStateData:
     g.tyre.fr_pressure = flat.get("tyre_pressure_fr", 0.0)
     g.tyre.rl_pressure = flat.get("tyre_pressure_rl", 0.0)
     g.tyre.rr_pressure = flat.get("tyre_pressure_rr", 0.0)
+
+    g.tyre.fl_compound = flat.get("tyre_compound_fl", "Unknown_Race")
+    g.tyre.fr_compound = flat.get("tyre_compound_fr", "Unknown_Race")
+    g.tyre.rl_compound = flat.get("tyre_compound_rl", "Unknown_Race")
+    g.tyre.rr_compound = flat.get("tyre_compound_rr", "Unknown_Race")
+
+    g.damage.last_impact_time = flat.get("last_impact_time", -1.0)
+    g.damage.last_impact_magnitude = flat.get("last_impact_mag", 0.0)
+
+    g.tyre.fl_compound = flat.get("tyre_compound_fl", "Unknown_Race")
+    g.tyre.fr_compound = flat.get("tyre_compound_fr", "Unknown_Race")
+    g.tyre.rl_compound = flat.get("tyre_compound_rl", "Unknown_Race")
+    g.tyre.rr_compound = flat.get("tyre_compound_rr", "Unknown_Race")
 
     for r in flat.get("rivals", []):
         name = r.get("driver_raw_name", "")
