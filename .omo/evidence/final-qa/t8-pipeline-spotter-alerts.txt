@@ -1,0 +1,11 @@
+T8: Pipeline spotter alerts tests
+Command: cd backend && pytest tests/test_pipeline_spotter_alerts.py -v
+Result: 6 passed in 0.17s
+Tests:
+  - test_spotter_alert_pit_limiter_active PASSED
+  - test_spotter_alert_gap_ahead_close PASSED
+  - test_spotter_alert_damage_detected PASSED
+  - test_spotter_alert_fuel_critical PASSED
+  - test_spotter_alert_safety_car PASSED
+  - test_spotter_alert_broadcast_sync PASSED
+Status: PASS [6/6]

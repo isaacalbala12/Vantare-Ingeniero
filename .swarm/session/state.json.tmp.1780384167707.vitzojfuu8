@@ -1,0 +1,939 @@
+{
+  "version": 2,
+  "writtenAt": 1780384167706,
+  "toolAggregates": {
+    "read": {
+      "tool": "read",
+      "count": 108,
+      "successCount": 108,
+      "failureCount": 0,
+      "totalDuration": 4905
+    },
+    "glob": {
+      "tool": "glob",
+      "count": 16,
+      "successCount": 16,
+      "failureCount": 0,
+      "totalDuration": 792
+    },
+    "question": {
+      "tool": "question",
+      "count": 1,
+      "successCount": 1,
+      "failureCount": 0,
+      "totalDuration": 19955
+    },
+    "task": {
+      "tool": "task",
+      "count": 3,
+      "successCount": 3,
+      "failureCount": 0,
+      "totalDuration": 684
+    },
+    "grep": {
+      "tool": "grep",
+      "count": 4,
+      "successCount": 4,
+      "failureCount": 0,
+      "totalDuration": 110
+    },
+    "write": {
+      "tool": "write",
+      "count": 1,
+      "successCount": 1,
+      "failureCount": 0,
+      "totalDuration": 46
+    },
+    "bash": {
+      "tool": "bash",
+      "count": 41,
+      "successCount": 41,
+      "failureCount": 0,
+      "totalDuration": 21911
+    },
+    "background_output": {
+      "tool": "background_output",
+      "count": 2,
+      "successCount": 2,
+      "failureCount": 0,
+      "totalDuration": 44654
+    },
+    "todowrite": {
+      "tool": "todowrite",
+      "count": 2,
+      "successCount": 2,
+      "failureCount": 0,
+      "totalDuration": 54
+    },
+    "call_omo_agent": {
+      "tool": "call_omo_agent",
+      "count": 3,
+      "successCount": 3,
+      "failureCount": 0,
+      "totalDuration": 1220
+    }
+  },
+  "activeAgent": {
+    "ses_178e189dfffe4D1vd3BAlugntC": "architect",
+    "ses_178dd7795ffe78UCewnoJjvwoP": "explore",
+    "ses_178d61460ffetLfLdnzIJfx1V1": "Metis - Plan Consultant",
+    "ses_178d5c3c1ffeFPqrXPM5DY1ogy": "explore",
+    "ses_178d5c392ffedbvkUIQi46ijpu": "explore",
+    "ses_178d5c360ffek2M3RX1EMGj1E2": "explore"
+  },
+  "delegationChains": {
+    "ses_178e189dfffe4D1vd3BAlugntC": [
+      {
+        "from": "architect",
+        "to": "Prometheus - Plan Builder",
+        "timestamp": 1780383749098
+      }
+    ]
+  },
+  "agentSessions": {
+    "ses_178e189dfffe4D1vd3BAlugntC": {
+      "agentName": "architect",
+      "lastToolCallTime": 1780384132134,
+      "lastAgentEventTime": 1780384132134,
+      "delegationActive": false,
+      "activeInvocationId": 6,
+      "lastInvocationIdByAgent": {
+        "Prometheus - Plan Builder": 6
+      },
+      "windows": {
+        "Prometheus - Plan Builder:6": {
+          "id": 6,
+          "agentName": "Prometheus - Plan Builder",
+          "startedAtMs": 1780384007737,
+          "toolCalls": 20,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780384132107,
+          "recentToolCalls": [
+            {
+              "tool": "read",
+              "argsHash": 5010755964481822000,
+              "timestamp": 1780384013238
+            },
+            {
+              "tool": "read",
+              "argsHash": 14194752358141436000,
+              "timestamp": 1780384013638
+            },
+            {
+              "tool": "grep",
+              "argsHash": 12509401076058825000,
+              "timestamp": 1780384020509
+            },
+            {
+              "tool": "read",
+              "argsHash": 4732836620007516000,
+              "timestamp": 1780384020888
+            },
+            {
+              "tool": "read",
+              "argsHash": 13355975646898512000,
+              "timestamp": 1780384027625
+            },
+            {
+              "tool": "read",
+              "argsHash": 16681887091558150000,
+              "timestamp": 1780384035903
+            },
+            {
+              "tool": "read",
+              "argsHash": 16512521204439750000,
+              "timestamp": 1780384035969
+            },
+            {
+              "tool": "read",
+              "argsHash": 17802754582088186000,
+              "timestamp": 1780384043294
+            },
+            {
+              "tool": "bash",
+              "argsHash": 9764875403430885000,
+              "timestamp": 1780384049532
+            },
+            {
+              "tool": "read",
+              "argsHash": 12332049350682835000,
+              "timestamp": 1780384054997
+            },
+            {
+              "tool": "read",
+              "argsHash": 11607310829888733000,
+              "timestamp": 1780384062188
+            },
+            {
+              "tool": "read",
+              "argsHash": 13722660687880454000,
+              "timestamp": 1780384067377
+            },
+            {
+              "tool": "read",
+              "argsHash": 12361230181416886000,
+              "timestamp": 1780384075342
+            },
+            {
+              "tool": "bash",
+              "argsHash": 236521444812251100,
+              "timestamp": 1780384081205
+            },
+            {
+              "tool": "read",
+              "argsHash": 6636037117897597000,
+              "timestamp": 1780384081618
+            },
+            {
+              "tool": "bash",
+              "argsHash": 9019992492205251000,
+              "timestamp": 1780384087087
+            },
+            {
+              "tool": "bash",
+              "argsHash": 1372167494790351000,
+              "timestamp": 1780384093895
+            },
+            {
+              "tool": "read",
+              "argsHash": 15743139653297418000,
+              "timestamp": 1780384099943
+            },
+            {
+              "tool": "todowrite",
+              "argsHash": 6178834918626635000,
+              "timestamp": 1780384110186
+            },
+            {
+              "tool": "task",
+              "argsHash": 12715278930128458000,
+              "timestamp": 1780384131793
+            }
+          ],
+          "warningIssued": false,
+          "warningReason": ""
+        },
+        "Prometheus - Plan Builder:5": {
+          "id": 5,
+          "agentName": "Prometheus - Plan Builder",
+          "startedAtMs": 1780383799407,
+          "toolCalls": 49,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780383965376,
+          "recentToolCalls": [
+            {
+              "tool": "read",
+              "argsHash": 1872390547008884700,
+              "timestamp": 1780383877886
+            },
+            {
+              "tool": "read",
+              "argsHash": 7354330340221385000,
+              "timestamp": 1780383884325
+            },
+            {
+              "tool": "bash",
+              "argsHash": 3558872631267385000,
+              "timestamp": 1780383884838
+            },
+            {
+              "tool": "read",
+              "argsHash": 6655780390493495000,
+              "timestamp": 1780383890533
+            },
+            {
+              "tool": "bash",
+              "argsHash": 5411163236293324000,
+              "timestamp": 1780383898225
+            },
+            {
+              "tool": "bash",
+              "argsHash": 9712338914767872000,
+              "timestamp": 1780383903705
+            },
+            {
+              "tool": "bash",
+              "argsHash": 9826227873264628000,
+              "timestamp": 1780383904192
+            },
+            {
+              "tool": "bash",
+              "argsHash": 12000729519489866000,
+              "timestamp": 1780383910010
+            },
+            {
+              "tool": "bash",
+              "argsHash": 718201494628761100,
+              "timestamp": 1780383910414
+            },
+            {
+              "tool": "bash",
+              "argsHash": 18423296409624904000,
+              "timestamp": 1780383916693
+            },
+            {
+              "tool": "bash",
+              "argsHash": 3411024359868242000,
+              "timestamp": 1780383917193
+            },
+            {
+              "tool": "bash",
+              "argsHash": 16175399120922507000,
+              "timestamp": 1780383924706
+            },
+            {
+              "tool": "read",
+              "argsHash": 17427533209501757000,
+              "timestamp": 1780383931551
+            },
+            {
+              "tool": "read",
+              "argsHash": 16962056192212677000,
+              "timestamp": 1780383936950
+            },
+            {
+              "tool": "bash",
+              "argsHash": 10001069999359216000,
+              "timestamp": 1780383942876
+            },
+            {
+              "tool": "read",
+              "argsHash": 15095427590481291000,
+              "timestamp": 1780383948373
+            },
+            {
+              "tool": "read",
+              "argsHash": 1004531335424151900,
+              "timestamp": 1780383948677
+            },
+            {
+              "tool": "read",
+              "argsHash": 1289851176454479600,
+              "timestamp": 1780383953800
+            },
+            {
+              "tool": "read",
+              "argsHash": 15000264891333970000,
+              "timestamp": 1780383954050
+            },
+            {
+              "tool": "read",
+              "argsHash": 13527988368125065000,
+              "timestamp": 1780383965334
+            }
+          ],
+          "warningIssued": false,
+          "warningReason": ""
+        },
+        "Prometheus - Plan Builder:4": {
+          "id": 4,
+          "agentName": "Prometheus - Plan Builder",
+          "startedAtMs": 1780383749099,
+          "toolCalls": 1,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780383749099,
+          "recentToolCalls": [
+            {
+              "tool": "background_output",
+              "argsHash": 7563060580384896000,
+              "timestamp": 1780383755263
+            }
+          ],
+          "warningIssued": false,
+          "warningReason": ""
+        },
+        "Prometheus - Plan Builder:3": {
+          "id": 3,
+          "agentName": "Prometheus - Plan Builder",
+          "startedAtMs": 1780383556876,
+          "toolCalls": 22,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780383633025,
+          "recentToolCalls": [
+            {
+              "tool": "glob",
+              "argsHash": 7131984593203842000,
+              "timestamp": 1780383562999
+            },
+            {
+              "tool": "glob",
+              "argsHash": 2930569422446788600,
+              "timestamp": 1780383563154
+            },
+            {
+              "tool": "glob",
+              "argsHash": 7589401145802797000,
+              "timestamp": 1780383563328
+            },
+            {
+              "tool": "glob",
+              "argsHash": 5384983817041160000,
+              "timestamp": 1780383563477
+            },
+            {
+              "tool": "glob",
+              "argsHash": 10905910304439075000,
+              "timestamp": 1780383563687
+            },
+            {
+              "tool": "glob",
+              "argsHash": 11783682063117904000,
+              "timestamp": 1780383563878
+            },
+            {
+              "tool": "glob",
+              "argsHash": 17131955140429165000,
+              "timestamp": 1780383564014
+            },
+            {
+              "tool": "glob",
+              "argsHash": 10314641917827391000,
+              "timestamp": 1780383564155
+            },
+            {
+              "tool": "glob",
+              "argsHash": 7481195758555987000,
+              "timestamp": 1780383564304
+            },
+            {
+              "tool": "read",
+              "argsHash": 14001000792706486000,
+              "timestamp": 1780383580466
+            },
+            {
+              "tool": "read",
+              "argsHash": 8956011056018424000,
+              "timestamp": 1780383580697
+            },
+            {
+              "tool": "read",
+              "argsHash": 13771107827720532000,
+              "timestamp": 1780383580898
+            },
+            {
+              "tool": "read",
+              "argsHash": 17903905847529927000,
+              "timestamp": 1780383581134
+            },
+            {
+              "tool": "read",
+              "argsHash": 14672103430498617000,
+              "timestamp": 1780383588824
+            },
+            {
+              "tool": "read",
+              "argsHash": 14210886457910434000,
+              "timestamp": 1780383589011
+            },
+            {
+              "tool": "glob",
+              "argsHash": 4479921238394573300,
+              "timestamp": 1780383598747
+            },
+            {
+              "tool": "read",
+              "argsHash": 15632563096394009000,
+              "timestamp": 1780383598957
+            },
+            {
+              "tool": "read",
+              "argsHash": 4587998720353160000,
+              "timestamp": 1780383606612
+            },
+            {
+              "tool": "read",
+              "argsHash": 16578413083746320000,
+              "timestamp": 1780383606855
+            },
+            {
+              "tool": "task",
+              "argsHash": 17875756059121710000,
+              "timestamp": 1780383632943
+            }
+          ],
+          "warningIssued": false,
+          "warningReason": ""
+        },
+        "Prometheus - Plan Builder:2": {
+          "id": 2,
+          "agentName": "Prometheus - Plan Builder",
+          "startedAtMs": 1780383529222,
+          "toolCalls": 0,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780383529222,
+          "recentToolCalls": [],
+          "warningIssued": false,
+          "warningReason": ""
+        },
+        "Prometheus - Plan Builder:1": {
+          "id": 1,
+          "agentName": "Prometheus - Plan Builder",
+          "startedAtMs": 1780383381068,
+          "toolCalls": 25,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780383509940,
+          "recentToolCalls": [
+            {
+              "tool": "read",
+              "argsHash": 7802159748279349000,
+              "timestamp": 1780383399179
+            },
+            {
+              "tool": "read",
+              "argsHash": 2146196140162694400,
+              "timestamp": 1780383405942
+            },
+            {
+              "tool": "read",
+              "argsHash": 13901907007802685000,
+              "timestamp": 1780383406250
+            },
+            {
+              "tool": "read",
+              "argsHash": 10918825383640791000,
+              "timestamp": 1780383406575
+            },
+            {
+              "tool": "read",
+              "argsHash": 5469050517224761000,
+              "timestamp": 1780383406878
+            },
+            {
+              "tool": "read",
+              "argsHash": 8647835077323530000,
+              "timestamp": 1780383412806
+            },
+            {
+              "tool": "read",
+              "argsHash": 821800578136309000,
+              "timestamp": 1780383413076
+            },
+            {
+              "tool": "read",
+              "argsHash": 15594242296100788000,
+              "timestamp": 1780383413393
+            },
+            {
+              "tool": "read",
+              "argsHash": 3289337749484023300,
+              "timestamp": 1780383419961
+            },
+            {
+              "tool": "read",
+              "argsHash": 9986514115028347000,
+              "timestamp": 1780383420158
+            },
+            {
+              "tool": "read",
+              "argsHash": 5375653888776666000,
+              "timestamp": 1780383435109
+            },
+            {
+              "tool": "read",
+              "argsHash": 10858405822860458000,
+              "timestamp": 1780383440957
+            },
+            {
+              "tool": "read",
+              "argsHash": 4333147236723351000,
+              "timestamp": 1780383441210
+            },
+            {
+              "tool": "read",
+              "argsHash": 1542955328943140900,
+              "timestamp": 1780383441405
+            },
+            {
+              "tool": "read",
+              "argsHash": 15386922373382074000,
+              "timestamp": 1780383446748
+            },
+            {
+              "tool": "read",
+              "argsHash": 1875853654238353700,
+              "timestamp": 1780383446986
+            },
+            {
+              "tool": "read",
+              "argsHash": 15491303473471762000,
+              "timestamp": 1780383456061
+            },
+            {
+              "tool": "read",
+              "argsHash": 574718465675369540,
+              "timestamp": 1780383462559
+            },
+            {
+              "tool": "read",
+              "argsHash": 12526464401690590000,
+              "timestamp": 1780383469222
+            },
+            {
+              "tool": "question",
+              "argsHash": 5679010815922845000,
+              "timestamp": 1780383489984
+            }
+          ],
+          "warningIssued": false,
+          "warningReason": ""
+        }
+      },
+      "lastCompactionHint": 0,
+      "architectWriteCount": 1,
+      "lastCoderDelegationTaskId": null,
+      "currentTaskId": null,
+      "turboMode": false,
+      "gateLog": {},
+      "reviewerCallCount": {},
+      "lastGateFailure": null,
+      "partialGateWarningsIssuedForTask": [
+        "ses_178e189dfffe4D1vd3BAlugntC:unknown"
+      ],
+      "selfFixAttempted": false,
+      "selfCodingWarnedAtCount": 1,
+      "catastrophicPhaseWarnings": [],
+      "lastPhaseCompleteTimestamp": 0,
+      "lastPhaseCompletePhase": 0,
+      "phaseAgentsDispatched": [
+        "Prometheus - Plan Builder"
+      ],
+      "lastCompletedPhaseAgentsDispatched": [],
+      "qaSkipCount": 0,
+      "qaSkipTaskIds": [],
+      "pendingAdvisoryMessages": [],
+      "taskWorkflowStates": {},
+      "scopeViolationDetected": false,
+      "model_fallback_index": 0,
+      "modelFallbackExhausted": false,
+      "coderRevisions": 0,
+      "revisionLimitHit": false,
+      "fullAutoMode": false,
+      "fullAutoInteractionCount": 0,
+      "fullAutoDeadlockCount": 0,
+      "fullAutoLastQuestionHash": null,
+      "sessionRehydratedAt": 0
+    },
+    "ses_178dd7795ffe78UCewnoJjvwoP": {
+      "agentName": "explore",
+      "lastToolCallTime": 1780383647881,
+      "lastAgentEventTime": 1780383647881,
+      "delegationActive": true,
+      "activeInvocationId": 1,
+      "lastInvocationIdByAgent": {
+        "explore": 1
+      },
+      "windows": {
+        "explore:1": {
+          "id": 1,
+          "agentName": "explore",
+          "startedAtMs": 1780383647881,
+          "toolCalls": 0,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780383762835,
+          "recentToolCalls": [],
+          "warningIssued": false,
+          "warningReason": ""
+        }
+      },
+      "lastCompactionHint": 0,
+      "architectWriteCount": 0,
+      "lastCoderDelegationTaskId": null,
+      "currentTaskId": null,
+      "turboMode": false,
+      "gateLog": {},
+      "reviewerCallCount": {},
+      "lastGateFailure": null,
+      "partialGateWarningsIssuedForTask": [],
+      "selfFixAttempted": false,
+      "selfCodingWarnedAtCount": 0,
+      "catastrophicPhaseWarnings": [],
+      "lastPhaseCompleteTimestamp": 0,
+      "lastPhaseCompletePhase": 0,
+      "phaseAgentsDispatched": [
+        "explore"
+      ],
+      "lastCompletedPhaseAgentsDispatched": [],
+      "qaSkipCount": 0,
+      "qaSkipTaskIds": [],
+      "pendingAdvisoryMessages": [],
+      "taskWorkflowStates": {},
+      "scopeViolationDetected": false,
+      "model_fallback_index": 0,
+      "modelFallbackExhausted": false,
+      "coderRevisions": 0,
+      "revisionLimitHit": false,
+      "fullAutoMode": false,
+      "fullAutoInteractionCount": 0,
+      "fullAutoDeadlockCount": 0,
+      "fullAutoLastQuestionHash": null,
+      "sessionRehydratedAt": 0
+    },
+    "ses_178d61460ffetLfLdnzIJfx1V1": {
+      "agentName": "Metis - Plan Consultant",
+      "lastToolCallTime": 1780384167137,
+      "lastAgentEventTime": 1780384132015,
+      "delegationActive": true,
+      "activeInvocationId": 1,
+      "lastInvocationIdByAgent": {
+        "Metis - Plan Consultant": 1
+      },
+      "windows": {
+        "Metis - Plan Consultant:1": {
+          "id": 1,
+          "agentName": "Metis - Plan Consultant",
+          "startedAtMs": 1780384132016,
+          "toolCalls": 7,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780384167180,
+          "recentToolCalls": [
+            {
+              "tool": "todowrite",
+              "argsHash": 1369436653975036400,
+              "timestamp": 1780384139582
+            },
+            {
+              "tool": "call_omo_agent",
+              "argsHash": 15179287242419350000,
+              "timestamp": 1780384152437
+            },
+            {
+              "tool": "call_omo_agent",
+              "argsHash": 12658136805962537000,
+              "timestamp": 1780384152448
+            },
+            {
+              "tool": "call_omo_agent",
+              "argsHash": 16043391759256152000,
+              "timestamp": 1780384152467
+            },
+            {
+              "tool": "glob",
+              "argsHash": 14382975395076640000,
+              "timestamp": 1780384167114
+            },
+            {
+              "tool": "glob",
+              "argsHash": 5881080660787735000,
+              "timestamp": 1780384167121
+            },
+            {
+              "tool": "glob",
+              "argsHash": 15551626150146420000,
+              "timestamp": 1780384167137
+            }
+          ],
+          "warningIssued": false,
+          "warningReason": ""
+        }
+      },
+      "lastCompactionHint": 0,
+      "architectWriteCount": 0,
+      "lastCoderDelegationTaskId": null,
+      "currentTaskId": null,
+      "turboMode": false,
+      "gateLog": {},
+      "reviewerCallCount": {},
+      "lastGateFailure": null,
+      "partialGateWarningsIssuedForTask": [],
+      "selfFixAttempted": false,
+      "selfCodingWarnedAtCount": 0,
+      "catastrophicPhaseWarnings": [],
+      "lastPhaseCompleteTimestamp": 0,
+      "lastPhaseCompletePhase": 0,
+      "phaseAgentsDispatched": [
+        "Metis - Plan Consultant"
+      ],
+      "lastCompletedPhaseAgentsDispatched": [],
+      "qaSkipCount": 0,
+      "qaSkipTaskIds": [],
+      "pendingAdvisoryMessages": [],
+      "taskWorkflowStates": {},
+      "scopeViolationDetected": false,
+      "model_fallback_index": 0,
+      "modelFallbackExhausted": false,
+      "coderRevisions": 0,
+      "revisionLimitHit": false,
+      "fullAutoMode": false,
+      "fullAutoInteractionCount": 0,
+      "fullAutoDeadlockCount": 0,
+      "fullAutoLastQuestionHash": null,
+      "sessionRehydratedAt": 0
+    },
+    "ses_178d5c3c1ffeFPqrXPM5DY1ogy": {
+      "agentName": "explore",
+      "lastToolCallTime": 1780384152662,
+      "lastAgentEventTime": 1780384152662,
+      "delegationActive": true,
+      "activeInvocationId": 1,
+      "lastInvocationIdByAgent": {
+        "explore": 1
+      },
+      "windows": {
+        "explore:1": {
+          "id": 1,
+          "agentName": "explore",
+          "startedAtMs": 1780384152662,
+          "toolCalls": 0,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780384152662,
+          "recentToolCalls": [],
+          "warningIssued": false,
+          "warningReason": ""
+        }
+      },
+      "lastCompactionHint": 0,
+      "architectWriteCount": 0,
+      "lastCoderDelegationTaskId": null,
+      "currentTaskId": null,
+      "turboMode": false,
+      "gateLog": {},
+      "reviewerCallCount": {},
+      "lastGateFailure": null,
+      "partialGateWarningsIssuedForTask": [],
+      "selfFixAttempted": false,
+      "selfCodingWarnedAtCount": 0,
+      "catastrophicPhaseWarnings": [],
+      "lastPhaseCompleteTimestamp": 0,
+      "lastPhaseCompletePhase": 0,
+      "phaseAgentsDispatched": [
+        "explore"
+      ],
+      "lastCompletedPhaseAgentsDispatched": [],
+      "qaSkipCount": 0,
+      "qaSkipTaskIds": [],
+      "pendingAdvisoryMessages": [],
+      "taskWorkflowStates": {},
+      "scopeViolationDetected": false,
+      "model_fallback_index": 0,
+      "modelFallbackExhausted": false,
+      "coderRevisions": 0,
+      "revisionLimitHit": false,
+      "fullAutoMode": false,
+      "fullAutoInteractionCount": 0,
+      "fullAutoDeadlockCount": 0,
+      "fullAutoLastQuestionHash": null,
+      "sessionRehydratedAt": 0
+    },
+    "ses_178d5c392ffedbvkUIQi46ijpu": {
+      "agentName": "explore",
+      "lastToolCallTime": 1780384152723,
+      "lastAgentEventTime": 1780384152723,
+      "delegationActive": true,
+      "activeInvocationId": 1,
+      "lastInvocationIdByAgent": {
+        "explore": 1
+      },
+      "windows": {
+        "explore:1": {
+          "id": 1,
+          "agentName": "explore",
+          "startedAtMs": 1780384152724,
+          "toolCalls": 0,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780384167705,
+          "recentToolCalls": [],
+          "warningIssued": false,
+          "warningReason": ""
+        }
+      },
+      "lastCompactionHint": 0,
+      "architectWriteCount": 0,
+      "lastCoderDelegationTaskId": null,
+      "currentTaskId": null,
+      "turboMode": false,
+      "gateLog": {},
+      "reviewerCallCount": {},
+      "lastGateFailure": null,
+      "partialGateWarningsIssuedForTask": [],
+      "selfFixAttempted": false,
+      "selfCodingWarnedAtCount": 0,
+      "catastrophicPhaseWarnings": [],
+      "lastPhaseCompleteTimestamp": 0,
+      "lastPhaseCompletePhase": 0,
+      "phaseAgentsDispatched": [
+        "explore"
+      ],
+      "lastCompletedPhaseAgentsDispatched": [],
+      "qaSkipCount": 0,
+      "qaSkipTaskIds": [],
+      "pendingAdvisoryMessages": [],
+      "taskWorkflowStates": {},
+      "scopeViolationDetected": false,
+      "model_fallback_index": 0,
+      "modelFallbackExhausted": false,
+      "coderRevisions": 0,
+      "revisionLimitHit": false,
+      "fullAutoMode": false,
+      "fullAutoInteractionCount": 0,
+      "fullAutoDeadlockCount": 0,
+      "fullAutoLastQuestionHash": null,
+      "sessionRehydratedAt": 0
+    },
+    "ses_178d5c360ffek2M3RX1EMGj1E2": {
+      "agentName": "explore",
+      "lastToolCallTime": 1780384152784,
+      "lastAgentEventTime": 1780384152784,
+      "delegationActive": true,
+      "activeInvocationId": 1,
+      "lastInvocationIdByAgent": {
+        "explore": 1
+      },
+      "windows": {
+        "explore:1": {
+          "id": 1,
+          "agentName": "explore",
+          "startedAtMs": 1780384152784,
+          "toolCalls": 0,
+          "consecutiveErrors": 0,
+          "hardLimitHit": false,
+          "lastSuccessTimeMs": 1780384152784,
+          "recentToolCalls": [],
+          "warningIssued": false,
+          "warningReason": ""
+        }
+      },
+      "lastCompactionHint": 0,
+      "architectWriteCount": 0,
+      "lastCoderDelegationTaskId": null,
+      "currentTaskId": null,
+      "turboMode": false,
+      "gateLog": {},
+      "reviewerCallCount": {},
+      "lastGateFailure": null,
+      "partialGateWarningsIssuedForTask": [],
+      "selfFixAttempted": false,
+      "selfCodingWarnedAtCount": 0,
+      "catastrophicPhaseWarnings": [],
+      "lastPhaseCompleteTimestamp": 0,
+      "lastPhaseCompletePhase": 0,
+      "phaseAgentsDispatched": [
+        "explore"
+      ],
+      "lastCompletedPhaseAgentsDispatched": [],
+      "qaSkipCount": 0,
+      "qaSkipTaskIds": [],
+      "pendingAdvisoryMessages": [],
+      "taskWorkflowStates": {},
+      "scopeViolationDetected": false,
+      "model_fallback_index": 0,
+      "modelFallbackExhausted": false,
+      "coderRevisions": 0,
+      "revisionLimitHit": false,
+      "fullAutoMode": false,
+      "fullAutoInteractionCount": 0,
+      "fullAutoDeadlockCount": 0,
+      "fullAutoLastQuestionHash": null,
+      "sessionRehydratedAt": 0
+    }
+  }
+}

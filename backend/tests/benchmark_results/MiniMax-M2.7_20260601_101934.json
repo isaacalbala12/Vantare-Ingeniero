@@ -1,0 +1,34 @@
+{
+  "model": "MiniMax-M2.7",
+  "timestamp": "20260601_101934",
+  "total": 3,
+  "results": [
+    {
+      "idx": 1,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Cuanta gasolina me queda?",
+      "response": "<think>El piloto pregunta cuánta gasolina le queda. La telemetría muestra:\n\nFuel: 18.2L\n\nEs una pregunta directa, debo responder con el dato disponible de forma concisa.\n</think>\n\n\n\n**18.2 litros** de combustible remaining.",
+      "error": "",
+      "elapsed": 3.317641496658325
+    },
+    {
+      "idx": 2,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Que marcha llevo?",
+      "response": "<think>The driver is asking \"What gear am I in?\" (¿Qué marcha llevo?)\n\nLooking at the telemetry data, it clearly states:\n- Gear: 6\n\nI should answer concisely as instructed.\n</think>\n\n\n\n**Marcha: 6ª**\n\nVas en 6ª marcha.",
+      "error": "",
+      "elapsed": 3.170422077178955
+    },
+    {
+      "idx": 3,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Van bien los frenos?",
+      "response": "<think>El piloto pregunta si los frenos van bien. Voy a analizar los datos de temperatura de los frenos:\n\nFL_Brake: 342°C\nFR_Brake: 338°C\nRL_Brake: 298°C\nRR_Brake: 295C\n\nPara un F1 moderno (asumiendo que es un monoplaza de categoría similar), las temperaturas normales de freno están típicamente en el rango de 200-400°C. Los valores actuales:\n- Frenos delanteros: 342°C y 338°C - dentro de rango normal\n- Frenos traseros: 298°C y 295°C - dentro de rango normal, incluso algo más frescos\n\nLas temperaturas parecen estar en rangos operativos normales. No hay signos de sobrecalentamiento ni de que estén demasiado fríos. \n</think>\n\n**Frenos OK.** Temperaturas dentro de rango:\n- **Delanteros:** 342°C / 338°C\n- **Traseros:** 295°C / 295°C\n\nSin alertas. Continúa.",
+      "error": "",
+      "elapsed": 7.953667640686035
+    }
+  ]
+}

@@ -1,0 +1,2046 @@
+{
+  "1": {
+    "name": "Extraccion de campos",
+    "prompts": [
+      {
+        "level": 1,
+        "index": 1,
+        "prompt": "Cual es la posicion actual?",
+        "ticker_id": "A",
+        "response": "**Posición actual: **3ª en pista, con 2.1 segundos de ventaja sobre VST y 1.2 detrás de ALO.\n\n*Tendencia clave:* Consumo medio de 3.2L/vuelta (13 vueltas restantes) y neumáticos fríos pero equilibrados para optimizar frenada/agarre en pista media.",
+        "ttft_ms": 573.6389999983658,
+        "tokens_per_second": 54.733965560391134,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 2,
+        "prompt": "Cuanto combustible queda en el tanque?",
+        "ticker_id": "A",
+        "response": "El piloto tiene **2.7 litros restantes** en su tanque (42.3L consumidos en 10 vueltas con ritmo de ~3.2L/vuelta).",
+        "ttft_ms": 134.2958000022918,
+        "tokens_per_second": 71.54165834967571,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 3,
+        "prompt": "Cual es el consumo promedio por vuelta?",
+        "ticker_id": "A",
+        "response": "El piloto consume **3.2 litros por vuelta** en esta sesión, con tanque actual a 42.3L y estimadas 13 vueltas restantes.",
+        "ttft_ms": 136.74819999869214,
+        "tokens_per_second": 68.54395594226445,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 4,
+        "prompt": "Cuantas vueltas restantes de combustible estimadas?",
+        "ticker_id": "A",
+        "response": "**Respuesta técnica:**\nTienes **9 vueltas restantes estimadas** con el consumo actual (3.2 L/vuelta) y 42.3L en tanque, ajustando a las 13L pendientes reportadas. Verifica desgaste neumáticos (RL/RR = 65/63) para optimizar stint.",
+        "ttft_ms": 136.8067000003066,
+        "tokens_per_second": 76.79458186572836,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 5,
+        "prompt": "Cual es el desgaste del neumatico delantero izquierdo?",
+        "ticker_id": "A",
+        "response": "El desgaste del neumático **delantero izquierdo (FL)** está en **72%** según datos actualizados. Temperatura actual: **92°C**.",
+        "ttft_ms": 165.55760000119335,
+        "tokens_per_second": 65.84136707739466,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 6,
+        "prompt": "Cual es la temperatura del neumatico trasero derecho?",
+        "ticker_id": "A",
+        "response": "El **neumático trasero derecho (RR)** registra una temperatura de **96°C**. Con desgaste moderado (65%) y condiciones de agarre medio, requiere atención para evitar sobrecalentamiento en vueltas posteriores.",
+        "ttft_ms": 169.54859999896144,
+        "tokens_per_second": 72.37684247912551,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 7,
+        "prompt": "Que desgaste de freno tiene la rueda delantera izquierda?",
+        "ticker_id": "A",
+        "response": "El desgaste actual en **freno delantero izquierdo (FL)** es del **38%**. Con 10 vueltas completadas, requiere atención para evitar pérdida de rendimiento.",
+        "ttft_ms": 147.87079999950947,
+        "tokens_per_second": 70.019288471174,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 8,
+        "prompt": "Quien va delante y a que distancia?",
+        "ticker_id": "A",
+        "response": "**Actualizado en L10:** **VST (Venturi)** lidera con **+2.1 segundos** sobre el segundo puesto, manteniendo su mejor tiempo en **1:48.2**. El ritmo de ventaja es estable (+0.3s vs ALO).",
+        "ttft_ms": 162.82510000019101,
+        "tokens_per_second": 74.60187885453311,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 9,
+        "prompt": "Quien va detras y a que distancia?",
+        "ticker_id": "A",
+        "response": "**Piloto detrás: ALO (Alfa Romeo) a -1.2 segundos.** Con ritmo mejorado (+0.3s vs su mejor tiempo), pero aún con 4 vueltas restantes en carrera.",
+        "ttft_ms": 162.76359999756096,
+        "tokens_per_second": 73.98343067114061,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 10,
+        "prompt": "Cual es la diferencia de ritmo con el coche de detras?",
+        "ticker_id": "A",
+        "response": "El piloto tiene un **ritmo superior en -0.3 segundos por vuelta** respecto al rival más cercano (ALO), según el dato `d-0.3` en GAP. Con neumáticos en desgaste moderado (FL/RR 65/63) y frenos con alta carga (BRK: FL/FR 38/35), optimiza su ritmo para mantener ventaja.",
+        "ttft_ms": 142.30169999791542,
+        "tokens_per_second": 80.20270819670516,
+        "score": 0.6666666666666666,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6666666666666666
+        }
+      },
+      {
+        "level": 1,
+        "index": 11,
+        "prompt": "De que clase es la sesion?",
+        "ticker_id": "A",
+        "response": "**Sesión activa: Clase HY (Hypercar)**.",
+        "ttft_ms": 146.06329999878653,
+        "tokens_per_second": 52.848296699549415,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 12,
+        "prompt": "Cuantas vueltas totales tiene la carrera?",
+        "ticker_id": "A",
+        "response": "La carrera tiene **38 vueltas completas** (SES:HY|RACE|38L|45:22).",
+        "ttft_ms": 137.44059999953606,
+        "tokens_per_second": 66.94001995705112,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 13,
+        "prompt": "Cuanto tiempo resta de carrera?",
+        "ticker_id": "A",
+        "response": "**Respuesta técnica:**\nTiempo restante: **45 minutos y 22 segundos** (45:22) hasta completar las **38 vueltas** en la sesión HY RACE.",
+        "ttft_ms": 140.3191000026709,
+        "tokens_per_second": 74.77223161018446,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 14,
+        "prompt": "Cual es el nivel de agarre de la pista?",
+        "ticker_id": "A",
+        "response": "La pista presenta **condiciones MED (Medium)**, con grip adecuado para manejo estable pero sin exceso de adherencia. Temperatura ambiente en 22°C y riesgo moderado por lluvia (+15m).",
+        "ttft_ms": 127.70780000209925,
+        "tokens_per_second": 75.19864976641784,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 15,
+        "prompt": "Cuantos coches hay en total?",
+        "ticker_id": "A",
+        "response": "En pista circulan **20 coches activos** (incluyendo tu equipo), con 4 dobles (-1L/-2L) y el resto en carrera.",
+        "ttft_ms": 148.47970000118949,
+        "tokens_per_second": 69.04372010820938,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 16,
+        "prompt": "Esta activo el Safety Car?",
+        "ticker_id": "B",
+        "response": "No hay **Safety Car** activado. El estado es **SC:N** (No) en condiciones normales, con clima **LOW grip** y 80% de probabilidad de lluvia en +3 minutos.",
+        "ttft_ms": 263.3172999994713,
+        "tokens_per_second": 63.09248645299307,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 17,
+        "prompt": "Cual es la probabilidad de lluvia?",
+        "ticker_id": "B",
+        "response": "La probabilidad de lluvia es del **80%**, con lluvias previstas en **+3 minutos** bajo condiciones de baja adherencia (*LOW*).",
+        "ttft_ms": 115.8742000006896,
+        "tokens_per_second": 71.2714130360174,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 18,
+        "prompt": "En cuantos minutos llegara la lluvia?",
+        "ticker_id": "B",
+        "response": "La lluvia llegará en **3 minutos** con probabilidad del 80%, manteniendo condiciones de agarre bajo (LOW) y temperatura de 18°C.",
+        "ttft_ms": 142.52349999878788,
+        "tokens_per_second": 66.50016292552691,
+        "score": 0.6666666666666666,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6666666666666666
+        }
+      },
+      {
+        "level": 1,
+        "index": 19,
+        "prompt": "En que vuelta estamos?",
+        "ticker_id": "B",
+        "response": "**Respuesta técnica:**\nEstamos en la **vuelta 25** de una carrera de **Hypercar (HY)** con **20:15 minutos restantes**. El ritmo actual es sostenible para mantener el liderazgo, pero HAM mantiene ventaja por **-5.3 segundos**, mientras que los rivales más cercanos (VER, LEC) se acercan rápidamente.",
+        "ttft_ms": 160.64510000069276,
+        "tokens_per_second": 74.5009715393322,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 1,
+        "index": 20,
+        "prompt": "Cuantas vueltas de combustible restan?",
+        "ticker_id": "B",
+        "response": "**Respuesta técnica:**\nEstimado equipo, el piloto lleva **7 vueltas restantes** con su tanque a 28.5L y un consumo promedio de **3.3L/vuelta**, manteniendo un margen seguro para completar la carrera sin necesidad de repostar en boxes.\n\n*Nota: Datos actualizados a L25.*",
+        "ttft_ms": 161.29069999806234,
+        "tokens_per_second": 76.34365353128523,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 21,
+        "prompt": "Esta activo el Safety Car?",
+        "ticker_id": "C",
+        "response": "**Respuesta técnica:**\nSí, **SC:S** indica que hay *Safety Car* en acción por condiciones de pista (*WTH:GRN/26°C*). El clima es estable pero con agarre medio (*MED*), y la sesión sigue activa para completar las 38L restantes.",
+        "ttft_ms": 245.74670000220067,
+        "tokens_per_second": 69.86689047358796,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.75
+        }
+      },
+      {
+        "level": 1,
+        "index": 22,
+        "prompt": "Cual es la temperatura ambiente?",
+        "ticker_id": "C",
+        "response": "La temperatura ambiente está a **26°C**, con condiciones de pista en **agarre verde (GRN)** y sin lluvia inmediata.",
+        "ttft_ms": 122.86049999966053,
+        "tokens_per_second": 67.03925078772089,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 23,
+        "prompt": "El coche de delante es...",
+        "ticker_id": "C",
+        "response": "**Actualización crítica:** El piloto **BOT** (8ª posición) lidera con **0.8s de ventaja** sobre el segundo clasificado, **SAI**, en pista verde y sin lluvia. Su consumo optimizado (3.1L/vuelta) y neumáticos a **96-97% de desgaste** mantienen ritmo estable.\n\n*¿Necesitas ajustar estrategia para mantener el liderato?*",
+        "ttft_ms": 117.65959999684128,
+        "tokens_per_second": 82.61268729738606,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 24,
+        "prompt": "Por que no hay datos de desgaste de neumaticos?",
+        "ticker_id": "D",
+        "response": "**Respuesta técnica:**\n*\"La vuelta 2 (L2) es demasiado corta para registrar desgaste significativo en neumáticos. El formato omite TYR cuando las vueltas son ≤3, priorizando datos relevantes en condiciones dinámicas. Además, el clima *GRN* y la sesión *RACE* con combustible alto sugieren que aún no hay estrés térmico/estático suficiente para medir desgaste real.\"*\n\n**Alternativa:** Si se requiere precisión, revisar si el sistema de telemetría prioriza datos en *PRACTICE* o *QUALI*, donde el desgaste sí es relevante.",
+        "ttft_ms": 254.41309999951045,
+        "tokens_per_second": 78.97969084388268,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 1,
+        "index": 25,
+        "prompt": "Cual es la posicion?",
+        "ticker_id": "D",
+        "response": "**Posición actual:** **5ª en pista**, con 2 vueltas completadas de carrera.\n\n*Detalles clave:* Verifica el ritmo de VER (+3.5s) y ajusta frenos/neumáticos para mantener ventaja frente a NOR (GT3). Clima estable (GRN), pero revisa desgaste neumático si se prolonga la vuelta.",
+        "ttft_ms": 145.73099999688566,
+        "tokens_per_second": 79.58607985076618,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 26,
+        "prompt": "Cuantas vueltas de combustible restan?",
+        "ticker_id": "D",
+        "response": "**Respuesta técnica:**\nEl piloto tiene **25 litros de combustible restantes** (96.8L consumidos en 3.2L/vuelta, con 28L restantes estimados).\n\n*Nota:* El formato compacto indica consumo promedio y laps restantes, ajustando a ~25L efectivos para la carrera.",
+        "ttft_ms": 153.78899999996065,
+        "tokens_per_second": 75.0211827670119,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 27,
+        "prompt": "Cuantos coches hay en total?",
+        "ticker_id": "E",
+        "response": "**Respuesta técnica:**\nEn la sesión actual hay **22 coches activos** (RIV:22 cars), incluyendo los 4 pilotos con laps perdidos (PER, ZHO, NOR, STR) que no compiten por tiempo. El resto (18) están en pista.",
+        "ttft_ms": 227.0500999984506,
+        "tokens_per_second": 68.09432471258255,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 28,
+        "prompt": "Que desgaste de freno tiene la rueda trasera izquierda?",
+        "ticker_id": "E",
+        "response": "La rueda **trasera izquierda (RL)** presenta un desgaste de frenos del **68%**.",
+        "ttft_ms": 156.5336000021489,
+        "tokens_per_second": 62.22782092203834,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 29,
+        "prompt": "Cuantas vueltas de combustible quedan?",
+        "ticker_id": "E",
+        "response": "**Respuesta técnica:**\nQuedan **0 vueltas completas de combustible**, con un consumo actual de **3.4 L/vuelta** y tanque a **5.2L**. Urgente revisar estrategia de pits para evitar *stint* crítico por falta de combustible en la carrera GT3.",
+        "ttft_ms": 196.7201000006753,
+        "tokens_per_second": 72.20566882197897,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 30,
+        "prompt": "Cual es la temperatura del neumatico delantero derecho?",
+        "ticker_id": "F",
+        "response": "El **neumático delantero derecho (FR)** está a **102°C**.",
+        "ttft_ms": 271.86150000125053,
+        "tokens_per_second": 43.49799920635313,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 31,
+        "prompt": "Cual es la temperatura del neumatico trasero derecho?",
+        "ticker_id": "F",
+        "response": "El neumático **trasero derecho (RR)** registra una temperatura de **103°C**.",
+        "ttft_ms": 151.1291999995592,
+        "tokens_per_second": 61.577647314432724,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      }
+    ]
+  },
+  "2": {
+    "name": "Interpretacion de campos",
+    "prompts": [
+      {
+        "level": 2,
+        "index": 1,
+        "prompt": "Vas ganando o perdiendo tiempo respecto al coche de detras?",
+        "ticker_id": "A",
+        "response": "**Situación actual:** **Perder tiempo moderado**, pero con margen ajustado.\n\n*Detalles clave:*\n- **Gap vs ALO (-1.2s):** Aunque lidera en ritmo (diferencia -0.3s), el rival mantiene presión constante.\n- **Desgaste neumáticos:** RL/RR aún frescos (98/96°C) y desgaste moderado (65/63%), pero VST avanza con ventaja técnica.\n- **Posición clave:** 3ª, con 10 vueltas restantes. Si no optimizas *stint* o evitas *undercut*, ALO puede cerrar brecha.\n\n**Acciones críticas:**\n✔ **Prioriza neumáticos RL/RR** (más desgastados) para evitar bloqueos en curvas.\n⚠ **Evita boxes innecesarios** si el ritmo es sostenible; el *gap* se resiste con consumo controlado.",
+        "ttft_ms": 252.0607000005839,
+        "tokens_per_second": 78.56807483699714,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 2,
+        "prompt": "Deberias preocuparte por la lluvia?",
+        "ticker_id": "B",
+        "response": "**Respuesta técnica:**\n*Condiciones críticas:* **WTH:LOW (agarre bajo) + 80% probabilidad de lluvia en +3m**. El clima actual es inestable y el desgaste neumático (TYR: ~50%) sugiere que los compuestos actuales no están optimizados para condiciones húmedas. **GAP>---** indica riesgo de pérdida de ritmo si la lluvia llega pronto, especialmente con rivales como HAM a -5.3s.\n\n*Acciones clave:* **Ajusta neumáticos a SAT (agarre máximo) y prioriza pits para cambiarlos antes del tiempo límite.** La carrera tiene solo 15L restantes; el Safety Car no está activo pero la lluvia podría activarlo.",
+        "ttft_ms": 225.4093000010471,
+        "tokens_per_second": 80.58461177667218,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 2,
+        "index": 3,
+        "prompt": "Acabas de salir de boxes?",
+        "ticker_id": "C",
+        "response": "**Respuesta técnica:**\nNo hay evidencia clara de *undercut* en este tick. El piloto **P8** mantiene su posición (8ª) con **F:89.7L/3.1(27L)**, pero los neumáticos **TYR:96/96.85** (RL/RR) muestran desgaste crítico en RL (86°C), lo que podría limitar su ritmo post-pit si no se ajusta el *stint*. Los rivales CLS1 (BOT, SAI) están a **+0.8s/-0.4s**, pero sin datos de *pit window* actualizado.\n\n**Conclusión:** Si salió de boxes en este momento, es probable que priorizara **frenos/neumáticos** (BRK: no reportados) o ajustes de combustible para optimizar el ritmo en RL. Revisar si su *stint* terminó antes de la vuelta 8.",
+        "ttft_ms": 257.23650000145426,
+        "tokens_per_second": 82.62279070263888,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 2,
+        "index": 4,
+        "prompt": "Es normal que no haya datos de desgaste de neumaticos?",
+        "ticker_id": "D",
+        "response": "Sí, es **completamente normal**. El formato omite el desgaste de neumáticos (**TYR**) en vueltas iniciales (≤3), ya que su medición es incierta y menos relevante en condiciones verdes con baja carga. Además, al ser una carrera en pista seca (**GRN**), los neumáticos aún no han sufrido desgaste significativo.\n\n**Recomendación técnica:** Si el ritmo se mantiene estable, prioriza **ritmo constante** antes de preocuparte por el consumo; en este caso, la ventaja de **VER (+3.5s)** es clave para mantener la posición.",
+        "ttft_ms": 267.4808000010671,
+        "tokens_per_second": 76.01408731062419,
+        "score": 0.8,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.8
+        }
+      },
+      {
+        "level": 2,
+        "index": 5,
+        "prompt": "Queda mucho tiempo de carrera?",
+        "ticker_id": "E",
+        "response": "**Respuesta técnica (radio):**\n*\"Tiempo restante: 3 minutos y 45 segundos, pero con condiciones críticas. El LOW grip y la alta probabilidad de lluvia (+90% sin lluvia prevista) obligan a priorizar seguridad. Los neumáticos están en **80-88%** de desgaste (RL/RR), con sesiones cortas por el ritmo exigente. **ALB** lidera +15s, pero **TSU** y **OCO** son peligrosos (-8.3s). Con solo 2 vueltas restantes, la estrategia debe enfocarse en **conservar combustible (5.2L)** y evitar undercut innecesarios. Si el clima empeora, podría activarse SC.\"*\n\n*(Prioridad: frenos/neumáticos + ritmo conservador).*",
+        "ttft_ms": 209.4933000007586,
+        "tokens_per_second": 82.44424636756975,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 2,
+        "index": 6,
+        "prompt": "Las temperaturas de los neumaticos son normales?",
+        "ticker_id": "F",
+        "response": "**Respuesta técnica:**\nTemperaturas **elevadas y críticas**: FL=92°C (sobrecalentamiento potencial), FR=94°C, RL=98°C, RR=96°C. Con **MED grip** y **35L/9L** (alta demanda de combustible), el desgaste neumático (RL/RR) y la temperatura en zona trasera sugieren riesgo de **pérdida de adherencia**, especialmente con rivales como STR (+11.3s) o TSU (+16.7s). Recomendable revisar **stint** para evitar *under-cut* forzado por el ritmo exigente del liderazgo (RUS).",
+        "ttft_ms": 242.25290000322275,
+        "tokens_per_second": 80.81663594273071,
+        "score": 0.14285714285714285,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.14285714285714285
+        }
+      },
+      {
+        "level": 2,
+        "index": 7,
+        "prompt": "Tienes combustible suficiente para terminar la carrera?",
+        "ticker_id": "E",
+        "response": "**Respuesta técnica:**\nCon **5.2L** y un consumo de **3.4L/vuelta**, en las últimas vueltas (0 restantes) el piloto tiene margen crítico: **~17L estimados** para completar 38L, pero con neumáticos degradados (RL/RR a ~94°C) y frenos al límite (65% desgaste trasero), la eficiencia aerodinámica y térmica podría reducir el rendimiento. **Recomendación:** Priorizar pits en las últimas vueltas para repostar (~10L) y evitar penalizaciones por neumáticos o frenos.",
+        "ttft_ms": 232.75830000056885,
+        "tokens_per_second": 80.04473425408506,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 2,
+        "index": 8,
+        "prompt": "Que implica que el Safety Car este activo para tu estrategia",
+        "ticker_id": "H",
+        "response": "**Estrategia clave con Safety Car (SC):**\nCon **SC activado**, la carrera se ralentiza a ~70-80% de velocidad, priorizando seguridad y reduciendo riesgos de colisiones. **Aprovecha para:**\n1. **Optimizar consumo**: Usa combustible eficiente (82.4L/3.1) y evita *undercut* agresivo en pits; prioriza desgaste neumático controlado (TYR: 95/94/93/92).\n2. **Posicionamiento defensivo**: VER (+1.5s) es tu rival más cercano; mantente a su distancia para evitar *gap* crítico con NOR (-3.2s). Evita adelantamientos en zonas de SC.\n3. **Stint ajustado**: Con 25L restantes y neumáticos fríos (FL/RR ~86/85), prioriza paradas estratégicas si hay *stints* largos; revisa BRK (frenos con desgaste moderado) para evitar bloqueos.\n\n**Acciones inmediatas:**\n- **Verifica clima**: GRN (agarre óptimo) pero lluvia en +15m. Si se activa, ajusta ritmo.\n- **Rivales**: En *CLS2*, LEC/RUS están a +8s; enfócate en mantener ritmo con ellos sin sobreconsumo.",
+        "ttft_ms": 266.0902999996324,
+        "tokens_per_second": 82.25963246727036,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 2,
+        "index": 9,
+        "prompt": "El coche de delante esta lejos o cerca?",
+        "ticker_id": "C",
+        "response": "El rival **BOT** está a **+0.8 segundos**, dentro del rango **CLS1 (gap <5s)**, por lo que es una distancia **muy cercana**. La ventaja se mantiene estable, pero con riesgo de pérdida si el ritmo no se ajusta.",
+        "ttft_ms": 262.95609999942826,
+        "tokens_per_second": 67.18429217102592,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 10,
+        "prompt": "Estas en zona de podio?",
+        "ticker_id": "A",
+        "response": "**Posición actual:** **Podio seguro (Top 3)** con margen estable. *VST* (+2.1s) y *ALO* (-1.2s) son los únicos rivales cercanos, pero el ritmo constante (3.2L/vuelta) y neumáticos en fase óptima (72/68 desgaste) mantienen la ventaja.\n\n**Riesgo:** *LEC* (+4.8s) es GT3, pero con 10 vueltas de ventaja; prioriza **pits si consumo supera 3.5L/vuelta**. Clima *MED* y pista seca evitan complicaciones.",
+        "ttft_ms": 246.0535999998683,
+        "tokens_per_second": 76.53588524379518,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 2,
+        "index": 11,
+        "prompt": "Cuantos rivales tienes a menos de 5 segundos?",
+        "ticker_id": "A",
+        "response": "Tienes **3 rivales** dentro del rango CLS1 (<5s), liderados por VST (+2.1s) y ALO (-1.2s). El tercer es LEC (GT3) con +4.8s.",
+        "ttft_ms": 167.78189999968163,
+        "tokens_per_second": 72.18684461500862,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 12,
+        "prompt": "Como esta el agarre de la pista?",
+        "ticker_id": "A",
+        "response": "El agarre actual es **MEDIO (WTH: MED)**, con condiciones estables pero sin riesgo de lluvia inmediata (+15m hasta precipitación). Temperatura ambiente en 22°C, ideal para neumáticos en su rango óptimo.",
+        "ttft_ms": 161.66689999954542,
+        "tokens_per_second": 71.83131134825571,
+        "score": 0.6666666666666666,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6666666666666666
+        }
+      },
+      {
+        "level": 2,
+        "index": 13,
+        "prompt": "De que clase es tu coche?",
+        "ticker_id": "E",
+        "response": "Tu coche compite en **GT3**, como confirmado por el diccionario de sesiones (*SES:GT3*).",
+        "ttft_ms": 240.0694999996631,
+        "tokens_per_second": 51.45825490242981,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 14,
+        "prompt": "Hay coches doblados?",
+        "ticker_id": "A",
+        "response": "Sí, **4 coches están doblados** (-1L a -3L) en vueltas recientes: PER (1 vuelta atrás), TSU y STR (2L), ZHO (3L). El desgaste de neumáticos (FL/RR más frío) y frenos (RL/RR críticos) sugiere riesgo de *burnout* o pérdida de ritmo. **Prioriza estabilidad en RL/RR**.",
+        "ttft_ms": 273.8914000001387,
+        "tokens_per_second": 70.44528862685212,
+        "score": 0.8333333333333334,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.8333333333333334
+        }
+      },
+      {
+        "level": 2,
+        "index": 15,
+        "prompt": "Deberias preocuparte por los frenos?",
+        "ticker_id": "E",
+        "response": "**Respuesta técnica:**\nLos frenos muestran desgaste **75/72/68/65**, con tendencia crítica en **RL/RR (68-65)** y moderada en FL/FR. Con **L35/0L** y **GAP>ALB (+15s)**, el ritmo es sostenido pero sin urgencia inmediata. Prioriza revisar **neumáticos** (desgaste RL/RR aún manejable) antes que frenos, ya que la carrera tiene **3:45 restantes** y clima estable.\n\n*Nota:* Si ALB acelera o se produce un *undercut*, ajusta frenos en pits para evitar bloqueo.",
+        "ttft_ms": 246.81079999936628,
+        "tokens_per_second": 80.45970599387451,
+        "score": 0.7142857142857143,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.7142857142857143
+        }
+      },
+      {
+        "level": 2,
+        "index": 16,
+        "prompt": "Si la lluvia llega en 3 minutos y estas con slicks, que debe",
+        "ticker_id": "B",
+        "response": "**Accion inmediata:** **Entrar a boxes para cambiar a neumáticos intermedios (intermediaries) lo antes posible**, priorizando un *undercut* estratégico. Con **LOW grip** y **80% probabilidad de lluvia en 3m**, la pista se vuelve peligrosa con slicks, pero los intermedios tardan ~15-20s en montarse.\n\n**Estrategia:**\n- **Prioriza el tiempo:** Si puedes, **llega a boxes antes que HAM (CLS1)** para evitar su *undercut* y asegurar tu posición.\n- **Monitorea la lluvia:** Si el SC se activa antes de los 3m, **usa frenos y neumáticos al máximo** hasta que llegues a boxes.\n\n**Alternativa si no puedes entrar rápido:**\n- **Aprovecha el ritmo actual (+0.8d vs HAM)** para mantener ventaja en vueltas restantes (7L). Si la lluvia llega sin SC, **reduce consumo y prioriza seguridad**.",
+        "ttft_ms": 242.83000000286847,
+        "tokens_per_second": 79.72294681513128,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 17,
+        "prompt": "Estas en los puntos?",
+        "ticker_id": "E",
+        "response": "**Respuesta técnica (radio):**\n*\"Sí, **P12** con 35 vueltas completadas. El desgaste neumáticos es crítico: **RL/RR = 83/80** (temperatura baja y grip LOW). Los rivales clave (ALB, TSU) están en *undercut* (+15s vs +18s), pero el ritmo de consumo (3.4L/vuelta) mantiene la ventaja. **Prioriza pits si el desgaste neumáticos supera 90% en RL/RR** para evitar bloqueos y recuperar tiempo.\"*\n\n*(Nota: *FAR(14)* indica que los últimos 22 pilotos están a +90s, pero tu ritmo es sostenible con ajustes de frenos/neumáticos).*",
+        "ttft_ms": 236.4025999995647,
+        "tokens_per_second": 78.85063623702732,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 2,
+        "index": 18,
+        "prompt": "La sesion es de que tipo?",
+        "ticker_id": "E",
+        "response": "**Respuesta técnica:**\n*Sesión **RACE GT3** con 38 vueltas restantes y ritmo ajustado por condiciones de pista (LOW grip, alta humedad +90%). Prioriza optimizar *stint* en boxes para mantener ventaja sobre rivales como ALB (+15.2s) bajo desgaste neumático moderado (FL/RR: ~83-75% desgaste).*",
+        "ttft_ms": 167.64429999966524,
+        "tokens_per_second": 76.36613218687468,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 2,
+        "index": 19,
+        "prompt": "Hay trafico significativo de doblados?",
+        "ticker_id": "A",
+        "response": "Sí, **trafico moderado-alto con dobles activos**. Cuatro rivales (PER, TSU, STR y ZHO) están en **-1L a -3L**, afectando ritmo y gestión de combustible. Prioriza evitar zonas de tráfico o ajustar estrategia de pits para optimizar *stint* sin penalización por *undercut*.",
+        "ttft_ms": 291.0405999973591,
+        "tokens_per_second": 69.38480419849765,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.75
+        }
+      },
+      {
+        "level": 2,
+        "index": 20,
+        "prompt": "La temperatura ambiente de 18C es normal?",
+        "ticker_id": "B",
+        "response": "En condiciones actuales (clima **LOW**, pista seca y baja humedad), **18°C es aceptable pero límite**. El neumático está en **temperatura óptima** (~90-92°C), pero el desgaste (**55/52/50/48**) sugiere que debes priorizar **ritmo controlado** para evitar sobrecalentamiento. Con **LOW grip**, evita frenadas bruscas y aceleraciones agresivas; si la temperatura sube, podrías perder agarre.",
+        "ttft_ms": 308.1299000004947,
+        "tokens_per_second": 66.29865199405862,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      }
+    ]
+  },
+  "3": {
+    "name": "Respuesta a triggers",
+    "prompts": [
+      {
+        "level": 3,
+        "index": 1,
+        "prompt": "Combustible criticamente bajo. Evalua la situacion.",
+        "ticker_id": "E",
+        "response": "**Situación crítica de combustible (5.2L/3.4L por vuelta):**\n- **Riesgo alto**: Solo 0L restantes en tanque, con consumo explosivo (3.4L/vuelta) y vuelta 35/38. **Pit stop urgente necesario**, pero revisa neumáticos: desgaste moderado-alto (FL/RR ~80-88%) y frenos en buen estado (72-68%). **Prioriza seguridad sobre ritmo** si hay riesgo de *under-cut* con rivales cercanos.\n\n**Acción inmediata:**\n1. **Pits**: Revisa combustible, neumáticos y frenos antes del siguiente *stint* (si es posible). Si el consumo no mejora, **prioriza combustible** para evitar parada forzada.\n2. **Rivales**: ALB (+15.2s) y MAG (-12.1s) son los más peligrosos; evita *under-cut* si hay riesgo de colisión con PER/ZHO (dobles en 2L).\n3. **Clima**: Agarre bajo (LOW), pero sin lluvia inmediata. **Frenos y neumáticos** son críticos para mantener ritmo en curvas.\n\n**Opción táctica:**\n- Si el *stint* actual termina pronto, **prioriza combustible** y ajusta estrategia para la siguiente parada. **No arriesgues vueltas valiosas**.",
+        "ttft_ms": 412.94570000172826,
+        "tokens_per_second": 74.72189234780421,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.5,
+          "rubric_score": 0.5
+        }
+      },
+      {
+        "level": 3,
+        "index": 2,
+        "prompt": "Combustible criticamente bajo. Evalua la situacion.",
+        "ticker_id": "A",
+        "response": "**Situación crítica de combustible (42.3L/13L restantes, 3.2L/vuelta).**\n**Riesgo:** Si no se para en boxes antes del *stint* final (~vuelta 26), riesgo de quedarse sin gasolina y perder posiciones clave (VST a +2.1s, ALO a -1.2s).\n\n**Acciones recomendadas:**\n- **Prioridad máxima al *undercut* en pits:** Entrar antes que rivales como VST o ALO para recuperar 3+ puestos.\n- **Optimizar consumo:** Neumáticos con desgaste moderado (FL/RR ~70%) y frenos en buen estado (BRK: FL/FR ~35-38%). Temperatura neumáticos equilibrada (92-96°C), ideal para eficiencia.\n- **Monitorear clima:** MED grip y 15m hasta lluvia, pero sin *Safety Car*. Riesgo de humedad en pista si no se para pronto.\n\n**Estrategia urgente:** Parada en boxes antes de la vuelta 24-25 para reabastecer (evitar *stint* largo con combustible crítico).",
+        "ttft_ms": 261.41460000144434,
+        "tokens_per_second": 83.53665693333093,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.5,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 3,
+        "prompt": "Safety Car desplegado. Que recomiendas?",
+        "ticker_id": "C",
+        "response": "**Radio técnico:**\n*\"Piloto, con Safety Car activo (SC:S) y pista en **GRN**, prioriza **pits rápido pero estratégico**:\n- **Undercut controlado**: Si BOT (+0.8s) o SAI (-0.4s) están cerca, prioriza boxes para **repostar/neumaticos** sin exponerse a *stint* largo en pista.\n- **Neumáticos**: TYR: 96/97/96/96.85 (RL/RR aún frescos). Si el ritmo lo permite, **saca RL/RR al máximo** para mantener GAP con BOT (mejorando d-0.7).\n- **Clima estable**: Temperatura baja (26°C) y *green* sugiere neumáticos en punto óptimo. Evita frenadas bruscas.\n- **GAP crítico**: SAI (-0.4s) es el mayor riesgo; si no puedes parar, **mantén ritmo pero vigila su *stint***.\n**Acción inmediata**: Decide entre **repostar (F:89.7L)** o cambiar neumáticos según tu *best lap* vs. BOT/SAI.\"*\n\n---\n*Nota clave*: Con Safety Car y pista seca, el riesgo de *overtaking* es bajo; enfócate en **conservar energía** y **neumaticos**.",
+        "ttft_ms": 253.96320000072592,
+        "tokens_per_second": 84.82335315667872,
+        "score": 0.125,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 4,
+        "prompt": "Safety Car desplegado. Que recomiendas?",
+        "ticker_id": "A",
+        "response": "**Radio técnico:**\n*\"Piloto, con Safety Car activado (SC:N) y condiciones MED/22°C, prioriza **prioridad de pista** para evitar colisiones en la zona crítica. Revisa desgaste neumáticos (FL:72%, FR:68%) y frenos (FL:38%), ajustando ritmo a **1:49-50** para optimizar consumo sin perder GAP con VST (+2.1s). En boxes, verifica combustible (42.3L/3.2L/vuelta) y planifica un *stint* corto si hay rivals como ALO (-1.2s) o HAM (+8.5s) cerca. Evita *undercut* innecesario; prioriza seguridad sobre ritmo.\"*\n\n---\n**Notas clave:**\n- **Ritmo:** 1:49-50 (mejorando tu best d-0.3 vs ALO).\n- **Neumáticos:** Temperatura FL baja (92°C), FR media-alta (94°C). Prioriza RL/RR para estabilidad.\n- **Frenos:** Desgaste crítico en RL/RL (22/20%). Reduce presión si hay riesgo de bloqueo.",
+        "ttft_ms": 243.0160000003525,
+        "tokens_per_second": 85.5801843378711,
+        "score": 0.16666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.3333333333333333,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 5,
+        "prompt": "Desgaste critico de frenos (>80%). Evalua.",
+        "ticker_id": "E",
+        "response": "**Análisis urgente:**\nFrenos en **FL/RR con desgaste >80%** (75/65) y **FR/RL moderado pero crítico** (72/68). Con **LOW grip** y **3:45 restantes**, riesgo alto de bloqueo o pérdida de control, especialmente frente a rivales como **ALB (+15.2s)** que lidera con neumáticos nuevos.\n\n**Recomendación:**\n- **Prioriza pits** para cambiar frenos (prioriza FL/RR) y revisar **suspensión/alineación** por desgaste desigual.\n- **Aprovecha el gap con ALB** para un *undercut* si condiciones lo permiten, pero monitorea **TSU (-8.3s)** que está a punto de sobrepasarte.\n\n**Clima:** Baja adherencia (LOW grip) y lluvia inminente (+90% probabilidad).",
+        "ttft_ms": 265.9182999996119,
+        "tokens_per_second": 83.25084801045953,
+        "score": 0.3125,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.625,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 6,
+        "prompt": "Desgaste critico de frenos (>80%). Evalua.",
+        "ticker_id": "A",
+        "response": "**Radio: Urgencia técnica - Frenos en riesgo crítico (P3, vuelta 10).**\n*Condición:* Desgaste FL/RR **>80%** (38/20) con neumáticos fríos y consumo alto (3.2L/vuelta). **Acción inmediata:** Priorizar *undercut* en pits para evitar pérdida de ritmo o bloqueo por calor, especialmente frente a VST (+2.1s) que lidera con mejor tiempo. Clima estable pero riesgo de lluvia en 15min; prioriza frenada eficiente.\n\n---\n**Recomendación:**\n- **Pits:** Reducir consumo (F:40L) y revisar BRK antes del siguiente *stint* (vuelta 23). Si no se corrige, riesgo de bloqueo en curvas con VST a la vista.",
+        "ttft_ms": 307.02110000129323,
+        "tokens_per_second": 80.75006155050434,
+        "score": 0.125,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 7,
+        "prompt": "Degradacion acelerada de neumaticos. Analiza.",
+        "ticker_id": "F",
+        "response": "**Análisis urgente: Degradación crítica en neumáticos (FL/RL)**\n\n- **Temperatura anómala**: FL=100°C, RL=101°C → **sobrecalentamiento por desgaste + posible *undercut* en boxes** (consumo 3.2L/Lap vs. pista media).\n- **Grips de pista (MED) y neumáticos gastados (FL:65%, RL:60%)** → **riesgo de pérdida de agarre en curvas** si no se ajusta ritmo.\n- **Rivalidad**: *RUS* (+6.2s) y *BOT* (-4.1s) mantienen presión; *STR* (GT3) lidera en desgaste neumático (V17). **Prioriza estirar stint actual** para evitar *pit stop* prematuro.\n\n**Recomendación inmediata**:\n- Reducir velocidad en curvas para bajar temperatura neumáticos.\n- Monitorear *gap* con *RUS* y ajustar estrategia de boxes si el ritmo no mejora.",
+        "ttft_ms": 266.91569999820786,
+        "tokens_per_second": 85.77544799584962,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.5,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 8,
+        "prompt": "Degradacion acelerada de neumaticos. Analiza.",
+        "ticker_id": "C",
+        "response": "**Análisis urgente: Degradación crítica en TYR (RL/RR) y riesgo de *under-cut* forzado**\n\n- **Problema clave:** Temperatura RL/RR **86/85°C** vs FL/FR **97/98°C**, con desgaste **RL/RR 86/87% (vs. FL/FR ~90%)**. **GAP>BOT (+0.8s)** y **SC activo** exigen priorizar *under-cut* para evitar perder ventaja.\n- **Acciones inmediatas:**\n  - **Pits ahora:** Cambiar RL/RR a compuestos frescos (si disponible) o reducir ritmo en RL/RR para estabilizar temperatura.\n  - **Monitorizar:** GAP con BOT (+0.8s) y SAI (-0.4s). Si no se actúa, riesgo de *pit-stall* por degradación acelerada.\n\n**Contexto:** Clima GRN (agarre óptimo), pero neumáticos en límite térmico. **Prioridad: Mantener ritmo actual con RL/RR hasta boxes.**",
+        "ttft_ms": 251.0794999980135,
+        "tokens_per_second": 85.23899308890343,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 9,
+        "prompt": "Bateria hibrida baja. Evalua el estado.",
+        "ticker_id": "F",
+        "response": "**Estado crítico: Batería híbrida en modo de bajo consumo (3.2 L/vuelta) con 9 vueltas restantes.**\n\n- **Riesgo:** Consumo excesivo (+0.5s/delta vs líder) y desgaste neumático acelerado (RL/RR a ~60%).\n- **Acciones clave:**\n  - *Stint corto* (1 vuelta max en boxes) para recuperar combustible sin perder ritmo.\n  - Priorizar *undercut* en pits si STR o TSU están cerca, pero prioriza a RUS/BOT por el gap +6.2s.\n\n**Clima y pista:** MED/MED (agarre estable), pero lluvia en +20m podría degradar neumáticos. **No SC**, pero revisa grip de rivales GT3 (ALB/MAG).",
+        "ttft_ms": 254.15009999778704,
+        "tokens_per_second": 80.97969689706213,
+        "score": 0.08333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.16666666666666666,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 10,
+        "prompt": "Amenaza de lluvia inminente. Que hago?",
+        "ticker_id": "B",
+        "response": "**Acciones inmediatas:**\n1. **Reducir ritmo y consumo**: Mantén velocidad moderada (evita desgaste neumático en LOW grip) y prioriza seguridad sobre *undercut*. Consume ~3.3L/vuelta para llegar a boxes con ~28L.\n\n2. **Neumáticos**: Temperaturas altas (90°C+ FL/RR) sugieren riesgo de grietas por humedad repentina. Si SC no se activa, ajusta presión ligeramente hacia abajo en RL/RR (ej: 3-4 psi menos) para mayor adherencia.\n\n**Prioridades clave**:\n- **Pits**: Prepara *stint* corto (7L restantes) con combustible fresco si hay duda de lluvia. Evita paradas largas por riesgo de *dry-stint* en condiciones cambiantes.\n- **Rivales**: HAM y VER están cerca (+/-5s). Si el clima empeora, considera *undercut* estratégico para ganar ventaja antes del SC.\n\n**Monitoreo crítico**:\n- Vigila grietas neumáticas (temperaturas >90°C) y ajusta presión si la lluvia llega. **No subestimes el LOW grip**: riesgo de patinaje en curvas secas/húmedas.",
+        "ttft_ms": 262.9774999986694,
+        "tokens_per_second": 84.48206963864804,
+        "score": 0.08333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.16666666666666666,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 11,
+        "prompt": "Amenaza de lluvia inminente. Que hago?",
+        "ticker_id": "A",
+        "response": "**Acciones inmediatas:**\n1. **Reducir ritmo y desgaste:** Mantén la velocidad en el límite seguro (MED grip) para evitar pérdida de agarre con el 30% de probabilidad de lluvia (+15m). Prioriza frenadas suaves y neumáticos a **92°C** (FL) para preservar tracción.\n\n2. **Posicionamiento:** No *undercut* a VST/ALO; prioriza conservar la **P3** con GAP estable (+2.1s). Si hay riesgo de *stint* largo, planifica una parada en boxes antes del 15L para recargar combustible (42.3L) y revisar frenos (BRK: FL/FR críticos).\n\n3. **Neumáticos:** Mantén temperatura RL/RR >96°C para evitar *slipstreaming*. Si el clima empeora, considera cambiar a **slick** si no hay SC.\n\n---\n**Radio clave:**\n*\"Clima MED con 15m de alerta lluvia. Velocidad controlada, frenos FL/FR en revisión. Priorizo P3 sin *undercut*; si se confirma SC, ajustaré estrategia de pits. Neumáticos RL/RR a +96°C para estabilidad. ¿Confirmo plan?\"*",
+        "ttft_ms": 259.6086999983527,
+        "tokens_per_second": 85.73005795292218,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 12,
+        "prompt": "Ventana de paradas abierta. Recomienda estrategia.",
+        "ticker_id": "G",
+        "response": "**Estrategia clave:**\n- **Prioriza *undercut* en pits:** LEC (+3.1s) y RUS (-1.8s) son críticos; prioriza a ellos para mantener ventaja sobre GT3/HY.\n- **Consumo controlado:** 53L/14v con 3.2L/vuelta → **16L restantes** (prioriza *stint* largo si no hay urgencia).\n- **Neumáticos:** Temperaturas estables (90-93°C), desgaste moderado (FL/FR bien conservados). No aprietes frenos (BRK 25/22/18/15).\n\n**Acciones:**\n- Si LEC/RUS no se acercan → **parada en 17L** para refuerzo de neumáticos (RL/RR aún con margen).\n- Si hay *undercut* → **aprovecha el ritmo de RUS** (GT3 más rápido) y ajusta combustible para mantener GAP.\n- **Evita frenadas bruscas:** BRK en RL está bajo; prioriza suavidad para alargar stint.\n\n*\"Lleva a LEC/RUS en tu radar, pero no descuides el ritmo: 16L te dan flexibilidad. Si la carrera se acelera, revisa TYR RL/RR.\"*",
+        "ttft_ms": 279.7685999976238,
+        "tokens_per_second": 84.07296332179746,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 13,
+        "prompt": "Ventana de paradas cerrándose. Quedan 2 vueltas.",
+        "ticker_id": "E",
+        "response": "**Radio técnico:**\n*\"Pit window cierra en 35 segundos, solo 2 vueltas restantes. Combustible bajo (5.2L/3.4L por vuelta) y desgaste neumáticos críticos: FL/RR al límite (80% y 94°C). Rivales como ALB (+15s) o TSU (-8s) mantienen presión, pero OCO avanza +18.7s. Prioriza **frenos/neumáticos** en boxes: revisa desgaste BRK (FL/RR) y ajusta ritmo para evitar *undertaking* con ALB/TSU. Si no hay urgencia, consume combustible eficientemente; si es necesario, prioriza neumáticos antes que frenos. ¡Cuidado con el clima LOW y lluvia en 90%!\"*\n\n*(Enfoque: Urgencia pit, prioridades técnicas, riesgos clave).*",
+        "ttft_ms": 251.57389999731095,
+        "tokens_per_second": 80.7170607162324,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 14,
+        "prompt": "Rival directo (SAI) ha entrado a boxes. Que hago?",
+        "ticker_id": "C",
+        "response": "**Acción inmediata:**\n**Pitea con urgencia** y **aprueba el *undercut* para recuperar +0.8s vs BOT en la vuelta 7, priorizando neumáticos frescos (FL/RR).**\n- **Prioriza RL/RR** (96/86) por desgaste crítico y riesgo de bloqueo al frenar.\n- **Ajusta combustible** a ~85L para maximizar rendimiento post-pit (27L restantes).\n- **Evita el *stint* largo**: Si SAI sale con neumáticos nuevos, mantén ritmo en RL/RR para no perder ventaja.\n\n**Clave:** *Neumáticos y frenos son tu debilidad vs BOT; apuesta por la velocidad de salida.*",
+        "ttft_ms": 264.96860000042943,
+        "tokens_per_second": 82.36552607181473,
+        "score": 0.125,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 15,
+        "prompt": "Brecha cerrada con rival < 1.5s. Evalua.",
+        "ticker_id": "C",
+        "response": "**Resumen técnico:**\nPiloto **8°** recupera +0.4s vs **SAI** (HY) en vuelta 8, cerrando brecha bajo condiciones **GRN/SC:S**. Consumo moderado (3.1L/L), neumáticos **96-85% desgaste** (FL/RR) y frenos no reportados. **BOT** lidera con +0.8s, pero **SAI** se acerca rápidamente.\n\n**Acción inmediata:**\n- **Undercut estratégico**: Prioriza boxes para revisar combustible (89.7L/27L restantes) y ajustar neumáticos si **SC** prolonga la carrera.\n- **Riesgo de ritmo**: **STR** (+8.9s) y **TSU** (+12.4s) requieren vigilancia en pista para evitar retroceso.\n- **Frenos/neumáticos**: Si el **SAI** mantiene presión, revisar desgaste FL/RR (priorizar RL si es necesario).\n\n*Nota: Clima estable pero SC activa; prioriza seguridad sobre ritmo.*",
+        "ttft_ms": 156.9625999982236,
+        "tokens_per_second": 88.17107714365774,
+        "score": 0.42857142857142855,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.8571428571428571,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 16,
+        "prompt": "Brecha cerrada con rival < 1.5s. Evalua.",
+        "ticker_id": "B",
+        "response": "**Análisis técnico (gap_closed):**\nPiloto **líder (P1)** mantiene brecha estable frente a **HAM (-5.3s)**, pero su ritmo se acelera (+0.8s/diferencia vs mejor rival), mientras que el desgaste neumáticos **FL/RL** (55/50) y frenos (**FL/FR: 90/91**) sugieren optimización en *stint* final. **HAM** (GT3) se acerca a ~8s, pero con **LAP(4)** detrás (PER, TSU), prioriza ritmo sobre seguridad.\n\n**Recomendación:**\n- **Aprovechar el *undercut*** para consolidar liderato en boxes si HAM no reacciona.\n- **Neumáticos:** Temperatura FL/RL (90/89°C) es óptima; mantener presión y evitar *overlocking*.\n- **Frenos:** Desgaste FR (91%) requiere revisión antes de la siguiente parada.",
+        "ttft_ms": 259.40459999765153,
+        "tokens_per_second": 85.10993321856482,
+        "score": 0.375,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.75,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 17,
+        "prompt": "La fase de carrera ha cambiado. Evalua.",
+        "ticker_id": "A",
+        "response": "**Resumen técnico actualizado (fase crítica):**\n*Posición 3 en pista, con **sint de combustible optimizado** (42.3L/3.2L/vuelta) y **13 vueltas restantes**. Neumáticos en *MED grip*, desgaste equilibrado pero FL/RR ligeramente más fríos (92°C/96°C). Frenos con alto desgaste frontal (BRK: 38/35), prioriza **pits en vuelta 10** para recarga de combustible y ajuste de neumáticos si el ritmo lo permite.\n\n*GAPs clave:* **VST (+2.1s)** lidera con mejor tiempo, pero **ALO (-1.2s)** se acerca peligrosamente. *Delta ritmo -0.3s*, riesgo de *overtaking* en pista seca (MED grip). Rivales como **HAM (+8.5s)** o **VER (+12.3s)** son inalcanzables, pero **LEC** (GT3) se acerca a +4.8s.\n\n*Condiciones:* Sin Safety Car, clima estable con 30% probabilidad de lluvia en 15 min. *Pits estratégicos recomendados*: **Recarga combustible** si el ritmo lo justifica; revisar neumáticos si hay *undercut* con rivales cercanos (ej: LEC). **Prioriza seguridad sobre velocidad pura**.",
+        "ttft_ms": 260.58890000058454,
+        "tokens_per_second": 86.76073217046489,
+        "score": 0.125,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 18,
+        "prompt": "Temperatura excesiva de neumaticos (>105C). Analiza.",
+        "ticker_id": "F",
+        "response": "**Respuesta técnica (radio):**\n*\"Neumáticos en **FL/RR sobrecalentados** (~92°C/103°C), riesgo crítico por desgaste acelerado y posible degradación del compuesto. **GAP con RUS (+6.2s)** exige priorizar pits para cambiar neumáticos fríos (TYR: 58-65% desgaste) antes de que el **MED grip** y **40% lluvia en +20m** agraven la seguridad. **STR/TSU** compiten por liderar, pero su ritmo (+11.3s) no justifica riesgo. **Pits ahora: stint 18L → 17L con neumáticos nuevos (FL/RR fríos)** para evitar *overheat* y mantener ventaja.\"*\n\n---\n**Acciones clave:**\n- **Prioriza pits** por **under-cut** con rivales en CLS2.\n- **Neumáticos fríos** (FL/RR) son urgentes; prioriza **RL** si desgaste es crítico.\n- **Monitorea GAP con RUS**: riesgo de *stint* largo sin alivio.",
+        "ttft_ms": 244.40620000314084,
+        "tokens_per_second": 83.7930814325124,
+        "score": 0.44285714285714284,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.2857142857142857,
+          "rubric_score": 0.3
+        }
+      },
+      {
+        "level": 3,
+        "index": 19,
+        "prompt": "Temperatura excesiva de neumaticos (>105C). Analiza.",
+        "ticker_id": "C",
+        "response": "**Análisis urgente:**\nLos neumáticos **RL (trasera izquierda)** y **RR (trasera derecha)** superan el límite crítico con **86°C/87°C**, riesgo de degradación prematura por sobrecalentamiento en pista verde (*GRN*). Con **26°C ambiente** y **SC activo**, la diferencia térmica es extrema.\n\n**Acciones inmediatas:**\n1. **Retirar neumáticos** para evitar daño estructural (riesgo de *blowout*).\n2. **Priorizar pits** con **undercut** contra rivales como **BOT (+0.8s)** o **SAI (-0.4s)**, ya que el desgaste actual (76/97/96/96) es inestable.\n3. **Verificar frenos** (*BRK:* no reportados, pero con *SC* y neumáticos fríos, priorizar seguridad).\n\n**Impacto:**\n- **BOT** lidera +0.8s; si no se actúa, podría perder ventaja por *undercut*.\n- **SAI** está a -0.4s, pero su consumo (3.1L/vuelta) es alto: **27L restantes = 86L totales**. Riesgo de *pit stop* forzado.\n\n---\n**Radio:** *\"Neumáticos traseros en sobrecalentamiento (>105°C). Prioridad máxima a pits con neumáticos nuevos y frenos revisados. Lider BOT tiene ventaja, pero riesgo de pérdida si no se actúa. SC activa: prioriza seguridad antes que ritmo.\"*",
+        "ttft_ms": 245.3669999995327,
+        "tokens_per_second": 87.6888735731765,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.5,
+          "rubric_score": 0.0
+        }
+      }
+    ]
+  },
+  "4": {
+    "name": "Razonamiento multicampo",
+    "prompts": [
+      {
+        "level": 4,
+        "index": 1,
+        "prompt": "80% de lluvia en 3 min y llevas slicks. Que recomiendas?",
+        "ticker_id": "B",
+        "response": "**Radio técnico:**\n*\"Con **LOW grip**, **slicks** y **80% probabilidad de lluvia en 3 minutos**, prioriza **pits ahora** para cambiar a **intermedios** (o al menos **soft wet**) antes del *stint* final. El clima es crítico: la diferencia entre seco y mojado con neumáticos nuevos puede costarte el liderato. Si no puedes parar, mantén ritmo pero vigila el desgaste de frenos (BRK) y evita *undercut* innecesarios en boxes por riesgo de *dry lock*.\"*",
+        "ttft_ms": 218.15670000069076,
+        "tokens_per_second": 81.79924854185937,
+        "score": 0.8,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.8
+        }
+      },
+      {
+        "level": 4,
+        "index": 2,
+        "prompt": "VST esta 2.1s adelante, llevais 10 vueltas, quedan 45 min. E",
+        "ticker_id": "A",
+        "response": "**Respuesta técnica (radio):**\n*\"Con +2.1s vs VST en vuelta 10 y 3.2L/volta, el ritmo es sostenible pero con neumáticos fríos (FL:92°C). El desgaste TYR (72% FL) y frenos (BRK:38/22) sugieren que un *undercut* podría ser viable si priorizas **pits en 10ª vuelta** para recuperar gap. La clase HY con 45 min de carrera y clima MED no penaliza cambios, pero revisa el ritmo de VST (1:48.2): si su consumo es similar, podrías compensar. Prioriza neumáticos RL/RR para maximizar rendimiento post-pit.\"*\n\n*(Nota: Riesgo moderado por rivalidad directa; ajusta según sesiones previas).*",
+        "ttft_ms": 274.0715999971144,
+        "tokens_per_second": 83.12590545898146,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.25
+        }
+      },
+      {
+        "level": 4,
+        "index": 3,
+        "prompt": "SC activo, estas P2 a 1.5s de VER. Entras a boxes?",
+        "ticker_id": "H",
+        "response": "**Respuesta técnica (radio):**\n*\"Pit stop recomendado con urgencia: neumáticos en **86/87/85** (RL/RR) y frenos al límite (5/5). Gap crítico (+1.5s vs VER), pero **25L restantes** y consumo de 3.1L/vuelta. Prioriza **undercut estratégico**: VER tiene neumáticos más frescos (95/94) y lidera en pista verde, pero su ritmo es +0.8s por vuelta vs tu best. **Stint ideal: ~2-3L** para recuperar gap sin perder ritmo. Prioriza frenos RL/RR si hay riesgo de bloqueo con Safety Car.\"*\n\n*(Nota: Evita paradas largas; VER ya tiene ventaja en neumáticos y ritmo).*",
+        "ttft_ms": 249.93840000024647,
+        "tokens_per_second": 83.53168219046417,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 4,
+        "index": 4,
+        "prompt": "Quedan 40 min de carrera, tienes 53.1L y consumes 3.2L/v. Ll",
+        "ticker_id": "G",
+        "response": "**Respuesta técnica (radio):**\n*\"Situación crítica: con **3.2L por vuelta** y solo **15L restantes**, el consumo actual te deja en **~49L total** (vs. ~60L objetivo). En 40 min, pierdes **~128L** (3.2L/min × 40), lo que sumado a tu carga actual, **no llegas al pit stop**. Prioriza optimizar consumo en la siguiente vuelta para evitar penalización por combustible.\"*\n\n*(Nota: Si el ritmo de consumo baja a ~2.5L/vuelta, podrías ajustar estrategia.)*",
+        "ttft_ms": 264.058800003113,
+        "tokens_per_second": 78.32180049579122,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 4,
+        "index": 5,
+        "prompt": "Tus neumaticos estan al 72% y el de detras es 0.3s mas rapid",
+        "ticker_id": "A",
+        "response": "**Respuesta técnica (radio):**\n*\"Con desgaste TYR FL:72% y ventaja de ritmo +0.3s vs rival trasero, prioriza **tyre saving** en RL/RR para evitar pérdida de gap. El consumo actual 3.2L/L es aceptable, pero con 13 vueltas restantes y neumáticos en transición crítica (96°C RR), optimizar presión/rotación en pits podría mantener ritmo sin penalizar desgaste.\"*\n\n*(Nota: Prioriza RL/RR por mayor ventaja competitiva y riesgo de *slipstream* en pista media).*",
+        "ttft_ms": 397.88189999671886,
+        "tokens_per_second": 71.74155911129672,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 4,
+        "index": 6,
+        "prompt": "Frenos al 75% y combustible para 0 vueltas. Prioridad?",
+        "ticker_id": "E",
+        "response": "**Radio técnico:**\n*\"Pit stop urgente por combustible crítico (5.2L/0L) y desgaste frenos alto (FL/FR: 75/72). Prioriza parada inmediata para evitar *under-cut* con rivales como ALB (+15s) y optimizar consumo en pista LOW. Evita riesgo de *pit wall* por falta de combustible.\"*\n\n*(Ajuste: Si sesión corta, prioriza frenos si ALB está a +18.7s, pero combustible es crítico para no quedarse sin gasolina).*",
+        "ttft_ms": 237.4853000001167,
+        "tokens_per_second": 79.66884623510396,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 4,
+        "index": 7,
+        "prompt": "Es carrera HYpercar y hay 80% lluvia en 3 min. Impacto?",
+        "ticker_id": "B",
+        "response": "**Respuesta técnica (radio):**\n*\"Condiciones extremas: **LOW grip + 80% lluvia en +3m** con Safety Car ausente. Riesgo alto de **derrapes en neumáticos degradados (49-52% desgaste)** y frenos críticos por humedad. Los rivales CLS1 (HAM) ya lideran con -5.3s, pero el clima obliga a **priorizar seguridad sobre ritmo**, especialmente en vuelta 25 con combustible bajo (28.5L/7L restantes). Posible ralentización forzada o *undercut* estratégico para evitar colisiones.\"*\n\n**Acciones clave:**\n- **Neumáticos:** Temperaturas altas (90°C FL/RR) sugieren riesgo de **desgaste acelerado en lluvia**.\n- **Frenos:** Desgaste alto (38% FR/RL) + humedad = posible **bloqueo prematuro** al frenar.\n- **Estrategia:** Si no hay SC, **evitar sobrepasos arriesgados**; priorizar **ritmo estable** o *undercut* en boxes para mantener ventaja.",
+        "ttft_ms": 237.96889999721316,
+        "tokens_per_second": 83.38660811078161,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 4,
+        "index": 8,
+        "prompt": "ALO esta 1.2s detras y es 0.3s mas rapido. Ademas hay 3 coch",
+        "ticker_id": "A",
+        "response": "**Radio técnico:**\n*\"Piloto, ALO mantiene ritmo +0.3s vs tu best, pero su ventaja de +1.2s con VST te deja vulnerable en la primera fila. Con neumáticos a 65% RL y frenos al 22%, prioriza **undercut** en pits para recuperar gap antes del sprint final (45L restantes). Los 3 rivales en CLS1 (VST, ALO, LEC) exigen precisión: ajusta consumo a ~3.0L/vuelta y evita desgaste neumático en RL/RR. Clima MED y lluvia +15m mantienen pista estable, pero el ritmo de ALO exige **ritmo constante** para no perder ventaja.\"*\n\n*(Enfoque: *Ganar gap con pits estratégicos + mantener ritmo vs ALO*).*",
+        "ttft_ms": 231.03099999934784,
+        "tokens_per_second": 75.75596817869895,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 4,
+        "index": 9,
+        "prompt": "Pista MED (nivel 2), neumaticos a 100-103C. Hay sobrecalenta",
+        "ticker_id": "F",
+        "response": "**Respuesta técnica:**\nSí, **riesgo moderado de sobrecalentamiento**. Neumáticos RL/RR a **98°C/101°C** con desgaste alto (58%/60%) y vuelta 18 en pista MED. Consumo elevado (**3.2L/vuelta**) y **9L restantes** sugieren estrés térmico por frenadas repetidas o ritmo agresivo. Prioriza **pit stop** para revisar presión/temperatura y ajustar estrategia de neumáticos.",
+        "ttft_ms": 269.54810000097496,
+        "tokens_per_second": 73.9655228206462,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 4,
+        "index": 10,
+        "prompt": "Sin combustible, P12, GT3. Entrar a boxes ahora o esperar?",
+        "ticker_id": "E",
+        "response": "**Recomendación técnica:**\n*No es seguro entrar ahora.* **P12 tiene 5.2L (0L restantes)** y el ritmo de consumo (3.4L/vuelta) en vuelta 35 con **GAP +15s vs ALB** y **LOW grip** exige priorizar la estrategia: **prioriza a ALB** para mantener ventaja, no arriesgarse a perder tiempo por un *stint* innecesario.\n\n**Alternativa:** Si el ritmo de consumo es estable (no hay desgaste crítico en neumáticos/frenos), espera hasta que **ALB o TSU** se acerquen más (ej: <10s) para un *undercut* seguro. **Neumáticos FR/RL ya muestran 97/94°C**, pero el desgaste es moderado; prioriza la estrategia de carrera.",
+        "ttft_ms": 229.21019999921555,
+        "tokens_per_second": 78.23209699849389,
+        "score": 0.6666666666666666,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6666666666666666
+        }
+      },
+      {
+        "level": 4,
+        "index": 11,
+        "prompt": "BOT +0.8s (1:49.5), SAI -0.4s (1:49.1). Estrategia?",
+        "ticker_id": "C",
+        "response": "**Radio:** *\"Pit crew, BOT mantiene ritmo +0.8s con 27L restantes y neumáticos en 96-98% desgaste. SAI lidera con -0.4s pero su consumo es superior (+0.7d). Prioridad: **pitar para refuerzo de combustible** (F:89.7L) y evitar *undercut* innecesario. Neumáticos en condiciones óptimas, pero el gap se cierra por ritmo. Revisar *stint* de BOT: si SAI no acelera, apurar pit stop para recuperar 0.4s sin riesgo de desgaste.\"*\n\n**Acción clave:** *\"Pitar ahora para F y revisión de frenos (BRK: datos pendientes). Evitar paradas largas en pista por clima verde y neumáticos frescos.\"*",
+        "ttft_ms": 284.06409999661264,
+        "tokens_per_second": 74.98297345189239,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 4,
+        "index": 12,
+        "prompt": "Hay 3 coches en CLS1. Eres P3. Describe la situacion.",
+        "ticker_id": "A",
+        "response": "**Radio técnico – Posición 3, vuelta 10:**\n\n*\"P3 lidera con combustible a 42.3L y ritmo estable (3.2L/vuelta), pero **VST (+2.1s)** y **ALO (-1.2s)** mantienen presión directa en pista. Neumáticos FR/RL al límite (94°C/98°C) por desgaste 68%/65%, priorizando frenos FL (38%) para optimizar *stint*. Clima MED y lluvia en +15m, pero sin SC. **Rivales clave:** VST y ALO son los únicos con menos de 5s; LEC (+4.8s) ya está fuera del *gap* crítico. Vueltas restantes: 28 más. ¿Necesitas ajustar estrategia de combustible o neumáticos?\"*",
+        "ttft_ms": 247.5531999989471,
+        "tokens_per_second": 77.97655265917047,
+        "score": 0.8333333333333334,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.8333333333333334
+        }
+      },
+      {
+        "level": 4,
+        "index": 13,
+        "prompt": "SC activo, tienes 82.4L. Entrar ahora o esperar?",
+        "ticker_id": "H",
+        "response": "**Radio técnico:**\n*\"Verifica: con Safety Car (SC) y neumáticos en **95/94/93/92.85**, consumo de **3.1L/vuelta** y **25L restantes**. VER lidera **+1.5s** con ritmo estable, pero NOR se acerca **-3.2s** (diferencia de ritmo -0.8s). **No hay urgencia por combustible**: 82.4L es suficiente para al menos **26L más** sin penalizar. Prioriza seguridad: espera a que el SC termine su stint o revisa si VER hace *undercut* en boxes (si no, mantén ritmo actual).\"*",
+        "ttft_ms": 256.11579999895184,
+        "tokens_per_second": 77.80697432220128,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.25
+        }
+      },
+      {
+        "level": 4,
+        "index": 14,
+        "prompt": "20:15 restantes, 7 vueltas de combustible. Suficiente?",
+        "ticker_id": "B",
+        "response": "**Respuesta técnica (radio):**\n*\"Situación crítica: solo **6.8L** en tanque con **3.3L/vuelta**, lo que implica un riesgo alto de quedarse sin combustible antes del final (20:15). Con 7 vueltas restantes, el consumo actual (42% de la carrera) exige **priorizar máxima eficiencia** y evitar frenadas bruscas para no gastar más. Si no se optimiza el ritmo, podría quedar fuera en las últimas vueltas.\"*\n\n*(Nota: Consumo estimado = 28.5L/7L ≈ 4.07L/vuelta vs. dato API de 3.3L/vuelta → **desviación crítica**).*",
+        "ttft_ms": 231.5415999983088,
+        "tokens_per_second": 78.91834116886149,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 4,
+        "index": 15,
+        "prompt": "Frenos 75/72/68/65, neumaticos 88/85/83/80, combustible 5.2L",
+        "ticker_id": "E",
+        "response": "**Radio técnico (priorizando riesgos):**\n\n*\"Pit stop urgente: frenos al límite (FL/FR/RL/RR: 75/72/68/65) y desgaste neumáticos crítico (FL/FR/RL/RR: 88/85/83/80). Combustible mínimo (5.2L), vuelta 34 con rivales como ALB (+15s) y TSU (-8s) exigiendo *undercut* para evitar adelantamientos forzados. Clima bajo agarre (LOW) y pista mojada en +90%. Prioriza parada ahora: reponer combustible, revisar frenos y neumáticos antes de que el ritmo se degrade.\"*\n\n*(Acción clave: **Pits now** con prioridad máxima).*",
+        "ttft_ms": 237.19770000025164,
+        "tokens_per_second": 79.14192881825251,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 4,
+        "index": 16,
+        "prompt": "80% lluvia en 3 min, liderando. Abres ventana de lluvia?",
+        "ticker_id": "B",
+        "response": "**Respuesta técnica (radio):**\n*\"Abrimos pits ahora mismo por riesgo climático: **SC:N → SC:S** con ventana de lluvia confirmada en +3m y grip **LOW**. Priorizamos seguridad: **stint final (7L)** para optimizar combustible y frenos (BRK ~25% desgaste), evitando *undercut* innecesario. Verificaremos neumáticos bajo **WTH:SC** para ajustar presión si hay cambios bruscos.\"*\n\n*(Acción inmediata: prioridad máxima a boxes).*",
+        "ttft_ms": 225.24650000195834,
+        "tokens_per_second": 75.73622713037653,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.25
+        }
+      },
+      {
+        "level": 4,
+        "index": 17,
+        "prompt": "P12 en GT3, ultimos compases. Que dices al piloto?",
+        "ticker_id": "E",
+        "response": "**Radio técnico (GT3 final):**\n*\"P12, mantén la presión con **LOW grip** y **5.2L** para optimizar el *stint* final. Los frenos están bien (BRK: 75/72), pero vigila el desgaste trasero (RL/RR: 68/65). **ALB** te acecha +15s, pero **TSU** y **OCO** son más cercanos (-8.3/-18.7). Prioriza **undercut** en pits si hay margen para adelantar a **MAG** (-12.1). Clima estable (SC:N), pero revisa neumáticos: RL/RR fríos (94/96°C) podrían limitar el ritmo. ¡Aprovecha la ventaja y no dejes que **PER/ZHO/NOR** te roben vueltas!\"*",
+        "ttft_ms": 224.6019999984128,
+        "tokens_per_second": 80.93315344863687,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 4,
+        "index": 18,
+        "prompt": "ALB va +15.2s, TSU viene -8.3s, quedan 3:45. Que haces?",
+        "ticker_id": "E",
+        "response": "**Radio técnico:**\n*\"En la vuelta 35 con 3:45 restantes y bajo agarre (LOW), ALB lidera +15.2s. Prioriza **conservar combustible** (5.2L) y **optimizar frenadas** para evitar desgaste brk/tyr sin riesgo de *under-cut* innecesario. TSU está -8.3s, pero con 4 vueltas restantes, enfócate en mantener ritmo estable evitando *stint* largos en boxes (frenos al 65-72% y neumáticos fríos). Si OCO/MAG se acercan (+18.7/-12.1), ajusta estrategia para no perder ventaja con el ritmo actual.\"*\n\n---\n**Acción clave:** *\"No apurar pits; prioriza eficiencia sobre *under-cut* en condiciones de bajo agarre.\"*",
+        "ttft_ms": 163.60379999969155,
+        "tokens_per_second": 80.99611434063969,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 4,
+        "index": 19,
+        "prompt": "50% lluvia en 10 min, neumaticos al 45%, combustible 53.1L. ",
+        "ticker_id": "G",
+        "response": "**Plan urgente: Parada inmediata (pit stop) para optimizar combustible y desgaste.**\n\n- **Combustible crítico**: Solo 53.1L con 15L restantes → **ritmo bajo** (3.2L/vuelta). Prioridad máxima.\n- **Desgaste neumáticos**: TYR ~45% (FL/RR más críticos) + clima MED/rain+10m → **riesgo de pérdida de agarre**.\n- **GAP clave**: LEC (+3.1s) y RUS (-1.8s) son los rivales más cercanos. **Undercut estratégico** para recuperar posición antes del Safety Car (si llega).\n\n**Acciones:**\n✅ **Parar en pits ahora** (antes de que llueva o pierdas ritmo).\n✅ **Cambiar a neumáticos intermedios** (si disponibles) o **frenos nuevos** si hay urgencia.\n✅ **Priorizar combustible**: Repostar al máximo posible para evitar *stint* largo en pista con riesgo de desgaste.\n\n*Nota: Si no hay intermedios, prioriza frenos y ajusta estrategia para mantener ritmo bajo pero seguro.*",
+        "ttft_ms": 285.76220000104513,
+        "tokens_per_second": 79.03623527107045,
+        "score": 0.8,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.8
+        }
+      },
+      {
+        "level": 4,
+        "index": 20,
+        "prompt": "Hay 4 doblados. Eres P3. Como gestionas el trafico?",
+        "ticker_id": "A",
+        "response": "**Radio técnico:**\n*\"P3, con 4 dobles (-1L) y ritmo ajustado por VST (+2.1s), prioriza **pits en stint final** (10ª vuelta) para optimizar combustible: ~42L/3.2L/vuelta. Evita undercut innecesario ante ALO (-1.2s) o LEC (+4.8s), enfócate en mantener desgaste neumáticos equilibrado (72/65 RR) y frenos priorizando RL/RR (BRK: 22/20). Clima MED y 30% lluvia +15m justifica precaución con neumáticos, pero el ritmo de VST te obliga a **priorizar ritmo sobre seguridad** en boxes. Si VER (+12s) o HAM (+8.5s) intentan adelantar, usa **pit strategy agresivo** para recuperar gap sin perder tiempo en pista.\"*\n\n---\n*Nota clave:* *\"Stint final (42L/3.2L) + neumáticos fríos (96C RR) son clave; si GAP con VST se acelera, **aprovecha pit exit** para adelantar a ALO/LEC sin riesgo de desgaste.\"*",
+        "ttft_ms": 246.66969999816502,
+        "tokens_per_second": 81.92195163152299,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      }
+    ]
+  },
+  "5": {
+    "name": "Razonamiento con RAG",
+    "prompts": [
+      {
+        "level": 5,
+        "index": 1,
+        "prompt": "Hemos perdido tiempo desde el SC de la vuelta 8?",
+        "ticker_id": "A",
+        "response": "**Respuesta técnica (radio):**\n*\"Sí, confirmamos pérdida de ritmo tras SC en V8. Actual: +45s vs líder (VST) y consumo ~3.2L/Lap vs histórico V8 (52.3L). Neumáticos fríos (RL/RR 96C) y desgaste BRK alto (FL/FR 38/35) agravan la recuperación. Prioriza *undercut* en pits para compensar.\"*\n\n*(Nota: Diferencia con VST (+2.1s actual vs +45s \"FAR\") sugiere no haber recuperado el ritmo post-SC).*",
+        "ttft_ms": 178.921700000501,
+        "tokens_per_second": 80.70388439809882,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.5,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 2,
+        "prompt": "ALO paro en V9. Ha ganado o perdido con el undercut?",
+        "ticker_id": "A",
+        "response": "**Respuesta técnica:**\nEn **V9**, ALO ejecutó un *undercut* efectivo al adelantar a su rival en boxes, mejorando su posición de **P4 a P5**. El dato histórico confirma que el movimiento fue clave para recuperar ventaja sobre VST (+2.1s) y consolidar liderazgo en la carrera.",
+        "ttft_ms": 169.8727000002691,
+        "tokens_per_second": 74.70569537803016,
+        "score": 0.6000000000000001,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.75,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 3,
+        "prompt": "Nuestro consumo es consistente con vueltas anteriores?",
+        "ticker_id": "E",
+        "response": "**Respuesta técnica:**\nEl consumo actual (**3.4 L/vuelta**) **supera en un 6% el promedio histórico** (2.9-3.1 L/vuelta en V30-V34). Los neumáticos muestran desgaste crítico (**88/85/83/80**), alineado con la vuelta 34, pero el consumo es **más alto que en vueltas completadas con menos desgaste** (ej: V32 con 62% de desgaste y 19.3L). Revisar posible sobrecalentamiento o pérdida de eficiencia por condiciones LOW grip.\n\n---\n*Nota clave:* El gap con ALB (+15.2s) sugiere que el ritmo actual no compensa el consumo elevado en pista dura.",
+        "ttft_ms": 291.2519000019529,
+        "tokens_per_second": 77.35165760728286,
+        "score": 0.26666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.3333333333333333,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 4,
+        "prompt": "Ya habia aviso de lluvia antes? Cuanto ha cambiado?",
+        "ticker_id": "B",
+        "response": "**Respuesta técnica:**\nSí, hubo alerta previa con **80% de probabilidad de lluvia en +3 minutos** (V22), pero el pronóstico actual se ajustó a **40% en +20m**. Cambio clave: reducción del riesgo de condiciones adversas y aumento del margen temporal para gestión de neumáticos.",
+        "ttft_ms": 246.04250000265893,
+        "tokens_per_second": 70.96880881961681,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 5,
+        "prompt": "VST esta mas lento que en vueltas anteriores?",
+        "ticker_id": "A",
+        "response": "**Análisis técnico:**\nEl ritmo actual de **VST (+2.1s vs su mejor tiempo de carrera, 1:47.9)** es **+0.3s más lento** que su mejor registro histórico (1:48.5 en V9), confirmando un **desaceleración notable**. Factores clave:\n- **Neumáticos**: Temperatura RL/RR aún frías (96/98°C) y desgaste moderado (RL 65%), pero **F/L más calientes** podrían limitar agarre.\n- **Combustible**: 42.3L con 13 vueltas restantes (~3.2L/vuelta), riesgo de **pérdida de ritmo por peso o consumo elevado**.\n- **Rivalidad**: VST lidera la clase HY, pero su **gap se ha reducido** desde V7 (1:48.1) a +2.1s actual.\n\n**Recomendación urgente:** Prioriza **pit stops estratégicos** para:\n1. **Cambio de neumáticos** (RL/RR fríos → más eficientes).\n2. **Optimizar combustible** (evitar consumo alto en vuelta larga).\n\n*Nota: El clima MED y 30% de lluvia (+15m) no afectan ahora, pero monitorear grip.*",
+        "ttft_ms": 281.6573999989487,
+        "tokens_per_second": 80.56192840191845,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.5,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 6,
+        "prompt": "La degradacion de neumaticos se esta acelerando?",
+        "ticker_id": "F",
+        "response": "**Análisis técnico (radio):**\n*\"Sí, hay una **aceleración clara en desgaste**, +13% desde V16 a L18 (+2.9% por vuelta vs. +1.7% promedio histórico). Los laterales RL/RR ya superan el 50% de vida útil (58/50%), con temperatura crítica (RL: 101°C) y consumo elevado (3.2L/vuelta). Riesgo de **underwear** por neumáticos fríos en pista media, prioriza pits para recalentar RL/RR y estabilizar ritmo.\"*\n\n*(Nota: Gap +6.2s vs RUS justifica urgencia; clima MED permite acción).*",
+        "ttft_ms": 311.14589999924647,
+        "tokens_per_second": 75.29944118525198,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 7,
+        "prompt": "La ultima vez que paramos, funciono la estrategia?",
+        "ticker_id": "G",
+        "response": "**Respuesta técnica (radio):**\n*\"Sí, la estrategia fue efectiva. Tras el *undercut* en V7, recuperamos **P6→P8** con neumáticos nuevos y consumo ajustado (3.2L/vuelta), optimizando el *stint*. El desgaste de frenos (BRK: 15-25%) y condiciones MED permitieron mantener ritmo frente a rivales como LEC (+3.1s) sin penalizar la gestión de combustible. La salida exitosa con neumáticos frescos (40/45% desgaste) aseguró ventaja sobre el resto.\"*\n\n*(Nota: El *gap* con RUS (-1.8s) y VER/+7.5s refleja control, pero el ritmo de PER/ZHO en LAP(-3L) sugiere revisar consumo futuro).*",
+        "ttft_ms": 255.50120000116294,
+        "tokens_per_second": 79.06352153416711,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 8,
+        "prompt": "Cuantas veces ha salido el SC en esta carrera?",
+        "ticker_id": "H",
+        "response": "En esta **sesión de carrera (RACE)**, el **Safety Car (SC)** se activó **una vez** durante la práctica previa (*WUP*), como indica tu histórico: *\"V8: Safety Car desplegado | P5\"*. No hay registros adicionales en los datos actuales.",
+        "ttft_ms": 258.49599999855855,
+        "tokens_per_second": 66.48570734599345,
+        "score": 0.5333333333333333,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.6666666666666666,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 9,
+        "prompt": "SAI nos esta alcanzando o alejando?",
+        "ticker_id": "C",
+        "response": "**Análisis técnico:** *SAI está **ajustándose al ritmo** sin presión de adelantamiento directo en este lap (V8). Aunque su gap es negativo (-0.4s), el contexto histórico muestra que su avance se correlaciona con cambios de ritmo en vueltas previas (ej: V7, -0.6s vs V5, -1.8s). Su consumo (3.1L/L) y neumáticos fríos (FL/RR 96/86) sugieren que prioriza estabilidad sobre *undercut* agresivo.*\n\n**Conclusión radio:** *SAI **no está adelantándote**, pero su ritmo se alinea con el tuyo en condiciones verdes. Monitorea su consumo y desgaste de neumáticos (RL fría = posible transición a caliente). Si su gap se estabiliza por encima de -0.3s, considera un *stint* para optimizar combustible.*",
+        "ttft_ms": 269.7928999987198,
+        "tokens_per_second": 78.96959551739475,
+        "score": 0.26666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.3333333333333333,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 10,
+        "prompt": "Resume los eventos importantes de la carrera hasta ahora.",
+        "ticker_id": "A",
+        "response": "**Resumen técnico actual (Vuelta 10, Carrera HY):**\n*Posición 3 con **frenos al límite** (FL/RR críticos) y **neumáticos en desgaste moderado** (72/65).* **GAP clave:** +2.1s vs *VST*, -1.2s vs *ALO* (ritmo superior +0.3s/best). **Clima estable MED**, pero *3 rivales directos* (*VST, ALO, LEC*) en zona de lucha por liderato. **4 pilotos doblados** (*PER, TSU, STR, ZHO*) y **8 más lejos (+45s)**. **Tiempo restante: 45min**.",
+        "ttft_ms": 233.22229999757838,
+        "tokens_per_second": 79.22358151528323,
+        "score": 0.13333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.16666666666666666,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 11,
+        "prompt": "Ya empezo a llover? El forecast anterior era 40%, ahora 80%.",
+        "ticker_id": "B",
+        "response": "**Respuesta técnica:**\n*Condiciones actuales:* **Lluvia confirmada en pista**, con grip reducido a *LOW* y probabilidad del 80% (+3m hasta inicio). El *SC:N* (sin Safety Car) sugiere que el clima no justifica su activación inmediata, pero la humedad crítica exige precaución extrema.\n\n**Contraste con forecast:** El cambio de *40% a 80% en solo 20 minutos* indica un **desarrollo meteorológico acelerado**, posiblemente por condensación o convergencia frontal. Los neumáticos (50-48.88% desgaste) y frenos (no reportados) requieren revisión urgente de *under-cutting* para evitar bloqueos en curvas.\n\n**Acción inmediata:** Priorizar **ritmo conservador**, priorizar boxes si el consumo supera 3.5L/vuelta, y ajustar estrategia de pits para minimizar *stint* en condiciones adversas.",
+        "ttft_ms": 243.57790000067325,
+        "tokens_per_second": 81.28375289106509,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 12,
+        "prompt": "Nuestro consumo de combustible ha sido consistente?",
+        "ticker_id": "A",
+        "response": "**Respuesta técnica:**\nEl consumo actual (**3.2 L/vuelta**) coincide con el histórico (V7-V9: **3.1-3.3 L**), manteniendo estabilidad en la eficiencia. Los **13L restantes** sugieren un ritmo estable, pero vigilar el desgaste de neumáticos (RL/RR a 65/63) y frenos (RL bajo, 22%) podría afectar al ritmo si no se ajusta el *stint* en boxes.\n\n---\n**Acción clave:** Monitorear la temperatura RL (98°C) para evitar sobrecalentamiento y optimizar paradas.",
+        "ttft_ms": 257.5678000030166,
+        "tokens_per_second": 77.604853294985,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.5,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 13,
+        "prompt": "Hemos ganado o perdido posiciones desde el inicio?",
+        "ticker_id": "C",
+        "response": "**Actualización clave (L8):**\n**Posición:** **P8 → P5** (+3 puestos) por *undercut* en boxes tras el Safety Car, aprovechando el ritmo de V1 y V3. El desgaste neumático controlado (FL/RR ~96-87%) y frenos equilibrados (BRK: 40/38/25/22) permitieron recuperar terreno frente a BOT (+0.8s) y SAI (-0.4s).\n\n**Clave:** *Ganamos* gracias al ritmo superior en la salida del SC y gestión de neumáticos bajo condiciones GRN (agarre óptimo).",
+        "ttft_ms": 250.94159999935073,
+        "tokens_per_second": 77.38555961082709,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.5,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 14,
+        "prompt": "Estoy rindiendo mejor o peor que al inicio de carrera?",
+        "ticker_id": "A",
+        "response": "**Análisis técnico actual vs. referencia histórica (V8):**\n*Mejoras claras*: **Consumo optimizado a 3.2L/vuelta** (vs. ~4L en V8) y **gap +0.1s frente a tu mejor lap histórico**, manteniendo neumáticos con desgaste controlado (FL/RR: 72/65). **Posición P3 estable**, pero el rival VST (+2.1s) sigue siendo un obstáculo.\n\n**Puntos críticos**:\n- **Frenos**: Desgaste alto en RL/RR (22/20), riesgo de degradación si no se ajusta ritmo.\n- **Clima**: MED y 30% lluvia en +15m podría afectar estabilidad a largo plazo.\n\n*Conclusión*: **Mejor rendimiento técnico** (consumo, desgaste neumáticos) pero **dependiente del ritmo actual**. Si mantienes la velocidad de V8 (1:48.2), podrías cerrar brecha con rivales cercanos.",
+        "ttft_ms": 323.0894000007538,
+        "tokens_per_second": 78.14204247393819,
+        "score": 0.6000000000000001,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.75,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 15,
+        "prompt": "La temperatura de la pista esta subiendo o bajando?",
+        "ticker_id": "F",
+        "response": "**Respuesta técnica:**\nTemperatura en **ascenso moderado**. Los neumáticos muestran temperaturas elevadas (FL: 100°C, RL: 98°C) y el clima reporta **MED (medio agarre)**, lo que sugiere calentamiento reciente por la sesión. Recomendable ajustar estrategia de frenos y neumáticos si persiste.",
+        "ttft_ms": 253.38030000057188,
+        "tokens_per_second": 71.78067354663034,
+        "score": 0.32000000000000006,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rag_references": 0
+        }
+      }
+    ]
+  },
+  "6": {
+    "name": "Estrategia multi-trigger",
+    "prompts": [
+      {
+        "level": 6,
+        "index": 1,
+        "prompt": "Combustible critico (0L rest), ventana cerrándose y ALB paro",
+        "ticker_id": "E",
+        "response": "**Acción inmediata:**\n**Pit stop urgente con *undercut* para ALB** — prioriza llegar antes que él al box, aprovecha su parada (-2L) y recupera **+3-4 posiciones** (actualmente P12 vs ALB en +15.2s). Prioriza neumáticos frescos (FL/RR 97/98) y frenos optimizados (BRK: 68/65).\n\n**Estrategia:**\n- **Neumáticos:** Usa los más nuevos (RL/RR 94/95) para maximizar agarre en la salida.\n- **Frenos:** Mantén desgaste bajo (72/65) para evitar bloqueo en curvas.\n- **Tiempo:** Aprovecha el *gap* con TSU (+15.2s) y OCO (+18.7s) para mantener ritmo.\n\n**Riesgo:** Si no pitas, pierdes **3+ vueltas** por consumo (3.4L/vuelta). **¡No esperes más!**",
+        "ttft_ms": 253.2405000019935,
+        "tokens_per_second": 81.96996044072225,
+        "score": 0.6000000000000001,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.4
+        }
+      },
+      {
+        "level": 6,
+        "index": 2,
+        "prompt": "SC activo, gap con VER solo 1.5s, ventana abierta. Entro?",
+        "ticker_id": "H",
+        "response": "**Respuesta técnica (radio):**\n*\"Pit window abierto y Safety Car en acción, pero el gap con VER (+1.5s) es crítico. **No se recomienda entrar**, prioriza conservar ritmo para evitar penalización por *undercut* innecesario mientras lideras la carrera. Si hay urgencia extrema (ej: neumáticos bajo consumo), evalúa con cautela, pero el riesgo de perder ventaja es alto.\"*\n\n---\n**Detalles clave:**\n- **Ventana abierta:** 15 minutos (no suficiente para recuperar +8s vs LEC).\n- **Condiciones SC:** Agarre bajo (*GRN*), frenos en 5/5 (RL/RR), neumáticos fríos pero estables.\n- **Prioridad:** Mantener ritmo y evitar *undercut* innecesario.",
+        "ttft_ms": 266.1883000000671,
+        "tokens_per_second": 77.06034402881832,
+        "score": 0.6333333333333333,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.6666666666666666,
+          "rubric_score": 0.3
+        }
+      },
+      {
+        "level": 6,
+        "index": 3,
+        "prompt": "Degradacion alta (45%), lluvia 50% en 10 min, ventana abiert",
+        "ticker_id": "G",
+        "response": "**Plan urgente para optimizar rendimiento:**\n\n1. **Prioriza neumáticos:** Con desgaste FL/RL crítico (45%) y clima MED+50% lluvia en +10m, **cambia a compuestos intermedios** (si disponible) o **pits ahora** para reducir consumo y evitar bloqueos por agua.\n\n2. **Aprovecha el *undercut*:** Los rivales CLS1 (LEC/RUS) están a **+3.1s**, pero con tu ritmo d-0.5 vs LEC, **entra a boxes en 1 vuelta** para recuperar gap y evitar que VER/HAM/ALO te superen por desgaste.\n\n3. **Monitorea frenos:** Desgaste BRK alto (FL/RR) sugiere sobrecalentamiento; ajusta ritmo para evitar *burnout* y prioriza seguridad en pista mojada.\n\n**Acciones clave:**\n- *\"Pits now\"* si neumáticos intermedios no están listos.\n- Reduce consumo a **3.0L/vuelta** (15L restantes) para mantener ritmo.\n- Vigila a PER/ZHO que doblan (-2L), podrían aprovechar tu ventana de *undercut*.",
+        "ttft_ms": 268.89480000318144,
+        "tokens_per_second": 81.0255417998171,
+        "score": 0.3,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.6,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 4,
+        "prompt": "Neumaticos sobrecalentados (100-103C), bateria baja (no se m",
+        "ticker_id": "F",
+        "response": "**Radio:** *\"Pits ahora, 2 paradas para recargar combustible (35L/9L restantes) y cambiar neumáticos fríos (FL/RR bajo 60%). Prioriza al rival BOT en boxes con *undercut* para recuperar +1.7s de ventaja. Verifica frenos (BRK: ~20-40% desgaste traseros).\"*\n\n**Acción clave:** *Stint crítico: 3L/voltaje → prioriza neumáticos y ritmo.*",
+        "ttft_ms": 237.93850000220118,
+        "tokens_per_second": 76.70630259393077,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 5,
+        "prompt": "90% lluvia ahora, combustible 0L, ventana cerrándose. Priori",
+        "ticker_id": "E",
+        "response": "**Prioridades urgentes:**\n1. **Pit stop crítico:** Consume el último litro (5.2L) en **3 vueltas restantes** para evitar *burnout* neumático y frenos al límite bajo condiciones LOW grip + lluvia inminente (+90%).\n   - **Stint ajustado:** 3L/3L (evitar desgaste excesivo en RL/RR, 83/80).\n\n2. **Posicionamiento:** *Undercut* a ALB (P1) para recuperar gap +15s antes de SC (si llega). Prioriza FL/FR para frenada eficiente.\n\n**Acciones inmediatas:**\n- **Pits:** Llegar en 3L/3L, revisar neumáticos (94C RL/RR son fríos; calentar con *stint* corto).\n- **Clima:** Reducir ritmo a 108-112km/h para evitar hidroplanamiento.",
+        "ttft_ms": 374.5409000002837,
+        "tokens_per_second": 75.52629208031479,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.5
+        }
+      },
+      {
+        "level": 6,
+        "index": 6,
+        "prompt": "SC activo, SAI entro a boxes, BOT esta a +0.8s. Entro ahora?",
+        "ticker_id": "C",
+        "response": "**Respuesta técnica (radio):**\n*\"BOT mantiene +0.8 segundos con el líder tras el Safety Car, pero **SAI ya está en pits** (CLS1: -0.4s). Con la pista seca y sin lluvia, **no hay motivo técnico para que BOT entre ahora**: su ritmo es estable (+0.7d vs SAI) y los neumáticos están optimizados (98/96). Prioriza conservar el gap con STR (+8.9s) en la siguiente vuelta libre.\"*\n\n*(Nota: Si hubiera urgencia por *undercut* a un rival clave o desgaste crítico, se evaluaría; pero no es caso aquí).*",
+        "ttft_ms": 255.4926999982854,
+        "tokens_per_second": 76.90176473109399,
+        "score": 0.3,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.6,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 7,
+        "prompt": "0L combustible, frenos 75%, neumaticos 88%. Que es mas criti",
+        "ticker_id": "E",
+        "response": "**Radio técnico:**\n*\"Pista crítica: **frenos al límite (75%)** y neumáticos en desgaste alto (FL=88%). Aunque el tanque está vacío, la pérdida de agarre por frenos en GT3 exige precaución en curvas exigentes. Prioriza manejo conservador hasta repostar.\"*\n\n*(Prioridad: frenos > neumáticos por impacto directo en tracción en condiciones LOW grip).*",
+        "ttft_ms": 252.1500000002561,
+        "tokens_per_second": 71.74350141267736,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.5,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 8,
+        "prompt": "SC en V6, combustible lleno (82.4L), neumaticos nuevos. Espe",
+        "ticker_id": "H",
+        "response": "**Análisis técnico y recomendación:**\n\n*\"Con Safety Car en la vuelta 6 y combustible al máximo (82.4L), los neumáticos en condiciones óptimas (95/94/93/92) y el rival VER a +1.5s, **debes esperar al final del SC para aprovechar el *undercut* estratégico.** La ventaja de combustible te permite mantener ritmo sin penalizar desgaste, pero la diferencia con VER es crítica: si salieras ahora, perderías tiempo en boxes y no compensaría el riesgo de frenada/neumáticos. El clima verde (GRN) y el SC alinean tu plan: recupera posición tras el *red flag* y aprovecha su salida para adelantar.\"*\n\n**Alternativa:** Si hay urgencia por liderar, revisa si **PER/ZHO** (doblados) tienen menos riesgo de colisiones en la salida del SC.",
+        "ttft_ms": 291.0784000014246,
+        "tokens_per_second": 78.73689248345823,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 9,
+        "prompt": "BOT +0.8s (CLS1), SAI en boxes, ventana cerrándose. Riesgo d",
+        "ticker_id": "C",
+        "response": "**Análisis técnico:**\nBOT mantiene **+0.8s** frente a ti (P8) con **27L restantes**, pero **SAI (-0.4s)** está en *pits* y su *stint* finaliza pronto. Con **52:00 de carrera** y **GRN/WTH/SC:N**, la ventana para un *undercut* es crítica:\n- **Riesgo alto**: SAI podría salir con menos combustible que tú (F:89.7L vs. su consumo no visible, pero su *gap* se reduce).\n- **Temperatura neumáticos**: TYR de BOT en **96/97** (fríos) vs. los tuyos en **85/87** (calientes), lo que favorece su aceleración.\n- **Clima estable**: Sin *SC* ni lluvia, no hay distracciones.\n\n**Recomendación:**\nSi el combustible y neumáticos te permiten, **aprovecha el *undercut* ahora** antes de que SAI salga. Prioriza velocidad sobre seguridad: revisa frenos (BRK) y prioriza pista.",
+        "ttft_ms": 302.5658000005933,
+        "tokens_per_second": 79.65084117641813,
+        "score": 0.3,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.6,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 10,
+        "prompt": "50% lluvia en 10 min, combustible para 15 vueltas pero neuma",
+        "ticker_id": "G",
+        "response": "**Radio técnico – Prioridades inmediatas:**\n\n*\"En pista con **MED agarre**, **SC:N** y **50% lluvia en +10m**, prioriza:\n1. **Pit stop urgente** (15L restantes, consumo 3.2L/vuelta) para **reducir combustible a ~40L** y evitar *overrun* con neumáticos degradados (45% desgaste). Evita *undercut* en boxes por riesgo de lluvia.\n2. **Neumáticos HY/GT3** (91-93°C) requieren **frenada suave** para mantener temperatura óptima; prioriza **RL/RR** (mayor degradación).\n3. **GAP crítico con LEC (+3.1s)** y **RUS (-1.8s)**: ajusta ritmo para no perder ventaja en pista mojada, pero sin acelerar por riesgo de *lockup* en frenada.\n4. **Clima dinámico**: monitorea *rain+min* y ajusta estrategia si SC activa (evita *stint* largo con neumáticos fríos).\"*\n\n---\n**Acción clave:** *\"Pits ahora, prioriza combustible + neumáticos; evita *undercut* por lluvia. Si SC entra, reduce ritmo a 100-105% de potencia.\"*",
+        "ttft_ms": 241.9845999975223,
+        "tokens_per_second": 80.52736685460994,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      }
+    ]
+  },
+  "7": {
+    "name": "Casos limite y anomalias",
+    "prompts": [
+      {
+        "level": 7,
+        "index": 1,
+        "prompt": "Neumaticos nuevos? Como estan?",
+        "ticker_id": "D",
+        "response": "Piloto en **P5** con neumáticos **nuevos (0% desgaste)** y condiciones ideales: **GRN (agarre perfecto)**, temperatura estable y sin Safety Car. Consumo moderado (3.2L/L) permite optimizar rendimiento sin preocupaciones por desgaste, aunque el ritmo de VER (+3.5s) exige precisión en frenadas y aceleración para mantener ventaja.",
+        "ttft_ms": 255.95489999977872,
+        "tokens_per_second": 72.0976952610323,
+        "score": 0.16666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.16666666666666666
+        }
+      },
+      {
+        "level": 7,
+        "index": 2,
+        "prompt": "Como estan los frenos?",
+        "ticker_id": "D",
+        "response": "Los frenos de tu coche muestran un desgaste moderado pero con riesgo en la parte trasera: **BRK: ~35/30/15/10** (FL/FR/RL/RR). Con solo 2 vueltas completadas y combustible alto, prioriza mantener presión en RL/RR para evitar bloqueos. El rival VER (+3.5s) ya está aprovechando el desgaste de frenos de tu clase.",
+        "ttft_ms": 333.81550000194693,
+        "tokens_per_second": 79.77631386378148,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 7,
+        "index": 3,
+        "prompt": "Como esta la bateria?",
+        "ticker_id": "B",
+        "response": "**Estado crítico de batería:**\nEl piloto lleva **7 vueltas restantes (V24)** con un consumo de **3.3 L/vuelta**, lo que implica un riesgo alto: en 20 minutos de carrera, consumiría ~67L (28.5 + 3.3×7), pero solo tiene **28.5L** disponibles.\n\n**Conclusión:** Si no se repostan pronto, la batería podría agotarse antes del final de la sesión. Prioridad máxima en pits para maximizar el stint y evitar penalizaciones por *under-cut* con rivales cercanos (ej: HAM a -5.3s).",
+        "ttft_ms": 227.065400002175,
+        "tokens_per_second": 77.46812172745726,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 7,
+        "index": 4,
+        "prompt": "El gap con BOT es exactamente 1.5s? Que tan cerca esta?",
+        "ticker_id": "C",
+        "response": "No, el **gap actual con BOT es +0.8s**, pero su ritmo mejorado (diferencia de ritmo) marca un **d-0.7** respecto a su tiempo más rápido.\n\n**Distancia real vs. ritmo:**\n- **Ahora:** **+0.8s** (ligeramente por delante).\n- **Si BOT mantuviera su ritmo actual**, en ~1 vuelta podría cerrar el gap, pero con tu mejor tiempo (**+0.7s menos**), **estás a solo 0.1s de igualarlo**. **¡Extremadamente cerca!**",
+        "ttft_ms": 271.7893000008189,
+        "tokens_per_second": 76.27633125025399,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.75
+        }
+      },
+      {
+        "level": 7,
+        "index": 5,
+        "prompt": "Voy a 0 km/h y estoy en la pista. Que pasa?",
+        "ticker_id": "H",
+        "response": "**Respuesta técnica (radio):**\n\n*\"Pista verde con Safety Car activo, pero **no hay riesgo inmediato**. Los neumáticos están en condiciones óptimas (95/86 desgaste) y el combustible es suficiente para completar la vuelta (25L restantes). Sin embargo, **evita frenar bruscamente** por los frenos en mal estado (BRK: 10/8/5/5), especialmente en las curvas. El rival VER mantiene +1.5s de ventaja, pero con clima estable y pista seca, podrías recuperar ritmo si mantienes velocidad constante.\"*\n\n---\n**Acciones clave:**\n- **No parques el coche** hasta que el SC termine (no hay lluvia prevista).\n- **Prioriza fluidez en curvas**, priorizando neumáticos delanteros (FL/FR más desgastados).",
+        "ttft_ms": 245.61180000091554,
+        "tokens_per_second": 78.48300718626982,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 6,
+        "prompt": "Si tengo el deposito lleno (89.7L) pero estoy P8, que estrat",
+        "ticker_id": "C",
+        "response": "**Radio:** *\"Pit stop pendiente con 89.7L y P8 en carrera HY. Prioriza **frenos/neumaticos** por desgaste crítico: BRK FL/RR ~30-25% (priorizar RL) y TYR RL ~86 (frío, riesgo de blister). Si gap con BOT es +0.8s, **undercut rápido a boxes** para recuperar P7+ y evitar que STR/TSU (+9s) te roben tiempo en vuelta 9. Consume ~3.1L/vuelta: si se agota antes de 27L restantes, apunta a **1 parada corta (15-20s)** para reponer combustible sin perder ritmo.\"*\n\n**Alternativa:** *\"Si clima GRN y SC activo, prioriza **neumaticos** (RL más frío) y evita frenadas agresivas. Si gap con ALB (-2.1s) es crítico, ajusta estrategia a **2 paradas** si consumo supera 3.5L/vuelta para asegurar combustible en vuelta clave.\"*",
+        "ttft_ms": 256.34509999872535,
+        "tokens_per_second": 80.22133570007017,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 7,
+        "index": 7,
+        "prompt": "Que datos faltan en este ticker?",
+        "ticker_id": "D",
+        "response": "**Respuesta técnica (radio):**\n*Falta BRK: desgaste frenos completo (FL/FR/RL/RR) y TYR: neumáticos por vuelta 1-3L (desgaste representativo).*\n*Condiciones clave pendientes:* **Pits:** tiempo estimado en boxes, **stint:** duración actual del periodo entre paradas.",
+        "ttft_ms": 257.84120000025723,
+        "tokens_per_second": 71.9925041402518,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.75
+        }
+      },
+      {
+        "level": 7,
+        "index": 8,
+        "prompt": "Las temperaturas de neumaticos estan cerca del limite (105C)",
+        "ticker_id": "F",
+        "response": "**Respuesta técnica:**\nSí, **FL/RR están en límite crítico**: **92°C/103°C** (FL: 92°C < 100°C *máx* recomendado; RR: 103°C > 100°C *crítico*). **FR/RL** (102°C/101°C) están dentro rango seguro, pero el desgaste neumático (58-65%) y la **MED grip** exigen precaución en curvas. **Riesgo de sobrecalentamiento en RL/RR** por consumo alto (3.2L/Lap). *Acción recomendada*: Reducir ritmo en rectas o ajustar presión si es posible.",
+        "ttft_ms": 263.33270000031916,
+        "tokens_per_second": 79.16989431516004,
+        "score": 0.7142857142857143,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.7142857142857143
+        }
+      },
+      {
+        "level": 7,
+        "index": 9,
+        "prompt": "Es una sesion de practica. Cambia la estrategia?",
+        "ticker_id": "D",
+        "response": "**Respuesta técnica (radio):**\n\n*\"P5 mantiene **frenos en 38/35/22/20** y neumáticos en **FL:92°C, FR:94°C**, pero con **GAP>VER (+3.5s)** y **consumo de 3.2L/vuelta (28L restantes)**. Con **WTH GRN/SC:N** y **clase HY RACE**, prioriza:\n1) **Neumáticos**: *FL/RR* aún fríos (92-96°C), ideal para **practica corta**. Si se alarga, ajusta stint a **30-40L** con *TYR 75/80/70/75*.\n2) **Frenos**: Desgaste bajo, pero **RL/RR (22%)** podrían limitar ritmo en curvas. Monitorea *BRK* si se acelera.\n3) **Estrategia**: Con **VER liderando +3.5s**, evita *undercut* innecesario. Si hay *SC:N*, usa **frenos suaves** y prioriza *FL/RR* para evitar sobrecalentamiento.\n*Recomendación*: Mantén ritmo estable, revisa *GAP<NOR (-2.1s)* y ajusta *F:96.8L* si se acorta la sesión.\"*\n\n---\n**Nota clave**: Practica corta (55:30) → **neumáticos fríos = prioridad**. Si se extiende, evalúa stint y frenos.",
+        "ttft_ms": 233.74840000178665,
+        "tokens_per_second": 82.90966767943647,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 7,
+        "index": 10,
+        "prompt": "Solo tengo 2 rivales en CLS1. Es buena senal?",
+        "ticker_id": "B",
+        "response": "**Respuesta técnica (radio):**\n*\"Sí, es señal crítica: HAM (-5.3s) y VER (-8.1s) en CLS1 con **7L restantes**. Consumo alto (3.3L/vuelta) + neumáticos fríos (90/91°C) y desgaste medio-bajo (FL/FR 55/52) sugieren riesgo de *under-cut* o pérdida de ritmo por frenos/neumáticos. Prioriza pits para refuerzo de combustible y revisión de TYR si el clima se degrada (LOW grip + lluvia en +3m).\"*",
+        "ttft_ms": 238.20149999664864,
+        "tokens_per_second": 76.60601985880022,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 11,
+        "prompt": "Por que no hay seccion '>' en el GAP?",
+        "ticker_id": "B",
+        "response": "El piloto **líder (P1)** por lo tanto omite la sección de *gap* adelante, ya que no tiene rivales directamente delante. Solo muestra los datos de pilotos detrás (**<HAM:-5.3...**), reflejando su posición dominante y sin competencia inmediata.",
+        "ttft_ms": 173.01759999827482,
+        "tokens_per_second": 73.34423220354418,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 7,
+        "index": 12,
+        "prompt": "Hay rivales muy lejanos?",
+        "ticker_id": "B",
+        "response": "Sí, hay **rivalidad extrema en el fondo**. Con **10 pilotos a más de 50 segundos** (FAR(10):+50s behind) y cuatro dobles (PER-1L, TSU-2L, STR-2L, ZHO-3L), la carrera está muy abierta. El ritmo es sostenible para mantener distancia.",
+        "ttft_ms": 176.4554000001226,
+        "tokens_per_second": 77.65416098181446,
+        "score": 0.75,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.75
+        }
+      },
+      {
+        "level": 7,
+        "index": 13,
+        "prompt": "Hay coches doblados?",
+        "ticker_id": "D",
+        "response": "No hay **coches doblados** registrados en este tick (*LAP(2):---*). Solo se indica que hay 2 rivales con **-nL**, pero sin detalles de vuelta superada. El contexto es puro *race*, con condiciones verdes y VER liderando +3.5s.",
+        "ttft_ms": 243.79160000171396,
+        "tokens_per_second": 70.09819991097757,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 14,
+        "prompt": "Que tiempo hace?",
+        "ticker_id": "D",
+        "response": "Clima estable: **agarre medio (GRN→MED)**, temperatura de 20°C, baja probabilidad de lluvia (5% con 0 minutos hasta precipitaciones) y sin Safety Car. Condiciones ideales para Hypercar en pista seca.",
+        "ttft_ms": 144.2776000003505,
+        "tokens_per_second": 75.27371404250064,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 7,
+        "index": 15,
+        "prompt": "Las temperaturas de neumaticos son muy uniformes. Que indica",
+        "ticker_id": "C",
+        "response": "Temperaturas neumáticos **96-98°C** en pista verde y sin lluvia sugieren un **ritmo estable pero bajo consumo de combustible**, posiblemente por:\n\n1. **Pista fría inicial (26°C)**: Los neumáticos aún no han alcanzado su temperatura óptima para máxima adherencia, manteniendo temperaturas moderadas.\n2. **Consumo conservador (3.1L/vuelta)**: El piloto prioriza eficiencia en lugar de maximizar velocidad, evitando sobrecalentamiento prematuro.\n\n**Posible acción**: Si la pista calienta, podría requerir ajustes en ritmo para evitar desgaste excesivo o pérdida de tiempo por frenadas frías.",
+        "ttft_ms": 272.91620000323746,
+        "tokens_per_second": 75.18536173147915,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      }
+    ]
+  },
+  "8": {
+    "name": "Razonamiento temporal",
+    "prompts": [
+      {
+        "level": 8,
+        "index": 1,
+        "prompt": "Analiza la tendencia de degradacion de neumaticos en los 3 t",
+        "ticker_id": "A",
+        "response": "**Resumen técnico (TICKS 10-14):**\n\n*Neumáticos: **Desgaste acelerado y sobrecalentamiento crítico***\n- **V10:** TYR 72/68/65/63 → **Frontera izquierda (FL) crítica** (92°C, riesgo de grietas).\n- **V12:** TYR 55/52/50/48 → **Pérdida de agarre frontal** (temperaturas >100°C en RL/RR), consumo de combustible optimizado pero riesgo de *understeer*.\n- **V14:** TYR 42/40/38/35 → **Desgaste extremo trasero** (35% RR, 103°C), frenos al límite (BRK: 46/43).\n\n*Conclusión:* **Frontera izquierda y trasera derecha son los puntos débiles**. Riesgo de *lockup* en RL/RR por sobrecalentamiento (>98°C) y degradación del compuesto. Prioriza **estintos cortos** (1-2L) para reducir consumo sin perder tiempo.",
+        "ttft_ms": 551.4530999971612,
+        "tokens_per_second": 73.2618923625607,
+        "score": 0.42857142857142855,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.42857142857142855
+        }
+      },
+      {
+        "level": 8,
+        "index": 2,
+        "prompt": "VST se esta alejando o acercando? Y ALO?",
+        "ticker_id": "A",
+        "response": "**Actualización táctica:**\n*VST está **alejándose** (+2.1s vs tu best), pero su ritmo es ligeramente inferior (d-0.3) — riesgo de pérdida si no optimizas consumo en pits. *ALO se acerca (-1.2s), pero con 1 vuelta menos en pista, prioriza mantener el ritmo actual para recuperar ventaja.*\n\n**Acción clave:** Aprovecha el *undercut* en boxes (si hay tiempo) para ajustar combustible y neumáticos antes de que VST acelere su ritmo.",
+        "ttft_ms": 171.61080000005313,
+        "tokens_per_second": 77.52329868283607,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 8,
+        "index": 3,
+        "prompt": "La degradacion de frenos se esta acelerando?",
+        "ticker_id": "A",
+        "response": "**Respuesta técnica:**\nSí, **aceleración crítica en desgaste BRK**. FL (38%) y RL (22%) muestran un ritmo de pérdida superior al 1% por vuelta (+0.4L/vuelta estimado), mientras que el rival VST mantiene frenos estables (BRK: ~50%). Con neumáticos a **96°C en RR** y clima MED, la degradación se agrava por el *undercut* de los rivales en boxes. **Recomendación:** Priorizar pits para cambiar frenos antes del stint final o ajustar estrategia de ritmo para reducir consumo.",
+        "ttft_ms": 168.32140000042273,
+        "tokens_per_second": 78.43274162402236,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 8,
+        "index": 4,
+        "prompt": "Recomienda estrategia basada en la tendencia de los 3 ticks.",
+        "ticker_id": "A",
+        "response": "**Estrategia clave:**\n*Prioriza **pit stop estratégico** para optimizar combustible y neumáticos: apunta a ~40L (F:42.3L) con **13 vueltas restantes**, ajustando desgaste neumático (FL/RR más críticos: 72/65 vs. 92/98). Si el ritmo de consumo (3.2L/L) se estabiliza, considera **undercut en pits** para recuperar +0.3s/delta con VST y ALO.\n\n**Acciones inmediatas:**\n- **Neumáticos:** Revisa temperatura FL/RR (92/96°C). Si el desgaste es homogéneo, mantén la parada en **L11-L12** para evitar *hot spots*.\n- **Frenos:** Desgaste FR/RL (35/20) sugiere priorizar RL en boxes. Usa frenada suave si el clima es MED (agarre medio).\n- **Rivales:** Con VST +2.1s y ALO -1.2s, enfócate en mantener ritmo con CLS1. Si PIA (+4.8s) avanza, ajusta *stint* para evitar que acelere tu consumo.\n\n**Alternativa si:**\n- **Lluvia inminente (WTH:30%+15m):** Postergar pit hasta L12-L13 y priorizar neumáticos HIG (98/96°C).",
+        "ttft_ms": 189.70790000093984,
+        "tokens_per_second": 82.64473572569715,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 8,
+        "index": 5,
+        "prompt": "Estamos ganando posiciones? Que esta cambiando?",
+        "ticker_id": "A",
+        "response": "**Actualización clave:**\nPosición **estabilizada en 3ª**, pero con riesgo de *undercut* por VST (+2.1s) y ALO (-1.2s). **Combustible crítico**: 42.3L/3.2(13L) → **prioridad pits** si hay ritmo para recuperar gap.\n\n**Cambios relevantes:**\n- **Neumáticos**: Temperatura RL/RR en **98°C/96°C** (calor acumulado). Desgaste TYR: 72/68/65/63 → **RL necesita cambio pronto**.\n- **Frenos**: Desgaste FL/FR alto (38/35), RL/RR crítico (22/20) → **riesgo de bloqueo en curvas rápidas** si no se ajusta.\n- **Clima**: MED grip + lluvia en **+15m**. **Ventaja táctica**: Aprovechar *soft tires* para mantener ritmo bajo condiciones estables.\n\n**Acción inmediata:**\n- **Pits ahora** si hay margen de tiempo (GAP d-0.3 vs VST). **Objetivo**: Recuperar al menos **+1s** con cambio de neumáticos y frenos.\n- **Riesgo**: Si no se actúa, ALO acelera (+4.8s) y VST mantiene presión. **Monitorear gap con HAM (8.5s)** en próxima vuelta.",
+        "ttft_ms": 259.5264999981737,
+        "tokens_per_second": 80.05518668541751,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 8,
+        "index": 6,
+        "prompt": "Estamos alcanzando a VER?",
+        "ticker_id": "A",
+        "response": "**Verificación de progreso hacia VER (HY):**\nCon **+12.3s** frente al rival en **Vuelta 10**, el ritmo actual (+3.2 L/vuelta) y desgaste neumático equilibrado (**72/68**) sugieren que **no hay margen para adelantar** sin *undercut* o mejora de consumo. Los neumáticos FR (94°C) podrían optimizarse en futuras vueltas para reducir resistencia aerodinámica, pero el gap es estable por ahora.\n\n---\n**Alternativa:** Si priorizas **frenos RL/RR** (22/20%), revisa la estrategia de *stint* para evitar bloqueos y aprovechar el clima **MED** sin riesgo de SC.",
+        "ttft_ms": 145.6910999986576,
+        "tokens_per_second": 81.32563746368838,
+        "score": 0.16666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.16666666666666666
+        }
+      },
+      {
+        "level": 8,
+        "index": 7,
+        "prompt": "Como esta la degradacion de neumaticos en esta serie?",
+        "ticker_id": "A",
+        "response": "En **HY**, los neumáticos muestran un desgaste moderado pero con asimetría crítica: **FL (72) y RL (65)** están más gastados que FR (68) y RR (63), lo que sugiere una **toma de curvas menos eficiente en la izquierda** (posible sobrecorrección o falta de presión lateral). Temperaturas estables pero con riesgo de **saturación en RL/RR** por el desgaste. **Clima MED** y 15m hasta lluvia podrían agravar esto si no se ajusta la estrategia de neumáticos.",
+        "ttft_ms": 171.82859999957145,
+        "tokens_per_second": 79.1955353248504,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 8,
+        "index": 8,
+        "prompt": "Nuestro ritmo relativo a LEC esta mejorando o empeorando?",
+        "ticker_id": "A",
+        "response": "**Respuesta técnica:**\nEl ritmo **mejora ligeramente**, pero con margen ajustado: **+4.8s vs LEC** (antes +6.5s en la última vuelta). Neumáticos fríos (**RL/RR 98/96°C**) y consumo medio (**3.2L/Lap**) mantienen presión, aunque el desgaste frontal (**FL/FR 72/68**) exige precisión en frenadas.\n\n*Accion clave:* Aprovechar **undercut** en pits para alinear con LEC (gap actual: **+4.8s**).",
+        "ttft_ms": 167.0205000009446,
+        "tokens_per_second": 79.62068704690357,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 8,
+        "index": 9,
+        "prompt": "Resume la evolucion de la carrera en estos 3 ticks.",
+        "ticker_id": "A",
+        "response": "**Resumen técnico (tick 9-10):**\nEn **lap 10**, el piloto mantiene **P3** con **42.3L/3.2Lv** y desgaste neumático equilibrado (**FL/RR ~72-65**), priorizando **RL/RR** por mayor temperatura (98°C). Los frenos muestran **desgaste crítico en RL/RR (20%)**, riesgo de calado si no se ajusta ritmo. **GAP estabilizado**: +2.1s vs VST (mejor tiempo 1:48.2) y -1.2s vs ALO, con ritmo superior (+d-0.3). **Rivales clave** (VST/ALO) mantienen presión en CLS1; **HAM** avanza a +8.5s. Clima **MED/22°C**, lluvia en +15m sin SC.\n\n*Estrategia clave*: Optimizar **frenos RL/RR** y evitar *undercut* innecesario para conservar combustible.",
+        "ttft_ms": 159.015699999145,
+        "tokens_per_second": 82.44779142719203,
+        "score": 0.14285714285714285,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.14285714285714285
+        }
+      },
+      {
+        "level": 8,
+        "index": 10,
+        "prompt": "Compara la degradacion entre la Serie 1 y la Serie 2.",
+        "ticker_id": "A",
+        "response": "**Análisis técnico de desgaste (Series CLS1 vs. CLS2):**\n\nEn **CLS1**, el piloto prioriza neumáticos con **72/68/65/63** (FL/RR más equilibrados) y frenos en **BRK:38/35/22/20** (RL/RR críticos). La ventaja de **VST (+2.1s)** se sustenta en neumáticos menos desgastados que **ALO (-1.2s)**, donde el ritmo se ve afectado por mayor consumo y temperatura (96°C RR).\n\nEn **CLS2**, los rivales como **HAM (+8.5s)** o **VER (+12.3s)** muestran neumáticos más degradados (ej: **PIA** con 4L menos en tanque vs. tu serie), pero su ritmo se compensa con **frenos menos exigidos** y condiciones de pista menos competitivas. La brecha de **+15.1s a +25.3s** refleja mayor desgaste neumático (ej: **RUS** con 63°C RR vs. tu 96°C).",
+        "ttft_ms": 242.4314999989292,
+        "tokens_per_second": 81.89924995522901,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      }
+    ]
+  }
+}

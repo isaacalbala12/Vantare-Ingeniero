@@ -1,0 +1,592 @@
+{"timestamp":"2026-06-02T06:56:21.067Z","event":"session_started","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder"}
+{"timestamp":"2026-06-02T06:56:21.068Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","taskId":"unknown"}
+{"timestamp":"2026-06-02T06:56:23.795Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T06:56:55.216Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T06:57:28.810Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T06:58:31.219Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T06:58:49.222Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","taskId":"unknown"}
+{"timestamp":"2026-06-02T06:59:16.876Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","taskId":"unknown"}
+{"timestamp":"2026-06-02T06:59:17.360Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T06:59:50.995Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:00:33.040Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Prometheus - Plan Builder"}
+{"timestamp":"2026-06-02T07:00:33.040Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T07:00:36.150Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:00:47.881Z","event":"session_started","sessionId":"ses_178dd7795ffe78UCewnoJjvwoP","agentName":"explore"}
+{"timestamp":"2026-06-02T07:00:47.881Z","event":"delegation_begin","sessionId":"ses_178dd7795ffe78UCewnoJjvwoP","agentName":"explore","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:00:47.974Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T07:00:48.848Z","event":"heartbeat","sessionId":"ses_178dd7795ffe78UCewnoJjvwoP"}
+{"timestamp":"2026-06-02T07:01:26.650Z","event":"heartbeat","sessionId":"ses_178dd7795ffe78UCewnoJjvwoP"}
+{"timestamp":"2026-06-02T07:02:13.315Z","event":"heartbeat","sessionId":"ses_178dd7795ffe78UCewnoJjvwoP"}
+{"timestamp":"2026-06-02T07:02:29.098Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","oldName":"architect"}
+{"timestamp":"2026-06-02T07:02:29.099Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:02:29.778Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:02:45.299Z","event":"heartbeat","sessionId":"ses_178dd7795ffe78UCewnoJjvwoP"}
+{"timestamp":"2026-06-02T07:03:19.407Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:03:21.525Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:03:56.053Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:04:31.407Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:05:05.895Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:05:38.395Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:06:17.249Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:06:47.737Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:06:48.276Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:07:25.085Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:07:56.787Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:08:31.636Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:08:52.016Z","event":"session_started","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1","agentName":"Metis - Plan Consultant"}
+{"timestamp":"2026-06-02T07:08:52.016Z","event":"delegation_begin","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1","agentName":"Metis - Plan Consultant","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:08:52.134Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Prometheus - Plan Builder"}
+{"timestamp":"2026-06-02T07:08:52.134Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T07:08:52.585Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:09:06.462Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:09:12.662Z","event":"session_started","sessionId":"ses_178d5c3c1ffeFPqrXPM5DY1ogy","agentName":"explore"}
+{"timestamp":"2026-06-02T07:09:12.662Z","event":"delegation_begin","sessionId":"ses_178d5c3c1ffeFPqrXPM5DY1ogy","agentName":"explore","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:09:12.723Z","event":"session_started","sessionId":"ses_178d5c392ffedbvkUIQi46ijpu","agentName":"explore"}
+{"timestamp":"2026-06-02T07:09:12.724Z","event":"delegation_begin","sessionId":"ses_178d5c392ffedbvkUIQi46ijpu","agentName":"explore","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:09:12.784Z","event":"session_started","sessionId":"ses_178d5c360ffek2M3RX1EMGj1E2","agentName":"explore"}
+{"timestamp":"2026-06-02T07:09:12.784Z","event":"delegation_begin","sessionId":"ses_178d5c360ffek2M3RX1EMGj1E2","agentName":"explore","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:09:13.433Z","event":"heartbeat","sessionId":"ses_178d5c3c1ffeFPqrXPM5DY1ogy"}
+{"timestamp":"2026-06-02T07:09:13.906Z","event":"heartbeat","sessionId":"ses_178d5c392ffedbvkUIQi46ijpu"}
+{"timestamp":"2026-06-02T07:09:14.454Z","event":"heartbeat","sessionId":"ses_178d5c360ffek2M3RX1EMGj1E2"}
+{"timestamp":"2026-06-02T07:09:29.127Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:09:44.715Z","event":"heartbeat","sessionId":"ses_178d5c3c1ffeFPqrXPM5DY1ogy"}
+{"timestamp":"2026-06-02T07:13:11.785Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:13:13.319Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:13:14.936Z","event":"heartbeat","sessionId":"ses_178d5c360ffek2M3RX1EMGj1E2"}
+{"timestamp":"2026-06-02T07:13:16.598Z","event":"heartbeat","sessionId":"ses_178d5c392ffedbvkUIQi46ijpu"}
+{"timestamp":"2026-06-02T07:13:17.882Z","event":"heartbeat","sessionId":"ses_178d5c3c1ffeFPqrXPM5DY1ogy"}
+{"timestamp":"2026-06-02T07:13:48.969Z","event":"heartbeat","sessionId":"ses_178d5c3c1ffeFPqrXPM5DY1ogy"}
+{"timestamp":"2026-06-02T07:13:49.989Z","event":"heartbeat","sessionId":"ses_178d5c360ffek2M3RX1EMGj1E2"}
+{"timestamp":"2026-06-02T07:13:51.153Z","event":"heartbeat","sessionId":"ses_178d5c392ffedbvkUIQi46ijpu"}
+{"timestamp":"2026-06-02T07:13:52.301Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:13:53.624Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:14:31.158Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:14:33.890Z","event":"heartbeat","sessionId":"ses_178d5c3c1ffeFPqrXPM5DY1ogy"}
+{"timestamp":"2026-06-02T07:14:35.720Z","event":"heartbeat","sessionId":"ses_178d5c392ffedbvkUIQi46ijpu"}
+{"timestamp":"2026-06-02T07:14:38.955Z","event":"heartbeat","sessionId":"ses_178d5c360ffek2M3RX1EMGj1E2"}
+{"timestamp":"2026-06-02T07:15:11.263Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:15:13.095Z","event":"heartbeat","sessionId":"ses_178d5c3c1ffeFPqrXPM5DY1ogy"}
+{"timestamp":"2026-06-02T07:15:14.408Z","event":"heartbeat","sessionId":"ses_178d5c392ffedbvkUIQi46ijpu"}
+{"timestamp":"2026-06-02T07:15:30.863Z","event":"heartbeat","sessionId":"ses_178d5c360ffek2M3RX1EMGj1E2"}
+{"timestamp":"2026-06-02T07:15:41.750Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:16:06.302Z","event":"heartbeat","sessionId":"ses_178d5c360ffek2M3RX1EMGj1E2"}
+{"timestamp":"2026-06-02T07:16:07.650Z","event":"delegation_begin","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1","agentName":"Metis - Plan Consultant","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:16:15.198Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:16:27.899Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:16:30.718Z","event":"delegation_begin","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1","agentName":"Metis - Plan Consultant","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:16:54.963Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:17:03.468Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:17:23.105Z","event":"delegation_begin","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1","agentName":"Metis - Plan Consultant","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:17:33.929Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:17:35.071Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:18:07.568Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:18:10.029Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:18:43.263Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:18:44.539Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:19:23.212Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:19:24.376Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:19:54.747Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","oldName":"architect"}
+{"timestamp":"2026-06-02T07:19:54.747Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:19:59.812Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:20:33.780Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:20:40.261Z","event":"delegation_begin","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1","agentName":"Metis - Plan Consultant","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:20:40.785Z","event":"heartbeat","sessionId":"ses_178d61460ffetLfLdnzIJfx1V1"}
+{"timestamp":"2026-06-02T07:21:19.867Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Prometheus - Plan Builder"}
+{"timestamp":"2026-06-02T07:21:19.867Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Prometheus - Plan Builder","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T07:21:21.524Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:22:05.236Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:23:02.035Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:23:32.634Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:24:33.854Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:24:47.617Z","event":"session_started","sessionId":"ses_178c78078ffePxLxRBVP3cFNg8","agentName":"Momus - Plan Critic"}
+{"timestamp":"2026-06-02T07:24:47.617Z","event":"delegation_begin","sessionId":"ses_178c78078ffePxLxRBVP3cFNg8","agentName":"critic","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:24:48.214Z","event":"heartbeat","sessionId":"ses_178c78078ffePxLxRBVP3cFNg8"}
+{"timestamp":"2026-06-02T07:25:21.686Z","event":"heartbeat","sessionId":"ses_178c78078ffePxLxRBVP3cFNg8"}
+{"timestamp":"2026-06-02T07:25:52.521Z","event":"heartbeat","sessionId":"ses_178c78078ffePxLxRBVP3cFNg8"}
+{"timestamp":"2026-06-02T07:26:44.595Z","event":"heartbeat","sessionId":"ses_178c78078ffePxLxRBVP3cFNg8"}
+{"timestamp":"2026-06-02T07:27:26.729Z","event":"heartbeat","sessionId":"ses_178c78078ffePxLxRBVP3cFNg8"}
+{"timestamp":"2026-06-02T07:28:04.871Z","event":"heartbeat","sessionId":"ses_178c78078ffePxLxRBVP3cFNg8"}
+{"timestamp":"2026-06-02T07:28:43.058Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T07:28:44.876Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:29:15.295Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:29:48.862Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:30:27.121Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:31:05.373Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:31:41.079Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:32:15.249Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:32:48.580Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:33:19.409Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:33:55.198Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:34:26.855Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:35:03.883Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:35:45.919Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:36:29.516Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:37:03.456Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:37:44.183Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:38:02.452Z","event":"session_started","sessionId":"ses_178bb5f9effeD79730cfx8SxAZ","agentName":"Momus - Plan Critic"}
+{"timestamp":"2026-06-02T07:38:02.452Z","event":"delegation_begin","sessionId":"ses_178bb5f9effeD79730cfx8SxAZ","agentName":"critic","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:38:02.963Z","event":"heartbeat","sessionId":"ses_178bb5f9effeD79730cfx8SxAZ"}
+{"timestamp":"2026-06-02T07:38:34.740Z","event":"heartbeat","sessionId":"ses_178bb5f9effeD79730cfx8SxAZ"}
+{"timestamp":"2026-06-02T07:39:08.840Z","event":"heartbeat","sessionId":"ses_178bb5f9effeD79730cfx8SxAZ"}
+{"timestamp":"2026-06-02T07:39:42.318Z","event":"heartbeat","sessionId":"ses_178bb5f9effeD79730cfx8SxAZ"}
+{"timestamp":"2026-06-02T07:40:14.093Z","event":"heartbeat","sessionId":"ses_178bb5f9effeD79730cfx8SxAZ"}
+{"timestamp":"2026-06-02T07:41:02.288Z","event":"heartbeat","sessionId":"ses_178bb5f9effeD79730cfx8SxAZ"}
+{"timestamp":"2026-06-02T07:41:35.817Z","event":"heartbeat","sessionId":"ses_178bb5f9effeD79730cfx8SxAZ"}
+{"timestamp":"2026-06-02T07:42:07.511Z","event":"heartbeat","sessionId":"ses_178bb5f9effeD79730cfx8SxAZ"}
+{"timestamp":"2026-06-02T07:42:28.976Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T07:42:30.635Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:43:32.596Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T07:43:32.596Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:43:33.135Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:44:12.219Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:44:44.760Z","event":"session_started","sessionId":"ses_178b53c12ffehdA46tGbzK70ws","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T07:44:44.760Z","event":"delegation_begin","sessionId":"ses_178b53c12ffehdA46tGbzK70ws","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:44:45.273Z","event":"heartbeat","sessionId":"ses_178b53c12ffehdA46tGbzK70ws"}
+{"timestamp":"2026-06-02T07:45:22.593Z","event":"heartbeat","sessionId":"ses_178b53c12ffehdA46tGbzK70ws"}
+{"timestamp":"2026-06-02T07:46:15.447Z","event":"heartbeat","sessionId":"ses_178b53c12ffehdA46tGbzK70ws"}
+{"timestamp":"2026-06-02T07:46:47.416Z","event":"heartbeat","sessionId":"ses_178b53c12ffehdA46tGbzK70ws"}
+{"timestamp":"2026-06-02T07:47:19.993Z","event":"heartbeat","sessionId":"ses_178b53c12ffehdA46tGbzK70ws"}
+{"timestamp":"2026-06-02T07:47:52.899Z","event":"heartbeat","sessionId":"ses_178b53c12ffehdA46tGbzK70ws"}
+{"timestamp":"2026-06-02T07:48:47.076Z","event":"heartbeat","sessionId":"ses_178b53c12ffehdA46tGbzK70ws"}
+{"timestamp":"2026-06-02T07:49:30.932Z","event":"heartbeat","sessionId":"ses_178b53c12ffehdA46tGbzK70ws"}
+{"timestamp":"2026-06-02T07:50:09.115Z","event":"heartbeat","sessionId":"ses_178b53c12ffehdA46tGbzK70ws"}
+{"timestamp":"2026-06-02T07:50:55.587Z","event":"heartbeat","sessionId":"ses_178b53c12ffehdA46tGbzK70ws"}
+{"timestamp":"2026-06-02T07:51:17.709Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T07:51:17.710Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T07:51:19.533Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:51:52.374Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:52:23.849Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:52:56.718Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:53:38.356Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:54:17.428Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T07:54:59.954Z","event":"session_started","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T07:54:59.954Z","event":"delegation_begin","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:55:00.491Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T07:55:55.272Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T07:56:27.087Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T07:57:06.552Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T07:57:49.491Z","event":"session_started","sessionId":"ses_178a941ecffe6SuctiUtqJDahX","agentName":"orchestrator"}
+{"timestamp":"2026-06-02T07:57:49.491Z","event":"delegation_begin","sessionId":"ses_178a941ecffe6SuctiUtqJDahX","agentName":"orchestrator","taskId":"unknown"}
+{"timestamp":"2026-06-02T07:57:50.304Z","event":"heartbeat","sessionId":"ses_178a941ecffe6SuctiUtqJDahX"}
+{"timestamp":"2026-06-02T07:58:23.230Z","event":"heartbeat","sessionId":"ses_178a941ecffe6SuctiUtqJDahX"}
+{"timestamp":"2026-06-02T07:58:56.038Z","event":"heartbeat","sessionId":"ses_178a941ecffe6SuctiUtqJDahX"}
+{"timestamp":"2026-06-02T08:00:00.688Z","event":"heartbeat","sessionId":"ses_178a941ecffe6SuctiUtqJDahX"}
+{"timestamp":"2026-06-02T08:02:09.689Z","event":"heartbeat","sessionId":"ses_178a941ecffe6SuctiUtqJDahX"}
+{"timestamp":"2026-06-02T08:02:51.117Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:03:25.784Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:04:06.222Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:04:40.240Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:05:13.576Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:05:47.179Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:06:33.862Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:07:09.241Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:08:00.175Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:08:33.872Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:09:09.285Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:09:40.709Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:10:14.932Z","event":"heartbeat","sessionId":"ses_178abd8f3ffeS4xgCbRlfLVMrv"}
+{"timestamp":"2026-06-02T08:16:43.426Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T08:16:43.656Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T08:16:43.656Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T08:16:44.584Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:17:16.285Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:17:47.254Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:19:01.686Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:19:48.109Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:20:32.190Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:21:14.177Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:21:53.099Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:22:38.834Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:23:04.024Z","event":"session_started","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T08:23:04.024Z","event":"delegation_begin","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T08:23:27.684Z","event":"heartbeat","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH"}
+{"timestamp":"2026-06-02T08:24:08.658Z","event":"heartbeat","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH"}
+{"timestamp":"2026-06-02T08:24:53.089Z","event":"heartbeat","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH"}
+{"timestamp":"2026-06-02T08:25:31.517Z","event":"heartbeat","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH"}
+{"timestamp":"2026-06-02T08:26:20.905Z","event":"heartbeat","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH"}
+{"timestamp":"2026-06-02T08:27:10.093Z","event":"heartbeat","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH"}
+{"timestamp":"2026-06-02T08:28:00.234Z","event":"heartbeat","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH"}
+{"timestamp":"2026-06-02T08:28:48.949Z","event":"heartbeat","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH"}
+{"timestamp":"2026-06-02T08:29:31.851Z","event":"heartbeat","sessionId":"ses_1789226a5ffeewrncTH4m5SLkH"}
+{"timestamp":"2026-06-02T08:30:07.664Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T08:30:07.664Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T08:30:09.217Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:31:10.648Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:32:04.758Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:33:05.878Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:34:13.397Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:35:17.820Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:36:08.325Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:36:49.698Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:37:08.786Z","event":"session_started","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T08:37:08.786Z","event":"delegation_begin","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T08:37:26.886Z","event":"heartbeat","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV"}
+{"timestamp":"2026-06-02T08:38:01.046Z","event":"heartbeat","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV"}
+{"timestamp":"2026-06-02T08:38:45.930Z","event":"heartbeat","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV"}
+{"timestamp":"2026-06-02T08:39:36.220Z","event":"heartbeat","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV"}
+{"timestamp":"2026-06-02T08:40:09.511Z","event":"heartbeat","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV"}
+{"timestamp":"2026-06-02T08:40:40.461Z","event":"heartbeat","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV"}
+{"timestamp":"2026-06-02T08:41:16.783Z","event":"heartbeat","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV"}
+{"timestamp":"2026-06-02T08:41:52.045Z","event":"heartbeat","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV"}
+{"timestamp":"2026-06-02T08:42:34.202Z","event":"heartbeat","sessionId":"ses_1788542ccffed8DqqTG5Ro76AV"}
+{"timestamp":"2026-06-02T08:42:48.843Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T08:42:50.310Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:43:28.116Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:44:09.710Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:44:33.848Z","event":"session_started","sessionId":"ses_1787e7758ffeeC9gPa3G7StW5d","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T08:44:33.849Z","event":"delegation_begin","sessionId":"ses_1787e7758ffeeC9gPa3G7StW5d","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T08:44:34.386Z","event":"session_started","sessionId":"ses_1787e7538ffeorwqm8aezrM1id","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T08:44:34.386Z","event":"delegation_begin","sessionId":"ses_1787e7538ffeorwqm8aezrM1id","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T08:44:34.490Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T08:44:34.650Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T08:44:56.253Z","event":"heartbeat","sessionId":"ses_1787e7758ffeeC9gPa3G7StW5d"}
+{"timestamp":"2026-06-02T08:44:56.716Z","event":"heartbeat","sessionId":"ses_1787e7538ffeorwqm8aezrM1id"}
+{"timestamp":"2026-06-02T08:44:58.090Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:45:42.121Z","event":"heartbeat","sessionId":"ses_1787e7538ffeorwqm8aezrM1id"}
+{"timestamp":"2026-06-02T08:45:43.339Z","event":"heartbeat","sessionId":"ses_1787e7758ffeeC9gPa3G7StW5d"}
+{"timestamp":"2026-06-02T08:46:23.317Z","event":"heartbeat","sessionId":"ses_1787e7758ffeeC9gPa3G7StW5d"}
+{"timestamp":"2026-06-02T08:46:24.540Z","event":"heartbeat","sessionId":"ses_1787e7538ffeorwqm8aezrM1id"}
+{"timestamp":"2026-06-02T08:47:02.158Z","event":"heartbeat","sessionId":"ses_1787e7758ffeeC9gPa3G7StW5d"}
+{"timestamp":"2026-06-02T08:47:08.463Z","event":"heartbeat","sessionId":"ses_1787e7538ffeorwqm8aezrM1id"}
+{"timestamp":"2026-06-02T08:48:14.914Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T08:48:14.914Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T08:48:15.728Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:48:53.753Z","event":"session_started","sessionId":"ses_1787a80fbffeLlft4WmclFLxyF","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T08:48:53.753Z","event":"delegation_begin","sessionId":"ses_1787a80fbffeLlft4WmclFLxyF","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T08:48:56.174Z","event":"heartbeat","sessionId":"ses_1787a80fbffeLlft4WmclFLxyF"}
+{"timestamp":"2026-06-02T08:49:37.297Z","event":"heartbeat","sessionId":"ses_1787a80fbffeLlft4WmclFLxyF"}
+{"timestamp":"2026-06-02T08:50:09.584Z","event":"heartbeat","sessionId":"ses_1787a80fbffeLlft4WmclFLxyF"}
+{"timestamp":"2026-06-02T08:50:40.627Z","event":"heartbeat","sessionId":"ses_1787a80fbffeLlft4WmclFLxyF"}
+{"timestamp":"2026-06-02T08:50:55.613Z","event":"session_started","sessionId":"ses_17878a413ffeSkPhj22UNZZe3U","agentName":"oracle"}
+{"timestamp":"2026-06-02T08:50:55.613Z","event":"delegation_begin","sessionId":"ses_17878a413ffeSkPhj22UNZZe3U","agentName":"oracle","taskId":"unknown"}
+{"timestamp":"2026-06-02T08:50:56.212Z","event":"heartbeat","sessionId":"ses_17878a413ffeSkPhj22UNZZe3U"}
+{"timestamp":"2026-06-02T08:51:27.052Z","event":"heartbeat","sessionId":"ses_17878a413ffeSkPhj22UNZZe3U"}
+{"timestamp":"2026-06-02T08:51:59.593Z","event":"heartbeat","sessionId":"ses_17878a413ffeSkPhj22UNZZe3U"}
+{"timestamp":"2026-06-02T08:52:49.944Z","event":"heartbeat","sessionId":"ses_17878a413ffeSkPhj22UNZZe3U"}
+{"timestamp":"2026-06-02T08:53:37.170Z","event":"heartbeat","sessionId":"ses_17878a413ffeSkPhj22UNZZe3U"}
+{"timestamp":"2026-06-02T08:54:10.832Z","event":"heartbeat","sessionId":"ses_17878a413ffeSkPhj22UNZZe3U"}
+{"timestamp":"2026-06-02T08:54:51.909Z","event":"heartbeat","sessionId":"ses_17878a413ffeSkPhj22UNZZe3U"}
+{"timestamp":"2026-06-02T08:55:23.958Z","event":"heartbeat","sessionId":"ses_17878a413ffeSkPhj22UNZZe3U"}
+{"timestamp":"2026-06-02T08:55:56.334Z","event":"heartbeat","sessionId":"ses_1787a80fbffeLlft4WmclFLxyF"}
+{"timestamp":"2026-06-02T08:56:38.868Z","event":"heartbeat","sessionId":"ses_1787a80fbffeLlft4WmclFLxyF"}
+{"timestamp":"2026-06-02T08:56:48.376Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T08:56:48.376Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T08:56:49.063Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T08:56:49.063Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T08:56:49.992Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T08:57:35.003Z","event":"session_started","sessionId":"ses_178728cdcffeoyY4Mt10M7EAwQ","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T08:57:35.003Z","event":"delegation_begin","sessionId":"ses_178728cdcffeoyY4Mt10M7EAwQ","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T08:57:35.551Z","event":"heartbeat","sessionId":"ses_178728cdcffeoyY4Mt10M7EAwQ"}
+{"timestamp":"2026-06-02T08:58:07.033Z","event":"heartbeat","sessionId":"ses_178728cdcffeoyY4Mt10M7EAwQ"}
+{"timestamp":"2026-06-02T08:58:37.993Z","event":"heartbeat","sessionId":"ses_178728cdcffeoyY4Mt10M7EAwQ"}
+{"timestamp":"2026-06-02T08:59:19.369Z","event":"heartbeat","sessionId":"ses_178728cdcffeoyY4Mt10M7EAwQ"}
+{"timestamp":"2026-06-02T08:59:54.055Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T08:59:54.055Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T08:59:55.632Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:00:45.328Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:01:33.614Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:02:23.096Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:03:07.093Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:03:54.426Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T09:03:54.426Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:03:57.543Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:03:58.452Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:04:23.342Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:04:26.231Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:04:50.342Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:04:53.209Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:04:53.932Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:05:18.465Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:05:21.326Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:05:46.147Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:05:48.981Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:05:49.628Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:06:12.267Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:06:15.161Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:06:34.993Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:06:37.777Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:06:38.392Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:06:57.360Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:07:00.153Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:07:52.255Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T09:07:52.255Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:07:53.028Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:09:17.791Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T09:09:17.791Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:09:18.603Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:09:43.596Z","event":"session_started","sessionId":"ses_178676ecaffe7wpebhPkI370f9","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T09:09:43.597Z","event":"delegation_begin","sessionId":"ses_178676ecaffe7wpebhPkI370f9","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:09:44.328Z","event":"heartbeat","sessionId":"ses_178676ecaffe7wpebhPkI370f9"}
+{"timestamp":"2026-06-02T09:10:17.319Z","event":"heartbeat","sessionId":"ses_178676ecaffe7wpebhPkI370f9"}
+{"timestamp":"2026-06-02T09:10:50.282Z","event":"heartbeat","sessionId":"ses_178676ecaffe7wpebhPkI370f9"}
+{"timestamp":"2026-06-02T09:11:23.263Z","event":"heartbeat","sessionId":"ses_178676ecaffe7wpebhPkI370f9"}
+{"timestamp":"2026-06-02T09:11:54.967Z","event":"heartbeat","sessionId":"ses_178676ecaffe7wpebhPkI370f9"}
+{"timestamp":"2026-06-02T09:12:28.918Z","event":"heartbeat","sessionId":"ses_178676ecaffe7wpebhPkI370f9"}
+{"timestamp":"2026-06-02T09:12:51.989Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T09:12:51.989Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T09:12:54.190Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:13:32.258Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:14:19.285Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:15:05.265Z","event":"session_started","sessionId":"ses_178628648ffel4hmSIAf3etPy5","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T09:15:05.265Z","event":"delegation_begin","sessionId":"ses_178628648ffel4hmSIAf3etPy5","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:15:05.993Z","event":"heartbeat","sessionId":"ses_178628648ffel4hmSIAf3etPy5"}
+{"timestamp":"2026-06-02T09:15:46.844Z","event":"heartbeat","sessionId":"ses_178628648ffel4hmSIAf3etPy5"}
+{"timestamp":"2026-06-02T09:16:11.473Z","event":"session_started","sessionId":"ses_1786182dcffe69Zr7lZ4Kms518","agentName":"orchestrator"}
+{"timestamp":"2026-06-02T09:16:11.474Z","event":"delegation_begin","sessionId":"ses_1786182dcffe69Zr7lZ4Kms518","agentName":"orchestrator","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:16:12.186Z","event":"heartbeat","sessionId":"ses_1786182dcffe69Zr7lZ4Kms518"}
+{"timestamp":"2026-06-02T09:16:45.260Z","event":"heartbeat","sessionId":"ses_1786182dcffe69Zr7lZ4Kms518"}
+{"timestamp":"2026-06-02T09:17:17.915Z","event":"heartbeat","sessionId":"ses_1786182dcffe69Zr7lZ4Kms518"}
+{"timestamp":"2026-06-02T09:18:22.790Z","event":"heartbeat","sessionId":"ses_1786182dcffe69Zr7lZ4Kms518"}
+{"timestamp":"2026-06-02T09:20:31.551Z","event":"heartbeat","sessionId":"ses_1786182dcffe69Zr7lZ4Kms518"}
+{"timestamp":"2026-06-02T09:21:13.004Z","event":"heartbeat","sessionId":"ses_178628648ffel4hmSIAf3etPy5"}
+{"timestamp":"2026-06-02T09:21:44.631Z","event":"heartbeat","sessionId":"ses_178628648ffel4hmSIAf3etPy5"}
+{"timestamp":"2026-06-02T09:22:13.062Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T09:22:14.899Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:22:52.059Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:23:30.994Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:24:10.274Z","event":"session_started","sessionId":"ses_1785a3476ffelz6FA649fbhLXU","agentName":"oracle"}
+{"timestamp":"2026-06-02T09:24:10.275Z","event":"delegation_begin","sessionId":"ses_1785a3476ffelz6FA649fbhLXU","agentName":"oracle","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:24:10.998Z","event":"session_started","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T09:24:10.999Z","event":"delegation_begin","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:24:11.746Z","event":"session_started","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T09:24:11.746Z","event":"delegation_begin","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:24:11.925Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T09:24:12.129Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T09:24:12.359Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T09:24:13.655Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:24:14.316Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:24:14.943Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:24:16.693Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:24:51.395Z","event":"session_started","sessionId":"ses_1785993cfffeDUuXeczEd63fxd","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T09:24:51.395Z","event":"delegation_begin","sessionId":"ses_1785993cfffeDUuXeczEd63fxd","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:24:52.069Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T09:24:53.492Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:24:55.254Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:24:57.426Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:24:59.634Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:25:01.350Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:25:39.064Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:25:40.788Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:25:42.444Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:25:44.144Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:26:27.219Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:26:28.553Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:26:29.860Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:29:47.558Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:29:51.953Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:29:53.372Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:29:54.981Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:30:14.420Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T09:30:14.420Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:30:16.715Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:31:06.264Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:31:08.583Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:31:11.006Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:31:13.855Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:32:04.075Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:32:06.506Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:32:08.445Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:32:10.598Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:33:19.704Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:33:46.428Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:33:47.877Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:33:49.468Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:33:51.896Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:33:53.521Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:34:31.957Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:34:33.563Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:34:35.186Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:34:37.393Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:35:03.491Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Sisyphus - Ultraworker","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T09:35:03.491Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Sisyphus - Ultraworker","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:35:07.337Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:35:09.075Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:35:09.831Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:35:12.037Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:35:13.869Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:35:51.130Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:35:52.881Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:35:55.119Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:35:57.338Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:35:59.452Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:36:51.052Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:36:53.826Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:36:56.230Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:36:58.391Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:37:00.202Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:37:42.105Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:37:45.568Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:37:48.012Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:37:49.902Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:37:51.838Z","event":"heartbeat","sessionId":"ses_1785a3476ffelz6FA649fbhLXU"}
+{"timestamp":"2026-06-02T09:38:35.461Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:38:38.271Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Sisyphus - Ultraworker","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:38:40.015Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:38:41.576Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:39:14.362Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:39:16.479Z","event":"heartbeat","sessionId":"ses_1785a2eafffeJ5yEIdkGOa81f2"}
+{"timestamp":"2026-06-02T09:39:27.973Z","event":"heartbeat","sessionId":"ses_1785993cfffeDUuXeczEd63fxd"}
+{"timestamp":"2026-06-02T09:39:29.053Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Sisyphus - Ultraworker","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:39:48.607Z","event":"heartbeat","sessionId":"ses_1785a3199ffeLlqK2zWgwJgg1B"}
+{"timestamp":"2026-06-02T09:39:59.556Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Sisyphus - Ultraworker","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:40:00.614Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:40:44.093Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Sisyphus - Ultraworker","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:40:45.755Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Sisyphus - Ultraworker","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:40:46.697Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"Sisyphus - Ultraworker"}
+{"timestamp":"2026-06-02T09:40:46.697Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:41:14.685Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:42:57.750Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:47:53.335Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:51:12.655Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:52:29.845Z","event":"session_started","sessionId":"ses_17840457effeELX05ICmnKbr7n","agentName":"explore"}
+{"timestamp":"2026-06-02T09:52:29.845Z","event":"delegation_begin","sessionId":"ses_17840457effeELX05ICmnKbr7n","agentName":"explore","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:52:29.994Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T09:52:29.994Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T09:52:30.877Z","event":"heartbeat","sessionId":"ses_17840457effeELX05ICmnKbr7n"}
+{"timestamp":"2026-06-02T09:52:32.540Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:53:06.733Z","event":"heartbeat","sessionId":"ses_17840457effeELX05ICmnKbr7n"}
+{"timestamp":"2026-06-02T09:53:38.580Z","event":"heartbeat","sessionId":"ses_17840457effeELX05ICmnKbr7n"}
+{"timestamp":"2026-06-02T09:54:15.578Z","event":"heartbeat","sessionId":"ses_17840457effeELX05ICmnKbr7n"}
+{"timestamp":"2026-06-02T09:54:48.978Z","event":"heartbeat","sessionId":"ses_17840457effeELX05ICmnKbr7n"}
+{"timestamp":"2026-06-02T09:55:39.963Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:56:09.811Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T09:56:09.811Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T09:56:11.509Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T09:56:49.381Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:00:24.017Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:01:18.252Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:03:39.876Z","event":"session_started","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T10:03:39.876Z","event":"delegation_begin","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:03:40.567Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:04:16.577Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:06:23.777Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:07:01.908Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:10:34.688Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:11:10.074Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:13:41.011Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:16:29.474Z","event":"session_started","sessionId":"ses_1782a4defffeXFRU8kEhQPtEnC","agentName":"orchestrator"}
+{"timestamp":"2026-06-02T10:16:29.475Z","event":"delegation_begin","sessionId":"ses_1782a4defffeXFRU8kEhQPtEnC","agentName":"orchestrator","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:16:30.087Z","event":"heartbeat","sessionId":"ses_1782a4defffeXFRU8kEhQPtEnC"}
+{"timestamp":"2026-06-02T10:17:02.965Z","event":"heartbeat","sessionId":"ses_1782a4defffeXFRU8kEhQPtEnC"}
+{"timestamp":"2026-06-02T10:17:35.593Z","event":"heartbeat","sessionId":"ses_1782a4defffeXFRU8kEhQPtEnC"}
+{"timestamp":"2026-06-02T10:18:40.430Z","event":"heartbeat","sessionId":"ses_1782a4defffeXFRU8kEhQPtEnC"}
+{"timestamp":"2026-06-02T10:20:49.089Z","event":"heartbeat","sessionId":"ses_1782a4defffeXFRU8kEhQPtEnC"}
+{"timestamp":"2026-06-02T10:21:31.351Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:23:18.505Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:24:25.291Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:25:19.985Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:25:56.500Z","event":"heartbeat","sessionId":"ses_178360d02ffe2mXxvL2pQOnKoh"}
+{"timestamp":"2026-06-02T10:26:25.232Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T10:26:25.232Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T10:26:27.065Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:27:09.150Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:27:28.660Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T10:27:28.660Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:27:48.470Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:28:08.875Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:28:28.518Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:28:48.549Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:29:07.793Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:29:27.851Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:29:47.265Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:30:07.217Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:30:26.436Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:30:46.336Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:31:05.799Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:31:25.636Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:31:44.974Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:32:04.833Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:32:24.126Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:32:49.626Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:33:09.216Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:33:40.885Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:34:00.292Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:34:57.711Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:35:16.935Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:36:14.069Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:36:33.210Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:36:52.776Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:37:11.669Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:37:31.079Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:37:50.250Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:38:09.625Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:38:28.601Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:38:48.295Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:39:07.255Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:39:26.719Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:39:45.918Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:40:05.414Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:40:24.287Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:40:44.012Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:41:03.095Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:41:22.600Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:41:41.699Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:42:01.531Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:42:20.653Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:42:40.363Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:42:59.736Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:43:19.407Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:43:38.658Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:43:58.607Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:44:17.623Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:44:38.863Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:44:58.560Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:45:18.496Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T10:45:37.702Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T10:45:57.782Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T13:32:05.081Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T13:32:05.081Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T13:32:06.770Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T13:32:46.960Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T13:40:25.152Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T13:40:55.642Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T13:41:25.970Z","event":"session_started","sessionId":"ses_1776eacc3ffebuCoQfn4uXiCWf","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T13:41:25.971Z","event":"delegation_begin","sessionId":"ses_1776eacc3ffebuCoQfn4uXiCWf","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T13:41:29.274Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T13:41:39.574Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T13:41:39.575Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T13:41:43.675Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T13:42:29.315Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T13:42:53.913Z","event":"session_started","sessionId":"ses_1776d5536ffeYwa4LJORKdu0cI","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T13:42:53.913Z","event":"delegation_begin","sessionId":"ses_1776d5536ffeYwa4LJORKdu0cI","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T13:42:57.140Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T13:42:57.140Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T13:43:07.401Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T13:43:07.401Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T13:43:09.123Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T13:43:36.185Z","event":"session_started","sessionId":"ses_1776cb0e9ffe6pbBzD6nEWFQQD","agentName":"coder"}
+{"timestamp":"2026-06-02T13:43:36.185Z","event":"delegation_begin","sessionId":"ses_1776cb0e9ffe6pbBzD6nEWFQQD","agentName":"coder","taskId":"unknown"}
+{"timestamp":"2026-06-02T13:45:04.866Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T13:45:04.866Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T13:45:05.080Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T13:45:05.080Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T13:45:05.926Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T14:09:40.686Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T14:10:37.382Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:10:45.343Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T14:11:42.740Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T14:12:34.031Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T14:13:25.584Z","event":"session_started","sessionId":"ses_17751632affeOsNNROpeAqjFbt","agentName":"coder"}
+{"timestamp":"2026-06-02T14:13:25.584Z","event":"delegation_begin","sessionId":"ses_17751632affeOsNNROpeAqjFbt","agentName":"coder","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:40:42.704Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"architect","oldName":"Atlas - Plan Executor"}
+{"timestamp":"2026-06-02T14:40:42.704Z","event":"delegation_end","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"","result":"completed"}
+{"timestamp":"2026-06-02T14:40:43.622Z","event":"agent_activated","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","oldName":"architect"}
+{"timestamp":"2026-06-02T14:40:43.622Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:40:44.518Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T14:40:48.994Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:41:06.448Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:41:32.019Z","event":"session_started","sessionId":"ses_17737a69effePwjuZMRC8fPjdi","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T14:41:32.019Z","event":"delegation_begin","sessionId":"ses_17737a69effePwjuZMRC8fPjdi","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:41:32.840Z","event":"heartbeat","sessionId":"ses_17737a69effePwjuZMRC8fPjdi"}
+{"timestamp":"2026-06-02T14:41:35.362Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:42:05.185Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T14:43:02.358Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:43:03.004Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:43:03.245Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:43:28.194Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T14:44:11.823Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T14:45:02.187Z","event":"heartbeat","sessionId":"ses_178e189dfffe4D1vd3BAlugntC"}
+{"timestamp":"2026-06-02T14:45:50.777Z","event":"session_started","sessionId":"ses_17733b3d8fferqIF6MT6hi8wxR","agentName":"Sisyphus-Junior"}
+{"timestamp":"2026-06-02T14:45:50.777Z","event":"delegation_begin","sessionId":"ses_17733b3d8fferqIF6MT6hi8wxR","agentName":"Sisyphus-Junior","taskId":"unknown"}
+{"timestamp":"2026-06-02T14:45:51.390Z","event":"heartbeat","sessionId":"ses_17733b3d8fferqIF6MT6hi8wxR"}
+{"timestamp":"2026-06-02T14:45:54.007Z","event":"delegation_begin","sessionId":"ses_178e189dfffe4D1vd3BAlugntC","agentName":"Atlas - Plan Executor","taskId":"unknown"}

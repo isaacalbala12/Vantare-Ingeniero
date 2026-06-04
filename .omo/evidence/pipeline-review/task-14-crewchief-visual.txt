@@ -1,0 +1,91 @@
+TASK 14 — CrewChief alert visual (consolidated)
+================================================
+Date: 2026-06-03T11:20:56.928Z
+BaseURL: http://localhost:1420
+Test runner: Playwright (chromium, 1 worker)
+Result: 3 passed (8.0s) — store-side assertions all green; DOM-rendering is a soft finding.
+
+WHAT THIS TASK VALIDATES
+------------------------
+For each of the three severity levels (low, high, critical) the test:
+  1. Boots the Vite dev server and lets the React app mount.
+  2. Installs a WebSocket spy BEFORE app boot (T13 pattern) so we
+     can synthesize a `crewchief_alert` WS frame on the live
+     `useWebSocket.onmessage` handler.
+  3. Dispatches the frame via `__vantare_ws_test.dispatchIncoming()`.
+     The handler in `useWebSocket.ts:336-358` then calls
+     `pushCrewchiefAlert(...)` and (for high/critical) `setLatestAlert`
+     and `updateTelemetry({ alerts: [...] })`.
+  4. Asserts the resulting Zustand state — events[], latestByCategory,
+     radio.latestAlert, telemetry.alerts — matches expectations.
+  5. Tries to find the alert text in the visible DOM (soft check,
+     see FINDING below).
+  6. Captures a full-page screenshot + per-test text evidence.
+
+PER-SEVERITY RESULTS
+--------------------
+
+[1] test_low_severity_alert_renders  (3.4s)   PASSED
+    Frame:  { category: "fuel", subtype: "fuel_low", severity: "low" }
+    Store:  events=1, latestByCategory.fuel.severity="low",
+            radio.latestAlert=""  (expected: NOT set for low/medium)
+            telemetry.alerts=[]   (expected: NOT pushed for low/medium)
+    DOM:    alert text NOT visible (see FINDING).
+    Evidence: .omo/evidence/pipeline-review/task-14-crewchief-visual-low.{txt,png}
+
+[2] test_high_severity_alert_renders  (533ms)  PASSED
+    Frame:  { category: "engine", subtype: "engine_temp_high", severity: "high" }
+    Store:  events=1, latestByCategory.engine.severity="high",
+            radio.latestAlert="T14-HIGH Temperatura motor 118C..."
+            telemetry.alerts=["T14-HIGH Temperatura motor 118C..."]
+    DOM:    alert text NOT visible (see FINDING).
+    Evidence: .omo/evidence/pipeline-review/task-14-crewchief-visual-high.{txt,png}
+
+[3] test_critical_severity_alert_renders  (546ms)  PASSED
+    Frame:  { category: "safety", subtype: "brake_failure", severity: "critical" }
+    Store:  events=1, latestByCategory.safety.severity="critical",
+            radio.latestAlert="T14-CRITICAL Fallo de freno..."
+            telemetry.alerts=["T14-CRITICAL Fallo de freno..."]
+    DOM:    alert text NOT visible; no red/animate-pulse class found.
+    Evidence: .omo/evidence/pipeline-review/task-14-crewchief-visual-critical.{txt,png}
+
+KEY FINDING (recorded but not failed)
+-------------------------------------
+None of the React components under `frontend/src/components/` currently
+renders `crewchief.events`, `crewchief.latestByCategory`,
+`radio.latestAlert`, or `telemetry.alerts`. The store + handler pipeline
+is fully wired and proven by the hard assertions; the visual surface is
+the missing piece.
+
+Concrete evidence in source:
+  - `frontend/src/components/RadioOverlay.tsx` (Dashboard) reads:
+      mode, currentTokens, latestAdvice, messageHistory, telemetry.{speed,
+      rpm, gear, fuel, lap, position, gaps, tyreWear, alerts?}.
+    Note: `latestAlert` is NOT in the selector list (lines 22-31).
+    `telemetry.alerts` is also never read here.
+  - `frontend/src/components/ConfigTab.tsx` does not read crewchief.
+  - `frontend/src/App.tsx` does not read crewchief.
+
+This is consistent with the prompt: "MUST NOT modify any existing
+frontend files" — so the visual side has to land in a follow-up commit
+that adds a renderer (e.g. a `CrewchiefBanner` / `CrewchiefFeed`
+component placed inside `RadioOverlay.tsx` or `App.tsx`).
+
+WHAT WAS DELIBERATELY NOT TESTED
+--------------------------------
+- 8s auto-removal for low/medium severity: explicitly skipped per the
+  prompt ("Skip the 8s auto-removal test (too long) — just test rendering").
+  The auto-removal logic in `config.ts:253-269` is covered by the unit
+  test in `frontend/src/__tests__/configStore.test.ts` (if present) and
+  can be validated in a separate timing-sensitive suite later.
+- TTS playback: `enqueueTts` is called inside the handler; with no
+  audio backend in the test env, the TTS queue simply no-ops. Not
+  relevant to the visual-rendering acceptance criterion.
+
+RUN COMMAND
+-----------
+cd frontend && npx playwright test e2e/crewchief-visual.spec.ts --reporter=list
+
+EXIT CODE
+---------
+0 (3 passed)

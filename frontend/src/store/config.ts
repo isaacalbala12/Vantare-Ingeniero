@@ -53,6 +53,8 @@ export interface TelemetryState {
 }
 
 // --- DOMINIO 4: CONFIGURACIÓN ---
+export type InterruptThreshold = "NEVER" | "SPOTTER" | "CRITICAL" | "IMPORTANT";
+
 export interface AppConfig {
   vllmIP: string;
   serverPort: number;
@@ -63,6 +65,45 @@ export interface AppConfig {
   pttHotkey: string;
   pttStopHotkey: string;
   wakeWordEnabled: boolean;
+  licenseKey: string;
+  interruptThreshold: InterruptThreshold;
+  chiefVoice: string;
+  spotterVoice: string;
+  chiefRate: number;
+  spotterRate: number;
+  chiefPitch: number;
+  spotterPitch: number;
+  spotterVolumeBoost: number;
+  audioOutputDevice: string;
+  autoVerbosityEnabled: boolean;
+  spotterGapForClear: number;
+  spotterOverlapDelay: number;
+  spotterClearDelay: number;
+  spotterRepeatFrequency: number;
+  spotterMinSpeed: number;
+  spotterMaxClosingSpeed: number;
+  spotterEnable3Wide: boolean;
+  fcyStopSpotter: boolean;
+  driverName: string;
+  workerUrl: string;
+  enableTemplates: boolean;
+}
+
+// --- DOMINIO 5: CREWCHIEF ---
+export interface CrewchiefAlert {
+  id: string;
+  severity: "low" | "medium" | "high" | "critical";
+  message: string;
+  category: string;
+  subtype?: string;
+  audioPriority?: number;
+  payload?: Record<string, unknown>;
+  timestamp: number;
+}
+
+export interface CrewchiefState {
+  events: CrewchiefAlert[];
+  latestByCategory: Record<string, CrewchiefAlert>;
 }
 
 // --- INTERFAZ GLOBAL DEL STORE ---
@@ -74,23 +115,67 @@ export interface GlobalStore {
   telemetry: TelemetryState;
   config: AppConfig;
   screen: Screen;
+  crewchief: CrewchiefState;
 
   // Acciones
   setWsStatus: (status: WebSocketStatus) => void;
   setLatency: (ms: number) => void;
   setBackendHealth: (health: ConnectivityState["backendHealth"]) => void;
-  
+
   setRadioMode: (mode: RadioMode) => void;
   setCurrentTokens: (tokens: string) => void;
   addMessageToHistory: (sender: "pilot" | "engineer", text: string) => void;
   setLatestAdvice: (advice: string) => void;
   setLatestAlert: (alert: string) => void;
   setMicLevel: (level: number) => void;
-  
+
   updateTelemetry: (data: Partial<TelemetryState>) => void;
   updateConfig: (newConfig: Partial<AppConfig>) => void;
   setScreen: (screen: Screen) => void;
+  pushCrewchiefAlert: (alert: Omit<CrewchiefAlert, 'id' | 'timestamp'>) => void;
+  clearCrewchiefAlerts: () => void;
 }
+
+// Defaults (single source of truth)
+const DEFAULT_CONFIG: AppConfig = {
+  vllmIP: "localhost",
+  serverPort: 8008,
+  micDevice: "default",
+  speakerDevice: "default",
+  wakeWord: "ingeniero",
+  sensitivity: 50,
+  pttHotkey: "Ctrl+Shift+Space",
+  pttStopHotkey: "Ctrl+Shift+Space",
+  wakeWordEnabled: true,
+  licenseKey: "",
+  interruptThreshold: "SPOTTER",
+  chiefVoice: "es-ES-AlvaroNeural",
+  spotterVoice: "es-MX-JorgeNeural",
+  chiefRate: 0,
+  spotterRate: 5,
+  chiefPitch: 0,
+  spotterPitch: 5,
+  spotterVolumeBoost: 20,
+  audioOutputDevice: "",
+  autoVerbosityEnabled: true,
+  spotterGapForClear: 5.0,
+  spotterOverlapDelay: 300,
+  spotterClearDelay: 500,
+  spotterRepeatFrequency: 3.0,
+  spotterMinSpeed: 5.0,
+  spotterMaxClosingSpeed: 30.0,
+  spotterEnable3Wide: true,
+  fcyStopSpotter: true,
+  driverName: "",
+  workerUrl: "https://vantare-llm-proxy.workers.dev",
+  enableTemplates: true,
+};
+
+/** Patrón de formato de clave de licencia beta: VNT-BETA-XXXX-XXXX-X */
+const LICENSE_KEY_REGEX = /^VNT-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]$/i;
+
+/** Valida que una clave de licencia cumpla el formato esperado */
+export const isValidLicenseFormat = (key: string): boolean => LICENSE_KEY_REGEX.test(key);
 
 // Cargar configuración de localStorage en el arranque si existe
 const loadSavedConfig = (): AppConfig => {
@@ -98,32 +183,18 @@ const loadSavedConfig = (): AppConfig => {
     let saved = localStorage.getItem("vantare_config");
     if (saved) {
       const parsed = JSON.parse(saved);
-      return {
-        vllmIP: parsed.vllmIP ?? "localhost",
-        serverPort: parsed.serverPort ?? 8008,
-        micDevice: parsed.micDevice ?? "default",
-        speakerDevice: parsed.speakerDevice ?? "default",
-        wakeWord: parsed.wakeWord ?? "ingeniero",
-        sensitivity: parsed.sensitivity ?? 50,
-        pttHotkey: parsed.pttHotkey ?? "Ctrl+Shift+Space",
-        pttStopHotkey: parsed.pttStopHotkey ?? "Ctrl+Shift+Space",
-        wakeWordEnabled: parsed.wakeWordEnabled ?? true,
-      };
+      const merged: AppConfig = { ...DEFAULT_CONFIG };
+      for (const key of Object.keys(DEFAULT_CONFIG)) {
+        if (key in parsed && parsed[key] !== undefined) {
+          (merged as any)[key] = parsed[key];
+        }
+      }
+      return merged;
     }
   } catch (e) {
     console.warn("Fallo al leer localStorage para la configuración:", e);
   }
-  return {
-    vllmIP: "localhost",
-    serverPort: 8008,
-    micDevice: "default",
-    speakerDevice: "default",
-    wakeWord: "ingeniero",
-    sensitivity: 50,
-    pttHotkey: "Ctrl+Shift+Space",
-    pttStopHotkey: "Ctrl+Shift+Space",
-    wakeWordEnabled: true,
-  };
+  return { ...DEFAULT_CONFIG };
 };
 
 export const useAppStore = create<GlobalStore>((set) => ({
@@ -154,6 +225,10 @@ export const useAppStore = create<GlobalStore>((set) => ({
     alerts: [],
   },
   config: loadSavedConfig(),
+  crewchief: {
+    events: [],
+    latestByCategory: {},
+  },
 
   // Acciones
   setWsStatus: (status) =>
@@ -215,4 +290,20 @@ export const useAppStore = create<GlobalStore>((set) => ({
       return { config: updated };
     }),
   setScreen: (screen) => set({ screen }),
+  pushCrewchiefAlert: (alert) =>
+    set((state) => {
+      const id = `cc-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
+      const entry = { ...alert, id, timestamp: Date.now() };
+      return {
+        crewchief: {
+          events: [...state.crewchief.events, entry].slice(-50),
+          latestByCategory: {
+            ...state.crewchief.latestByCategory,
+            [alert.category]: entry,
+          },
+        },
+      };
+    }),
+  clearCrewchiefAlerts: () =>
+    set({ crewchief: { events: [], latestByCategory: {} } }),
 }));

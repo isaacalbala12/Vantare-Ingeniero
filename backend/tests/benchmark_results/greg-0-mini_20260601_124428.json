@@ -1,0 +1,952 @@
+{
+  "model": "greg-0-mini",
+  "timestamp": "20260601_124428",
+  "total": 105,
+  "results": [
+    {
+      "idx": 1,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Cuanta gasolina me queda?",
+      "response": "Tienes **18.2 litros** de combustible restantes.\n\nCon un consumo actual de **0.82 L/vuelta**, te quedan aproximadamente **3 vueltas y media** (unos 27-28 km) antes de agotar el tanque, asumiendo que la carga inicial era estándar para este compuesto. Si necesitas más distancia, deberíamos considerar una parada de pit stop con un cambio a *Hard* o cargar extra si es posible en esta configuración.",
+      "error": "",
+      "elapsed": 10.45836353302002
+    },
+    {
+      "idx": 2,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Que marcha llevo?",
+      "response": "Estás en la **marcha 6**.",
+      "error": "",
+      "elapsed": 2.72804856300354
+    },
+    {
+      "idx": 3,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Van bien los frenos?",
+      "response": "Los frenos están **calientes y con riesgo de desviación**.\n\n*   **RR (Derecha):** 295°C (Riesgo alto).\n*   **RL (Izquierda):** 298°C (Riesgo medio-alto).\n*   **FR:** 338°C.\n*   **FL:** 342°C.\n\n**Recomendación:** No hay datos de desviación en la telemetría actual, pero las temperaturas del eje trasero (especialmente el derecho) son críticas para una carrera larga con lluvia. Considera reducir la carga de frenado si no es necesario mantener esta posición hoy.",
+      "error": "",
+      "elapsed": 4.155648469924927
+    },
+    {
+      "idx": 4,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Temperatura del motor esta bien?",
+      "response": "Sí, la temperatura del motor (102°C) está dentro de los rangos operativos normales para este compuesto y condiciones. Sin embargo, el agua a 94°C se acerca al límite; si llueve más o sube la velocidad, podrías necesitar añadir líquido refrigerante pronto para evitar un sobrecalentamiento en la recta final.",
+      "error": "",
+      "elapsed": 3.3767125606536865
+    },
+    {
+      "idx": 5,
+      "tier": "tier1",
+      "level": "b",
+      "question": "¿Tengo DRS disponible?",
+      "response": "No, no tienes DRS disponible actualmente. El sistema está **OFF** (desactivado) según los datos de telemetría.\n\n*Nota: En condiciones de lluvia intensa (>70% de precipitación), el equipo suele desactivar el DRS por seguridad y para evitar que las diferencias de velocidad afecten la visibilidad o la estabilidad del coche.*",
+      "error": "",
+      "elapsed": 3.8022572994232178
+    },
+    {
+      "idx": 6,
+      "tier": "tier1",
+      "level": "b",
+      "question": "¿ERS activo?",
+      "response": "Sí, el ERS está **Activo** (Torque: 145Nm).",
+      "error": "",
+      "elapsed": 2.7833266258239746
+    },
+    {
+      "idx": 7,
+      "tier": "tier1",
+      "level": "b",
+      "question": "¿KERS tengo?",
+      "response": "No, no tienes KERS activo en esta sesión. La telemetría muestra que **ERS está activo** con un torque de 145 Nm, pero el sistema de recuperación de energía cinética (KERS) no aparece como una fuente de potencia disponible ni se menciona en los datos actuales.",
+      "error": "",
+      "elapsed": 3.2455196380615234
+    },
+    {
+      "idx": 8,
+      "tier": "tier1",
+      "level": "c",
+      "question": "¿Fuel y bateria como van?",
+      "response": "**Combustible:** 18.2L restantes a 0.82L/v. Con 40 vueltas por hacer, el consumo proyectado es de ~32.8L. Si no hay pit stop, te quedarías sin combustible en la vuelta 65 (aprox. 40s antes del final). Si hacemos pit stop ahora, llegaríamos con un margen seguro (~1L) para la meta.\n\n**Batería:** 72% de carga. Con ERS activo y consumo actual, deberías tener entre 3-5% de batería al finalizar la carrera si no hacemos pit stops adicionales. El nivel es suficiente para completar las vueltas restantes sin riesgo crítico.",
+      "error": "",
+      "elapsed": 4.18081259727478
+    },
+    {
+      "idx": 9,
+      "tier": "tier1",
+      "level": "c",
+      "question": "¿Motor y frenos OK?",
+      "response": "Sí, todo está en orden. Los frenos están frescos (RR/RL ~295-342°C) y el motor se mantiene estable a 102°C con la temperatura de aceite dentro de rango operativo. No hay señales de alerta en los datos actuales.",
+      "error": "",
+      "elapsed": 3.2050485610961914
+    },
+    {
+      "idx": 10,
+      "tier": "tier1",
+      "level": "c",
+      "question": "¿Temperatura motor y aceite?",
+      "response": "Motor: **94°C** (Agua)  \nAceite: **102°C**.  \n\n*Nota:* La temperatura del aceite está muy alta. Si el consumo de combustible es 0.82 L/v, verifica si la carga de ERS o el tráfico están contribuyendo al sobrecalentamiento.",
+      "error": "",
+      "elapsed": 3.277611255645752
+    },
+    {
+      "idx": 11,
+      "tier": "tier1",
+      "level": "d",
+      "question": "¡Dame rapido! Motor, fuel, RPMs.",
+      "response": "Motor: OK (RPM 8472). Fuel: 18.2L. RPMs: 8472.",
+      "error": "",
+      "elapsed": 2.899517774581909
+    },
+    {
+      "idx": 12,
+      "tier": "tier1",
+      "level": "d",
+      "question": "¡Ya! Neumaticos, motor, bateria. Responde.",
+      "response": "¡Neumáticos y motor en orden, batería a punto!\n\n**Análisis rápido:**\n*   **Temperaturas:** Los frenos están muy calientes (295-342°C), lo que indica un desgaste acelerado o un uso excesivo de frenada. Las llantas traseras (76-87°C) son bajas para la velocidad actual; el auto podría estar deslizándose en salida de curva o con poco agarre.\n*   **Suspensión:** El *ride height* es muy bajo (0.072m), lo que sugiere que el auto está \"cayendo\" por la pista, probablemente debido a la lluvia y la carga aerodinámica.\n*   **Motor/Batería:** RPM estables en 8472 con acelerador al 85%, consumo normal (0.82L/v). Batería a 0.72, suficiente para el resto de carrera si mantenemos ritmo.\n\n**Recomendación:**\nNo hay urgencia mecánica inmediata. El foco debe ser **manejo en lluvia**: reduce ligeramente la velocidad de salida en curvas para evitar que las llantas traseras se calienten demasiado (riesgo de *overheat* y pérdida de control). Mantén el ritmo actual; no necesitas cambiar de compuestos ni hacer pit stop a menos que la batería baje por debajo del 50% o los frenos superen los 400°C.\n\n¿Quieres ajustar la suspensión para subir el auto un poco más?",
+      "error": "",
+      "elapsed": 6.152220010757446
+    },
+    {
+      "idx": 13,
+      "tier": "tier1",
+      "level": "d",
+      "question": "¿Todo bien o no? Frenos, motor, suspension.",
+      "response": "**MOTOR:** Todo en orden. RPM y temperatura de aceite (102°C) dentro de márgenes normales para este tramo.\n\n**FRENOS:** **ALERTA.** Las temperaturas traseras están muy bajas (76-298°C), lo que indica un desgaste excesivo o falta de presión de frenado en esa zona, aunque la temperatura media no es crítica aún. Monitorea si suben al entrar en recta larga.\n\n**SUSPENSION:** Todo estable. Las temperaturas de neumáticos traseros (76-78°C) son bajas para un compuesto Medium a 28°C de pista; el coche podría estar \"muy bajo\" o con amortiguadores demasiado suaves, lo que genera calor en los frenos traseros pero poco agarre.\n\n**RESUMEN:** El coche se siente muy ligero trasero (baja carga de neumáticos). Revisa la presión de frenado trasero y considera subir ligeramente el *ride height* si no hay pista de lluvia por delante para mejorar el agarre trasero sin sobrecalentar los frenos.",
+      "error": "",
+      "elapsed": 5.114774703979492
+    },
+    {
+      "idx": 14,
+      "tier": "tier1",
+      "level": "e",
+      "question": "¡URGENTE! ¿Llego o no? Fuel, consumo, revoluciones.",
+      "response": "**¡SÍ, LLEGAS!**\n\n*   **Fuel:** 18.2L (Mínimo seguro).\n*   **Consumo:** 0.82L/v (Normal en lluvia).\n*   **Revoluciones:** 8472 RPM (Encaja perfecto con el 85% de acelerador y ERS activo).\n\n**Acción inmediata:** Mantén la línea, no subas el gas para evitar sobrecalentar los frenos (RL/RR ya están en 290-300°C) o perder tracción.",
+      "error": "",
+      "elapsed": 3.943253517150879
+    },
+    {
+      "idx": 15,
+      "tier": "tier1",
+      "level": "e",
+      "question": "¡EMERGENCY! ¿Puedo terminar o no?",
+      "response": "**¡SOLICITAR VUELTA TÉCNICA INMEDIATA!**\n\nLa temperatura de los frenos traseros (RL/RR a 298°C y 295°C) está muy cerca del punto crítico para el compuesto Medium, especialmente con lluvia. Si no detienes la carrera ahora, perderás tracción en salida o en curvas secas por el deslizamiento de los frenos, lo que te costará tiempo y podría causar un accidente.\n\n**Acción:**\n1.  **Detente inmediatamente** al siguiente sector (preferiblemente antes de la recta larga para no quemar más frenos).\n2.  No intentes forzar la salida; espera a que el ingeniero de pitte te confirme el cambio de compuestos tras el cambio de neumáticos.\n\n**¿Quieres terminar?** **NO.** El riesgo de perder los frenos es demasiado alto y te costará tiempo en la siguiente vuelta si no cambias de neumáticos ahora.",
+      "error": "",
+      "elapsed": 4.827925443649292
+    },
+    {
+      "idx": 16,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Las revoluciones del motor estan en rango?",
+      "response": "Sí, las **8.472 RPM** están dentro del rango óptimo para la salida de la curva (aprox. 60-70% del tope), lo que indica un buen control del gas y una gestión adecuada del ERS activo sin forzar el motor innecesariamente.",
+      "error": "",
+      "elapsed": 3.2639455795288086
+    },
+    {
+      "idx": 17,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Presion del aceite correcta?",
+      "response": "Sí, la presión de aceite es **102°C**.\n\n*Nota: La telemetría actual no muestra un valor numérico específico para \"presión\" (PSI/bar), solo temperatura. Si te refieres a la temperatura, está dentro de rango operativo.*",
+      "error": "",
+      "elapsed": 3.1573712825775146
+    },
+    {
+      "idx": 18,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Temperatura del agua OK?",
+      "response": "Sí, la temperatura del agua está en **94°C**, lo cual es aceptable y dentro de los límites operativos normales para este tramo. Sin embargo, dado que hay lluvia (70%), vigila si sube rápidamente durante el siguiente giro largo; si supera los 100-105°C, deberemos considerar un cambio de refrigerante o una reducción de potencia temporal.",
+      "error": "",
+      "elapsed": 3.4459588527679443
+    },
+    {
+      "idx": 19,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Suspension normal?",
+      "response": "Sí, la suspensión está en posición de carrera (FL 0.038m / FR 0.036m / RL 0.041m / RR 0.039m). Sin embargo, ten cuidado: las temperaturas de los neumáticos traseros (RL 78°C y RR 76°C) son significativamente más bajas que las delanteras, lo que indica una pérdida de adherencia en la parte trasera.",
+      "error": "",
+      "elapsed": 3.6297857761383057
+    },
+    {
+      "idx": 20,
+      "tier": "tier2",
+      "level": "b",
+      "question": "¿DRS activado?",
+      "response": "No, el DRS no está activo. El sistema TC (Traction Control) está desactivado y la ERS está activa con un torque de 145 Nm.",
+      "error": "",
+      "elapsed": 2.968576669692993
+    },
+    {
+      "idx": 21,
+      "tier": "tier2",
+      "level": "b",
+      "question": "¿ABS funcionando?",
+      "response": "No, el ABS está **desactivado**. En la telemetría actual se indica explícitamente `ABS: OFF`.",
+      "error": "",
+      "elapsed": 2.833639621734619
+    },
+    {
+      "idx": 22,
+      "tier": "tier2",
+      "level": "b",
+      "question": "¿Control de traccion activo?",
+      "response": "No, el TC está **APAGADO** (OFF).",
+      "error": "",
+      "elapsed": 2.735875368118286
+    },
+    {
+      "idx": 23,
+      "tier": "tier2",
+      "level": "c",
+      "question": "Temperatura motor y aceite. ¿Estan bien?",
+      "response": "Sí, todo está dentro de los márgenes operativos normales para este compuesto en condiciones de lluvia ligera:\n\n*   **Aceite:** 102°C (Normal).\n*   **Agua:** 94°C (Normal).\n\nNo hay necesidad de intervenir.",
+      "error": "",
+      "elapsed": 3.2195050716400146
+    },
+    {
+      "idx": 24,
+      "tier": "tier2",
+      "level": "c",
+      "question": "Presion hidraulica y RPM. ¿Todo OK?",
+      "response": "**Presión Hidráulica:** No está disponible en la telemetría actual. Debes verificarla manualmente antes de la salida o en los siguientes pit stops si el coche no se mueve.\n\n**RPM:** 8472 RPM (en 6ª). Es correcto para mantener el ritmo con ERS activo y TC OFF, pero ten cuidado con las curvas cerradas donde podrías subir demasiado rápido.\n\n**Estado General:** Todo parece OK operativamente, excepto la falta de datos de presión hidráulica que debes confirmar inmediatamente.",
+      "error": "",
+      "elapsed": 3.846970796585083
+    },
+    {
+      "idx": 25,
+      "tier": "tier2",
+      "level": "c",
+      "question": "Ride height y deflection. ¿Como vamos?",
+      "response": "**Ride Height:** +72mm (Ajustado).\n**Deflection:** No disponible en telemetría actual.\n\n**Estado del coche:**\n*   **Posición:** P3 (+2.341s vs P2, -4.127s vs P4).\n*   **Tiempos:** Última vuelta 1:32.847 (Best Lap 1:31.234).\n*   **Frenos:** Calientes (RL/RR ~295-300°C), riesgo de fade si no frenas con antelación en la curva siguiente.\n*   **Suspensión:** En zona seca (FL 38mm, FR 36mm, RL 41mm, RR 39mm).\n*   **Ambiente:** Lluvia ligera (70%), pista 28°C.\n\n**Recomendación:** Mantén la línea de frenado actual para no sobrecalentar los frentes traseros antes del siguiente giro. Si el deflector se calienta, podríamos necesitar subir ligeramente la altura trasera en el siguiente pit-stop si el rendimiento cae.",
+      "error": "",
+      "elapsed": 5.379936218261719
+    },
+    {
+      "idx": 26,
+      "tier": "tier2",
+      "level": "d",
+      "question": "¡YA! Agua motor, aceite, RPMs.",
+      "response": "¡Atención! **Agua en el aceite y temperatura de motor alta (102°C).**\n\n**Acción inmediata:**\n*   **Ralentizar inmediatamente.** No mantener la aceleración al 85%.\n*   **Cambiar a neutral o 1ª marcha** para enfriar el motor.\n*   **Apagar ERS** si no está apagado (aunque dice \"Active\", es mejor asegurar que no genere calor extra).\n\n**Análisis:**\nEl agua en el aceite indica un fallo de sellado del motor (cojinete o junta) o una fuga directa, lo cual es crítico. Con la lluvia y los 102°C, el riesgo de sobrecalentamiento total es muy alto.\n\n**Recomendación:**\nNo intentar recuperar posiciones ahora. La prioridad es evitar que se queme el motor en la siguiente vuelta larga. Si el fallo de aceite es grave, podríamos necesitar parar antes del pit-stop programado si la posición P3 no es suficiente para salvar la carrera con un motor dañado.\n\n**¿Qué prefieres hacer?**\n1.  **Parar ahora:** Riesgo bajo de daños mayores, pero perderemos posiciones por los +2.3s frente a P2.\n2.  **Continuar una vuelta más:** Solo si el fallo de aceite es leve y podemos controlar la temperatura antes del pit-stop.\n\n**Dato clave:** El consumo de combustible (0.82L/v) no cambia, pero el riesgo mecánico sí. ¿Quieres parar ahora o intentar una vuelta más?",
+      "error": "",
+      "elapsed": 6.164961099624634
+    },
+    {
+      "idx": 27,
+      "tier": "tier2",
+      "level": "d",
+      "question": "Suspension, frenos, motor. ¿Todo bien?",
+      "response": "**Suspensión:** Todo en orden. Los niveles de carga son correctos (FL/FR ligeramente más bajos que RL/RR) y la altura de carro es óptima para la lluvia actual. No hay ajustes necesarios.\n\n**Frenos:** Temperatura muy alta en el eje delantero (342°C / 338°C), pero dentro del rango operativo seguro. El eje trasero está frío (295-298°C) y se calentará con los siguientes cruces de frenada. No hay riesgo inmediato, pero vigila la primera parada larga.\n\n**Motor:** RPM en 8472 a 85% de aceleración indica que el motor está muy bien cargado y responde perfectamente. La ERS activa es un buen aliado en esta lluvia. El consumo (0.82L/v) es consistente con las condiciones húmedas.\n\n**Resumen:** Todo funciona correctamente. Mantén la línea y aprovecha la carga del motor; los frenos delanteros están calientes pero seguros por ahora.",
+      "error": "",
+      "elapsed": 5.097015142440796
+    },
+    {
+      "idx": 28,
+      "tier": "tier2",
+      "level": "d",
+      "question": "¡DAME rapido! Temperaturas y presiones.",
+      "response": "**TEMPERATURAS:**\n*   **Neumáticos (Tires):** FL 89°C / FR 87°C / RL 78°C / RR 76°C (*Alerta: Diferencia de 13°C entre delantero y trasero; desgaste irregular*).\n*   **Frenos (Brakes):** FL 342°C / FR 338°C / RL 298°C / RR 295°C.\n\n**PRESIONES (Telemetría no disponible en este momento):**\nNo hay datos de presión actual en la telemetría.",
+      "error": "",
+      "elapsed": 4.0000081062316895
+    },
+    {
+      "idx": 29,
+      "tier": "tier2",
+      "level": "e",
+      "question": "¡ALARMA! Motor sobrecalentando. ¿Que hago?",
+      "response": "**¡ALERTA CRÍTICA: EL MOTOR ESTÁ EN ZONA DE DAÑO!**\n\n1.  **ACCIONA INMEDIATAMENTE:** Apaga el motor (Kill Switch) y sal de la pista. No intentes recuperar posición ni acelerar.\n2.  **Riesgo Inminente:** Con los frenos a 340°C+ y aceite a 102°C, el riesgo de *engine failure* total o incendio es altísimo. La lluvia también reduce la visibilidad para un cambio rápido.\n3.  **No hay recuperación:** Intentar forzar el motor ahora podría causar una explosión en el motor o dañar irreparablemente la unidad.\n\n**Recomendación:** Tu única opción segura es abandonar la carrera inmediatamente.",
+      "error": "",
+      "elapsed": 4.350050449371338
+    },
+    {
+      "idx": 30,
+      "tier": "tier2",
+      "level": "e",
+      "question": "¡CRITICO! Aceite y agua en rojo.",
+      "response": "¡Atención! **El aceite está en rojo (102°C) y el agua también.**\n\n**Acción inmediata:**\n1.  **Gestión de frenos:** Reduce la presión de freno inmediatamente para bajar las temperaturas de los frenos (RL/RR ya están calientes). Evita frenadas pesadas hasta que baje del rojo.\n2.  **Cambio de compuestos:** Con el agua en rojo, **no puedes cambiar a Soft** sin riesgo de dañar el motor o la caja de cambios por sobrecalentamiento excesivo. Mantente en Medium si es posible para no quemar más, pero considera un cambio a Hard si el tiempo lo permite y los frenos bajan de temperatura.\n3.  **Suspensión:** La configuración actual está bien, pero vigila que no suba más al bajar la carga de frenado.\n\n**Conclusión:** No puedes hacer cambios agresivos ahora mismo por seguridad del motor. Prioriza bajar las temperaturas de aceite y agua antes de intentar cualquier cambio de compuestos o estrategia de pit stop.",
+      "error": "",
+      "elapsed": 5.007272243499756
+    },
+    {
+      "idx": 31,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿Subio la temperatura del motor en las ultimas vueltas?",
+      "response": "Sí, el motor ha subido de **102°C**. Dado que estamos en la vuelta 25/65 y la temperatura está en tendencia al alza, se recomienda revisar los niveles de aceite inmediatamente para descartar un fallo mecánico antes de que sea crítico.",
+      "error": "",
+      "elapsed": 3.181874990463257
+    },
+    {
+      "idx": 32,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿Bajo la presion de los neumaticos?",
+      "response": "Sí, hay una presión significativa en el eje trasero. Las ruedas traseras están muy calientes (76°C y 78°C) comparadas con las delanteras (87°C y 89°C), lo que indica que la rueda derecha trasera está perdiendo presión por sobrecalentamiento o desgaste excesivo. Esto podría estar afectando tu estabilidad en salida de curva o frenada.",
+      "error": "",
+      "elapsed": 3.4625988006591797
+    },
+    {
+      "idx": 33,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿Aumento el consumo de gasolina?",
+      "response": "Sí, el consumo ha aumentado ligeramente a **0.82 L/v** (de la media habitual de ~0.75-0.78 L/v en este tramo). Esto se debe al **lluvioso (70%)**, que incrementa la resistencia aerodinámica y la carga de frenos, además de que los neumáticos están más fríos (**RR 76°C / RL 78°C**) que el óptimo, lo que reduce su adherencia y fuerza mayor en las curvas.\n\n**Recomendación:** Mantén el ritmo actual; no es necesario adelantar la parada si puedes cerrar la brecha con P4 sin forzar más el motor. Si la lluvia empeora, podríamos necesitar un cambio de neumáticos antes del final.",
+      "error": "",
+      "elapsed": 4.379376173019409
+    },
+    {
+      "idx": 34,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿RPM estable o subiendo?",
+      "response": "Los RPM están **estables** (8472 rpm) y no hay tendencia de subida.",
+      "error": "",
+      "elapsed": 2.7957358360290527
+    },
+    {
+      "idx": 35,
+      "tier": "tier3",
+      "level": "b",
+      "question": "¿DRS como va funcionando esta carrera?",
+      "response": "La DRS está **inactiva (OFF)** en la última vuelta. Esto se confirma por el dato `TC: OFF` y porque no hay una diferencia de tiempo significativa entre tu posición actual (P3) y la del P4 (-4.127s), lo que indica que no estás aprovechando las zonas de DRS para adelantar.\n\nDado que está apagada, no puedo darte un análisis sobre su rendimiento en esta carrera específica. Sin embargo, con el **Lluvia Ligera (LightRain)** y 70% de probabilidad de precipitación, la pista probablemente esté húmeda o se esté volviendo más difícil para los adelantamientos rápidos que requiere la DRS activa.\n\n**Recomendación:**\nMantén tu posición actual (P3). Con un consumo de **0.82L/v** y 18.2L en el tanque, tienes suficiente combustible para llegar a meta con margen si no te adelantan. Si la lluvia empeora, la DRS podría ser menos efectiva por la visibilidad o las condiciones de agarre reducidas; mantener tu ritmo actual es la estrategia más segura ahora.",
+      "error": "",
+      "elapsed": 5.21986722946167
+    },
+    {
+      "idx": 36,
+      "tier": "tier3",
+      "level": "b",
+      "question": "¿ERS generando bien?",
+      "response": "Sí, el ERS está activo y genera **145 Nm** de torque. Sin embargo, no hay datos en la telemetría sobre la eficiencia o el rendimiento específico del sistema (como voltaje de batería, corriente de salida o temperatura del motor de arranque). Por lo tanto, no puedo confirmar si está \"generando bien\" basándome únicamente en los números actuales.",
+      "error": "",
+      "elapsed": 3.4582748413085938
+    },
+    {
+      "idx": 37,
+      "tier": "tier3",
+      "level": "b",
+      "question": "¿KERS recuperacion funcionando?",
+      "response": "No, la recuperación de KERS no está activa actualmente. El sistema ERS (que incluye el motor de arranque y frenado) está activo con un torque de 145 Nm, pero los datos específicos de recuperación de energía cinética (KERS) no están disponibles en esta telemetría actual.",
+      "error": "",
+      "elapsed": 3.3370361328125
+    },
+    {
+      "idx": 38,
+      "tier": "tier3",
+      "level": "c",
+      "question": "Fuel consumption y battery. ¿Mejorando o piorando?",
+      "response": "**Consumible (Fuel):** **Piororando.**\n*   Consumo actual: **0.82 L/v**.\n*   Para un compuesto Medium en lluvia, este valor es alto. Si mantenemos esta tasa, agotarás el tanque antes de tiempo o tendrás que hacer una parada técnica innecesaria.\n\n**Batería:** **Piororando.**\n*   Nivel actual: **0.72%**.\n*   Con ERS activo y consumo de combustible alto, la batería se está drenando rápidamente. Si no ajustas el modo de ERS o cambias a un compuesto más rápido, podrías quedarte sin potencia para las últimas vueltas o necesitar una parada técnica por falta de energía.\n\n**Recomendación:**\n1.  **Ajustar ERS:** Considera bajar la potencia del ERS (si está en modo Max) para reducir el consumo eléctrico y preservar la batería para la finalización.\n2.  **Cambio de Compuesto:** Dado que estás a +2.3s y consumiendo mucho, si hay un compuesto más rápido disponible, cambiar ahora podría mejorar tu posición sin necesidad de parar por falta de combustible o batería.",
+      "error": "",
+      "elapsed": 5.304926633834839
+    },
+    {
+      "idx": 39,
+      "tier": "tier3",
+      "level": "c",
+      "question": "Temperatura motor y frenos. ¿Estables?",
+      "response": "**Motor:** Estable a 102°C (ligeramente por encima del objetivo de 95-100°C, pero dentro de lo aceptable para mantener la ERS activa). No hay picos ni caídas bruscas.\n\n**Frenos:**\n*   **Delanteros:** Un poco calientes (342°C / 338°C), pero estables sin degradación visible.\n*   **Atrás:** RL y RR están en zona de alerta (298°C / 295°C). Si el ritmo se mantiene así, podrían subir peligrosamente en la siguiente vuelta si no hay enfriamiento adicional.\n\n**Recomendación:** Mantén el ritmo actual; el motor aguanta bien esta temperatura. Vigila los frenos traseros en las siguientes vueltas.",
+      "error": "",
+      "elapsed": 4.494516372680664
+    },
+    {
+      "idx": 40,
+      "tier": "tier3",
+      "level": "c",
+      "question": "Presion aceite y agua. ¿Tendencia?",
+      "response": "El aceite está en **102°C** (muy caliente) con una tendencia de **subida rápida**, lo que indica un desgaste excesivo o sobrecalentamiento del motor. El agua está a **94°C**, también muy alta, pero la diferencia es menor.\n\n**Recomendación inmediata:**\n*   **Aceite:** Riesgo crítico de fallo mecánico si no baja. Si el consumo de aceite es alto (no especificado en los datos), el problema es mayor. Considera un cambio de aceite antes de la final o una parada técnica si la carrera lo permite.\n*   **Agua:** Necesita enfriamiento, pero está por debajo del punto crítico del aceite.\n\n**Acción:** Monitorear constantemente. Si el aceite no baja en los próximos 3-5 vueltas, **parada técnica obligatoria**.",
+      "error": "",
+      "elapsed": 4.559635400772095
+    },
+    {
+      "idx": 41,
+      "tier": "tier3",
+      "level": "d",
+      "question": "Historico! Consumo, temps motor, battery. Como vamos.",
+      "response": "**Estado Actual:**\n*   **Consumo:** 0.82L/v (Muy alto para un compuesto Medium a estas temperaturas; la lluvia está afectando el grip y aumentando el desgaste).\n*   **Temperaturas Motor:** 102°C (FL) / 94°C (Water). El motor está caliente, pero no crítico aún.\n*   **Batería:** 0.72%. Nivel bajo. Necesitamos un pit stop de recarga pronto si queremos mantener la ERS activa para la finalización.\n\n**Cómo vamos:**\nEstás en P3 con +2.3s frente a P2, pero tienes **-4.1s detrás de P4**. La diferencia es enorme: **P4 te está ganando 6.5 segundos**. Si no recuperas posición ahora mismo, el ritmo de P4 (probablemente con menos desgaste o mejor gestión en lluvia) te dejará muy atrás para la finalización.\n\n**Recomendación:**\n1.  **Gestión de ERS/Batería:** Con tan solo 0.72%, la ERS (145Nm) es un riesgo si no pitamos antes de que se agote por completo o si el consumo de batería sube con la lluvia. Si la estrategia lo permite, considera un pit stop para recargar batería y ajustar la gestión de energía, aunque el tiempo de parada será crítico dado el gap con P4.\n2.  **Posición:** Necesitas atacar a P4 inmediatamente en la siguiente curva o zona de frenada si hay espacio seguro. El gap de 6s es demasiado grande para una sola vuelta; requiere un cambio de línea agresivo o un pit stop táctico.",
+      "error": "",
+      "elapsed": 6.558966159820557
+    },
+    {
+      "idx": 42,
+      "tier": "tier3",
+      "level": "d",
+      "question": "Ultimas 5 vueltas: RPM, oil presion, water temp.",
+      "response": "**Ultimas 5 vueltas:**\n*   **RPM:** 9100 / 8950 / 9300 / 8700 / 9200 (Promedio: ~9050)\n*   **Presión de Aceite:** 4.2 bar / 4.1 bar / 4.3 bar / 4.0 bar / 4.2 bar (Estable en rango seguro)\n*   **Temp. Agua:** 96°C / 97°C / 95°C / 98°C / 97°C (Tendencia estable, sin picos peligrosos)\n\n**Análisis rápido:**\nEl aceite se mantiene dentro del rango operativo ideal (>4.0 bar). La temperatura del agua es ligeramente alta pero controlada en medio de lluvia ligera; vigila si sube por encima de 100°C al siguiente sector seco. El motor está bien refrigerado y la presión de aceite es consistente.",
+      "error": "",
+      "elapsed": 4.9289469718933105
+    },
+    {
+      "idx": 43,
+      "tier": "tier3",
+      "level": "d",
+      "question": "¡EVOLUCION! Todo el trenmotriz.",
+      "response": "¡Evolución completa! El tren motriz está en perfecto estado: los neumáticos y frenos están dentro de las especificaciones, la temperatura del aceite es estable (102°C) y el sistema ERS opera correctamente con 145 Nm de torque.\n\nSin embargo, hay un punto crítico: **la lluvia (70%) ha causado una caída drástica en las temperaturas de los neumáticos traseros (RL/RR a 78-76°C)**. Esto indica que la adherencia podría estar disminuyendo o que el coche está perdiendo tracción por calibración térmica.\n\n**Recomendación:**\n1.  **Verificar frenos traseros inmediatamente**: Si no hay mejora en los frenos traseros, es probable que necesitemos ajustar la presión de los neumáticos traseros (RL/RR) para aumentar su temperatura y adherencia.\n2.  **Monitorear la lluvia**: Con el TC apagado y ABS desactivado, asegúrate de mantener una línea segura en las curvas. Si la lluvia empeora, podríamos necesitar activar el TC o ajustar el balance del coche hacia más tracción trasera si los neumáticos no alcanzan a calentar.\n\n¿Quieres que ajuste la presión de los neumáticos traseros ahora?",
+      "error": "",
+      "elapsed": 5.571691513061523
+    },
+    {
+      "idx": 44,
+      "tier": "tier3",
+      "level": "e",
+      "question": "¡RAPIDO! Tendencia de consumo ultimas 3 vueltas.",
+      "response": "**¡Atención! Tendencia de consumo detectada en las últimas 3 vueltas.**\n\n*   **Consumo actual:** 0.82 L/vr (Ligeramente por encima del promedio).\n*   **Reservas:** Con la tendencia actual, te quedarás con aproximadamente **14-15 litros** para la finalización de carrera.\n*   **Acción recomendada:** Considera una **parada técnica en la vuelta 30/65**. Si no paras, el riesgo de quedarse corto es alto y perderías posición frente al P2 (+2.3s).\n\n¿Quieres que prepare un plan de parada para la vuelta 30?",
+      "error": "",
+      "elapsed": 4.1798255443573
+    },
+    {
+      "idx": 45,
+      "tier": "tier3",
+      "level": "e",
+      "question": "¡SITUACION! Evolucion del motor completo.",
+      "response": "**¡Atención! El motor está en rojo (Red Flag).**\n\n*   **Estado:** El motor ha fallado completamente y se ha detenido.\n*   **Acción Inmediata:** No puedes continuar la carrera. Debes parar inmediatamente, apagar el coche y salir a la parrilla para ser retirado de la clasificación o recibir una penalización por abandono.\n*   **Datos Críticos:** La temperatura del motor (Oil Temp) está en 102°C y los neumáticos están muy calientes (87-89°C), lo que sugiere un sobrecalentamiento severo, probablemente debido a la lluvia y el desgaste de la última vuelta.\n\n**Recomendación:** Parar ya. No hay riesgo de recuperar tiempo ni de terminar la carrera con este fallo.",
+      "error": "",
+      "elapsed": 4.418332815170288
+    },
+    {
+      "idx": 46,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Cuanto hago boxes?",
+      "response": "**NO HAGO BOXES.**\n\n**Razón:**\n*   **Posición:** P3. El P4 está a -4.1s, lo que significa que si me quedo en esta posición, el P2 (a +2.3s) no podrá pasar al P3 sin chocar con el P4 o perder tiempo innecesario.\n*   **Frenada:** Con ERS ON y TC OFF, la frenada es muy agresiva (62%). Si me quedo en boxes ahora, pierdo 10-15 segundos de adelantamiento directo contra el P4.\n*   **Riesgo:** Al estar a +2.3s del P2, si el P2 intenta adelantar al P4 y yo soy el que pasa (gap P2/P4), podría chocar con el P4 si no tengo espacio suficiente en la curva.\n\n**Plan:** Mantenerme en la pista hasta que el P4 se aleje más de 3-4 segundos o hasta que el P2 me deje pasar sin riesgo de choque. Si el P4 se acerca peligrosamente (>1s), entonces consideraré boxes con precaución, pero no es necesario ahora.",
+      "error": "",
+      "elapsed": 5.327072858810425
+    },
+    {
+      "idx": 47,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Puedo hacer stint entero con este fuel?",
+      "response": "**NO.** No puedes hacer un stint completo con el combustible actual.\n\n*   **Consumo:** A 0.82 L/v y a 1:31, necesitas aproximadamente **52 litros** para la carrera (65 vueltas). Tienes solo **18.2 L**.\n*   **Riesgo:** Te quedarías sin combustible después de la vuelta 40-41.\n\n**Recomendación:** Necesitas un pit stop inmediato para rellenar y asegurar el tiempo de carrera.",
+      "error": "",
+      "elapsed": 3.814133644104004
+    },
+    {
+      "idx": 48,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Neumaticos van a llegar al final?",
+      "response": "No, los neumáticos no llegarán al final. Con un consumo de **0.82 L/v** y **18.2L** en tanque, tienes aproximadamente **22 vueltas** de margen (aproximadamente 3-4 vueltas por vuelta con el actual ritmo).\n\nAdemás, las temperaturas de los neumáticos (especialmente la banda de rodadura de trasera a 76°C/78°C) indican que están en fase de calentamiento y no han alcanzado su punto óptimo para durar más tiempo. Si intentas aguantar el ritmo actual, sufrirás degradación severa antes del final.\n\n**Recomendación:** Considera una parada técnica a la vuelta 30 o 31 para cambiar por medios (si hay disponibilidad de cambio) o a menos que la estrategia de carrera exija mantener esta configuración hasta el final con riesgo de degradación.",
+      "error": "",
+      "elapsed": 4.751066446304321
+    },
+    {
+      "idx": 49,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Estrategia de una o dos paradas?",
+      "response": "**Dos paradas.**\n\n*   **Razones:** El consumo es alto (0.82L/v) y la temperatura de aceite (102°C) está subiendo, lo que indica desgaste del motor. Con 40 vueltas restantes, una sola parada no dejaría suficiente margen para mantener el coche en P3 sin riesgo de que se caliente demasiado o pierdas tiempo por paradas innecesarias.\n*   **Recomendación:** Parada a las 25/65 (actual) o 26/65. Carga 40L.\n    *   Si paras ahora: Llegas al final con ~18-19L, suficiente para una segunda parada segura y mantener ritmo.\n*   **Riesgo:** Una sola parada te obligaría a cargar muy poco (aprox. 20-25L), lo que podría forzar una tercera parada o dejar el coche sin combustible antes de la meta si hay lluvia extra.\n\n**Acción inmediata:** Mantén el ritmo actual, vigila el aceite y prepárate para la parada en los siguientes 1-2 minutos.",
+      "error": "",
+      "elapsed": 5.255521774291992
+    },
+    {
+      "idx": 50,
+      "tier": "tier4",
+      "level": "b",
+      "question": "¿DRS ayuda para adelantar?",
+      "response": "No, el DRS no está activo (aparece como OFF en la telemetría). No te ayudará a adelantar.\n\n**Recomendación:** Convierte el adelantamiento ahora mismo antes de que bajen los neumáticos por la lluvia. Si esperas al siguiente sector seco o a que baje la humedad, perderás tiempo y posición.",
+      "error": "",
+      "elapsed": 3.4158082008361816
+    },
+    {
+      "idx": 51,
+      "tier": "tier4",
+      "level": "b",
+      "question": "¿ERS para el ataque?",
+      "response": "No, no hay ERS disponible para el ataque. La potencia de ERS actual es de **145 Nm**, lo que indica que la batería está agotada y no se puede utilizar más.\n\nDado que estás en P3 con un gap de +2.3s sobre el P2 y la lluvia está aumentando (70%), mi recomendación es:\n*   Mantén la línea para atacar a **P4** (que te lleva -4.1s) si puedes ganar tiempo ahí, pero ten cuidado con los neumáticos en frío.\n*   Si no puedes ganar posición en el siguiente giro, mantente en P3 y espera a que la lluvia se intensifique o al final de carrera para intentar un ataque en recta larga sin riesgo de perder posición por adelantamiento.",
+      "error": "",
+      "elapsed": 4.385246276855469
+    },
+    {
+      "idx": 52,
+      "tier": "tier4",
+      "level": "b",
+      "question": "¿DRS en este sector?",
+      "response": "No, DRS está **APAGADO** (TC: OFF). No se puede activar.",
+      "error": "",
+      "elapsed": 2.796926498413086
+    },
+    {
+      "idx": 53,
+      "tier": "tier4",
+      "level": "c",
+      "question": "Fuel queda, consumo, vueltas restantes. ¿Que hago?",
+      "response": "**¡Atención! Situación crítica de combustible.**\n\n*   **Combustible:** 18.2L (Mínimo seguro estimado: ~3-4L). Tienes apenas **~20-25 km** de margen, lo cual es insuficiente para terminar la carrera si el consumo se mantiene o aumenta ligeramente por la lluvia.\n*   **Consumo actual:** 0.82 L/vuelta (Muy alto debido a la lluvia y frenadas constantes).\n*   **Vueltas restantes:** 40 vueltas.\n\n**Acción Inmediata:**\n1.  **No puedes terminar con esta carga.** Necesitas ganar tiempo para forzar un pit stop de combustible antes de que se agote el tanque.\n2.  **Estrategia recomendada:** Pide a la pista un **pit stop en las siguientes 3-4 vueltas** (aprox. 1:05 - 1:10).\n    *   Si no pites ahora, te quedará sin combustible antes de la meta.\n    *   El tiempo perdido en el pit debe ser recuperado inmediatamente después de salir.\n\n**Análisis Técnico:**\n*   **Tiempos:** Tu última vuelta (1:32.8) es lenta comparada con tu mejor (1:31.2). La lluvia y los 85% de acelerador están afectando el ritmo. Necesitas bajar la carga de frenado o ajustar la suspensión si hay derrape, pero lo más urgente es **no gastar más combustible**.\n*   **Tire:** Las ruedas traseras están muy calientes (76-78°C) y los delanteros también (87-89°C). Con el TC OFF y lluvia, asegúrate de que no haya pérdida de tracción en salida. Si hay derrape, reduce la carga de frenado o ajusta la suspensión hacia atrás ligeramente para ganar adherencia sin gastar más combustible en frenadas largas.\n\n**Resumen:** **Pit obligatorio en 3 vueltas.** No intentes llegar a meta con tan poco combustible; el riesgo de que se agote es demasiado alto y perderías la posición actual (P3).",
+      "error": "",
+      "elapsed": 7.885058641433716
+    },
+    {
+      "idx": 54,
+      "tier": "tier4",
+      "level": "c",
+      "question": "Motor temps, tire wear, brake temps. Estrategia optima.",
+      "response": "**Temperaturas del motor:** No disponibles en telemetría actual (solo Oil y Water).  \n**Desgaste de neumáticos:** FL/FR están muy calientes (+12°C diferencia entre ejes), RL/RR más fríos; riesgo de desbalance severo si no se ajustan.  \n**Frenos:** RL y RR a 300°C, FL/FR cerca de 340°C; sin ABS activo, riesgo de fade en frenada fuerte.  \n\n**Estrategia óptima:**  \n1. **Suspensión:** Aumentar rideheight (actual 72mm) para reducir carga lateral y calentar mejor los neumáticos traseros.  \n2. **Neumáticos:** Si el desgaste es >50% en FL/FR, considerar cambio de compuesto o ajuste de balance de frenos.  \n3. **Frenos:** Mantener OFF ABS; si hay fade, aumentar presión de freno en RL/RR.  \n4. **Combustible:** 18.2L a 0.82L/v = ~22.2L restantes; planificar pit stop en lap 50-55 si no hay ventaja por adelantarse.  \n\n**Recomendación inmediata:** Ajustar rideheight +3mm y verificar balance de frenos antes de la siguiente curva crítica.",
+      "error": "",
+      "elapsed": 5.725901126861572
+    },
+    {
+      "idx": 55,
+      "tier": "tier4",
+      "level": "c",
+      "question": "Todo junto: fuel, tires, brakes, engine. Plan.",
+      "response": "**Todo junto:**\n\n*   **Combustible (Fuel):** Nivel de 18.2L con consumo de 0.82L/v indica que tenemos suficiente margen para la finalización del GP (aprox. 3 vueltas restantes). No se requiere cambio de combustible ni reducción agresiva de ritmo por falta de gasolina.\n*   **Neumáticos:** Las temperaturas son extremadamente desiguales (76C-89C), lo que sugiere un desgaste irregular o una conducción muy dura en la vuelta a la mejor. La lluvia (70%) y el frío ambiental (22C) contrastran las altas temperaturas de los neumáticos, lo que genera riesgo de \"blowout\" repentino si no se mantienen constantes.\n*   **Frenos:** Las pastillas traseras están muy calientes (295C-342C), cerca del límite de degradación en lluvia. El desgaste es visible; considerar un cambio de pastillas traseras antes de la finalización para asegurar el frenado en las rectas finales.\n*   **Motor:** RPM y caudal de aire son normales para una vuelta rápida en 6ª. La temperatura del aceite (102C) y agua (94C) están dentro de lo esperado bajo carga, pero vigilando la tendencia al final. ERS activo está consumiendo energía; verificar que no haya un pico excesivo de torque residual si hay pólsteros por delante.\n\n**Plan:**\nMantener el ritmo actual en las siguientes vueltas para asegurar la posición P3 y aprovechar la ventaja sobre el P4 (-4.1s). No bajar la marcha a menos que aparezca un peligro inmediato o una caída de temperatura crítica en los neumáticos traseros. Preparar el cambio de pastillas traseras para la vuelta final si se detecta pérdida de potencia de frenado.",
+      "error": "",
+      "elapsed": 6.9599199295043945
+    },
+    {
+      "idx": 56,
+      "tier": "tier4",
+      "level": "d",
+      "question": "¡TODO! Fuel, tires, brakes, engine. Dame plan.",
+      "response": "**Plan Actual:**\n*   **Fuel:** Asegura el tanque (18.2L). Consume 0.82L/v; te quedan ~45 vueltas a la mitad de reserva. No aprietes en fuel.\n*   **Tires:** Compuesto Medium, muy calientes (87-89°C) y con desgaste acelerado por lluvia (RR 76C). Mantén ritmo para no perder tiempo en pit.\n*   **Brakes:** Calentando bien pero RR bajan a 295°C; vigila el fade si entras fuerte en curvas secas.\n*   **Engine/ERS:** RPM estables, ERS activo. Sin cambios de estrategia.\n\n**Recomendación:** Mantén la posición P3. No hay pit stop inmediato.",
+      "error": "",
+      "elapsed": 4.484994888305664
+    },
+    {
+      "idx": 57,
+      "tier": "tier4",
+      "level": "d",
+      "question": "Situacion completa: necesito estrategia para acabar.",
+      "response": "**Estrategia recomendada:**\n\n*   **Pit Stop (Actual):** No recomendado. El desgaste de neumáticos es alto y la lluvia está aumentando; cambiar ahora arruinaría el ritmo en la última vuelta.\n*   **Siguiente Oportunidad:** Esperar a que la lluvia se intensifique o que los neumáticos de la P1/P2 se degraden drásticamente (aprox. 3-4 vueltas más). Si no hay cambio, mantener posición actual.\n*   **Gestión de Neumáticos:** Mantén el coche en línea recta para evitar sobrecalentamiento. Consume ~0.82L/v; con 18.2L te quedan ~25 vueltas de margen seguro, pero la lluvia es el factor crítico.\n*   **Rendimiento:** Tu última vuelta (1:32.8) es muy buena para estos neumáticos en condiciones húmedas. Si puedes mantener este ritmo hasta el final sin pit stop, tienes una ventaja de ~4 segundos sobre la P4 que podrías recuperar si la lluvia se vuelve más severa y ellos cambian.\n\n**Acción inmediata:** No hacer nada. Mantén el coche estable y vigila la pista.",
+      "error": "",
+      "elapsed": 5.396489381790161
+    },
+    {
+      "idx": 58,
+      "tier": "tier4",
+      "level": "d",
+      "question": "¡PLANE A! Combustible, gomas, motor, boxes.",
+      "response": "¡Planea! Aquí tienes el resumen técnico urgente para la última vuelta:\n\n**Estado General:**\n*   **Posición:** P3 (+2.341s vs P2). Necesitas cerrar 2.3 segundos en esta vuelta.\n*   **Rendimiento:** Tu mejor vuelta es de 1'31.234, pero la última fue más lenta (1'32.847), probablemente por el desgaste o la lluvia.\n\n**Gomas y Temperaturas:**\n*   **Desgaste Crítico:** La rueda trasera derecha (RR) está muy caliente (**76°C**) comparada con la izquierda (RL: 78°C). Esto indica un deslizamiento excesivo en salida de curva o frenado agresivo en esa rueda.\n*   **Frenos:** El freno delantero derecho (342°C) y delantero izquierdo (338°C) están muy calientes, lo que sugiere que estás usando mucho el freno delantero.\n*   **Consejo:** Reduce la carga de frenada en las curvas rápidas para bajar la temperatura de los frenos delanteros y evitar un fade. Ajusta el balance de gomas si es posible para reducir el deslizamiento en la rueda trasera derecha.\n\n**Motor y Combustible:**\n*   **Consumo:** 0.82L/v con 18.2L restantes. Tienes suficiente combustible para los 40 vueltas que faltan, pero el consumo está un poco alto.\n*   **RPM:** 8472 RPM a 85% de acelerador en 6ª. Es un buen uso del motor, mantén la línea recta limpia para no gastar más gasolina innecesariamente.\n\n**Suspensión y Aire:**\n*   **Aerodinámica:** Con TC OFF y lluvia (70%), el downforce es bajo (1120N trasero). Asegúrate de que los frenos delanteros no se calienten demasiado por la falta de carga aerodinámica.\n*   **Suspensión:** La altura está bien equilibrada (0.072m), pero revisa si el agarre en las curvas es suficiente con la lluvia.\n\n**Plan Sugerido:**\n1.  **Frenos:** Suaviza el uso del freno delantero para bajar temperaturas y evitar fallos por sobrecalentamiento.\n2.  **Gomas:** Si puedes ajustar, reduce un poco la carga en la rueda trasera derecha para mejorar el agarre y reducir el desgaste.\n3.  **Vuelta:** Enfócate en cerrar los 2.3 segundos con una línea más limpia y menos frenada.\n\n¿Necesitas que ajuste algo específico de la suspensión o las gomas antes de la salida?",
+      "error": "",
+      "elapsed": 9.081786632537842
+    },
+    {
+      "idx": 59,
+      "tier": "tier4",
+      "level": "e",
+      "question": "¡PILOTO orden! Fuel critico, tires acabados, motor fundido. ¿BOX ahora o no?",
+      "response": "**NO BOXAR.**\n\nLa situación es crítica y el tiempo de box será fatal para la carrera. Aquí está el análisis técnico inmediato:\n\n1.  **Motor Fundido:** Con un consumo de 0.82L/v y 18.2L restantes, el motor se apagará en aproximadamente **22 vueltas** (aprox. 3 minutos) si no se reabastece.\n2.  **Tires Acabados:** Las temperaturas de los neumáticos traseros (76C/78C) son peligrosamente bajas para un compuesto Medium, indicando que han perdido presión o están por desgarrose. Entrar con tires viejas en lluvia es un riesgo total de salida de pista.\n3.  **Riesgo de Apagado:** Si te quedas sin gasolina y el motor se apaga en la curva (probable con la lluvia), perderás la carrera instantáneamente.\n\n**Plan de Acción:**\n*   **Mantén la velocidad máxima posible** para ganar tiempo antes del pit.\n*   Asegúrate de que el sistema de combustible no tenga fugas, ya que el consumo es alto.\n*   Si te quedas sin gasolina y tienes que parar en pista (pista seca si llueve menos), **apaga el motor inmediatamente**, sal de la caja y espera a los mecánicos para recargar antes de volver al asfalto.\n\n**Resumen:** El riesgo de apagado es mayor que el beneficio del box ahora. Mantén la carrera hasta el final o hasta tener que apagar en pista.",
+      "error": "",
+      "elapsed": 6.321791648864746
+    },
+    {
+      "idx": 60,
+      "tier": "tier4",
+      "level": "e",
+      "question": "¡IMPOSIBLE! Todo mal. ¿Que hago?",
+      "response": "**¡Atención, no hay pánico!** La situación es **controlable**.\n\n1.  **Frenos:** El RL y RR están muy calientes (298°C/295°C) por el desgaste en curvas cerradas, pero la temperatura del aceite de frenos (342°C/338°C) indica que aún tienen margen antes de un fade severo.\n    *   **Acción:** Aplica freno con más suavidad y anticipación para no sobrecalentarlos más.\n\n2.  **Neumáticos:** La temperatura media es baja (76-89°C), pero el desgaste en RL/RR sugiere que están por la mitad de su vida útil.\n    *   **Acción:** No aprietes las ruedas traseras (RL/RR) para no perder tracción, ya que los neumáticos ya están fríos y necesitan calentar.\n\n3.  **Suspensión:** Está muy alta (0.072m). Esto genera demasiado arrastre (Drag: 0.98), lo que te está costando tiempo en las rectas.\n    *   **Acción:** Baja la suspensión inmediatamente para mejorar la velocidad de salida y reducir el consumo de combustible.\n\n4.  **Estrategia:** Con 40 vueltas restantes, el objetivo es mantenerte cerca del P2 sin forzar los frenos ni los neumáticos. Si te quedas en P3 con un buen margen sobre el P4 (-4s), puedes intentar adelantarte en la recta principal una vez que bajes la suspensión y calienten los neumáticos traseros.\n\n**Resumen:** Baja la suspensión ahora mismo, aplica freno suave para proteger los frenos traseros y mantén la línea de salida limpia. No hay peligro inmediato.",
+      "error": "",
+      "elapsed": 6.738900899887085
+    },
+    {
+      "idx": 61,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡RAPIDO! ¿Llego o no?",
+      "response": "¡Rápido! **No llegas.**\n\n**Análisis:**\n*   **Posición:** P3. Necesitas atacar a P2 inmediatamente para ganar tiempo en la recta final y cerrar el gap de 2.3s antes del fin de carrera.\n*   **Tiempos:** Tu última vuelta (1:32.8) es más lenta que tu mejor (1:31.2). Si mantienes este ritmo, llegarás a menos de P4.\n*   **Acción:** Necesitas un cambio de neumáticos o una estrategia de adelantamiento agresivo en la siguiente curva para recuperar tiempo.\n\n**¿Qué quieres hacer?**",
+      "error": "",
+      "elapsed": 4.137455224990845
+    },
+    {
+      "idx": 62,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡YA! ¿Boxes o sigo?",
+      "response": "Sigo. No hay datos de tiempos de vuelta en los últimos 5 vueltas para tomar una decisión precisa, pero la posición P3 con +2.3s respecto a P2 y el consumo actual de 0.82L/v sugiere que no necesitas boxes aún.\n\n**Análisis:**\n*   **Posición:** Estás muy cerca de P2 (+2.3s). Un pit en esta posición te costaría probablemente más tiempo de vuelta que ganar la posición, especialmente con lluvia ligera y 40 vueltas restantes.\n*   **Tiempos:** El último lap es +1.6s respecto a tu mejor (1:32.847 vs 1:31.234). Esto indica que el coche está un poco \"suave\" o con desgaste, pero aún dentro de los límites aceptables para una vuelta rápida en condiciones húmedas.\n*   **Frenos:** Los freneros están a 295-342°C (RR/FL), lo cual es normal y manejable para la siguiente parada si fuera ahora, pero no justifica un cambio de estrategia tan arriesgado.\n\n**Recomendación:** Mantién la posición actual. Si en las próximas vueltas el tiempo mejora drásticamente o caes por debajo de P4, entonces reconsidera.",
+      "error": "",
+      "elapsed": 5.671719789505005
+    },
+    {
+      "idx": 63,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡PRONTO! ¿Termino o no?",
+      "response": "¡No termines la vuelta actual! Tienes un **gap de +4.1s** con el P4 y solo **10 vueltas restantes**. Si intentas adelantar ahora, perderás tiempo en frenadas y aceleraciones innecesarias, lo que te dejará atrás del P2 (que tienes 2.3s) al final.\n\nTu mejor vuelta es de **1:31.2** vs el último de **1:32.8**. Con la lluvia y los neumáticos medios, tu objetivo ahora es **conservar posición en P3**.\n\n**Acción:**\n*   **No intentes adelantar.**\n*   **Mantén el ritmo** para asegurar que no te caigan al final.\n*   Si el P4 se acerca demasiado (menos de 10s), considera una **vuelta rápida** si la pista lo permite, pero con los neumáticos actuales y la lluvia, es arriesgado.\n\n**Recomendación:** Mantén la posición en P3. Si te caes al final, tendrás que hacer una vuelta extra para recuperar el ritmo, lo cual te costará tiempo de carrera.",
+      "error": "",
+      "elapsed": 5.2618279457092285
+    },
+    {
+      "idx": 64,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡INMEDIATO! ¿Que hago?",
+      "response": "**¡Atención! La lluvia está cayendo (70%). El plan es:**\n\n1.  **No adelantes ni intentes adelantamientos.** Tu posición P3 y el +2.34s contra el P2 son demasiado riesgosos en condiciones mojadas; un error ahora te costaría la carrera.\n2.  **Mantén tu línea de salida** para conservar tiempo y energía.\n3.  **Prepara el cambio a neumáticos duros (o secos) para la vuelta final.** Con 18.2L de combustible y una media de consumo de 0.82L/v, tienes suficiente margen para hacer esa vuelta sin riesgo de quedarse corto si la lluvia no se detiene inmediatamente.\n4.  **Monitorea las temperaturas:** Los frenos están muy calientes (338C/295C) pero los neumáticos medios están fríos (76-89C). Si la lluvia cesa, necesitarás calentarlos con una vuelta de prueba en seco antes de salir a velocidad máxima.\n\n**Resumen:** Guarda tu posición, espera a que se sequen las pistas y sal a la vuelta final con neumáticos secos.",
+      "error": "",
+      "elapsed": 5.331769227981567
+    },
+    {
+      "idx": 65,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Seguridad motor? Tengo miedo.",
+      "response": "No hay datos de seguridad en la telemetría actual. El motor está estable (RPM 8472, Throttle 85%, Gear 6) y los sistemas ERS están activos sin fallas reportadas. No hay parpadeos ni alertas visibles en el cuadro de datos que indiquen un problema mecánico grave.\n\nSin embargo, ten en cuenta que **la lluvia (70%) y las temperaturas bajas de neumáticos traseros (76-78C)** son los factores críticos actuales, no el motor. Si sientes mareos o vérselas con problemas visuales, prioriza tu seguridad sobre la posición: sal a la parrilla si es necesario para evitar un accidente en curva cerrada bajo lluvia.",
+      "error": "",
+      "elapsed": 4.257903575897217
+    },
+    {
+      "idx": 66,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Motor va a partirse?",
+      "response": "No, el motor no se va a partir. La temperatura del aceite está en **102°C** y la de agua en **94°C**, por lo que ambos sistemas están dentro de los márgenes seguros operativos. No hay signos de sobrecalorización crítica ni de fallo mecánico inminente.\n\nSin embargo, ten mucho cuidado con las **ruedas traseras**: la rueda trasera izquierda (RR) está a **76°C** y la derecha (RL) a **78°C**, lo que indica un calentamiento excesivo por el tráfico o frenado en curvas. Si esto se mantiene, podrías ver pérdida de tracción o derrape en los siguientes giros, aunque no es una amenaza inmediata para el motor.\n\nMantén la línea y evita frenar bruscamente si puedes, para bajar las temperaturas traseras.",
+      "error": "",
+      "elapsed": 4.566723108291626
+    },
+    {
+      "idx": 67,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Frenos van a fallar?",
+      "response": "**No, no hay riesgo inminente de fallo.**\n\nLos frenos están en condiciones **muy buenas**:\n*   Temperaturas muy bajas (RR y RL por debajo de 300°C).\n*   No hay degradación visible ni pérdida de potencia.\n*   El consumo de energía del motor (ERS) es bajo, lo que ayuda a mantener las temperaturas controladas.\n\n**Recomendación:** Puedes aplicar frenos con total confianza hasta el siguiente cambio de compuestos o la finalización de la carrera.",
+      "error": "",
+      "elapsed": 3.775294065475464
+    },
+    {
+      "idx": 68,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Aceite OK? Veo warning.",
+      "response": "Sí, el aceite está caliente (102°C) y hay una alerta activa en la telemetría. Dado que estás en **Lluvia Ligera** con un consumo de combustible alto (0.82 L/v), es probable que estés usando el sistema de refrigeración del motor para enfriar el aceite, lo cual puede generar ese aviso.\n\n**Recomendación:**\nMantén la posición actual y sigue la estrategia de lluvia. No necesitas cambiar el aceite ahora; el riesgo de daño por sobrecalentamiento es bajo mientras mantengas una velocidad constante y no aceleres agresivamente en curvas secas. Si el aviso persiste o aumenta drásticamente en los siguientes 10-15 km, avísame para considerar un cambio si queda tiempo antes del pit stop programado.",
+      "error": "",
+      "elapsed": 4.458993434906006
+    },
+    {
+      "idx": 69,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡ADELANTE! ¿Puedo atacar ya?",
+      "response": "**NO, no atacas.**\n\nLa temperatura de las llantas traseras (RR 76°C y RL 78°C) está muy baja para la velocidad actual. Si aceleras ahora, perderás tracción y te desviará el coche. Necesitas mantener la posición en 3ª hasta que las traseras suban a al menos **80-85°C**.\n\n**Plan:**\n1.  Mantén la línea de salida (gap P2: +2.3s).\n2.  Acelera suavemente para subir temperatura sin perder tracción.\n3.  Espera a que las traseras lleguen al rango óptimo antes de intentar el ataque en la curva siguiente.\n\n**¿Te parece bien?**",
+      "error": "",
+      "elapsed": 4.311884164810181
+    },
+    {
+      "idx": 70,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡PUSH! ¿Aguantan los Michelin?",
+      "response": "**¡SOLICITUD DE PULSA MÍNIMA!**\n\nLos neumáticos están **FRAGILES**. La temperatura de la rueda trasera derecha (RR) está en **76°C**, muy por debajo del umbral de seguridad para compuestos Medium. Con lluvia ligera y 70% de humedad, el riesgo de *blowout* o pérdida de tracción es alto.\n\n**Recomendación:**\n1.  **No apretar.** Mantén la rueda trasera derecha por encima de los **85°C**. Si baja más, cortamos la carrera inmediatamente.\n2.  **Gestión de frenos:** Reduce el uso del freno en la salida recta para calentar la RR antes de entrar a curva.\n3.  **Límite de velocidad:** No intentes pasar a P4 ahora mismo; el riesgo es demasiado alto.\n\n**Estado actual:** Riesgo crítico en RR. ¡Cuidado con la lluvia!",
+      "error": "",
+      "elapsed": 4.860126256942749
+    },
+    {
+      "idx": 71,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡SACRIFICE todo! ¿Boxes o sigo hasta final?",
+      "response": "**BOXES AHORA.**\n\n*   **Razón:** El desgaste de neumáticos es crítico (RR 76°C, RL 78°C) y la lluvia está aumentando. Mantenerse en el medio del circuito con estos datos expone al coche a un \"punch\" peligroso o una salida de pista.\n*   **Estrategia:** Cambiar por sueltos (Medium) para asegurar la salida final. La diferencia de tiempo (+2.3s frente a P2, -4.1s frente a P4) se recupera fácilmente con neumáticos frescos en las siguientes vueltas.\n*   **Orden:** 1. Box, 2. Cambio de neumáticos (Medium), 3. Vuelta rápida a la salida para evitar el tráfico de los coches que bajan.\n\n**Datos no disponibles:** No hay telemetría específica sobre la degradación actual del neumático trasera derecha o el consumo exacto de combustible en esta vuelta específica, pero las temperaturas de frenada y neumáticos indican urgencia por desgaste.",
+      "error": "",
+      "elapsed": 5.002836465835571
+    },
+    {
+      "idx": 72,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡MAXIMO PUSH! ¿Puedo?",
+      "response": "**NO.**\n\nPushing now is a recipe for disaster. The rear tires are dangerously cold (76°C/78°C) and the brake temps are rising, indicating we are already at the limit. Adding more power will cause massive oversteer or spin you out in these conditions.\n\n**Plan:**\n*   **Maintain current pace.** You are P3; fighting for P2 now risks losing position to P4 on the next sector.\n*   **Manage fuel:** At 0.82L/v, we have enough for a safe finish without risking reliability or control.\n*   **Monitor rear temps:** If they drop below 65°C before the end of the race, I will consider a slight power increase then, but not now.\n\n**Focus on holding P3.**",
+      "error": "",
+      "elapsed": 4.445490837097168
+    },
+    {
+      "idx": 73,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Que pasa? No entiendo los numeros.",
+      "response": "No te preocupes, el coche está en **muy buen estado**. Aquí lo que realmente importa para ti ahora mismo:\n\n*   **Posición:** Estás en **3º**, con 2.3 segundos de ventaja sobre el 2º y 4.1 segundos de retraso respecto al 4º.\n*   **Tiempos:** Tu última vuelta fue de **1:32.8** (mejor de la sesión: 1:31.2). Si mantienes ese ritmo, puedes atacar a P2 en la siguiente curva.\n*   **Temperaturas:** Las llantas están calientes y el motor está bien refrigerado. No hay problemas mecánicos.\n\n**Mi recomendación:** Mantén la línea de salida y acelera suavemente para intentar adelantar al 2º antes de la recta final o en la siguiente curva larga. ¡A por P1!",
+      "error": "",
+      "elapsed": 4.681154012680054
+    },
+    {
+      "idx": 74,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Esto verde o rojo? No veo bien.",
+      "response": "**Verde.** La luz de freno (brake light) está activa, lo que indica que el sistema de frenado está listo para ser usado en la siguiente curva.\n\nNo es una señal roja ni un problema crítico; simplemente confirma que los frenos están calientes y operativos a 342°C/338°C. Puedes proceder con seguridad.",
+      "error": "",
+      "elapsed": 3.400592803955078
+    },
+    {
+      "idx": 75,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Cuanto fuel? No me aclaro.",
+      "response": "Tienes **18.2 litros** de combustible.\n\n*Nota: La telemetría actual no muestra el consumo total acumulado del tanque, solo la tasa de consumo por vuelta (0.82 L/v). Con 65 vueltas en total y asumiendo que has completado las primeras 24 a esa tasa, te quedarías con aproximadamente 17.9 litros, pero los datos exactos de consumo total no están disponibles.*",
+      "error": "",
+      "elapsed": 3.6485116481781006
+    },
+    {
+      "idx": 76,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Que me dices? Estoy perdido.",
+      "response": "**SITUACIÓN CRÍTICA: TIEMPO DE LLUVIA (WET)**\n\nNo te preocupes, el coche está bien mecánicamente y la posición es defendible, pero **la estrategia de neumáticos ha fallado**.\n\n1.  **Neumáticos en peligro:** Las llantas traseras (RR) están a **76°C** con una temperatura del asfalto de 28°C. Esto indica que estás usando **neumáticos secos (Medium)** en condiciones húmedas y frías. Estás perdiendo tracción instantánea por falta de agarre, no por desgaste mecánico.\n2.  **El problema real:** Si intentas forzar el coche ahora para recuperar el P4, te saldrás o perderás tiempo innecesario. Tu mejor vuelta (1:31.2) fue probablemente en condiciones ligeramente mejores que las actuales.\n3.  **Recomendación inmediata:**\n    *   **No fuerces la salida.** Mantén la posición actual (+2.3s).\n    *   Si el tiempo de lluvia no mejora drásticamente, considera una **pista rápida (fast pit)** para cambiar a neumáticos de lluvia o secos más blandos si están disponibles, aunque el riesgo de salirse es alto con los actuales.\n    *   Si la lluvia se detiene pronto, espera a que las llantas suban de temperatura antes de intentar recuperar posiciones agresivamente.\n\n**Resumen:** Tu coche está bien, pero los neumáticos no son para esta pista húmeda. Mantén la calma y prioriza la seguridad sobre la posición actual.",
+      "error": "",
+      "elapsed": 6.342965841293335
+    },
+    {
+      "idx": 77,
+      "tier": "tier5",
+      "level": "e",
+      "question": "¡ALARMA! ¡PILOTO! Motor rojo, fuel cero, tires quemados.",
+      "response": "¡Atención! **SITUACIÓN CRÍTICA DETECTADA.**\n\n1.  **Motor Rojo:** El motor ha fallado inmediatamente. La carrera está terminada.\n2.  **Combustible Cero:** Confirma el fallo del motor (consumo de 0.82L/v es normal, pero 0L indica corte total).\n3.  **Tires Quemados:** Las temperaturas de neumáticos (RR 76C, RL 78C) son extremadamente bajas para estar \"quemados\" a menos que haya habido un contacto violento o una frenada brusca extrema justo antes del fallo, lo cual es inusual para este estado.\n4.  **Datos Inconsistentes:** La telemetría muestra RPM de 8472 y acelerador al 85%, pero el consumo es 0. Esto indica que el motor está en modo de seguridad o ha cortado la inyección instantáneamente mientras mantenías el gas.\n\n**Acción Inmediata:**\n*   **No intentar recuperar.** El coche no tiene combustible ni potencia.\n*   **Salida de pista:** Acelera suavemente para salir al sector más seguro y alejarte del tráfico.\n*   **Parada en box:** Una vez fuera, detente inmediatamente en el primer box disponible para que el equipo revise el motor y los neumáticos.\n\n**Resumen:** **Carrera terminada por fallo de motor.**",
+      "error": "",
+      "elapsed": 5.959326267242432
+    },
+    {
+      "idx": 78,
+      "tier": "tier5",
+      "level": "e",
+      "question": "¡EMERGENCIA! Todo fallando. ¡AYUDA!",
+      "response": "¡ALERTA CRÍTICA! No hay datos de telemetría en tiempo real para confirmar el fallo mecánico específico. Sin embargo, basándome en los parámetros actuales:\n\n*   **Temperaturas:** Las ruedas traseras (76-78°C) y frenos (295-342°C) están muy calientes para una lluvia ligera; hay riesgo inminente de *brake fade* o pérdida de adherencia.\n*   **Suspensión:** El *ride height* es demasiado bajo (0.072m), lo que aumenta el riesgo de impacto con bordillos en la lluvia.\n*   **Frenos/Tracción:** La tracción está al 85% y frenos al 62%, indicando un esfuerzo extremo sin confirmación de pérdida de control por telemetría.\n\n**Acción Inmediata:**\n1.  **No intentar adelantarte.** El riesgo de perder el coche en la curva es demasiado alto con esa configuración de suspensión y temperatura de neumáticos.\n2.  **Solicita cambio de neumáticos** si no has hecholo ya, o espera a que se sequen los bordillos para salir con *Medium* (si están disponibles) o cambiar a *Hard* si el tiempo lo permite y la pista se seca.\n3.  **Mantén posición P3.** Es más seguro seguirte al segundo que arriesgar una salida en la curva trasera.\n\n**Recomendación:** Si el fallo es mecánico (motor/frenos), sal inmediatamente a la zona de box si hay tiempo, o mantén la posición actual y espera a que se sequen los bordillos para salir con *Medium* para intentar recuperar la posición.",
+      "error": "",
+      "elapsed": 6.621258020401001
+    },
+    {
+      "idx": 79,
+      "tier": "tier5",
+      "level": "e",
+      "question": "¡PELIGRO! Critical en todas partes. ¡ACCION YA!",
+      "response": "**¡ALERTA CRÍTICA: FRENOS EN PUESTA DE FUEGO.**\n\n*   **Frenos:** RR y RL a 295-298°C (Límite de seguridad). FR/FL también peligrosos (>330°C).\n*   **Neumáticos:** RR y RL en 76-78°C (Extremadamente bajos para Medium con lluvia), riesgo de *understeer*.\n*   **Acción Inmediata:**\n    1.  **Apagar ERS** ahora mismo para reducir torque y frenos.\n    2.  **Bajar carga trasera** (RR) a -0.035m o más inmediatamente si no lo has hecho ya.\n    3.  Considerar **bajar la suspensión trasera** (-0.010m) para mejorar agarre en lluvia y reducir peso sobre frenos traseros.\n*   **Nota:** Con TC OFF, el balance es muy inestable. Necesitas más carga trasera urgente.\n\n¿Quieres cambiar de compuestos ahora o intentar recuperar posición con precaución?",
+      "error": "",
+      "elapsed": 5.21161413192749
+    },
+    {
+      "idx": 80,
+      "tier": "tier5",
+      "level": "e",
+      "question": "DANGER everywhere. Everything failing. RESPOND.",
+      "response": "**DANGER:** Engine is critical (Battery 0.72%). **IMMEDIATE ACTION REQUIRED.**\n\n1.  **LAP:** Do not attempt to overtake P4; risk of collision with a failing engine is too high. Stay behind P3 and P2 until you are clear or the car stops safely.\n2.  **DRIVE:** Reduce throttle immediately (currently 85%). If RPM drops below redline, prepare for emergency stop.\n3.  **TELEMETRY LIMITATION:** I cannot see specific engine failure data in this telemetry feed. The low battery and high consumption indicate a severe mechanical issue that requires immediate pit stop or track safety car intervention if the car is uncontrollable.\n\n**STATUS:** Car needs to be stopped immediately. Do not push it further.",
+      "error": "",
+      "elapsed": 4.361729383468628
+    },
+    {
+      "idx": 81,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Que hago? ¿Paro ahora o sigo?",
+      "response": "**SITUACIÓN ACTUAL:**\nEstás en P3 con +18.4s de Verstappen (P1) y +2.3s de Hamilton (P2). El coche está muy fresco (temperaturas de neumáticos 76-89°C), pero el agua sube al 70% y hay lluvia ligera. La ventana de pit es **Lap 35-38**.\n\n**RECOMENDACIÓN: SÍ, PITA AHORA MISMO.**\n\n**RAZONES TÉCNICAS:**\n1.  **Gestión de Neumáticos:** Con +2.3s sobre Hamilton y una lluvia inminente (45 min), los neumáticos Medium están en su límite térmico. Si esperas a la lluvia, las ruedas se degradarán más rápido por el agua y la temperatura bajará drásticamente, perdiendo tiempo en la salida de pit y aumentando el riesgo de *spin* o pérdida de tracción.\n2.  **Ventana de Pit:** Tienes una ventana abierta (35-38). Pitar ahora (Lap 25) te deja 10 vueltas para salir con Hard, lo cual es suficiente para recuperar posiciones si la lluvia no empeora inmediatamente. Si esperas a Lap 35, estarás en el límite de tiempo y con neumáticos más fríos.\n3.  **Posición:** Estar en P2 (con Hamilton) te da una ventaja estratégica enorme. Con Hard, puedes intentar atacar a Verstappen o mantener la posición si la lluvia se intensifica.\n\n**PLAN DE ACCIÓN:**\n*   **Acción:** Pit Stop inmediato en la siguiente salida de curva (aprox. 3-4 vueltas después).\n*   **Cambio:** Neumáticos **Hard**.\n*   **Estrategia Post-Pit:** Si la lluvia no cae fuerte, intenta mantenerte cerca de Hamilton o intentar adelantar a Verstappen si el tráfico lo permite. Si llueve fuerte antes de Lap 35, considera salir con Medium para aprovechar la humedad.\n\n**RIESGO:**\n*   **Baja temperatura:** Con lluvia ligera y neumáticos fríos (76°C en traseros), hay riesgo de que no lleguen a temperatura operativa si esperas demasiado.\n*   **Degradación rápida:** Las ruedas granean rápido con agua; mejor salir antes de que el agua cubra la pista completamente.\n\n**RESUMEN:** No arriesgues la posición actual. Pita ahora con Hard para maximizar tu ventaja sobre Hamilton y preparar una salida agresiva en las siguientes vueltas.",
+      "error": "",
+      "elapsed": 9.81386113166809
+    },
+    {
+      "idx": 82,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Boxes ahora o espero hasta el final?",
+      "response": "**NO. Espera.**\n\n*   **Tiempo de Pista:** Tienes +18.4s sobre Verstappen (P1) con Soft y solo 20 vueltas. Tu ritmo actual es demasiado lento para ganar tiempo en la última vuelta; necesitas una ventaja masiva.\n*   **Ventana de Pitaje:** La ventana está abierta hasta la vuelta 38. Si pitas ahora, perderás un lapso crucial.\n*   **Clima:** Lluvia ligera (70%) y probabilidad del 45% de lluvia en 45 minutos. El asfalto se está degradando (\"graining\").\n*   **Estrategia:** Mantén la posición actual. Si pitas ahora, te quedarías sin tiempo para intentar ganar vueltas antes de que caiga la lluvia o si necesitas pitaje de seguridad.\n\n**Recomendación:** Saca el máximo rendimiento en esta vuelta y espera a la vuelta 35-36. Si la lluvia empeora drásticamente, podríamos considerar un pitaje anticipado, pero por ahora, **no**.",
+      "error": "",
+      "elapsed": 5.219107389450073
+    },
+    {
+      "idx": 83,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Stint strategy? ¿Una o dos paradas?",
+      "response": "**Estrategia recomendada: Dos paradas (Out-In).**\n\n*   **Parada 1:** Lap 35-36. Cambiar a **Soft**.\n    *   *Razón:* Con 25 laps en Medium y lluvia ligera, el desgaste es alto (0.12 FL/RL). El Soft te dará más margen de seguridad para la finalización bajo estas condiciones húmedas.\n*   **Parada 2:** Lap 48-50. Cambiar a **Hard**.\n    *   *Razón:* Para mantenerte cerca del líder (Verstappen) en las últimas vueltas sin riesgo de lluvia mayor, el Hard ofrece la mejor resistencia si la pista se seca o mantiene condiciones estables.\n\n**Notas técnicas:**\n*   **ERS:** Mantén activo para ganar tiempo en los frenazos; tienes 8 vueltas disponibles.\n*   **Tires:** Las temperaturas son bajas (76-89°C) por la humedad; asegúrate de calentar bien antes de salir a pista tras la primera parada.\n*   **Riesgo:** Si la lluvia se intensifica antes de la parada 2, considera cambiar a Hard en la parada 1 y mantenerlo hasta el final si es necesario para no detenerse en mojado.",
+      "error": "",
+      "elapsed": 5.703099489212036
+    },
+    {
+      "idx": 84,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Cuando es el momento optimo para boxes?",
+      "response": "**BOX WINDOW:** 35-38. **RECOMMEND NOW.**\n\n**REASONING:**\n*   **Tire Wear:** You are at ~12% wear (FL) and 14% (RL). With only 40 laps left, you will likely hit the limit before Lap 35 unless you drive extremely conservatively.\n*   **Weather Risk:** Rain is forecast in 45 minutes. If it starts, your grip will degrade rapidly due to graining; a pit stop now secures a fresh set for wet conditions or ensures safety if rain delays further.\n*   **Gap Analysis:** You are +2.3s behind Hamilton (P2). He stopped at Lap 21 on Soft tires and is currently leading the pack with P4 (-4s) chasing him. If you wait until Lap 35+, you risk losing time to both P1 (Verstappen, who has 8 laps of fresh Soft) and P4 if they pit again or if rain forces a general slowdown.\n*   **ERS:** You have 8 ERS laps available; using them now preserves them for the final stint if needed.\n\n**ACTION:** Pit immediately to save tires and mitigate weather risk.",
+      "error": "",
+      "elapsed": 5.515848636627197
+    },
+    {
+      "idx": 85,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Puedo terminar sin entrar a boxes?",
+      "response": "**No, no puedes terminar sin parar.**\n\nAquí tienes el análisis técnico basado en los datos:\n\n1.  **Gestión de Combustible:** Tienes **18.2L** restantes con un consumo actual de **0.82 L/v**. Para llegar a la meta (65 laps) necesitarás aproximadamente **37-38 litros** si mantienes este ritmo, o al menos **34-35L** si reducimos ligeramente el consumo. Estás en una situación crítica de \"combustible bajo\" (*low fuel*).\n2.  **Riesgo de Retorno a la Pista:** Si intentas terminar sin parar, el riesgo de que se corte el suministro de combustible y te quedes atrapado en la pista es muy alto (probabilidad >80%). Esto podría costarte la posición actual (P3) o incluso la carrera.\n3.  **Ventana de Parada:** Tu ventana de parada está abierta para los laps **35-38**. Estás en el lap 25. Tienes que parar pronto para llenar y asegurar la salida a la meta con combustible suficiente.\n\n**Recomendación:**\n*   **Parar ahora mismo.** No hay margen de maniobra.\n*   **Estrategia sugerida:** Parada en un lap entre 30-34 si es posible, o esperar al inicio de tu ventana (lap 35) para llenar y salir con una ventaja de combustible que te permita mantener la posición sin riesgo de corte.\n*   **Plan B:** Si el tiempo se agota antes del lap 35, considera un pit stop en la vuelta actual si hay espacio en la pista, o prepararte para una salida muy agresiva tras llenar (aunque con lluvia y desgaste de neumáticos es arriesgado).\n\n**Conclusión:** La seguridad del combustible es prioritaria. **Parar ahora.**",
+      "error": "",
+      "elapsed": 7.15493369102478
+    },
+    {
+      "idx": 86,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Leclerc viene fuerte por detras. ¿Defiendo o dejo pasar?",
+      "response": "**No defiendo.**\n\n*   **Razón:** Tienes una ventaja de tiempo de +2.3s sobre Hamilton (P2) con 40 segundos restantes en el pit window. Si te defiendes, perderás posiciones y la carrera sin ganar nada.\n*   **Estrategia:** Deja pasar a Hamilton ahora mismo. Con tu posición actual y los 15% de probabilidad de lluvia, mantenerte en P3 es lo más seguro para asegurar un podium o una victoria limpia si el tiempo de lluvia se retrasa.\n*   **Acción:** Acelera en la recta principal para ganar ese segundo de margen antes del siguiente pit window (aprox. lap 35).",
+      "error": "",
+      "elapsed": 4.252215147018433
+    },
+    {
+      "idx": 87,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Hamilton a 2 decimas. ¿Que hago?",
+      "response": "**Hamilton está en una posición de riesgo alto (P3) con un margen muy ajustado contra P4 (-4.1s). Tu mejor vuelta es +0.6s respecto al líder, lo que indica que estás por debajo del ritmo actual.**\n\n**Análisis:**\n*   **Ritmo vs. Pacesetters:** El líder (Verstappen) tiene un ritmo de 1:31.2 con neumáticos Soft. Tú tienes Medium y +0.6s de diferencia en tu mejor vuelta, pero el desgaste de los Medium está acelerado por la lluvia (70% precipitación).\n*   **Ventaja de P4:** Leclerc (-4.1s) tiene 22 vueltas con Medium. Si no pitas pronto, te quedará menos distancia que él al final del stint actual, pero su desgaste será mayor en las curvas mojadas.\n*   **Riesgo de Lluvia:** Hay un 45% de probabilidad de lluvia fuerte en 45 minutos. Si llueve mucho, los Medium perderán rendimiento drásticamente y te quedarás atrás de P1 y P2 si no pitas antes del deterioro total.\n\n**Recomendación:**\nNo esperes a que la lluvia caiga o que el desgaste sea crítico. **Pita ahora mismo (Lap 25-26) para salir con Hard.**\n\n*   **Por qué:** Tienes +0.6s de diferencia en tu mejor vuelta, lo que sugiere que no estás al máximo rendimiento con Medium. Salir con Hard te dará una ventaja de tiempo significativa sobre Verstappen y Hamilton si la lluvia se intensifica pronto (45 min).\n*   **Estrategia:** Si pitas ahora, tendrás 2 vueltas con Hard antes de la lluvia probable. Esto debería mantenerte por delante de P1 y P2 en las curvas mojadas, donde los Medium fallarán rápido.\n*   **Alternativa:** Solo si el radar indica lluvia *inmediata* (menos de 5 min), considera esperar una vuelta más para asegurar que los Hard estén calientes, pero con +0.6s de diferencia, el riesgo de quedarse atrás es alto.\n\n**Acción:** Pita ahora.",
+      "error": "",
+      "elapsed": 7.983182668685913
+    },
+    {
+      "idx": 88,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Vettel presiona. ¿Ataco o cubro?",
+      "response": "**CUBRO.**\n\nNo hay oportunidad de atacar ahora. P4 (Leclerc) está a solo **4.1 segundos** y tiene 25 vueltas, mientras tú tienes 25 vueltas pero +2.3s. Si te atacas, perderás tiempo en la curva y probablemente terminarás detrás de Leclerc o con un gap demasiado grande para recuperar antes del pit stop (abre a lap 35).\n\nAdemás, el **45% de probabilidad de lluvia** en 45 minutos sugiere que los neumáticos de P1 (Verstappen) podrían degradarse o cambiar pronto. Mantener la posición te asegura:\n1.  Un gap seguro para cuando caiga la lluvia.\n2.  Una salida limpia al pit stop si necesitas cambiar a Hard o salirte con Soft/Hard.\n\n**Acción:** No atacas. Espera a que Leclerc se canse o a que la lluvia empiece.",
+      "error": "",
+      "elapsed": 4.881089687347412
+    },
+    {
+      "idx": 89,
+      "tier": "tier6",
+      "level": "b",
+      "question": "¿Undercut o overcut? Rival entrando a boxes.",
+      "response": "**Overcut.**\n\nEl rival (P4 Leclerc) está en pista con 22 vueltas y no ha hecho parada desde la última. Si entras ahora, perderás tiempo de salida y posición en el sector 1/2 sin ganar tiempo de vuelta.\n\n*   **Rival:** +4.1s en pista vs tu +18.4s.\n*   **Ventaja:** Tienes 35 vueltas restantes; él tiene 22.\n*   **Recomendación:** Mantente en pista hasta la parada del P2 (Lap 35) o más tarde si el P4 se retira. No intentes undercut ahora mismo.",
+      "error": "",
+      "elapsed": 4.260468244552612
+    },
+    {
+      "idx": 90,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Adelantamiento posible. ¿Si o no?",
+      "response": "**NO.**\n\n**Reasoning:**\n1.  **Gap Analysis:** You are +2.341s behind Hamilton (P2). The gap is too small to gain a significant advantage by pitting now, especially with the car slower than P5 (Norris) in terms of pace per lap relative to your position.\n2.  **Tyre Wear:** Your rear tyres are at 0.14 wear (RL) and 0.13 (RR). You have ~40-45 laps remaining on Mediums; pitting now would force you onto Hard tyres or Softs, both of which will likely be slower than the current setup given the rain forecast.\n3.  **Weather:** Rain is incoming in 45 minutes. Pitting now exposes you to wet conditions with fresh tyres that may not perform well on a damp track compared to your worn Mediums.\n4.  **Strategy Window:** Your window (Lap 35-38) aligns perfectly with the rain arrival. Waiting allows you to pit in the wet, potentially gaining time by avoiding the \"graining\" phase and getting fresh tyres when the track is wetter.\n\n**Action:** Hold position. Monitor for rain onset. Plan a pit stop during the window (Lap 35-38) once conditions deteriorate or if the gap to P2 widens significantly (>4s).",
+      "error": "",
+      "elapsed": 5.876946449279785
+    },
+    {
+      "idx": 91,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Hay FCY virtual. ¿Entro a boxes?",
+      "response": "No, no entres en boxes ahora.\n\n**Análisis:**\n*   **Posición:** P3 con +18s respecto al líder (Verstappen). Necesitas ganar tiempo para ser competitivo en la siguiente parada.\n*   **Tires:** Mediums a 0.12/0.14% de desgaste. Tienes suficiente vida para correr el resto del race (aprox. 5-6 vueltas más) sin parar, especialmente con las llaves de lluvia que están cayendo en 45 minutos.\n*   **Pista:** Está \"Track Green\" y hay graining. Las Mediums son muy competitivas ahora mismo; cambiar por Hard o Soft te costaría mucho tiempo de parada y no es necesario.\n*   **Ventana:** Tu ventana (35-38) está demasiado lejos para intentar recuperar posiciones con tires nuevas sin riesgo de dañar las actuales en la lluvia.\n\n**Recomendación:** Mantén las Mediums, gestiona el ERS y espera a que la pista se caliente o a que la lluvia intensifique más allá del 70% si necesitas cambiar, pero prioriza la posición actual.",
+      "error": "",
+      "elapsed": 5.35240912437439
+    },
+    {
+      "idx": 92,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Safety car proximo. ¿Cuando es el momento?",
+      "response": "**No hay datos de telemetría sobre cuándo ocurrirá la salida del coche de seguridad ni en qué lapso.**\n\nSin embargo, basándonos en los datos disponibles:\n*   **Clima:** Lluvia ligera (70% probabilidad) y se indica que viene lluvia dentro de 45 minutos.\n*   **Posición:** Estás en P3 con +18s respecto a Verstappen (P1).\n*   **Rendimiento:** Tu última vuelta es 1:32.8, mientras que el líder hace 1:31.2.\n\n**Recomendación:**\nNo hay señal de telemetría inmediata para salir ahora. La lluvia está llegando en 45 minutos. Si la pista se vuelve intransitable antes de ese tiempo (lo cual no se refleja en los datos actuales), saldrá el coche de seguridad. Por ahora, mantén tu posición y espera a que la telemetría muestre una pérdida de rendimiento significativa o un cambio de condiciones críticas para decidir si pitar o esperar.",
+      "error": "",
+      "elapsed": 5.069773197174072
+    },
+    {
+      "idx": 93,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Lluvia en 20 minutos. ¿Boxes ahora o espero?",
+      "response": "**BOX NOW.**\n\n*   **Tires:** Mediums are graining rapidly in the rain; wear is already high (FL/FR ~12-13%). Waiting risks a blowout or loss of grip before the window closes.\n*   **Fuel:** You have 18.2L remaining at 0.82L/v. At this burn rate, you will run out in roughly 22 more laps (approx. lap 47). The pit stop is mandatory for fuel safety.\n*   **Strategy:** With rain expected in 45 minutes and the box window closing soon (lap 35-38), stopping now secures your position ahead of Leclerc (+18s gap vs his -4s pace) and prevents a potential DNF from tire failure or running out of fuel.\n*   **Action:** Order pit stop immediately. Switch to Hard tires for the wet conditions.",
+      "error": "",
+      "elapsed": 4.759467363357544
+    },
+    {
+      "idx": 94,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Cambio de gomas. ¿Pits ahora o sigo?",
+      "response": "**SUGERENCIA: PITS AHORA.**\n\n**RAZONAMIENTO:**\n1.  **Gestión de Neblina:** Con 45 minutos de lluvia inminente y el sector en estado \"TRACK_GREEN\" (aunque hay banderas amarillas en sectores), la pista está muy seca ahora mismo. Si esperas, perderás tiempo de carrera mientras la pista se empapa y los neumáticos medios se degradan o pierden adherencia.\n2.  **Ventana de Pista:** Tu ventana es 35-38. Si no entras en 35, estarás fuera de la ventana cuando llegue la lluvia.\n3.  **Posición:** Estás en P3 con +18s respecto a Verstappen (Soft). Un pit stop rápido te dejará en P4 o P5, pero mantendrás tu posición relativa frente al tráfico trasero que está más lento. Si esperas y la pista se empapa, podrías ser superado por los de Soft (Verstappen) o Hard (Norris) si no pites con tiempo.\n4.  **Neumáticos:** Tus neumáticos están en buen estado (0.12-0.13 wear), pero el riesgo de perder adherencia por la lluvia inminente es alto. Cambiar a Soft te da ventaja en la siguiente vuelta húmeda.\n\n**ACCION:**\n*   **PIT NOW.**\n*   **ESTRATEGIA:** Pitar ahora para salir con Soft y aprovechar la pista seca antes de que empiece la lluvia. Si pites a 35 o 36, estarás listo para atacar en la vuelta siguiente cuando el tráfico se mueva.\n\n**NOTA TÉCNICA:**\n*   Tu consumo es muy eficiente (0.82L/v), lo cual te da margen de seguridad en combustible.\n*   Los frenos están calientes pero dentro de rango seguro (342C/RR 295C). No hay urgencia mecánica para un pit inmediato, la decisión es puramente estratégica por la lluvia.",
+      "error": "",
+      "elapsed": 7.58487868309021
+    },
+    {
+      "idx": 95,
+      "tier": "tier6",
+      "level": "c",
+      "question": "¿Rain strategy? Pista mojandose.",
+      "response": "**No hay datos de lluvia en la telemetría actual.** La pista está seca (Bandera Verde, Sector Verde) y las llantas están calientes (230°C+), lo que indica que no estamos en una fase de \"pista mojándose\" real.\n\nSin embargo, los datos indican un **cambio de condiciones inminente**:\n*   **Probabilidad:** 45% de lluvia en 45 minutos.\n*   **Evolución:** Se menciona \"graining\" (desgaste por calor), lo que sugiere que la pista podría empezar a volverse más rápida o irregular antes de llover, pero no está mojada todavía.\n\n**Recomendación:**\nNo hay una estrategia de lluvia activa ahora mismo. Si decides hacer pit en los próximos 45 minutos, el objetivo debe ser **conservar llantas secas** y evitar entrar con la pista \"mojándose\" (que suele ser más lento que seco). Si llova antes de que te acaben las llantas, necesitarás una estrategia de doble parada o un cambio a llanta intermedia si el tiempo lo permite.\n\n¿Quieres revisar los tiempos de vuelta en condiciones secas vs. mojadas para calcular la ventana óptima?",
+      "error": "",
+      "elapsed": 5.495156288146973
+    },
+    {
+      "idx": 96,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Stint o push? Neumaticos en window optimo.",
+      "response": "**No hay stint.** No es necesario parar ahora; el coche está muy fresco y tienes margen de seguridad con P4 (Leclerc) a -4s.\n\n**No hacer push.** Los neumáticos están en 12% de desgaste tras la última parada, pero la lluvia inminente (45 min) y las condiciones húmedas hacen que cualquier esfuerzo por adelantarse ahora comprometa la estabilidad y el desgaste excesivo antes del siguiente pitstop obligatorio para P4.\n\n**Recomendación:** Mantén la línea actual. Si te acercas a P3 o P2 en los próximos 10-15 minutos, considera un stint de 1 lap (aprox. 60s) para recuperar posición sin riesgo de perder el ritmo en seco.",
+      "error": "",
+      "elapsed": 4.403162240982056
+    },
+    {
+      "idx": 97,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Fuel window para acabar? ¿Cuanto me sobra?",
+      "response": "No hay datos de telemetría sobre el fuel remaining (sobrante) ni la ventana de parrilla específica en este lap. Solo se indica que la ventana de box está abierta y que tu posición actual es P3 con 18.2L restantes. No puedo confirmar si estás dentro de la ventana para acabar sin ver los datos de \"fuel remaining\" o \"window status\" detallados.",
+      "error": "",
+      "elapsed": 3.5118792057037354
+    },
+    {
+      "idx": 98,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Tires van a durar? Ultima tanda hasta meta.",
+      "response": "No, las llantas no durarán para la última vuelta.\n\n**Análisis:**\n*   **Wear (Desgaste):** Tienes un desgaste de **0.12 - 0.14** en el tramo actual (Lap 25). Esto es muy alto; normalmente una tanda dura hasta 0.18-0.20, pero con la lluvia y el graining (abrasión por agua), el desgaste se acelera drásticamente.\n*   **Temperaturas:** Las llantas traseras están muy frías (**76C/78C**) para su peso de presión (231kPa/228kPa). Esto indica que la carga es baja y no hay tracción real, lo que aumenta el riesgo de *oversteer* si intentas acelerar fuerte.\n*   **Riesgo:** Con 45 minutos de lluvia inminente y un desgaste tan alto, el riesgo de perder control en una salida o frenada es crítico.\n\n**Recomendación:**\nNo arriesgues la última vuelta. Si puedes mantener la posición P3 sin salir a pista seca (que no se ve en los datos), **mantén la posición**. Salir ahora con 0.12+ de desgaste y llantas frías podría costarte el puesto o causar un accidente en la curva principal cuando llegue la lluvia.\n\n**Acción:** Mantener ritmo conservador, evitar salidas agresivas y esperar a que la lluvia se intensifique para ver si puedes mantener la posición sin salir.",
+      "error": "",
+      "elapsed": 6.256051778793335
+    },
+    {
+      "idx": 99,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿2-stop o 1-stop? Rivales strategia.",
+      "response": "**Estrategia Recomendada: 2 Paradas (Pit Stop)**\n\n**Análisis:**\n*   **Rival P4 (Leclerc):** Está ganando tiempo (-4s) con neumáticos Medium tras una parada en la vuelta 22. Su ritmo actual es superior al tuyo, pero su desgaste de neumático (0.13-0.14) está acelerando ligeramente.\n*   **Rival P5 (Norris):** Está perdiendo tiempo (-12s) con Hard. Es un \"ghost car\" peligroso si no pita pronto para ganar vueltas.\n*   **Ventaja:** Tienes 8 vueltas de ERS disponibles y el coche está muy limpio (0.12/0.11).\n\n**Plan de Acción:**\n1.  **Pit Stop 1:** Vuelta **35**.\n    *   Cambiar a **Medium** (si no lo tienes) o mantener si ya tienes Medium (revisar tu configuración de neumáticos, asumo que llevas Medium por el desgaste). Si llevas Hard, pita ahora para Medium.\n    *   *Nota:* Dado que llevas Medium y el desgaste es bajo (0.12), no necesitas cambiar a Soft todavía. Mantén los Medium.\n\n2.  **Pit Stop 2:** Vuelta **48-50**.\n    *   Cambiar a **Hard** para cerrar la carrera con ventaja sobre Verstappen y Hamilton.\n\n**Consideraciones Clave:**\n*   **Lluvia:** Hay un 45% de probabilidad de lluvia en 45 minutos. Si llueve, el Hard será muy lento comparado con Soft/Medium. Ten cuidado si la lluvia cae antes de la vuelta 38 (tu ventana actual).\n*   **Gap vs. Pace:** El líder (Verstappen) tiene +18s y su ritmo es similar al tuyo. Si pitas a la vuelta 35, necesitarás mantener tu ritmo en el sector 2 para no dejarle más de 40s de ventaja.\n\n**Resumen:** Pita **vuelta 35** (Medium -> Medium) y **vuelta 48** (Medium -> Hard). Monitorea la lluvia; si cae antes de la vuelta 38, considera un pit stop extra o cambiar a Soft inmediatamente.",
+      "error": "",
+      "elapsed": 8.637048721313477
+    },
+    {
+      "idx": 100,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Pace esta bien? ¿Gestiono o push?",
+      "response": "**Pace:** No es bueno. Estás a +18.4s de Verstappen (Soft) y solo +2.3s de Hamilton (Medium). Tu ritmo actual de 1:32.8 es demasiado lento para mantener la posición P3 con lluvia; el desgaste en los neumáticos Medium está acelerando significativamente.\n\n**Gestión:** Estás gestionando agresivamente (\"push\"). El consumo de combustible ha aumentado drásticamente a **0.82 L/v** (vs 0.56 al inicio), y las temperaturas de los frenos traseros (RR: 76°C) son bajas, lo que indica que no estás pidiendo el máximo rendimiento en la salida o aceleración.\n\n**Recomendación:**\n1.  **Cambia de estrategia:** No puedes ganar con estos neumáticos a este ritmo. Considera una parada técnica ahora para cambiar a Hard (si hay tiempo) o esperar la lluvia si el equipo decide que los Medium ya no son viables.\n2.  **Ajuste de ERS:** Asegúrate de que el ERS esté al máximo (State: Active) en las rectas largas, pero ten cuidado con el calor del motor (102°C).\n3.  **Frenos:** Las temperaturas traseras son bajas; no estás frenando fuerte, lo cual confirma la gestión conservadora. Necesitas más agresividad si decides mantener los Medium, o cambiar de neumáticos inmediatamente.\n\n**Resumen:** El ritmo es malo y el consumo alto. La gestión actual te está costando posiciones. Evalúa una parada técnica urgente o cambia a Hard para intentar recuperar tiempo.",
+      "error": "",
+      "elapsed": 6.589686155319214
+    },
+    {
+      "idx": 101,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡ENGINEER! Todo en rojo. Fuel critico. Rival cerca. ¿PLAN?",
+      "response": "**¡ALERTA CRÍTICA: FUEL CRITICO Y RIESGO DE RETRASO!**\n\n*   **FUEL:** 18.2L restantes a 25/65 laps. A este consumo (0.82L/v), te quedarás con menos de 4 segundos de margen antes del siguiente pitstop si no cambias de ritmo.\n*   **RIVAL:** Leclerc está a -4.1s y tiene Hard (sin parar). Si no pitas ahora, te quedará sin combustible o te retrasarás drásticamente en la salida.\n*   **TIRES/CLIMA:** Lluvia ligera (70%), 28°C pista. Temperaturas de frenos bajas pero desgaste de neumáticos medio-alto (14% traseras). El asfalto está graining y la lluvia puede aumentar el consumo bruscamente.\n\n**PLAN INMEDIATO:**\n1.  **PITSTOP URGENTE:** Necesitas parar en la ventana actual (35-38) o antes si la lluvia empeora. No esperes a que se acabe el fuel.\n2.  **Cambio de Neumáticos:** Cambia a **SUELTOS** (Soft). Tienes 10% de desgaste trasero, pero con lluvia y graining, los Medium ya no son seguros ni rápidos. Los Suelos te darán tracción inmediata para recuperar el tiempo perdido por Leclerc.\n3.  **ERS:** Mantén ERS activo (2) para ganar velocidad en rectas si la lluvia se intensifica.\n\n**RECOMENDACIÓN:** Pita inmediatamente con SUELTOS. El riesgo de quedarse sin fuel es mayor que el desgaste de neumáticos. Si no pitas, perderás la carrera por falta de combustible o te retrasarás más de 20 segundos frente a Leclerc.",
+      "error": "",
+      "elapsed": 7.247840642929077
+    },
+    {
+      "idx": 102,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡PILOTO orden! Box NOW or FINISH? Fuel zero. Tires gone.",
+      "response": "**BOX NOW.**\n\n**Reasoning:**\n*   **Fuel Critical:** You are at 18.2L with a consumption of ~0.82L/v. At this rate, you will run out in roughly 22-23 laps (approx. lap 47), which is dangerously close to the end of the race (lap 65).\n*   **Tire Wear:** You are on Mediums with 11% front and 13% rear wear. Combined with the \"tires graining\" evolution and light rain, you likely have <20 laps of life left. Running out on Hard tires is not an option.\n*   **Race Position:** P3 behind Leclerc (P4) who has 5 more laps than you. If you pit now, you can set up for a final stint to challenge for the win or at least secure points before fuel runs dry.\n\n**Action Plan:**\n1.  **Pit Immediately.**\n2.  **Strategy:** Switch to Hard tires (or Soft if available and track temps allow, but Hard is safer given rain).\n3.  **Target:** Aim for a final stint of ~40-45 laps. With the current fuel burn (~0.8L/v), you need roughly 16-17L to finish safely. You have plenty of margin if you pit now.\n\n**Warning:** Do not delay. Running out of fuel or tires in P3 is a disaster scenario.",
+      "error": "",
+      "elapsed": 6.255643606185913
+    },
+    {
+      "idx": 103,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡SITUATION critical! Analisis completo. ¡YA!",
+      "response": "**¡SITUACIÓN CRÍTICA! ACCIÓN INMEDIATA:**\n\n1.  **TIPOS DE LLANTA:** El desgaste es excesivo (0.12-0.14) y las temperaturas traseras son bajas (76-78°C). **NO PUEDES CONTINUAR.** Necesitas parar en la siguiente ventana de box (**35-38**).\n    *   *Recomendación:* Cambiar a **Suaves**. La lluvia está llegando en 45 min; las medias están cerca del límite y las suaves te darán ventaja en los siguientes 10-12 vueltas.\n\n2.  **Gestión de ERS:** Tienes 8 vueltas disponibles, pero con la lluvia y el cambio de llanta, **desactiva el ERS** para ahorrar calor y evitar que se sobrecaliente el motor tras el cambio.\n\n3.  **Estrategia:**\n    *   Parar ahora o en la vuelta 36 (si hay un pit lane disponible).\n    *   Cambiar a Suaves.\n    *   Salir con DRS activado para ganar tiempo si es posible, pero prioriza la seguridad del cambio de llanta.\n\n**Resumen:** No esperes más. La lluvia y el desgaste lo exigen. Parar en la ventana 35-38, cambiar a **Suaves**, desactivar ERS.",
+      "error": "",
+      "elapsed": 6.168960809707642
+    },
+    {
+      "idx": 104,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¿Que harias tu? Situacion imposible.",
+      "response": "**Acción Inmediata:** Mantén la línea actual (P3). No intentes adelantar a Leclerc ni a Hamilton ahora; el riesgo de contacto o pérdida de posición por el tráfico es demasiado alto con lluvia y 28°C.\n\n**Análisis Técnico:**\n*   **Tire:** Temperaturas laterales (76-89°C) son bajas para un Medium en esta fase, pero la presión está bien. El desgaste (0.11-0.14) es normal.\n*   **Frenos:** Temperatura baja en traseros (295/298C). Evita frenadas agresivas por el riesgo de desviación si la lluvia empeora.\n*   **ERS:** Tienes 8 vueltas disponibles. Si la lluvia no cae en los próximos 10 minutos, úsalas para ganar tiempo al final.\n\n**Plan Estratégico (Tu Ventana: Lap 35-38):**\n1.  **Laps 26-34:** Defénsete. Mantente detrás de Verstappen o Hamilton si es necesario para evitar el tráfico. No salgas a DRS agresivo en curvas cerradas por la lluvia.\n2.  **Pit Stop (Recomendado):** Planifica tu parada entre las vueltas 35 y 38, pero prioriza la seguridad sobre la posición. Si la lluvia aumenta antes de entonces, considera una parada anticipada o un \"out\" si el tiempo es crítico, aunque con Mediums en seco tienes ventaja de velocidad.\n3.  **Cambio de Tires:** Al salir, cambiarás a Hard (como Norris) o Soft (Verstappen). Dado que la probabilidad de lluvia es del 45% y cae en 45 min, si sales ahora, el Hard te dará ritmo hasta que llueva. Si llueve antes de tu parada, saldrás con Mediums mojados y perderás mucho tiempo.\n\n**Conclusión:**\nTu posición actual (P3) es la más segura. Espera a que la lluvia se estabilice o termine para atacar. Tu pit stop en la ventana 35-38 te pondrá en una posición competitiva si el tiempo lo permite, pero **prioriza no perder tu puesto por un error de adelantamiento**.\n\n¿Quieres que ajuste los parámetros del coche (SUSP_FL/RIDE_H) para mejorar la adherencia con las temperaturas actuales?",
+      "error": "",
+      "elapsed": 8.695744514465332
+    },
+    {
+      "idx": 105,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡DECISION! 30 segundos. Boxes o no. ¡RESPONDE!",
+      "response": "**No pit.**\n\n**Reasoning:**\n*   **Pace Gap:** You are +18s behind Verstappen (Soft). P2 (Hamilton) is only +2.3s ahead of you on Mediums, but his pace is slower (+0.4s/lap vs your ~0.5s/lap implied by gap closing).\n*   **Fuel Margin:** At 18.2L with a consumption of 0.82L/v and 40 laps remaining (65 total - 25 done), you have roughly 30-32km of range left. A pit stop at lap 35 would leave you dangerously close to the red line in the final 10-15 laps, risking a DNF or forcing an early safety car exit if rain worsens.\n*   **Rain Factor:** Rain is incoming in 45 mins (Lap ~38). Stopping now risks getting stuck in traffic during the wet phase or running out of fuel before the race ends.\n*   **Strategy:** Hold on Mediums until Lap 35-36 to maximize distance, then pit for Hard tires if the rain doesn't start sooner, or wait for a Safety Car if conditions deteriorate rapidly.\n\n**Action:** Stay out. Focus on maintaining position behind Verstappen; do not risk fuel starvation.",
+      "error": "",
+      "elapsed": 6.247551679611206
+    }
+  ]
+}

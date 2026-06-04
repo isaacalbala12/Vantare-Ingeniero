@@ -115,6 +115,9 @@ from src.intelligence.events.conditions_monitor import ConditionsMonitor
 from src.intelligence.events.frozen_order_monitor import FrozenOrderMonitor
 from src.intelligence.events.session_monitor import SessionMonitor
 from src.intelligence.events.lap_counter import LapCounter
+from src.intelligence.events.driver_swaps import DriverSwaps
+from src.intelligence.events.race_time import RaceTime
+from src.intelligence.events.penalties import Penalties
 
 logger = logging.getLogger("vantare.test")
 
@@ -406,6 +409,9 @@ def _build_runtime(audio_player: RecordingAudioPlayer) -> CrewChiefRuntime:
     runtime.engine.register_event("tyre_monitor", TyreMonitor(audio_player=audio_player))
     runtime.engine.register_event("damage_reporting", DamageReporting(audio_player=audio_player))
     runtime.engine.register_event("engine_monitor", EngineMonitor(audio_player=audio_player))
+    runtime.engine.register_event("driver_swaps", DriverSwaps(audio_player=audio_player))
+    runtime.engine.register_event("race_time", RaceTime(audio_player=audio_player))
+    runtime.engine.register_event("penalties", Penalties(audio_player=audio_player))
 
     runtime._prev_gsd = None
     runtime._consecutive_empty = 0
@@ -988,3 +994,102 @@ class TestCrewChiefEventFlowE2E:
         assert alert.severity == "critical"
 
         assert ap.spotter_calls, "audio_player.spotter_calls is empty"
+
+    # --- 13. driver_swaps: driver change detection ---
+
+    def test_13_driver_swap_pit_state_fires_crewchief_alert(self, ws_client_with_ap):
+        """driver_swaps/driver_change fires when pit_state transitions to 3."""
+        ws_client, ap = ws_client_with_ap
+        gsds = [
+            dict(pit_state=0, now=100.0),
+            dict(pit_state=3, now=101.0),
+            dict(pit_state=3, now=102.0),
+        ]
+        with _BroadcastCapture() as cap:
+            with ws_client.websocket_connect('/ws') as ws:
+                resp = ws_client.post("/test/tick", json={"gsds": gsds})
+                assert resp.status_code == 200, resp.text
+                time.sleep(0.1)
+                msgs = _drain_ws(ws, max_messages=8, timeout_s=1.5)
+        alerts = _combined_alerts(cap.captured, msgs)
+
+        swap_alerts = [a for a in alerts if "driver_change" in (a.subtype or "")]
+        assert swap_alerts, (
+            f"No driver_change alert. Subtypes: {[a.subtype for a in alerts]}"
+        )
+        alert = swap_alerts[0]
+        assert alert.event == "crewchief_alert"
+        assert "driver_change" in alert.subtype
+
+        swap_msgs = [m for m in ap.messages if "driver_change" in m.name]
+        assert swap_msgs, (
+            f"audio_player.messages missing driver_change. "
+            f"Got: {[m.name for m in ap.messages]}"
+        )
+
+    # --- 14. race_time: halfway detection ---
+
+    def test_14_race_time_halfway_fires_crewchief_alert(self, ws_client_with_ap):
+        """race_time/halfway fires when session_running_time >= total / 2."""
+        ws_client, ap = ws_client_with_ap
+        gsd_spec = dict(now=100.0)
+        gsd_spec["extra_attrs"] = {
+            "session.session_running_time": 1800.0,
+            "session.session_time_remaining": 1200.0,
+        }
+        with _BroadcastCapture() as cap:
+            with ws_client.websocket_connect('/ws') as ws:
+                resp = ws_client.post("/test/tick", json={"gsds": [gsd_spec]})
+                assert resp.status_code == 200, resp.text
+                time.sleep(0.1)
+                msgs = _drain_ws(ws, max_messages=8, timeout_s=1.5)
+        alerts = _combined_alerts(cap.captured, msgs)
+
+        # halfway is in the race_time category
+        halfway_alerts = [a for a in alerts
+                          if "halfway" in (a.subtype or "")]
+        assert halfway_alerts, (
+            f"No halfway alert. Subtypes: {[a.subtype for a in alerts]}"
+        )
+        alert = halfway_alerts[0]
+        assert alert.event == "crewchief_alert"
+        assert "halfway" in alert.subtype
+
+        halfway_msgs = [m for m in ap.messages if "halfway" in m.name]
+        assert halfway_msgs, (
+            f"audio_player.messages missing halfway. "
+            f"Got: {[m.name for m in ap.messages]}"
+        )
+
+    # --- 15. penalties: new penalty detection ---
+
+    def test_15_penalty_received_fires_crewchief_alert(self, ws_client_with_ap):
+        """penalties/penalty_received fires when num_outstanding increases."""
+        ws_client, ap = ws_client_with_ap
+        gsds = [
+            dict(now=100.0),
+            dict(now=101.0),
+        ]
+        gsds[1]["extra_attrs"] = {"penalties.num_outstanding": 1}
+        with _BroadcastCapture() as cap:
+            with ws_client.websocket_connect('/ws') as ws:
+                resp = ws_client.post("/test/tick", json={"gsds": gsds})
+                assert resp.status_code == 200, resp.text
+                time.sleep(0.1)
+                msgs = _drain_ws(ws, max_messages=8, timeout_s=1.5)
+        alerts = _combined_alerts(cap.captured, msgs)
+
+        penalty_alerts = [a for a in alerts
+                          if "penalty" in (a.subtype or "")]
+        assert penalty_alerts, (
+            f"No penalty alert. Subtypes: {[a.subtype for a in alerts]}"
+        )
+        alert = penalty_alerts[0]
+        assert alert.event == "crewchief_alert"
+        assert "penalty" in alert.subtype
+
+        penalty_msgs = [m for m in ap.messages if "penalty" in m.name]
+        assert penalty_msgs, (
+            f"audio_player.messages missing penalty. "
+            f"Got: {[m.name for m in ap.messages]}"
+        )

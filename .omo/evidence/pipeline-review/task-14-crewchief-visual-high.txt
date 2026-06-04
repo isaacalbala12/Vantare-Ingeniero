@@ -1,0 +1,19 @@
+TASK 14 — CrewChief alert visual (HIGH severity)
+===============================================
+Date: 2026-06-04T07:20:34.046Z
+BaseURL: http://localhost:1420
+Dispatch ok: true
+Frame category: engine
+Frame subtype: engine_temp_high
+Frame severity: high
+Frame message: T14-HIGH Temperatura motor 118C, reducir potencia inmediatamente
+
+Store snapshot after dispatch:
+  crewchief.events.length: 1
+  crewchief.latestByCategory.engine.severity: high
+  crewchief.latestByCategory.engine.message: T14-HIGH Temperatura motor 118C, reducir potencia inmediatamente
+  radio.latestAlert: "T14-HIGH Temperatura motor 118C, reducir potencia inmediatamente"
+  telemetry.alerts: ["T14-HIGH Temperatura motor 118C, reducir potencia inmediatamente"]
+
+DOM-rendering: high-severity alert rendered in DOM
+Screenshot: C:\Users\isaac\Desktop\Vantare-Ingeniero\.omo\evidence\pipeline-review\task-14-crewchief-visual-high.png

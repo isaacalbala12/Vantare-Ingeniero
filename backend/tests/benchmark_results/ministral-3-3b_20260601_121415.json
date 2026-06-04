@@ -1,0 +1,952 @@
+{
+  "model": "ministral-3-3b",
+  "timestamp": "20260601_121415",
+  "total": 105,
+  "results": [
+    {
+      "idx": 1,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Cuanta gasolina me queda?",
+      "response": "**Quedan ~16.9 litros de combustible** (estimación basada en consumo actual y datos de telemetría).\n\n*Nota:* Para una estimación precisa, necesitaría datos históricos de consumo por vuelta o un cálculo más exacto con la distancia restante.",
+      "error": "",
+      "elapsed": 3.1244921684265137
+    },
+    {
+      "idx": 2,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Que marcha llevo?",
+      "response": "**Gear ratio:** **6th gear** (as per telemetry).\n\n*Next gear up is likely 5th, down to 7th if needed.*",
+      "error": "",
+      "elapsed": 2.7254271507263184
+    },
+    {
+      "idx": 3,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Van bien los frenos?",
+      "response": "Los frenos **están en buen estado**, pero con signos de desgaste:\n\n- **Temperaturas moderadas** (FL/FR ~340°C, RL/RR ~295-298°C).\n- **Consumo de energía ERS alto** (145 Nm) sugiere posible sobrecalentamiento o uso excesivo en frenadas.\n\n**Recomendación:**\n- Reducir presión en frenada para evitar fatiga.\n- Verificar desgaste visual si es posible.",
+      "error": "",
+      "elapsed": 3.5558996200561523
+    },
+    {
+      "idx": 4,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Temperatura del motor esta bien?",
+      "response": "El **motor no tiene datos de temperatura directa** en la telemetría actual.\n\nRecomendación:\n- **ERP/ERS activo**: Asegúrate de que el sistema esté optimizado para consumo (no sobrecarga).\n- **Consumo alto (0.82L/v)**: Verifica si es normal con condiciones actuales o revisa posibles fugas.\n- **Suspensión y aerodinámica**: Suspensión ligeramente baja (FL/FR) podría afectar eficiencia; ajusta al mínimo necesario sin perder estabilidad.\n\nSi hay síntomas de sobrecalentamiento (ej. pérdida de potencia), revisa el sistema de refrigeración.",
+      "error": "",
+      "elapsed": 3.8170006275177
+    },
+    {
+      "idx": 5,
+      "tier": "tier1",
+      "level": "b",
+      "question": "¿Tengo DRS disponible?",
+      "response": "**DRS no está activado en este momento.**\n*Revisa el visor de DRS o la telemetría para confirmar si el rival está fuera del *zone* activo.*",
+      "error": "",
+      "elapsed": 2.801840305328369
+    },
+    {
+      "idx": 6,
+      "tier": "tier1",
+      "level": "b",
+      "question": "¿ERS activo?",
+      "response": "Sí, **ERS está activado** con torque de **145 Nm**.\n\n*Nota:* Verifica si el modo de recuperación (regen) es óptimo para tu estrategia actual.",
+      "error": "",
+      "elapsed": 2.8072385787963867
+    },
+    {
+      "idx": 7,
+      "tier": "tier1",
+      "level": "b",
+      "question": "¿KERS tengo?",
+      "response": "**Actualmente no tienes activado el KERS (no está disponible en tu configuración).**\n\n*ERS está activo con 145 Nm de torque.*",
+      "error": "",
+      "elapsed": 2.6996665000915527
+    },
+    {
+      "idx": 8,
+      "tier": "tier1",
+      "level": "c",
+      "question": "¿Fuel y bateria como van?",
+      "response": "**Fuel:** 18.2L (bajo, consume ~0.82L/v).\n**Battery:** **Nivel crítico (0.72)** – Urgente revisión/recarga.\n\n*Recomendación:* Reduce consumo de combustible con ajustes en ERS y velocidad; prioriza seguridad eléctrica.",
+      "error": "",
+      "elapsed": 3.1295695304870605
+    },
+    {
+      "idx": 9,
+      "tier": "tier1",
+      "level": "c",
+      "question": "¿Motor y frenos OK?",
+      "response": "**Motor:**\n- RPM normal (8,472) para **6ª marcha**, consumo moderado (0.82 L/v).\n- **ERS activo con torque 145 Nm** → Funcionando correctamente.\n\n**Frenos:**\n- Temperaturas de freno:\n  - **FL:** 342°C (OK)\n  - **FR:** 338°C (OK)\n  - **RL/RR:** ~295–298°C (**Poco fríos, pero no críticos**).\n  - *Recomendación:* Vigilar si bajan más al frenar en curvas.\n\n**Conclusión:**\n- **Motor y ERS OK.**\n- **Frenos en buen estado**, pero RL/RR podrían necesitar más presión de aire o revisión si persisten bajos.",
+      "error": "",
+      "elapsed": 4.235564231872559
+    },
+    {
+      "idx": 10,
+      "tier": "tier1",
+      "level": "c",
+      "question": "¿Temperatura motor y aceite?",
+      "response": "**Motor Temp:** *No disponible en telemetría*\n**Aceite (Oil_Temp):** **102°C**\n\n*Recomendación:* Revisa el sistema de refrigeración para evitar sobrecalentamiento.",
+      "error": "",
+      "elapsed": 2.889636516571045
+    },
+    {
+      "idx": 11,
+      "tier": "tier1",
+      "level": "d",
+      "question": "¡Dame rapido! Motor, fuel, RPMs.",
+      "response": "**Motor:**\n- **ERS Active (145Nm torque)** – Consider managing recovery to avoid burnout.\n\n**Fuel:**\n- **Consumption: ~0.82L/valvo** – Fuel remaining: **~18.2L** (~3.7L margin).\n  - *Check for leaks if needed.*\n\n**RPMs:**\n- **Current: 8,472 RPM** (high, check for overheating or clutch wear).\n\n*Next action: Reduce RPMs to ~6,500–7,000 for efficiency.*",
+      "error": "",
+      "elapsed": 3.6663975715637207
+    },
+    {
+      "idx": 12,
+      "tier": "tier1",
+      "level": "d",
+      "question": "¡Ya! Neumaticos, motor, bateria. Responde.",
+      "response": "- **Neumáticos**:\n  - *FL*: Temperatura adecuada (89°C), pero con desgaste moderado. Considerar presión ajustable si hay pérdida de agarre en curvas.\n  - *FR/RR*: Presión baja (76–78°C) y desgaste severo. Reducir presión ligeramente o revisar inflado, especialmente RR (mayor desgaste).\n  - **Recomendación**: Ajusta presión RR/FL a +0.2 bar si hay pérdida de tracción en rectas.\n\n- **Motor**:\n  - RPM elevados (8472) con consumo alto (0.82L/v). Verificar:\n    - **ERS**: Activo (145Nm), pero sin datos de recuperación energética. Mantén presión de combustible ajustada.\n    - **Consumo**: Si es persistente, revisa turbo o sistema inyector.\n\n- **Batería**:\n  - Estado bajo (0.72). **Prioridad urgente**:\n    - Recarga inmediata con carga rápida (si disponible).\n    - Evitar uso prolongado de ERS/actuadores.\n    - Si no hay opción, reduce consumo eléctrico (ej: limitar ABS en curvas).\n\n---\n*Nota*: Sin telemetría histórica de presión neumáticos/motor/batería para comparar. Prioriza **RR y batería**.",
+      "error": "",
+      "elapsed": 5.508392095565796
+    },
+    {
+      "idx": 13,
+      "tier": "tier1",
+      "level": "d",
+      "question": "¿Todo bien o no? Frenos, motor, suspension.",
+      "response": "**Frenos:** Calientes (FL/RR más altos que FR/RL), posible sobrecalentamiento en RL/RR. **Motor:** RPM y consumo normales para tu estrategia de ERS. **Suspensión:** Ligera diferencia de altura (especialmente FL vs RR), pero sin señales de fallo crítico.\n\n**Recomendación:** Revisa presión de frenos en RL/RR y ajusta suspensión si hay asimetría persistente.",
+      "error": "",
+      "elapsed": 3.4364075660705566
+    },
+    {
+      "idx": 14,
+      "tier": "tier1",
+      "level": "e",
+      "question": "¡URGENTE! ¿Llego o no? Fuel, consumo, revoluciones.",
+      "response": "**Aún en carrera (P3), pero con margen ajustado.**\n\n- **Combustible:** 18.2L / Consumo actual ~0.82L/v → **Puedes llegar si mantienes ritmo y evitas paradas innecesarias.**\n- **RPM:** 8,472 RPM → **Aceptable para tu estrategia (ERS activo).** Si sube más, revisa consumo.\n\n*Recomendación:* Mantén **throttle estable**, prioriza **ERS eficiente** y ajusta **brake/gear** para evitar pérdida de tiempo.",
+      "error": "",
+      "elapsed": 3.7615177631378174
+    },
+    {
+      "idx": 15,
+      "tier": "tier1",
+      "level": "e",
+      "question": "¡EMERGENCY! ¿Puedo terminar o no?",
+      "response": "**Respuesta:**\nNo hay datos suficientes para confirmar una **emergencia física**. Sin embargo, estos son los puntos clave:\n\n- **Tiros**: RL/RR (76°C) y FL (89°C) están en límites aceptables para condiciones de lluvia ligera.\n- **Brakes**: RL/RR (295-298°C) podrían ser preocupantes si no se recalientan con frenadas recientes. **Verifica presión de frenos**.\n- **ERS/ERP**: Activo a **145Nm** → Riesgo de sobrecarga en curvas húmedas. **Reduce torque o apaga ERS si es seguro**.\n\n**Acciones inmediatas:**\n1. **Frena con suavidad** para estabilizar RL/RR.\n2. **Evita acelerar bruscamente** (ERS activa).\n3. Si hay pérdida de control, **apaga ABS/TC** y usa frenada progresiva.\n\nSi la situación persiste o empeora, **abandona el coche**.",
+      "error": "",
+      "elapsed": 4.752616882324219
+    },
+    {
+      "idx": 16,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Las revoluciones del motor estan en rango?",
+      "response": "Sí, **RPM (8472 rpm)** están dentro del rango óptimo para tu configuración actual (**6ª marcha** y condiciones de **tierra húmeda/lluvia ligera**). No hay señales de sobrecalentamiento o estrés excesivo.\n\n*Recomendación:* Mantén la potencia estable en este rango para evitar desgaste prematuro. Si el ERS sigue aportando torque, ajusta ligeramente la estrategia de recuperación si es necesario.",
+      "error": "",
+      "elapsed": 3.4506828784942627
+    },
+    {
+      "idx": 17,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Presion del aceite correcta?",
+      "response": "**No hay datos disponibles de presión del aceite en telemetría.**\n\n*Recomendación:* Verifica manualmente con el sistema de monitoreo interno o revisión física. **Oil Temp (102°C) está dentro de rango seguro, pero presión debe confirmarse.**",
+      "error": "",
+      "elapsed": 3.0289535522460938
+    },
+    {
+      "idx": 18,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Temperatura del agua OK?",
+      "response": "**Sí, temperatura del agua (94°C) está dentro de rango aceptable para condiciones actuales.** No hay señales de sobrecalentamiento.",
+      "error": "",
+      "elapsed": 2.7161223888397217
+    },
+    {
+      "idx": 19,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Suspension normal?",
+      "response": "**Suspension is slightly compromised:**\n- **Front (FL/FR):** Slightly too low (**+0.038m / +0.036m**), reducing ride height and potentially increasing drag.\n- **Rear (RL/RR):** Minor sag (**+0.041m / +0.039m**), but within acceptable limits.\n\n**Action:**\n- Adjust ride height slightly higher (~+0.5–1cm) to optimize aerodynamics.\n- Monitor tire cooling—RR/RL temps are critical under light rain (consider a quick check if possible).",
+      "error": "",
+      "elapsed": 3.6758341789245605
+    },
+    {
+      "idx": 20,
+      "tier": "tier2",
+      "level": "b",
+      "question": "¿DRS activado?",
+      "response": "No, **DRS está desactivado** (no hay datos de activación en telemetría). Verifica el panel visual o la pantalla del coche.",
+      "error": "",
+      "elapsed": 2.7332236766815186
+    },
+    {
+      "idx": 21,
+      "tier": "tier2",
+      "level": "b",
+      "question": "¿ABS funcionando?",
+      "response": "No, **ABS está desactivado (OFF)** en telemetría.",
+      "error": "",
+      "elapsed": 2.550957202911377
+    },
+    {
+      "idx": 22,
+      "tier": "tier2",
+      "level": "b",
+      "question": "¿Control de traccion activo?",
+      "response": "**Respuesta:**\nActivo (ERS en modo *Active Mode*). No hay datos específicos sobre el nivel de activación, pero el sistema está en uso.",
+      "error": "",
+      "elapsed": 2.702263116836548
+    },
+    {
+      "idx": 23,
+      "tier": "tier2",
+      "level": "c",
+      "question": "Temperatura motor y aceite. ¿Estan bien?",
+      "response": "**Motor:** **102°C** (aceptable en condiciones de lluvia, pero monitorea el aumento).\n**Aceite:** **102°C** (temperatura estable; no hay sobrecalentamiento).\n\n*Recomendación:* Mantén la velocidad constante y evita aceleraciones bruscas para evitar sobrecarga del motor.",
+      "error": "",
+      "elapsed": 3.174618721008301
+    },
+    {
+      "idx": 24,
+      "tier": "tier2",
+      "level": "c",
+      "question": "Presion hidraulica y RPM. ¿Todo OK?",
+      "response": "**Hidráulica:**\n- **FL:** ~150 bar (estimado por presión de frenos + suspensión)\n- **FR:** ~148 bar\n- **RL:** ~135 bar\n- **RR:** ~132 bar\n\n**RPM:**\n✅ **OK**, en rango óptimo para 6ª marcha (~7,000–9,000 RPM).\n\n---\n**Notas clave:**\n- **Brakes FL/FR:** Presión baja (FL: 342°C, FR: 338°C) → Riesgo de sobrecalentamiento. Reduce presión hidráulica si es posible.\n- **RL/RR:** Temperaturas bajas en frenos y neumáticos → Menor riesgo de degradación por ahora.\n- **Suspensión:** Suspensiones ligeramente altas (FL/FR > RL/RR) → Posible pérdida de agarre en curvas. Revisa ajustes si es necesario.\n\n**Recomendación inmediata:**\n- **Reduce presión hidráulica en FL/FR** (si no hay restricciones técnicas) para aliviar calor.\n- **Ajusta suspensión** si notas pérdida de tracción en curvas (FL/FR más bajos).",
+      "error": "",
+      "elapsed": 5.248257160186768
+    },
+    {
+      "idx": 25,
+      "tier": "tier2",
+      "level": "c",
+      "question": "Ride height y deflection. ¿Como vamos?",
+      "response": "**Ride Height Analysis:**\n- **Current:** **+7.2 cm** (higher than usual).\n- **Impact:** Increased drag (+0.98) and reduced downforce efficiency.\n- **Action:** Lower ride height to improve aerodynamics and stability.\n\n*Check suspension alignment if further adjustments needed.*",
+      "error": "",
+      "elapsed": 3.0657763481140137
+    },
+    {
+      "idx": 26,
+      "tier": "tier2",
+      "level": "d",
+      "question": "¡YA! Agua motor, aceite, RPMs.",
+      "response": "**Motor Water:** *94°C* (within safe range)\n**Oil Temp:** *102°C* (check for overheating if sustained; may need cooling adjustment)\n\n**RPMs:** 8,472 – **High but stable**. Consider reducing throttle slightly to lower RPMs and reduce ERS strain.",
+      "error": "",
+      "elapsed": 3.1283345222473145
+    },
+    {
+      "idx": 27,
+      "tier": "tier2",
+      "level": "d",
+      "question": "Suspension, frenos, motor. ¿Todo bien?",
+      "response": "**Suspensión:**\n- **Ride height (0.072m)** y susensiones en rango aceptable.\n- **FL/RR ligeramente bajados** → Podría reducir *ride height* a ~0.068m para mejorar estabilidad.\n\n**Frenos:**\n- Temperaturas **FL/FR muy altas (342C/338C)**, RL/RR normales.\n- **Baja presión de aire en RL/RR (295C/298C)** → Revisar neumáticos o desgaste. Priorizar frenada suave.\n\n**ERS/Motor:**\n- **ERP activo (145Nm)** → Optimizado para consumo y potencia.\n- **Temperatura del motor (Oil: 102°C, Water: 94°C)** dentro de rango seguro.\n- **RPM alto (8,472 RPM) en 6ª** → Posible sobrecarga; bajar a ~8,300 RPM si posible.\n\n---\n**Acciones inmediatas:**\n✅ Reducir *ride height* ligeramente y revisar frenos RL/RR.\n⚠️ Evitar excesos de RPM/ERP en curvas.",
+      "error": "",
+      "elapsed": 5.190794229507446
+    },
+    {
+      "idx": 28,
+      "tier": "tier2",
+      "level": "d",
+      "question": "¡DAME rapido! Temperaturas y presiones.",
+      "response": "**Temperatura:**\n- **Braques:** FL (342°C), FR (338°C) → *Prensa alta, revisa desgaste*.\n- **Neumáticos:** RL/RR (76–78°C) → **Frio suficiente**, pero RR está más bajo que RL.\n- **Aceite:** 102°C *(aceptable en carrera)*.\n- **Líquido refrigerante:** 94°C *(bajo riesgo, pero vigila sobrecalentamiento)*.\n\n**Presiones (no disponible en telemetría)**:\n- *Avisa si necesitas datos específicos de presión de neumáticos/braques*.\n\n---\n**Acciones clave:**\n✅ **Neumáticos RR:** Revisar presión/desgaste si hay pérdida de adherencia.\n⚠️ **Braques FL/FR:** Monitorea desgaste (342°C) y posible degradación en carrera.",
+      "error": "",
+      "elapsed": 4.547995090484619
+    },
+    {
+      "idx": 29,
+      "tier": "tier2",
+      "level": "e",
+      "question": "¡ALARMA! Motor sobrecalentando. ¿Que hago?",
+      "response": "**Acción inmediata:**\n- **Reduce potencia y RPM** a ~6,000 RPM (desactiva ERS si posible).\n- **Aumenta consumo de combustible** (~1L/v) para enfriar motor.\n- **Evita frenadas bruscas** (brakes a 50% max).\n- **Verifica presión aceite y refrigerante** en telemetría.\n\n*Si oil temp sigue >120°C, considera apagar ERS y reducir consumo de combustible.*",
+      "error": "",
+      "elapsed": 3.5319743156433105
+    },
+    {
+      "idx": 30,
+      "tier": "tier2",
+      "level": "e",
+      "question": "¡CRITICO! Aceite y agua en rojo.",
+      "response": "**Acción inmediata:**\n- **Baja la temperatura del motor** (reduce RPM a ~6,500 RPM con throttle ~70%).\n- **Bloquea el ERS** (activar *TC ON* si disponible) para evitar sobrecalentamiento.\n- **Revisa fugas** en aceite y refrigerante (verifica sellos, juntas, mangueras).\n- **Ajusta suspensión** a nivel mínimo (0.03m) para reducir calor en chasis.\n\n**Prioridad:** Detener la carrera si no resuelves el sobrecalentamiento.",
+      "error": "",
+      "elapsed": 3.7637994289398193
+    },
+    {
+      "idx": 31,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿Subio la temperatura del motor en las ultimas vueltas?",
+      "response": "Sí, hay una tendencia al **aumento de temperatura del motor** en las últimas vueltas (ejemplo: última vuelta reportada es ~102°C vs. datos históricos previos).\n\n**Recomendación:**\n- Ajustar **carga de ERS** para reducir consumo y evitar sobrecalentamiento.\n- Verificar si hay **fricción interna** (si RPM/ERS se mantienen altos con baja eficiencia).\n*No hay telemetría histórica exacta, pero el aumento en Oil_Temp + ERS activo sugiere posible sobrecarga.*",
+      "error": "",
+      "elapsed": 3.6934900283813477
+    },
+    {
+      "idx": 32,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿Bajo la presion de los neumaticos?",
+      "response": "**Sí, presión baja en las ruedas traseras (RL/RR).**\n- **RL:** ~1.5 bar (estimado por temperatura y deformación).\n- **RR:** ~1.4 bar.\n**Acciones inmediatas:**\n- Revisar válvulas y posibles fugas.\n- Prioriza RL/RR antes de seguir.\n\n*(Nota: Telemetría no muestra presión exacta, pero datos de temperatura y suspensión confirman baja inflado).*",
+      "error": "",
+      "elapsed": 3.4295172691345215
+    },
+    {
+      "idx": 33,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿Aumento el consumo de gasolina?",
+      "response": "**Sí, hay un aumento en el consumo actual (0.82 L/v vs. datos históricos).**\n\n**Posibles causas:**\n- **Tiros altos de RPM (8472 rpm)** con ERS activo y alto torque.\n- **Batería baja (0.72) + carga ERS limitada** → sistema trabajando más duro.\n- **Condiciones de pista húmedas (LigthRain 70%)** → mayor resistencia aerodinámica y fricción.\n\n**Recomendación:**\n- Reduce ERS torque o activa **TC/ERS limitador** si disponible.\n- Ajusta RPM a rango óptimo (~8000–8200) para mantener eficiencia.",
+      "error": "",
+      "elapsed": 4.016334772109985
+    },
+    {
+      "idx": 34,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿RPM estable o subiendo?",
+      "response": "**Estable (8,472 RPM)** – No hay tendencia clara de aumento en telemetría actual.",
+      "error": "",
+      "elapsed": 2.622655153274536
+    },
+    {
+      "idx": 35,
+      "tier": "tier3",
+      "level": "b",
+      "question": "¿DRS como va funcionando esta carrera?",
+      "response": "**DRS Status:**\n- **Activo (en uso)** si está alineado con la zona activa.\n- **Desactivado** en zonas fuera de rango o con tráfico.\n\n*Verifica telemetría actual para confirmar posición exacta dentro del área DRS.*",
+      "error": "",
+      "elapsed": 3.0122780799865723
+    },
+    {
+      "idx": 36,
+      "tier": "tier3",
+      "level": "b",
+      "question": "¿ERS generando bien?",
+      "response": "**ERS está funcionando activamente con **145 Nm de torque** (dato en telemetría).**\n- **Consumo moderado** (no saturado, pero revisa si hay pulsos erráticos).\n- **Peso ERS bajo** (ideal para mantener ritmo).\n\n**Acción inmediata:**\n- Ajusta la **conducción suave** para evitar sobrecarga.\n- Si notas pérdida de potencia, verifica que no haya fallo en el sistema.",
+      "error": "",
+      "elapsed": 3.4562923908233643
+    },
+    {
+      "idx": 37,
+      "tier": "tier3",
+      "level": "b",
+      "question": "¿KERS recuperacion funcionando?",
+      "response": "**Sí, el KERS (ERS) está activo con recuperación de energía disponible.**\n*Torque actual: **145 Nm***\n*(No hay datos de recuperación exacta en telemetría, pero el sistema está operando).*",
+      "error": "",
+      "elapsed": 2.9159810543060303
+    },
+    {
+      "idx": 38,
+      "tier": "tier3",
+      "level": "c",
+      "question": "Fuel consumption y battery. ¿Mejorando o piorando?",
+      "response": "**Fuel consumption (ERS on):**\n- **Improving slightly** – Current ERS torque (145Nm) is higher than typical recovery phases, suggesting better energy extraction efficiency.\n\n**Battery state:**\n- **Unavailable data** – Cannot assess trend without historical battery charge/state-of-charge telemetry. Focus on ERS usage instead.\n\n*Action:* Monitor ERS efficiency; reduce throttle if RPM drops below 8000 to preserve battery.",
+      "error": "",
+      "elapsed": 3.4389092922210693
+    },
+    {
+      "idx": 39,
+      "tier": "tier3",
+      "level": "c",
+      "question": "Temperatura motor y frenos. ¿Estables?",
+      "response": "**Motor:** Estable (RPM constante, sin picos).\n**Frenos:**\n- **FL/FR:** Tiempos de frenado estables (342°C/338°C).\n- **RL/RR:** Frenos más calientes (298°C/295°C), pero sin sobrecalentamiento crítico.\n**Conclusión:** Estabilidad general, pero RL/RR requieren vigilancia.",
+      "error": "",
+      "elapsed": 3.3539979457855225
+    },
+    {
+      "idx": 40,
+      "tier": "tier3",
+      "level": "c",
+      "question": "Presion aceite y agua. ¿Tendencia?",
+      "response": "- **Aceite**:\n  Temperatura estable en **102°C** (sin datos históricos de tendencia).\n\n- **Agua**:\n  Temperatura estable en **94°C** (sin datos históricos de tendencia).",
+      "error": "",
+      "elapsed": 2.852872848510742
+    },
+    {
+      "idx": 41,
+      "tier": "tier3",
+      "level": "d",
+      "question": "Historico! Consumo, temps motor, battery. Como vamos.",
+      "response": "**Consumo actual:** 0.82 L/v (promedio histórico en estas condiciones: ~0.83–0.85 L/v).\n**Temperatura motor:** RPM alto (8472) con consumo eficiente; **batería:** 0.72V (poco margen para ERS).\n\n**Situación:**\n- **Posición:** P3, pero **P4 tiene +6.468s** (diferencia acumulada). Debes priorizar **conservar energía** y evitar sobrecarga en curvas.\n- **Tiros:** Suspensión equilibrada; bajón moderado en RL/RR (verifica aligeramiento si es necesario).\n- **ERS:** Activo con 145Nm. Usa **modo ECU ajustado** para no saturar la batería.\n\n**Recomendación clave:**\n- **Reducir consumo ERS** (si es posible) y **evitar aceleraciones bruscas**. Si P2 te supera, aprieta en curvas secas con menos ERS.",
+      "error": "",
+      "elapsed": 4.859373331069946
+    },
+    {
+      "idx": 42,
+      "tier": "tier3",
+      "level": "d",
+      "question": "Ultimas 5 vueltas: RPM, oil presion, water temp.",
+      "response": "**RPM (last 5 laps):**\n- *Unavailable* (no telemetry data provided).\n\n**Oil Pressure (last 5 laps):**\n- *Unavailable*.\n\n**Water Temperature (last 5 laps):**\n- **Lap 24:** ~93°C\n- **Lap 25:** ~94°C",
+      "error": "",
+      "elapsed": 3.2026188373565674
+    },
+    {
+      "idx": 43,
+      "tier": "tier3",
+      "level": "d",
+      "question": "¡EVOLUCION! Todo el trenmotriz.",
+      "response": "**Tren motriz actual:**\n- **RPM:** 8,472 RPM (bajo en zona de potencia ideal para tu modelo).\n- **ERS:** Activo con **145 Nm** (potencia recuperada, pero revisa si hay sobrecarga).\n- **Consumo ERS:** Sin datos específicos de recuperación vs. consumo.\n\n**Recomendaciones:**\n✔ **Ajusta RPM:** Mantén entre **7,800–8,200 RPM** para optimizar potencia y eficiencia del ERS.\n✔ **Controla carga ERS:** Si notas sobrecalentamiento o pérdida de potencia, reduce consumo (evita aceleraciones bruscas).\n⚠ **Sin telemetría detallada** de recuperación vs. gasto: Confirma con datos históricos si el ERS está funcionando al 100%.\n\n---\n**Prioriza estabilidad y eficiencia antes de más ajustes.**",
+      "error": "",
+      "elapsed": 4.50635838508606
+    },
+    {
+      "idx": 44,
+      "tier": "tier3",
+      "level": "e",
+      "question": "¡RAPIDO! Tendencia de consumo ultimas 3 vueltas.",
+      "response": "**Consumo en las últimas 3 vueltas:**\n- **No disponible en telemetría actual**.\n*(Para tendencias precisas, revisa datos históricos o logs de laps previos).*",
+      "error": "",
+      "elapsed": 2.8143362998962402
+    },
+    {
+      "idx": 45,
+      "tier": "tier3",
+      "level": "e",
+      "question": "¡SITUACION! Evolucion del motor completo.",
+      "response": "**Resumen motor (actualidad):**\n- **RPM:** Elevado (8,472 RPM) en **6ª marcha**, pero con **consumo moderado (0.82 L/v)**.\n- **ERS activo** (145 Nm de torque), pero sin datos históricos de recuperación/limpieza para comparar evolución.\n- **Temperaturas:**\n  - **Motor:** Agua (94°C) y aceite (102°C) en rango aceptable, pero **batería baja (0.72)** podría limitar rendimiento a largo plazo.\n\n**Recomendación inmediata:**\n- **Reducir RPM** si buscas eficiencia (evita sobrecarga ERS sin datos de recuperación).\n- **Verificar batería** (si es posible) para evitar fallos en recuperaciones futuras.",
+      "error": "",
+      "elapsed": 4.281055450439453
+    },
+    {
+      "idx": 46,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Cuanto hago boxes?",
+      "response": "**Recomendación de boxes:**\n- **FL y FR:** Cambia los neumáticos (89C/87C) antes de que bajen a ~85C para evitar pérdida de agarre en curvas.\n- **RL/RR:** Cambia los neumáticos (~76-78C) si la temperatura sigue subiendo; riesgo de degradación y pérdida de tracción.\n\n**Prioriza:**\n1. **FL/FR primero** (más críticos en condiciones de lluvia ligera).\n2. Si no puedes cambiar ambos, prioriza el lado que tenga más desgaste visible o mayor temperatura relativa.\n\n*Nota: No hay datos de desgaste visual actualizado.*",
+      "error": "",
+      "elapsed": 3.8832693099975586
+    },
+    {
+      "idx": 47,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Puedo hacer stint entero con este fuel?",
+      "response": "**Respuesta:**\nCon **18.2L de combustible** y una tasa de consumo de **0,82L/v**, necesitarías unos **23,5L para completar el stint (65 vueltas)**.\n**No es suficiente** por ahora.\n\n*Recomendación inmediata:*\n- Reduce consumo con ajustes en **ERS, RPM y presión de neumáticos**.\n- Prioriza **sobrevivir al stint actual** antes de planificar otro.",
+      "error": "",
+      "elapsed": 3.4771130084991455
+    },
+    {
+      "idx": 48,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Neumaticos van a llegar al final?",
+      "response": "**Sí, los neumáticos están en condiciones para finalizar la carrera.**\n\n- **FL/RR (más usados):** Temperaturas moderadas pero con desgaste notable (**76–89°C**). No muestran signos críticos de degradación.\n- **FR/RL (menos usados):** Más frescos (**78–87°C**), pero el RL ya está en límite medio.\n\n**Recomendación:**\nSi hay más laps, prioriza **FL/RR** para evitar pérdida de agarre. Si es final, revisa presión y perfil si notas vibraciones o pérdida de tracción.",
+      "error": "",
+      "elapsed": 3.8266589641571045
+    },
+    {
+      "idx": 49,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Estrategia de una o dos paradas?",
+      "response": "**Recomendación actual:**\n- **Dos paradas recomendadas** (si objetivo es ganar tiempo en carrera).\n- **Motivo:** Gap a P2 (+2.34s) y RR/RB muy calientes (76C/295C). Necesitas:\n  - **Nuevos neumáticos** para reducir consumo y mejorar adherencia en curvas.\n  - **Recarga de combustible** (18.2L, ~20% capacidad restante).\n- **Alternativa:** Si priorizas *safety* o fatiga del piloto, una parada con ERS recarga + cambio de neumáticos.\n\n---\n**Datos clave para decidir:**\n- **ERS:** 145Nm (batería baja a 72%). Recargar en parada.\n- **Neumáticos:** RR/RB muy degradados (76C/295C). Cambiar por nuevos.\n- **Consumo:** 0.82L/v → Acelerar consumo si no paras pronto.\n\n*¿Quieres ajustar prioridades?*",
+      "error": "",
+      "elapsed": 4.829424142837524
+    },
+    {
+      "idx": 50,
+      "tier": "tier4",
+      "level": "b",
+      "question": "¿DRS ayuda para adelantar?",
+      "response": "**Sí, el DRS está activado (ERS en modo activo).**\nActualmente no hay restricciones de tráfico, pero verifica si hay coches adelante en tu zona crítica.\n\n*Nota:* Si el DRS está **desactivado**, no ayudará. Revisa telemetría para confirmar su estado.",
+      "error": "",
+      "elapsed": 3.1471059322357178
+    },
+    {
+      "idx": 51,
+      "tier": "tier4",
+      "level": "b",
+      "question": "¿ERS para el ataque?",
+      "response": "**No, ERS está activo pero con carga baja (145Nm).**\n- **Recomendación:** Espera a que se recargue antes de usar.\n- **Alternativa:** Si es urgente, usa **modo \"Boost\" controlado** (si disponible) para un impulso temporal.\n\n*Nota: Sin telemetría de estado ERS exacto en tiempo real.*",
+      "error": "",
+      "elapsed": 3.321709632873535
+    },
+    {
+      "idx": 52,
+      "tier": "tier4",
+      "level": "b",
+      "question": "¿DRS en este sector?",
+      "response": "**Sí, activa DRS en el sector actual.**\n*(Gap P2 +2.3s y condiciones de lluvia moderada favorecen su uso.)*\n\n---\n**Notas clave:**\n- **ERS activo (145Nm)**: Ideal para aprovechar energía recuperada.\n- **Tiros laterales**: Suspensión ligeramente baja (+0.038m FL) ayuda a mantener contacto.\n- **Batería baja (0.72)**: Prioriza eficiencia en consumo (0.82L/v).\n*Si el sector tiene restricciones, verifica con el equipo.*",
+      "error": "",
+      "elapsed": 3.6882922649383545
+    },
+    {
+      "idx": 53,
+      "tier": "tier4",
+      "level": "c",
+      "question": "Fuel queda, consumo, vueltas restantes. ¿Que hago?",
+      "response": "**Fuel:**\n- **Remaining:** ~18.2L (check exact fuel level via fuel gauge or tank volume data).\n- **Consumption:** **0.82L/valvo** (steady but high—likely due to ERS usage and medium compound).\n\n**Vuelotas restantes:**\n- **Total laps:** 65\n- **Current lap:** 25 → **40 vueltas restantes**.\n\n---\n### **Acciones clave:**\n1. **ERS Management:**\n   - **Reduce torque** (current: **145Nm**) to save energy.\n     *Target:* Aim for **<120Nm** if possible (check telemetry for efficiency gains).\n   - **Lower throttle engagement** in braking zones (avoid over-revving).\n\n2. **Tires:**\n   - **RL/RR are at 76C/78C (underinflated risk)** → Check pressure (telemetry doesn’t show PSI, but temps suggest underinflation).\n     *Action:* Top up to **~90-95PSI** (medium compound target range) and avoid aggressive cornering.\n\n3. **Fuel Efficiency:**\n   - **0.82L/valvo is high for medium compound.** Optimize:\n     - **Smooth throttle** (avoid jerks).\n     - **Downshift early** in gears 5/6 to reduce RPM drag.\n     - **Avoid overuse of brakes** (FL/FR temps at 340C/338C—cool before next lap).\n\n4. **Brakes:**\n   - **FL/FR temps stable**, but RL/RR are cooler (~295-298C). No immediate concern, but monitor for heat buildup.\n\n---\n**Priorize:** Fuel + tire pressure first. If time allows, check oil/water temps (102°C/94°C—normal for light rain).",
+      "error": "",
+      "elapsed": 6.6421427726745605
+    },
+    {
+      "idx": 54,
+      "tier": "tier4",
+      "level": "c",
+      "question": "Motor temps, tire wear, brake temps. Estrategia optima.",
+      "response": "**Motor:**\n- **Oil Temp:** Optimal (102°C).\n- **Water Temp:** Slightly high but stable (94°C). Monitor closely; may need cooling if rising.\n\n---\n**Tire Wear:**\n- **FL/RR:** Low wear (89C/76C), good condition.\n- **FR/RL:** Moderate wear (87C/78C). Consider **front-side wear**—check for underinflation or misalignment. Monitor closely; may need rotation/repair soon.\n\n---\n**Brake Temps:**\n- **FL/FR:** High temps (342°C/338°C), **critical**. Risk of fade.\n  - Reduce throttle, brake earlier, and avoid aggressive braking zones.\n- **RL/RR:** Lower but still elevated (298°C/295°C). Monitor for gradient changes.\n\n---\n**Strategy:**\n1. **Braking Zone Action:**\n   - **Front brakes:** Decrease pedal pressure in high-G zones (e.g., exit of Turn 4, apex of Turn 10).\n   - **Rear brakes:** Use **ERS recovery** (if available) to manage heat—switch to **low torque** if needed.\n\n2. **Tire Management:**\n   - **Front tires:** Rotate/replace soon. Consider **medium-compound switch** if wet conditions worsen.\n   - **Rear tires:** Monitor for wear; may need replacement by Lap 40–45 if not addressed.\n\n3. **Fuel & Strategy:**\n   - **Current fuel (18.2L):** Gap to P2 is +2.3s—safe to stay out longer if possible.\n     - If overtaking risk, consider **late pit stop** (Lap 30–35) for fresh tires/brakes.\n   - **ERS:** Use sparingly; torque (145Nm) is high—balance with braking.\n\n---\n**Immediate Actions:**\n- **Brake cooling:** Reduce throttle in braking zones.\n- **Tire check:** Ensure pressure/alignment on front tires.",
+      "error": "",
+      "elapsed": 7.021485805511475
+    },
+    {
+      "idx": 55,
+      "tier": "tier4",
+      "level": "c",
+      "question": "Todo junto: fuel, tires, brakes, engine. Plan.",
+      "response": "**Fuel:**\n- **Conserve fuel:** ~18.2L remaining (~26.5L capacity). Current consumption is high (0.82L/v) – reduce throttle in corners to save.\n\n---\n**Tires:**\n- **FL/RR warmest (89C/76C), RL coldest (78C)** → **Rotate tires** (swap FL→RL, FR→RR) to balance wear.\n- **Medium compound:** Risk of wet grip on Light Rain. Consider shifting to **Intermediate** if lap times drop significantly.\n\n---\n**Brakes:**\n- **FL/FR hotter than RL/RR** → **Check brake balance** (adjust caliper alignment or rotate discs).\n- Brake temperatures are acceptable (~340C–295C), but monitor for fade in wet conditions.\n\n---\n**Engine/ERS:**\n- **High RPM (8,472) with throttle at 85%** → **Reduce RPM** to save energy and improve lap speed.\n- **ERS active (145Nm)** – optimize recovery in braking zones; avoid aggressive clutch engagement.\n\n---\n**Summary Plan:**\n1. **Fuel:** Reduce throttle in corners, aim for ~0.7L/v.\n2. **Tires:** Rotate FL→RL/FR→RR immediately; consider Intermediate if needed.\n3. **Brakes:** Verify brake balance; no immediate action required but monitor temps.\n4. **Engine/ERS:** Lower RPM to 8,000–8,200; optimize ERS recovery.\n\n**Next Steps:**\n- Check tire pressure (if possible) and adjust for wet conditions.\n- Monitor oil/water temps—no critical issues yet.",
+      "error": "",
+      "elapsed": 6.2226221561431885
+    },
+    {
+      "idx": 56,
+      "tier": "tier4",
+      "level": "d",
+      "question": "¡TODO! Fuel, tires, brakes, engine. Dame plan.",
+      "response": "**Fuel:**\n- **Consumption:** ~0.82L/v (consistent). Refuel if gap to P2 drops below **~1.5s** (~16-17L remaining).\n- **Strategy:** Hold current fuel level for now; monitor tire wear.\n\n---\n\n**Tires:**\n- **Wear:** FL/RR most worn (**78C/76C**), RL slightly better (**79C avg**). Avoid aggressive braking/throttle.\n- **Compound:** Medium (good balance). Switch to **Intermediate** if gap widens or lap time stalls (~lap 30-35).\n- **Action:** Limit hard braking; manage ERS recovery.\n\n---\n\n**Brakes:**\n- **Heat:** FL/FR hot (**342C/338C**), RL/RR cooler (**298C/295C**). Brake early, avoid overheating.\n- **Condition:** FL/FR may need attention soon. Check for wear if temps rise further.\n\n---\n**Engine:**\n- **RPM:** 8,472 (high but stable). No issues detected; keep RPM moderate (~8K max).\n- **Throttle/Brake:** 85% throttle, 62% brake—adjust to balance power/control.\n- **ERS:** Active (**145Nm**), manage recovery to avoid overheating.\n\n---\n**Summary:**\n- **Fuel:** Refuel if gap >1.5s (~lap 30).\n- **Tires:** Switch to Intermediate if needed; limit hard corners.\n- **Brakes:** Brake early, monitor FL/FR temps.\n- **Engine:** Keep RPM stable; manage throttle/brake balance.\n\n*Lap focus: Smoothness > speed.*",
+      "error": "",
+      "elapsed": 6.323768854141235
+    },
+    {
+      "idx": 57,
+      "tier": "tier4",
+      "level": "d",
+      "question": "Situacion completa: necesito estrategia para acabar.",
+      "response": "**Estrategia clave actual:**\n- **ERS:** Usa el máximo recupero (145Nm) en curvas de alta velocidad y rectas largas para maximizar la energía antes del siguiente pit stop.\n- **Tiros de combustible:** Con **18.2L** y consumo moderado (0.82L/v), podrías llegar al pit con ~3L si ajustas el ritmo (evita sobrecarga en curvas). Prioriza **prioridad en la salida del box** para no perder tiempo.\n- **Tiros de frenada:** Si hay un giro rápido (ej. *Turn 1* o *Bend X*), usa ABS/TC para evitar bloqueos y protege los neumáticos (FL/RR más fríos).\n\n**Prioridades:**\n1. **Neumáticos:** RL/RR son más calientes (76C/295C). Reduce presión en curvas si hay riesgo de *understeer*.\n2. **Batería:** Si el ERS falla, prepárate para un posible \"dead battery\" (no hay datos de degradación real).\n\n**Acción inmediata:**\n- Ajusta la velocidad en curvas para evitar sobrecalentamiento de neumáticos.\n- Monitoriza los frenos: FL/RR tienen más calor; usa menos presión si hay riesgo de *burnout*.",
+      "error": "",
+      "elapsed": 5.464031219482422
+    },
+    {
+      "idx": 58,
+      "tier": "tier4",
+      "level": "d",
+      "question": "¡PLANE A! Combustible, gomas, motor, boxes.",
+      "response": "**Combustible:**\n- **Consumo actual:** ~0.82 L/100km (rápido; revisar ajustes de ERS y aerodinámica).\n- **Reserva estimada:** ~35L (laps restantes ~47). **Prioridad:** Reducir consumo en curvas y mantener RPM moderado.\n\n**Gomas:**\n- **Condición:**\n  - FL/FR: **Aceptables** (89C/87C), pero con desgaste visible.\n  - RL/RR: **Criticas** (76C/78C). **Accion:** Cambiar RL/RR *inmediatamente* por riesgo de pinchazo en curvas secas/húmedas. Priorizar en zona de boxes.\n\n- **Temperatura ambiente:** Lligth rain → **Gomas húmedas** (riesgo de aquaplaning). Mantén presión y alineación ajustada.\n\n---\n**Motor:**\n- **RPM/Throttle:**\n  - RPM alto (8472) con throttle al 85% → **ERS activado a 145Nm**. **Acción:** Reducir ERS torque en curvas para evitar sobrecalentamiento de frenos y desgaste prematuro.\n  - **Recomendación:** Mantener RPM entre **6000-7000** en rectas; priorizar eficiencia.\n\n---\n**Boxes:**\n- **Batería (0.72):** Baja carga → **Recarga urgente** si posible (riesgo de fallo ERS en laps siguientes).\n- **Suspensión:** Suspensión baja (~0.038m) → **Ajustar ligeramente más alto** para estabilidad en curvas húmedas (evitar rebote excesivo).\n- **Temperaturas:**\n  - **Brakes RL/RR (295C/298C):** Calientes, pero dentro límites si ERS está optimizado.\n  - **Oil/Water:** Normales (102°C/94°C), pero **vigilar** en laps siguientes por consumo de combustible.\n\n---\n**Resumen urgente:**\n1. **Gomas RL/RR → Boxes ahora.**\n2. **ERS torque reducir a ~80Nm** (evitar sobrecalentamiento).\n3. **Mantener RPM <7000** en curvas; priorizar eficiencia.\n4. **Recargar batería** si disponible.\n5. **Ajustar suspensión +0.01m** para húmedo.\n\n---\n*Nota:* Si no hay tiempo para cambios, enfócate en **gomas y ERS**.",
+      "error": "",
+      "elapsed": 8.459727048873901
+    },
+    {
+      "idx": 59,
+      "tier": "tier4",
+      "level": "e",
+      "question": "¡PILOTO orden! Fuel critico, tires acabados, motor fundido. ¿BOX ahora o no?",
+      "response": "**¡BOX INMEDIATO!**\n\n- **Tires**: RR/RL (76°C/78°C) y FR (87°C) están muy degradados.\n- **Brakes**: RL/RR (295C/298C) con riesgo de fallo por sobrecalentamiento.\n- **ERS**: Activo pero sin datos de desgaste en tiempo real.\n- **Suspensión**: FL/FR ligeramente hundidas (0.036m/0.038m), posible pérdida de estabilidad.\n\n**Prioridad**:\n1. **Tiros**: Cambiar RR/RL y FR *ahora*.\n2. **Brakes**: RL/RR requieren revisión urgente.\n3. **ERS**: Verificar estado del sistema (no hay telemetry de desgaste).\n\n**No arriesgarse más**.",
+      "error": "",
+      "elapsed": 4.388485908508301
+    },
+    {
+      "idx": 60,
+      "tier": "tier4",
+      "level": "e",
+      "question": "¡IMPOSIBLE! Todo mal. ¿Que hago?",
+      "response": "**Tiros:**\n- **Pista mojada (LLuvia ligera):** Reduce presión de neumáticos al mínimo viable para la tracción (**FL/FR ~70-75 psi**, RL/RR ajustar ligeramente más si hay pérdida de agarre).\n- **Neumáticos:** **RL/RR 1-2 unidades más blandos** (si posible) o **ERP (Energy Recovery Pressure)** activado en modo *low grip* para extraer energía sin degradarlos.\n- **Brakes:** **FL/FR a ~300C max**, RL/RR **295C max** (evita sobrecalentamiento). Si hay bloqueo, activa **TC/ESP** selectivamente.\n\n**Motivo principal:**\n- **RL/RR más fríos que FL/FR** → **Pérdida de agarre lateral en curvas**. Ajusta presión y compuestos si es posible.\n- **Batería baja (0.72)** → Si hay margen, usa **ERS al máximo** para compensar potencia.\n\n**Acciones inmediatas:**\n1. **Aumenta RPM a 9000+** (si no hay bloqueo de motor) para mantener torque en RL/RR.\n2. **Reduce velocidad de entrada a curvas** (~5-10 km/h menos).\n3. **Si ABS/TC fallan:** Actívalos con precaución, pero prioriza neumáticos.\n\n*¿Neumáticos disponibles más blandos?* Si no, **prioriza presión y RPM**.",
+      "error": "",
+      "elapsed": 5.812442302703857
+    },
+    {
+      "idx": 61,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡RAPIDO! ¿Llego o no?",
+      "response": "**Respuesta:**\nEstás a **+2.3s** de P2 en la vuelta **25/65**. **Sí llegas**, pero con margen ajustado.\nRecomendación clave:\n- **ERS (Recovery)** está activo, pero **torque limitado a 145Nm** (no optimizado para sprint).\n- **Tiros de motor** en 6ª: verifica si puedes mantener **RPM >8000** sin sobrecalentar.\n\n*Prueba un \"sprint\" controlado con ERS al final del sector 3.*",
+      "error": "",
+      "elapsed": 3.71708083152771
+    },
+    {
+      "idx": 62,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡YA! ¿Boxes o sigo?",
+      "response": "**Sigue la pista.** Los neumáticos **FR y RR** están más fríos (76-78°C) que los delanteros, pero aún tienen margen para un giro rápido. La diferencia de presión en el **ERS (145Nm)** sugiere que hay energía disponible si mantienes ritmo.\n\n*Recomendación clave:* Evita frenadas largas y prioriza velocidad en curvas. Si boxes, revisa neumáticos antes de volver a entrar.",
+      "error": "",
+      "elapsed": 3.4376425743103027
+    },
+    {
+      "idx": 63,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡PRONTO! ¿Termino o no?",
+      "response": "**No, aún no terminas.**\n\n- **Gap P2:** **+2.3s** (aún por recuperar).\n- **Tiros de motor y frenos:** RPM alto (8472) + ERS activo (145Nm). Ajusta pedal de gas para evitar sobrecalentamiento de neumáticos y frenos.\n- **Neumáticos:** RL/RR fríos (76C/78C), FL/FR más usados (89C/87C). Prioriza RL/RR en curvas exteriores.\n\n**Acción inmediata:**\n1. Reduce ERS torque si es posible (evita sobrecalentamiento).\n2. Ajusta suspensión para bajar RideHeight (0.072m) y reducir Drag (0.98).\n3. **Frenada en la salida:** Mantén presión moderada en frenos (RL/RR fríos, FL/FR más usados).\n\n*Si no hay datos de \"termina\" en telemetría, no puedo confirmar si es tu límite.*",
+      "error": "",
+      "elapsed": 4.8486082553863525
+    },
+    {
+      "idx": 64,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡INMEDIATO! ¿Que hago?",
+      "response": "**Prioridades inmediatas:**\n\n1. **Tiros de frenado (Braking):**\n   - **RL/RR:** Braques muy calientes (295-298°C). Reduce presión de frenada en estas ruedas para evitar grietas o fallos.\n   - **FL/FR:** Calor moderado, pero verifica si hay vibraciones. Si hay, reduce carga al máximo.\n\n2. **Tiros de dirección:**\n   - **RL/RR:** Ruedas con más desgaste (76C/78C vs 89C/87C). Reduce presión en estas ruedas para evitar patinadas o pérdida de tracción.\n   - **FL/FR:** Tiros firmes, pero vigila si hay sobrecalentamiento.\n\n3. **ERS:**\n   - **Activo (145Nm):** Usa el ERS con moderación en rectas largas (Gear 6). Si aceleras demasiado, puede saturar el motor y perder potencia.\n\n4. **Consumo de combustible:**\n   - **0.82L/v:** Consume rápido. Reduce velocidad en curvas para evitar pérdida de eficiencia.\n   - **Fondo de banca:** Si puedes, haz un giro más lento (ej: 15-20 km/h menos) para ahorrar.\n\n5. **Suspensión:**\n   - **RideHeight alto (7.2 cm):** Pierdes aerodinámica y estabilidad. Ajusta ligeramente hacia abajo si es seguro (sin perder contacto).\n\n6. **ERP/ERS:**\n   - **TC OFF:** Si puedes, activa el modo \"Recovery\" en ERS para recuperar energía en curvas.\n\n**Acción inmediata:**\n- **Frenar suavemente** en RL/RR y prioriza FL/FR.\n- **Reducir velocidad en rectas** (evita 8472 RPM sin necesidad).\n- **Evita aceleraciones bruscas** con ERS activo.\n\n*Si hay vibraciones o ruidos extraños, detente para revisar.*",
+      "error": "",
+      "elapsed": 7.076399803161621
+    },
+    {
+      "idx": 65,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Seguridad motor? Tengo miedo.",
+      "response": "**Motor:**\n- **RPM (8,472)** y **torque ERS (145 Nm)** son dentro de límites normales para tu configuración.\n- **Temperaturas críticas:** *Oil_Temp (102°C) / Water_Temp (94°C)* están en rango seguro (no hay alertas rojas).\n- **Batería (0.72)** y **ERS** funcionan correctamente sin sobrecalentamiento.\n\n**Recomendación:**\nSi el motor está \"cansado\" por lapsos anteriores, revisa:\n1. **Consumo de combustible (0.82L/v)** → Compara con tu *Best Lap* (¿más consumo en vuelta rápida?).\n2. **Temperaturas de aceite y agua** → Si son estables, no hay riesgo.\n\nSi notas vibraciones o ruidos anómalos, detente para revisión.",
+      "error": "",
+      "elapsed": 4.550725936889648
+    },
+    {
+      "idx": 66,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Motor va a partirse?",
+      "response": "**Respuesta:**\nNo hay datos de **temperatura del motor** o **presión de aceite** en telemetría. No puedo confirmar riesgo de sobrecalentamiento.\n\n- **ERP (ERS) activo**: Consume energía, pero no afecta directamente al motor.\n- **RPM moderados (8472)** y **suspensión estable**, sin señales de vibración anómala.\n\n**Recomendación:**\nVerifica **temperatura del motor** en el dashboard o telemetría específica antes de acelerar. Si no está disponible, prioriza **ritmo constante** para evitar sobrecarga.",
+      "error": "",
+      "elapsed": 3.8186044692993164
+    },
+    {
+      "idx": 67,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Frenos van a fallar?",
+      "response": "**Respuesta:**\nLos frenos **no muestran signos críticos de sobrecalentamiento o degradación**. Temperaturas máximas:\n- FL: **342°C** (aceptable, ~50-60°C por encima del límite seguro)\n- FR: **338°C**\n- RL/RR: **<300°C** (muy seguros).\n\n**Recomendación:**\n- Mantén presión en frenos y revisa desgaste visual si hay humo o vibraciones.\n- Si ERS está activo, reduce carga para evitar sobrecalentamiento de discos.\n\n*No hay datos de desgaste físico ni fallos en telemetría.*",
+      "error": "",
+      "elapsed": 3.9444634914398193
+    },
+    {
+      "idx": 68,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Aceite OK? Veo warning.",
+      "response": "**Oil Temp:** **102°C** (within normal range for current conditions).\n**No immediate oil pressure warning detected in telemetry**—confirm with dash display.\n\n*Check dashboard for specific oil pressure reading.*",
+      "error": "",
+      "elapsed": 2.8594493865966797
+    },
+    {
+      "idx": 69,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡ADELANTE! ¿Puedo atacar ya?",
+      "response": "**Sí, pero con precaución:**\n- **Tiros:** RL/RR (76°C) y FL/FR (89/87°C) tienen desgaste desigual. Prioriza curvas secas para evitar bloqueos.\n- **Batería baja (0.72)**: ERS activo pero bajo nivel. Usa recuperación de energía en zonas lentas.\n- **Braques RL/RR fríos** (295/298°C vs FL/FR 342/338°C): Evita frenadas largas en rectas.\n\n**Acción recomendada:**\n- **Línea rápida** en curvas secas (ej. *Turn 12*).\n- **Controla velocidad** para evitar pérdida de tracción en RL/RR.\n- **Mantén ERS** activado pero sin exceder 145Nm.\n\n*Si hay riesgo de bloqueo, reduce presión y prioriza fluidez.*",
+      "error": "",
+      "elapsed": 4.540597438812256
+    },
+    {
+      "idx": 70,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡PUSH! ¿Aguantan los Michelin?",
+      "response": "**Tiros actuales:**\n- **RL/RR (traseros):** Temperaturas de 76°C/78°C. **No están en condiciones óptimas para más presión** (pérdida de agarre en curvas secas o mojado).\n- **FL/FR (anteros):** Están más frescos, pero el gap con P2 (+2.34s) sugiere que necesitas **más potencia y eficiencia**.\n\n**Recomendación:**\n- **Baja presión en RL/RR** (si es posible ajustar sin perder tracción).\n- **Acelera más suavemente**, prioriza la **ERS y consumo eficiente** para recuperar tiempo.\n\n*Nota: No hay datos de presión actual en neumáticos.*",
+      "error": "",
+      "elapsed": 4.093670845031738
+    },
+    {
+      "idx": 71,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡SACRIFICE todo! ¿Boxes o sigo hasta final?",
+      "response": "**Recomendación:**\n- **No boxes.** Los neumáticos están en **RL/RR (76C/78C)** y **FL (89C)**, pero con **FR (87C)** aún en buen estado.\n- **ERP activo** (145Nm) puede ayudar a mantener ritmo, pero prioriza **sobrepasos limpios**.\n- **Consumo de combustible alto (0.82L/v)** y **batería baja (0.72)** justifican continuar.\n- **Braques fríos en RL/RR** podrían ser un riesgo si frenas fuerte; evita sobrecargas.\n\n*Si la estrategia lo permite, sigue hasta meta.*",
+      "error": "",
+      "elapsed": 4.093236446380615
+    },
+    {
+      "idx": 72,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡MAXIMO PUSH! ¿Puedo?",
+      "response": "**Respuesta:**\n*\"Si, pero con precaución:*\n- **Tiros:** RPMs altos (8.5k) + throttle al límite pueden sobrecargar RL/RR (76°C/295°C). Prioriza **FL/FR** para evitar pinchazos.\n- **Batería baja (0.72)** y **ERS activo (145Nm)**: Usa el motor si hay necesidad de potencia extra, pero evita golpes bruscos en ERS.\n- **Brakes calientes (RL/RR):** Reduce presión al frenar para evitar desgaste acelerado.\n\n*Si es un sprint final, hazlo con control. Si es ritmo, prioriza FL/FR y ajusta suspensión si hay rebote excesivo (0.038m/FL).\"*\n\n---\n**Notas clave:**\n- **Tiros:** No hay telemetría de *torque* o *load*, pero RL/RR son fríos para este ritmo. Si es sprint, prioriza **ERP** (no ERS) y **temperatura de llantas**.\n- **Consumo:** 0.82L/v en 6ª no es óptimo con el gap a P2 (+2.34s). Si hay margen, reduce consumo a ~0.75L/v con RPMs más bajos.\n- **Suspensión:** FL está alto (0.038m), podría generar *understeer*. Ajusta ligeramente hacia abajo si es necesario para mantener tracción en curvas.",
+      "error": "",
+      "elapsed": 5.953383445739746
+    },
+    {
+      "idx": 73,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Que pasa? No entiendo los numeros.",
+      "response": "**Tiros:**\n- **FL/RR:** Sobrecalentados (89°C/76°C vs. RL/FR ~87°C). Riesgo de grietas o pérdida de adherencia.\n- **Braques FL/RR:** Más calientes que los otros (342°C/295°C), posible sobrebombeo o desgaste prematuro.\n\n**Motores:**\n- RPM alto (8.4k) con throttle al 85% → **Consumo elevado (0.82L/v)** y riesgo de sobrecalentamiento si no bajas la potencia.\n- ERS activado (145Nm): Usa energía almacenada, pero vigila el desgaste del sistema.\n\n**Otros:**\n- **Frenos:** RL/FR más fríos → Posible falta de presión en circuitos secundarios o bloqueo en algún sector.\n- **Neumáticos:** FL/RR más duros (78°C/76°C) que FR/RL (87°C). Necesitan más tiempo de recuperación.\n\n**Acciones urgentes:**\n1. Reduce potencia (ERP o throttle) para bajar consumo y RPM.\n2. Revisa neumáticos: FL/RR son los peores. Si es posible, haz un *tire check* en pista.\n3. **Braques:** Verifica presión de fluidos y distribuye peso con suspensión (RL/FR más bajos = menos calor).\n\n**Datos faltantes:**\n- Temperatura del aceite/fluido frenado exacto.\n- Presión de neumáticos y presión de aire en los frenos.\n- Estado de la batería (voltaje actual).",
+      "error": "",
+      "elapsed": 6.244941473007202
+    },
+    {
+      "idx": 74,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Esto verde o rojo? No veo bien.",
+      "response": "**Verde con precaución.**\n\n- **Tiros de ERS:** Torque alto (145Nm) + *Light Rain* → Riesgo de pérdida de tracción.\n- **Baterías y consumo:** 0.72 (baja) + consumo elevado (0.82L/v) → Controla el ritmo para evitar sobrecarga.\n- **Tiros:** Suspensión baja (FL/FR) pero *RR/RL* aún con calor en frenos/tires → Evita frenadas bruscas en curvas secas.\n\n**Prioridad:**\n1. **ERS:** Reduce torque si hay riesgo de bloqueo o pérdida de adherencia.\n2. **Tiros:** Ajusta presión en RR/RL si es posible (consulta con el equipo).\n3. **Consumo:** Mantén ritmo estable para no descargar batería.\n\n*Si hay dudas sobre la estrategia, consulta con tu ingeniero antes de actuar.*",
+      "error": "",
+      "elapsed": 4.617453336715698
+    },
+    {
+      "idx": 75,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Cuanto fuel? No me aclaro.",
+      "response": "Tienes **18.2 litros de combustible** en el tanque actualmente.",
+      "error": "",
+      "elapsed": 2.603795051574707
+    },
+    {
+      "idx": 76,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Que me dices? Estoy perdido.",
+      "response": "**Prioridades inmediatas:**\n\n1. **Tiros de rueda (FL > FR)**:\n   - *FL* (89°C) está en buen estado, pero *FR* (87°C) y *RR/RL* (76-78°C) son frágiles.\n   - **Acción**: Reduce velocidad en curvas para evitar pinchazos. Prioriza FL/FR.\n\n2. **Braques**:\n   - Temperaturas altas (*FL/RR*: 342°C / 295°C). Riesgo de *brake fade*.\n   - **Acción**: Ajusta presión de aire o reduce frenadas agresivas en rectas largas.\n\n3. **ERS (Active)**:\n   - Torque alto (145Nm) pero sin datos de eficiencia en condiciones actuales.\n   - **Precaución**: No sobreutilices si hay riesgo de *overheat* o pérdida de control.\n\n4. **Suspensión y altura**:\n   - Suspensión baja (0.036m FR), posible *understeer* en curvas. Ajusta ligeramente para equilibrio.\n   - **Verifica**: ¿RideHeight está optimizado para esta configuración?\n\n5. **Consumo y combustible**:\n   - 18.2L con consumo alto (0.82L/v). Si ERS no es clave, reduce RPM/Throttle en rectas.\n\n**¿Qué datos faltan para ajustar mejor?**\n- *Downforce balance* exacto (F825N/R1120N).\n- *ABS/TC activados* en esta sesión.\n- *Last lap strategy*: ¿ERS recuperado o consumo priorizado?\n\n**Primeras acciones**:\n- **Aprieta FL/FR**, evita frenadas bruscas.\n- Si ERS es clave, usa con moderación (145Nm es alto para condiciones de lluvia).\n- Revisa *tyre pressure* si hay sensaciones de pérdida de agarre.",
+      "error": "",
+      "elapsed": 6.90911340713501
+    },
+    {
+      "idx": 77,
+      "tier": "tier5",
+      "level": "e",
+      "question": "¡ALARMA! ¡PILOTO! Motor rojo, fuel cero, tires quemados.",
+      "response": "**Alerta crítica:**\n- **Consumo de combustible:** **0.82 L/volumen** → *Acelera al consumo máximo (1.0+ L/v) para evitar quedarte sin combustible antes del pitstop.*\n- **Tires:** **RL/RR 76C, FL 89C (FR 87C)** → *Gira a la pista con precaución; RL/RR tienen riesgo de desgasificado o quemado. Prioriza frenadas suaves y aceleraciones controladas.*\n\n**Acciones inmediatas:**\n- **ERS:** Desactívalo si es posible (*145Nm aún alto, pero prioriza combustible*).\n- **Batería:** *0.72V (bajo)* → Si hay opción de recarga en pitstop, actúa rápido.\n- **Suspensión:** *RL/RR bajos (0.039m/0.041m vs FL/FR 0.036/0.038m)* → Posible pérdida de altura; ajusta peso hacia adelante si es posible.\n\n**Recomendación:**\n- **Último pitstop:** Prioriza combustible y recarga de batería sobre cambios de neumáticos (RL/RR son críticos). Si no hay opción, gira con *FL/FR* pero monitorea frenadas.",
+      "error": "",
+      "elapsed": 5.509498834609985
+    },
+    {
+      "idx": 78,
+      "tier": "tier5",
+      "level": "e",
+      "question": "¡EMERGENCIA! Todo fallando. ¡AYUDA!",
+      "response": "**Prioridades inmediatas:**\n\n- **Tiros de frenada:** Reduce **throttle a ~5%** y aplica **brakes al máximo (100%)** en curvas para evitar derrapes.\n  - *FR/RR* tienen **temperatura crítica (76C/295C)** → Riesgo de gripe o bloqueo. Evita presión excesiva.\n\n- **ERS:** Desactívalo temporalmente (**ERS: OFF**) si no hay necesidad urgente. Consume energía y puede afectar estabilidad.\n  - *Torque actual (145Nm)* es alto; reduce a **<70Nm** si posible.\n\n- **Tiros de aceleración:**\n  - **Gear 6** → Cambia a **Gear 5** para evitar sobrecarga en motor/transmisión (RPM altos + consumo).\n  - *RL/FR* tienen **temperatura baja (<80C)** → Riesgo de patinaje. Acelera con suavidad.\n\n- **Suspensión:** Mantén **ride height estable** (~0.072m). Si hay rebote, ajusta amortiguadores (FL/RR más bajos si es necesario).\n\n---\n**No disponible:**\n- Presión de neumáticos.\n- Estado de ERS residual (capacidad restante).\n- Condiciones exactas del asfalto bajo lluvia.\n\n**Primeros pasos:**\n1. **Frena en la siguiente curva** y acelera con suavidad.\n2. Verifica si el **ERS se recupera** antes de reactivarlo.\n3. Si hay pérdida de control, usa **TC (ON)** y **ABS (ON)** para estabilidad.\n\n---\n*Si los neumáticos o frenos siguen fallando, considera un *pit stop* inmediato.*",
+      "error": "",
+      "elapsed": 6.506405353546143
+    },
+    {
+      "idx": 79,
+      "tier": "tier5",
+      "level": "e",
+      "question": "¡PELIGRO! Critical en todas partes. ¡ACCION YA!",
+      "response": "**Acciones inmediatas:**\n\n- **Tiros:** Reduce **throttle a ~65%** (evita sobrecarga en ERS y frenos).\n- **Brakes:** Aumenta presión de **braking fluid** (FL/FR: ~340C, RL/RR: ~295C → **activa ABS si necesario**).\n- **Tires:**\n  - **RL/RR:** Revisa presión/desgaste (76C/78C). Si es posible, **reduce carga en estas ruedas** (suspensión baja o ERS transferencia).\n  - **FL/FR:** Temperatura estable (~89-87C), pero **vigila desgaste**.\n- **ERS:** Mantén **torque controlado (145Nm)** y activa **TC si hay riesgo de bloqueo en llantas**.\n\n**Prioriza:**\n⚠️ **Evita frenazos bruscos** (riesgo de derrape con ERS activo).\n✔️ **Ajusta suspensión** para distribuir carga hacia FL/FR si RL/RR están calientes.\n\n*No hay datos de presión de neumáticos o desgaste exacto en telemetría.*",
+      "error": "",
+      "elapsed": 5.256500959396362
+    },
+    {
+      "idx": 80,
+      "tier": "tier5",
+      "level": "e",
+      "question": "DANGER everywhere. Everything failing. RESPOND.",
+      "response": "**Immediate Actions:**\n- **Brakes:** Reduce throttle, apply firm but controlled braking (no wheelspin). Check for brake fade—**FL/RR brakes are hot; consider reducing usage or shifting to softer compound if possible**.\n- **Tires:** Light rain means grip is compromised. **RL/RR tires are near optimal temp but low grip (76C/78C). Consider:\n  - **Downshifting to 5th gear** (if safe) to cool tires and reduce slip.\n  - **Avoiding aggressive corner exits**—light rain = unpredictable lap times.\n- **ERS:** Monitor **145Nm torque** carefully. If overheating or erratic, switch to **TC/ERS OFF** temporarily (but risk lap time).\n- **Suspension:** Ride height is slightly high (**0.072m**). Check for flex—could affect stability in wet conditions.\n- **Fuel/Battery:** **18.2L left**, ~35% ERS charge. No immediate refuel needed, but watch consumption.\n\n**Longer-Term:**\n- **Tire Strategy:** Medium compound is fine now, but expect slower lap times in rain. Consider **soft compound if P2 gap grows**.\n- **Battery/ERS:** If battery drops below 0.65, risk ERS cutoff—plan fuel stop if needed.\n- **Track Condition:** Light rain = slippery corners. Prioritize **consistent line and smooth throttle**.\n\n**Checklist:**\n1. Brakes: Reduce usage, monitor temps.\n2. Tires: Avoid aggressive exits; consider downshifting.\n3. ERS: Limit torque use if overheating.\n4. Suspension: No immediate issues, but watch ride height.\n\n*No telemetry on tire pressure or wheel speed—assume normal unless erratic.*",
+      "error": "",
+      "elapsed": 6.423097610473633
+    },
+    {
+      "idx": 81,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Que hago? ¿Paro ahora o sigo?",
+      "response": "**Recomendación:**\n- **No pares ahora.** Con **ERS activo (2/8 laps restantes)** y **temperatura de neumáticos en RL/RR bajo riesgo de grained**, prioriza mantener ritmo con:\n  - **Neumáticos Medium (18.2L, ~0.82L/h)**, que aún tienen margen para más laps.\n  - **RPM bajos (~8,472)** y **braqueo moderado (62%)** para conservar energía en sectores húmedos.\n- **DRS activo (disponible)**: Usa con precaución en zonas de alta velocidad post-curvas.\n\n**Alternativa:** Si ves que los neumáticos **RL/RR superan 80C sin grained**, considera un *soft* en la próxima parada.",
+      "error": "",
+      "elapsed": 5.032537221908569
+    },
+    {
+      "idx": 82,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Boxes ahora o espero hasta el final?",
+      "response": "**Recommendation:**\nPit now if possible—ERS is active (2/8 laps left) and **tires are graining** (RL/RR wear high, low grip). Fuel burn stable (~0.73–0.82L/lap), but **front brake heat is critical** (FL: 342°C). Stop before sector 1 to avoid tire/brake degradation.\n\n*If box window closes:* Consider waiting until lap 35 if you can manage a slower stint (~1:33 pace) without risking graining.",
+      "error": "",
+      "elapsed": 3.717602014541626
+    },
+    {
+      "idx": 83,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Stint strategy? ¿Una o dos paradas?",
+      "response": "**Recommended Strategy:**\n- **Single stop (lap ~37–38)** – Current tires are graining but still usable. Medium compound has good wet performance and lap time consistency.\n  - *Pit window ends at lap 38*, so you’ll need to manage fuel/ERS for the final laps.\n\n**Alternate Option:**\n- **Two stops (lap ~25 & ~40)** – If risking tire wear, but likely slower due to medium/hard compound gaps. Only if P1/P2 are vulnerable and you can exploit their stints.\n\n**Key Risks:**\n- Wet track conditions may slow you further; avoid aggressive braking/throttle.\n- **ERS state (active)**: Monitor recovery—no telemetry on current charge, but last lap had ~145Nm usage.",
+      "error": "",
+      "elapsed": 4.229590892791748
+    },
+    {
+      "idx": 84,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Cuando es el momento optimo para boxes?",
+      "response": "**Optimal pit window:** **Lap 35-37** (current fuel burn ~0.82 L/lap).\n\n**Rationale:**\n- Current wear is balanced (~0.11–0.14), but rear tires are cooler (~76C/RL, ~78C/RR) with higher pressure (~228kPa/231kPa). Consider **rear-side tire refresh** for better grip in wet conditions.\n- Fuel remaining: **~16.8L**, which is safe but may require a *short stint* if rain arrives sooner than expected (45 min forecast).\n- **ERS state:** Active (1/2), but with ~145Nm torque—no urgent charge needed unless you’re pushing hard on the last laps.\n\n**Recommendation:**\n- **Stint length:** **3–4 laps max** to avoid fuel penalty and manage tire wear.\n- If rain hits earlier, **prioritize rear-side tires** (RR/RL) for better grip.",
+      "error": "",
+      "elapsed": 4.830054759979248
+    },
+    {
+      "idx": 85,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Puedo terminar sin entrar a boxes?",
+      "response": "**Recommended:** **No, do not complete the lap without pit stops.**\n\n### Key Risks:\n1. **Tire Wear & Graining (Track Evolution):**\n   - Front tires (**FL/RR**) are at ~89C/76C with **0.12/0.13 wear**—still manageable but close to limits.\n   - Rear tires (**RL/FR**) are cooler (~78C/87C) but show **higher wear (0.14/0.11)** and lower pressure (228kPa/232kPa).\n   - *Risk:* Graining is worsening; rear tires may lose grip faster if not rotated/replaced.\n\n2. **Brake Temperatures:**\n   - Front brakes (**FL/FR**) at ~342C/338C with decent pressure (0.82/0.81). Rear brakes (**RL/RR**) are cooler (~298C/295C) but lower pressure (0.71/0.70).\n   - *Risk:* If you push harder, rear brakes may fade sooner.\n\n3. **Fuel Efficiency:**\n   - Current consumption is stable (~0.82L/h), but with 18.2L left and a ~15s gap to P1, you’ll need to optimize further.\n   - *Alternative:* Pit for fuel/ERS recharge if needed (but not urgent).\n\n### Action:\n- **If confident:** Push through the next laps (~3–4 more) but monitor tire pressures/wear closely. Consider rotating/replacing rear tires at your next pit stop.\n- **Safest option:** Enter boxes to replace/rebalance tires and check brakes before completing the race.\n\n**Data note:** No telemetry on *exact* graining progression or tire compound degradation rate—track evolution is critical here.",
+      "error": "",
+      "elapsed": 6.723679065704346
+    },
+    {
+      "idx": 86,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Leclerc viene fuerte por detras. ¿Defiendo o dejo pasar?",
+      "response": "**Decision:**\nGiven the current track conditions (graining tires) and your position, **do not defend**.\n\n- **Why?** Leclerc is likely running slightly faster on mediums/hard compounds due to less wear and better grip.\n- **Risk:** Graining can make tire management tricky—your rear tires are cooler than front, but pressure is dropping (228kPa/RL).\n- **Opportunity:** If he’s aggressive, you’ll have a clear path for a late pass in the next 5 laps.\n\n**Action:** Let him through now. Monitor his position closely and prepare to defend if he slows down unexpectedly.",
+      "error": "",
+      "elapsed": 3.841923952102661
+    },
+    {
+      "idx": 87,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Hamilton a 2 decimas. ¿Que hago?",
+      "response": "**Key Observations:**\n- **Tyres:** Medium compound, graining (wear high on rear, pressure low). Rear tyres are cooler but wear is consistent.\n- **Brakes:** Front brakes hot (342C/338C), rear brakes less stressed. Pressure slightly degraded, especially rear.\n- **Power & Efficiency:**\n  - RPM stable (~8,500) with slight decline in throttle efficiency (consistent consumption).\n  - ERS active but low torque (145Nm)—no urgent need to disengage yet.\n\n**Action Plan:**\n1. **Tyres:** Maintain current line—rear tyres are cooler and grip better than fronts. Avoid aggressive braking (fronts hot) or hard acceleration.\n2. **Braking:** Reduce front brake usage slightly; distribute power more evenly if needed.\n3. **ERS:** Keep active but monitor for potential recovery laps if gaps widen (P4 is 4+ seconds behind).\n4. **Fuel/Efficiency:** No urgent need to adjust—consistent consumption, no fuel management urgency yet.\n\n**Risk:** Graining could worsen with rain; watch rear tyre wear and pressure drop.\n\n*Next decision point:* If P2/P4 gap grows >5s or tyres degrade further (e.g., >0.15 wear on any side), consider a pit stop for fresh mediums.",
+      "error": "",
+      "elapsed": 5.551490306854248
+    },
+    {
+      "idx": 88,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Vettel presiona. ¿Ataco o cubro?",
+      "response": "**Recommended:**\n*Proceed cautiously—graining tires and light rain require caution.*\n\n- **Front left tire:** Highest wear (0.12) + highest temp (89°C). Suspect underinflation or grip loss.\n- **Brake pressures:** Front wheels at max (FL: 0.82, FR: 0.81), rear lower (RL/RR: ~0.7).\n- **ERS active**—avoid aggressive revving near braking zones.\n\n**Action:**\n- **Cover** in the next corner (especially if suspecting grip loss on FL). Check brake temperatures post-corner.\n- If confident, attack **only if** you confirm tire pressures are stable and avoid heavy throttle before braking.",
+      "error": "",
+      "elapsed": 4.119858264923096
+    },
+    {
+      "idx": 89,
+      "tier": "tier6",
+      "level": "b",
+      "question": "¿Undercut o overcut? Rival entrando a boxes.",
+      "response": "**Recommendation:**\n**Overcut (1-2 laps ahead).**\n\n**Justification:**\n- **Tire wear imbalance:** Rear tires are cooler and underinflated (~0.7kPa lower than front), suggesting they’re losing grip faster—risk of graining.\n- **ERS state:** Active but low torque (145Nm) suggests energy recovery is limited; overcut avoids ERS depletion before your window.\n- **Competitor’s tires:** P2 Hamilton has mediums, likely still fresh. An overcut lets you exploit their grip while avoiding a mid-stint pit stop.\n\n*If rivals are aggressive, confirm with crew.*",
+      "error": "",
+      "elapsed": 3.86216139793396
+    },
+    {
+      "idx": 90,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Adelantamiento posible. ¿Si o no?",
+      "response": "**No, no hay oportunidad de adelantar ahora.**\n- **Tires:** Graining (RL/RR más fríos y desgaste similar).\n- **Competidores:** P2 (Hamilton) tiene mejor ritmo que tú en este momento.\n- **ERS:** Solo 8 laps disponibles; prioriza conservar energía.\n\n**Recomendación:**\n- Mantén presión de neumáticos (FL: ~235kPa, RR: ~231kPa).\n- Optimiza consumo para llegar al box con combustible suficiente.",
+      "error": "",
+      "elapsed": 3.658568859100342
+    },
+    {
+      "idx": 91,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Hay FCY virtual. ¿Entro a boxes?",
+      "response": "**Recommended:**\n- **Do not pit yet.** Tires are still in the *graining* phase (RL/RR ~76–78°C, FL/FR closer to 89°C). Wait for a lap or two of consistent grip before considering a stop.\n\n**Key Notes:**\n- **Fuel economy is stable (~0.56–0.82L/v)**, but **ERS torque (145Nm) suggests you’re not fully extracting power yet**—consider checking engine setup if possible.\n- **Brake pressures are low** (especially rear), which may indicate a need for brake balance or cooling check if conditions worsen.\n\n**Action:** Monitor tire evolution further. If gaps widen significantly, consider a stop to refresh tires before rain.",
+      "error": "",
+      "elapsed": 4.147358179092407
+    },
+    {
+      "idx": 92,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Safety car proximo. ¿Cuando es el momento?",
+      "response": "**Estimated safety car window:** **Next 3–4 laps (~lap 27–29)** based on tire evolution and incoming rain.\n\n- **Current traction concerns**: Rear tyres are cooler than fronts (wear uneven, risk of graining).\n- **Safety margin**: If you push further with current grip, risk losing control in wet conditions.\n- **Recommendation**: Pit now if possible to switch to softer compound or rotate worn rear tyres.",
+      "error": "",
+      "elapsed": 3.4334678649902344
+    },
+    {
+      "idx": 93,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Lluvia en 20 minutos. ¿Boxes ahora o espero?",
+      "response": "**Action:** **Do not box yet.**\n**Rationale:**\n- **Tire wear & heat:** Rear tires (especially RR) are cooler but still underperforming (~76C/231kPa). Fronts are stable, but rear grip is marginal—graining risk in light rain.\n- **Fuel economy:** Current consumption (~0.82L/v) is high; fuel efficiency could improve with a lower throttle (e.g., 75%+ throttle = ~0.69–0.71L/v).\n- **ERS recovery:** Active but low torque (145Nm). Consider saving for later laps if rain arrives.\n- **Competitors’ stints:** P2 is fresh with Mediums, P4 has Mediums (but slower pace). No urgent need to pit yet.\n\n**Alternative:** Monitor rear grip closely. If RR temps drop below 70C or wear exceeds 0.15, consider a stop for *rear* tire refresh.",
+      "error": "",
+      "elapsed": 4.6808366775512695
+    },
+    {
+      "idx": 94,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Cambio de gomas. ¿Pits ahora o sigo?",
+      "response": "**Recommendation:**\n**Pit now.** Tire wear is high (especially rear), pressures are low, and track conditions suggest **graining**—expect faster degradation.\n\n- **FL/RR wear >0.13** → Risk of **underinflated/uneven contact patch**.\n- **Oil/water temps stable**, but **ERS torque (145Nm) suggests fuel burn may rise** with tire warm-up.\n- **Pit window open (laps 35-38)**—avoid risking a **front-end lockup or rear slip** on wet/graining.\n\n**Proceed to pit.**",
+      "error": "",
+      "elapsed": 3.8396754264831543
+    },
+    {
+      "idx": 95,
+      "tier": "tier6",
+      "level": "c",
+      "question": "¿Rain strategy? Pista mojandose.",
+      "response": "**Rain Strategy (Current Conditions):**\n- **Tire Condition:** Graining confirmed, but still usable.\n- **Recommendation:**\n  - **Pit Stop Now:** Fuel ~18.2L, wear low on all tires. Risk of losing grip if rain intensifies.\n  - **Plan:** Switch to **Medium compound** (if available) or **Soft** with fresh tires for next stint.\n  - **Avoid DRS/Rear Flap:** Higher risk of hydroplaning; prioritize traction.\n\n*If rain worsens, consider a stop earlier.*",
+      "error": "",
+      "elapsed": 3.7095730304718018
+    },
+    {
+      "idx": 96,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Stint o push? Neumaticos en window optimo.",
+      "response": "**Current Stint Analysis:**\n- **Tyre Wear:** Front (FL/RR) ~0.12/0.13, Rear (RL) ~0.14 → **Optimal for next stint** (wear balanced, no severe graining).\n- **Track Conditions:** Graining confirmed (RL temp 76C is critical; RR slightly cooler but stable). **Risk of rear tyre degradation if pushed further.**\n\n**Recommendation:**\n- **Stint:** **Push to Lap 35–38** (ERS still active, fuel margin ~18L).\n- **Tyre Strategy:** **Soft compound is correct**—no need for medium/hard. Focus on **rear tyre management** (RL/RR temps >70C risk).\n\n*Next stint (lap 42+) will require a pit stop if graining persists.*",
+      "error": "",
+      "elapsed": 4.41778302192688
+    },
+    {
+      "idx": 97,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Fuel window para acabar? ¿Cuanto me sobra?",
+      "response": "**Fuel window:** You’re at **~17.9L** (25.4L max).\n**Remaining fuel:** ~**17.6L**.\n\n*Recommendation:* If you can maintain pace, consider a **short stint (~8-10 laps)** to avoid tire wear/ERS depletion before the box window closes. Check ERS state if needed.",
+      "error": "",
+      "elapsed": 3.275942325592041
+    },
+    {
+      "idx": 98,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Tires van a durar? Ultima tanda hasta meta.",
+      "response": "**Tyres (Lap 25):**\n- **FL/RR:** Wear ~0.12/0.13 – *still in prime* (~6–8 more laps before peak wear).\n- **FR:** Wear ~0.11 – *slightly underperforming*, but still usable (~4–6 more laps).\n- **RL:** Wear ~0.14 – *needs attention soon* (graining likely; expect 2–3 more laps max).\n\n**Recommendation:**\n- **Front-right (FR) and rear-left (RL)** are the weakest—consider a pit stop if you can’t manage them.\n- **ERS torque (145Nm)** is high—check for energy recovery efficiency, but no immediate risk.\n\n*Tires will last to the finish unless conditions worsen.*",
+      "error": "",
+      "elapsed": 4.331425189971924
+    },
+    {
+      "idx": 99,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿2-stop o 1-stop? Rivales strategia.",
+      "response": "**Current strategy vs competitors:**\n- **P1 Verstappen (Soft tires, 20 laps):** Likely to pit soon (~lap 35–40).\n- **P2 Hamilton (Medium tires, 18 laps):** Probably still on mediums.\n- **P4 Leclerc (Medium tires, 22 laps):** Also likely mid-stint.\n\n**Recommendation:**\n- **Stick with current setup (mediums)** unless you see P1’s tire wear trend diverge significantly or track conditions worsen. Avoid a 2-stop if competitors are still on mediums and rain is not imminent.\n- **Monitor:** FL/RR tire pressures—consider softs if grip drops further or braking heat spikes.",
+      "error": "",
+      "elapsed": 4.01743221282959
+    },
+    {
+      "idx": 100,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Pace esta bien? ¿Gestiono o push?",
+      "response": "**Pace:** *Muy bueno* (1:32.847 vs. tu mejor lap de 1:31.234).\n\n**Gestión/Push:**\n- **Tiros:** Tires en buen estado pero con **graining moderado** (RL/RR más fríos y desgaste similar a FL/FR). Presiones bajas en RL/RR (228/231 kPa) sugieren que aún hay margen para aumentar presión si es necesario.\n- **Brakes:** Temperaturas altas en RL/RR (295C/298C), pero presión baja. Si mantienes **brake % ~40-45**, podrías evitar sobrecalentamiento sin perder eficacia.\n- **ERS:** Activo y con torque útil (145Nm). Usa el *boost* en curvas para aprovecharlo, pero evita saturar la batería (Battery: 72%).\n\n**Conclusión:**\n- **Push moderado**: Mantén **throttle ~80-85%** y **brake ~40%**, priorizando consistencia. Si hay zonas con fuerte graining en RL/RR, ajusta presión ligeramente (+3-5 kPa) en esos sectores.\n- **ERS:** Aprovecha el *torque* en curvas, pero no descuides la gestión de energía para evitar fallos laterales.\n\n**Próximos pasos:**\n1. Vigila el **graining en RL/RR** (posible causa de pérdida de tracción).\n2. Si hay zonas con alta carga aerodinámica, prueba a bajar ligeramente el *throttle* para reducir drag sin sacrificar velocidad.\n3. En la siguiente vuelta, revisa si el **ERS se satura** y ajusta el consumo de energía.",
+      "error": "",
+      "elapsed": 6.679267644882202
+    },
+    {
+      "idx": 101,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡ENGINEER! Todo en rojo. Fuel critico. Rival cerca. ¿PLAN?",
+      "response": "**Plan:**\n1. **Tire Management:** Stop now (lap 25) to switch to **hard compound**—graining is critical, wear is high on rear tires (RL/RR 76-78°C). Avoid further fuel loss.\n2. **Fuel:** ~18L left (critical for hard tires). Aim for **30s pit stop** to set up for lap 26.\n3. **Competitors:**\n   - **P4 Leclerc** is close (+4s) and on medium/hard tires—focus on **consistent pace** in green/yellow sectors.\n   - **Norris** (hard tires, no stops) may exploit if you’re too aggressive.\n4. **ERS:** Active but low torque (145Nm)—avoid heavy braking/acceleration to preserve energy.\n\n**Action:**\n- **Pit stop now.** Prioritize tire change over fuel refill.",
+      "error": "",
+      "elapsed": 4.573332071304321
+    },
+    {
+      "idx": 102,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡PILOTO orden! Box NOW or FINISH? Fuel zero. Tires gone.",
+      "response": "**Action:**\n**Pit immediately.** Current tyres are **graining severely** (RL/RR ~76C, FL slightly better but still warm). Fuel is near zero (~18.2L), and you’re losing time to competitors on worn compounds.\n\n**Key concerns:**\n- Tyre degradation (wear 0.11–0.14) + low grip → risk of sliding in wet conditions.\n- No DRS, ERS limited (only 8 laps left).\n- Fuel economy is stable (~0.72L/hr), but no margin for error.\n\n**Pit strategy:**\n- **Soft compound swap** (if possible) to preserve rubber.\n- **Check tyre pressure**—fronts are slightly underinflated (FL: 235kPa, FR: 232kPa).\n- **Optimize fuel burn** (consistent ~0.72L/hr).",
+      "error": "",
+      "elapsed": 4.558278322219849
+    },
+    {
+      "idx": 103,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡SITUATION critical! Analisis completo. ¡YA!",
+      "response": "**Key Concerns & Immediate Actions:**\n\n1. **Tire Condition:**\n   - *Front tires* (FL/RR) are **hot (89C/76C)** with **low wear (0.12/0.13)** but **high pressure (235kPa/231kPa)**—likely overinflated or losing grip.\n   - *Rear tires* (RL/FR) are **underperforming** (78C/76C, 228kPa/232kPa). **Graining evident**; consider **reducing pressure by ~5-10 kPa** and **coasting into corners**.\n\n2. **Brakes:**\n   - *Front brakes* (FL/FR) are **hot (342C/338C)** with **low pressure (0.82/0.81 MPa)**—likely overheating. **Reduce throttle in braking zones**; check for brake fade.\n\n3. **ERS & Power:**\n   - *ERS active* but **torque low (145Nm)**—likely due to **high RPMs (8,472)** and **low throttle efficiency**. **Shift earlier** to 6th gear if possible; avoid aggressive rev-matching.\n\n4. **Fuel Economy:**\n   - **Consumption rising (~0.82L/v)** with **lower throttle/brake engagement**—likely due to **tire grip issues**. **Optimize lap time over fuel burn**.\n\n5. **Race Strategy:**\n   - *Competitors* (Hamilton, Leclerc) are **in medium tires**, but you’re on **softs**. If rain hits soon (**45min**), consider **pushing harder now** to exploit tire life.\n   - *Box window open until lap 38*—no immediate stop needed unless grip worsens.\n\n---\n**Action Plan:**\n- **Reduce throttle in braking zones**; **coast into corners**.\n- **Lower rear tire pressure by ~10 kPa**, check for graining.\n- **Avoid aggressive rev-matching**; prioritize **consistent RPMs (7,500–8,200)**.\n- **Monitor brake temps**—if FL/RR exceed 360C, consider a stop.",
+      "error": "",
+      "elapsed": 7.69665002822876
+    },
+    {
+      "idx": 104,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¿Que harias tu? Situacion imposible.",
+      "response": "**Recomendación clave (prioridad):**\n**Aprovecha la ventana de pit (laps 35-38) para cambiar a *Soft* si aún no lo has hecho.** Los *Mediums* están grained y pierdes **~0.2s/lap vs. Soft** en condiciones húmedas.\n\n---\n### **Acciones inmediatas:**\n1. **ERS:** Usa el **ERS al máximo (torque 145Nm)** para compensar la baja presión de frenos y bajar RPM sin perder potencia.\n   - *RPM actual:* 8,472 → **Reduce a ~7,000-7,500** con *ERS* activado en curvas lentas (ej: sector 1).\n\n2. **Tiros:**\n   - **FL/RR:** Presión baja (<235kPa) y temperatura alta (>85C). **Frena más pronto** en rectas para evitar derrapes.\n     - *Ejemplo:* En la siguiente curva de frenada, aplica frenada **antes del límite de 62%** (usa *ERS* si es necesario).\n   - **RL:** Presión crítica (228kPa) y temperatura baja (78C). **No fuerces el pedal** en curvas cargadas.\n\n3. **Aceleración:**\n   - **Throttle:** Mantén **~85%** para evitar que los *Softs* pierdan presión por calor.\n   - **Gearbox:** Cambia a 6ª en rectas (ya lo estás), pero **evita sobrepasar 9,000 RPM** con ERS.\n\n4. **Suspenión:**\n   - **FL:** Suspensión baja (**0.038m**) → **Ajusta ligeramente más alto** para evitar contacto con el asfalto en curvas.\n   - **RL:** Suspensión alta (**0.072m**) → **Reducir 1-2mm** si hay vibraciones.\n\n---\n### **Si no puedes cambiar a *Soft*:**\n- **Acelera más rápido** en rectas para ganar tiempo con *Mediums* grained.\n- **DRS:** Actívalo en zonas permitidas (ej: curva siguiente) para aprovechar el *ERS*.\n\n---\n### **No:**\n❌ No uses ABS ni TC activados (no hay necesidad).\n❌ No fuerces frenos en curvas (brake temp crítica).\n\n---\n**Objetivo:** Llega a la ventana de pit con **~18L de combustible**, *Softs* con presión >240kPa y ERS al 100%.",
+      "error": "",
+      "elapsed": 8.731427431106567
+    },
+    {
+      "idx": 105,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡DECISION! 30 segundos. Boxes o no. ¡RESPONDE!",
+      "response": "**Decision:** **Pit now (19L left, ~25s to P4).**\n\n- **Tire wear imbalance**: Rear tires are cooler/weaker (~76–78°C vs front 87–89°C), risking grip loss.\n- **ERS depletion**: Only **8 laps** of recovery left; stop before energy crunch.\n- **Rain risk**: Graining tires + 45min rain forecast = slippery lap ahead.\n\n**Pit strategy:** Softs (if available) or transition to mediums for safety.",
+      "error": "",
+      "elapsed": 3.7396206855773926
+    }
+  ]
+}

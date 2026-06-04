@@ -1,0 +1,4 @@
+T2: PyAudioOutput init/close
+Command: cd backend && python -c "from src.services.audio_player import PyAudioOutput; p=PyAudioOutput(); p.close(); print('OK')"
+Result: OK
+Status: PASS

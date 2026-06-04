@@ -1,0 +1,20 @@
+TASK 14 — CrewChief alert visual (CRITICAL severity)
+====================================================
+Date: 2026-06-04T07:20:34.609Z
+BaseURL: http://localhost:1420
+Dispatch ok: true
+Frame category: safety
+Frame subtype: brake_failure
+Frame severity: critical
+Frame message: T14-CRITICAL Fallo de freno detectado, sal de pista ahora
+
+Store snapshot after dispatch:
+  crewchief.events.length: 1
+  crewchief.latestByCategory.safety.severity: critical
+  crewchief.latestByCategory.safety.message: T14-CRITICAL Fallo de freno detectado, sal de pista ahora
+  radio.latestAlert: "T14-CRITICAL Fallo de freno detectado, sal de pista ahora"
+  telemetry.alerts: ["T14-CRITICAL Fallo de freno detectado, sal de pista ahora"]
+
+DOM-rendering: critical-severity alert rendered in DOM
+DOM-rendering: critical-severity visual highlight ([data-severity="critical"]) present in DOM
+Screenshot: C:\Users\isaac\Desktop\Vantare-Ingeniero\.omo\evidence\pipeline-review\task-14-crewchief-visual-critical.png

@@ -1,0 +1,2046 @@
+{
+  "1": {
+    "name": "Extraccion de campos",
+    "prompts": [
+      {
+        "level": 1,
+        "index": 1,
+        "prompt": "Cual es la posicion actual?",
+        "ticker_id": "A",
+        "response": "**DRV:** P3|L10|F:42.3L/3.2(13L)|TYR:72/68/65/63.92/94/98/96|  \n**BRK:** 38/35/22/20  \n**GAP:** VST+2.1|1:48.2  \n**SES:** HY|RACE|38L|45:22  \n**WTH:** MED|22|30%+15m|SC:N  \n**RIV:** 20 cars",
+        "ttft_ms": 340.62639999865496,
+        "tokens_per_second": 143.82137827339142,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 2,
+        "prompt": "Cuanto combustible queda en el tanque?",
+        "ticker_id": "A",
+        "response": "El piloto tiene 42.3 litros de combustible y se estima 13 vueltas restantes.",
+        "ttft_ms": 134.69629999963217,
+        "tokens_per_second": 111.82305120429565,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 3,
+        "prompt": "Cual es el consumo promedio por vuelta?",
+        "ticker_id": "A",
+        "response": "**Consumo:** 3.2 L/vuelta.  \n**Diferencia:** VST lidera con +2.1 segundos.",
+        "ttft_ms": 173.61290000008012,
+        "tokens_per_second": 117.51692054110794,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 4,
+        "prompt": "Cuantas vueltas restantes de combustible estimadas?",
+        "ticker_id": "A",
+        "response": "| DRV | Lvuelta | F:combustible|Consumo (laps_rest)|TYR:...|\n|-----|----------|---------------|--------------------|--------|\n| P3  | 10       | 42.3L         | 13L                | 72/68/65/63 |\n| BRK | 38/35/22/20|38/35/22/20   | —                  | — |\n| GAP | VST     | +2.1          | 48.2               | 45:22   |\n\nRespuesta en 2 frases.",
+        "ttft_ms": 152.74259999932838,
+        "tokens_per_second": 184.80181703660045,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 5,
+        "prompt": "Cual es el desgaste del neumatico delantero izquierdo?",
+        "ticker_id": "A",
+        "response": "El desgaste del neumático delantero izquierdo es del 72%.",
+        "ttft_ms": 151.48059999955876,
+        "tokens_per_second": 89.4771403307142,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 6,
+        "prompt": "Cual es la temperatura del neumatico trasero derecho?",
+        "ticker_id": "A",
+        "response": "El neumático trasero derecho muestra una temperatura de 98°C.",
+        "ttft_ms": 167.4395000009099,
+        "tokens_per_second": 75.21519066040642,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 7,
+        "prompt": "Que desgaste de freno tiene la rueda delantera izquierda?",
+        "ticker_id": "A",
+        "response": "**BRK:** 38/35/22/20 – Desgaste medio.  \n**GAP:** VST+2.1|1:48.2  \n**SES:** HY|RACE|38L|45:22  \n**WTH:** MED|22|30%+15m|SC:N",
+        "ttft_ms": 183.83259999973234,
+        "tokens_per_second": 155.51912951968265,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 8,
+        "prompt": "Quien va delante y a que distancia?",
+        "ticker_id": "A",
+        "response": "**Respuesta:** VST lidera con +2.1 segundos; ALO sigue con -1.2.  \nEl rival más cercano está 4 vueltas atrás.",
+        "ttft_ms": 154.38390000053914,
+        "tokens_per_second": 128.9777129732496,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 9,
+        "prompt": "Quien va detras y a que distancia?",
+        "ticker_id": "A",
+        "response": "**Detrás:** ALO (+1.2)  \n**Atrás:** VST +2.1 (48.2s) | ALO -1.2 (47.9s)  \n**Rival:** V10.ALO | HY 4.8 | GT3 +4.8  \n**Condiciones:** Agarre MED, lluvia 30%, ritmo d-0.3",
+        "ttft_ms": 153.4096999985195,
+        "tokens_per_second": 168.99415649331075,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 10,
+        "prompt": "Cual es la diferencia de ritmo con el coche de detras?",
+        "ticker_id": "A",
+        "response": "**Respuesta:** El coche detrás tiene un ritmo 0.3 segundos más rápido.",
+        "ttft_ms": 150.86410000003525,
+        "tokens_per_second": 101.79482789758242,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 11,
+        "prompt": "De que clase es la sesion?",
+        "ticker_id": "A",
+        "response": "La sesión es HY.",
+        "ttft_ms": 123.01389999993262,
+        "tokens_per_second": 56.755943765757124,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 12,
+        "prompt": "Cuantas vueltas totales tiene la carrera?",
+        "ticker_id": "A",
+        "response": "La carrera cuenta con **38 vueltas**.",
+        "ttft_ms": 122.38529999922321,
+        "tokens_per_second": 70.92491243982194,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 13,
+        "prompt": "Cuanto tiempo resta de carrera?",
+        "ticker_id": "A",
+        "response": "**Tiempo restante:** 45:22  \nRival más rápido: VST con +2.1 segundos.",
+        "ttft_ms": 153.22759999980917,
+        "tokens_per_second": 108.65296083359529,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 14,
+        "prompt": "Cual es el nivel de agarre de la pista?",
+        "ticker_id": "A",
+        "response": "El agarre está en MED (Medium).",
+        "ttft_ms": 153.19459999955143,
+        "tokens_per_second": 58.33342569455121,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 15,
+        "prompt": "Cuantos coches hay en total?",
+        "ticker_id": "A",
+        "response": "**RIV:** 20 cars  \n**BRK:** 38/35/22/20  \n**SES:** HY|RACE|38L|45:22  \n**RESPONSE:** 20 competidores.",
+        "ttft_ms": 168.26209999999264,
+        "tokens_per_second": 137.1015555993676,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 16,
+        "prompt": "Esta activo el Safety Car?",
+        "ticker_id": "B",
+        "response": "El Safety Car está activo (SC:N).  \nRival más cercano: HAM con 5.3 segundos de ventaja.",
+        "ttft_ms": 136.17800000065472,
+        "tokens_per_second": 117.60586329730991,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 17,
+        "prompt": "Cual es la probabilidad de lluvia?",
+        "ticker_id": "B",
+        "response": "La probabilidad de lluvia es del 30%.",
+        "ttft_ms": 139.02070000040112,
+        "tokens_per_second": 63.76582406942023,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 18,
+        "prompt": "En cuantos minutos llegara la lluvia?",
+        "ticker_id": "B",
+        "response": "El piloto VST llegaría en 47.5 segundos, con una probabilidad del 3% de lluvia.",
+        "ttft_ms": 156.30440000131784,
+        "tokens_per_second": 107.5270958320377,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 1,
+        "index": 19,
+        "prompt": "En que vuelta estamos?",
+        "ticker_id": "B",
+        "response": "Estamos en la **L25**.  \nVuelta actual: 26, 13 vueltas restantes.  \nTiro de ritmo: 55 segundos por vuelta.",
+        "ttft_ms": 156.30529999907594,
+        "tokens_per_second": 124.16890409494651,
+        "score": 0.6666666666666666,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6666666666666666
+        }
+      },
+      {
+        "level": 1,
+        "index": 20,
+        "prompt": "Cuantas vueltas de combustible restan?",
+        "ticker_id": "B",
+        "response": "| Vuelta | Combustible restante |\n|--------|---------------------|\n| L26    | 13.0 L               |",
+        "ttft_ms": 139.0188000004855,
+        "tokens_per_second": 116.5777593759701,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 21,
+        "prompt": "Esta activo el Safety Car?",
+        "ticker_id": "C",
+        "response": "El Safety Car está activo (SC:S).  \nRival más cercano: VST con +0.8 segundos.  \nTiempo restante estimado: 8.0 minutos.",
+        "ttft_ms": 152.19269999943208,
+        "tokens_per_second": 135.60381472911718,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 22,
+        "prompt": "Cual es la temperatura ambiente?",
+        "ticker_id": "C",
+        "response": "La temperatura ambiente es de 22°C.",
+        "ttft_ms": 138.78189999923052,
+        "tokens_per_second": 52.098589054797834,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 23,
+        "prompt": "El coche de delante es...",
+        "ticker_id": "C",
+        "response": "**DRV:** VST|HY|+0.8|V7.SAI|HY|-0.4|V8.ALB|GT3|+1.2|V8.OCO|GT3|-2.1|V7  \n**BRK:** 38.0  \n**GAP:** BOT:+0.8 | SAI:49.5 (d-0.7)  \n**SES:** HY|RACE|38L|52:00  \n**WTH:** GRN|26|10%+0m|SC:S  \n**RIV:** 20 cars",
+        "ttft_ms": 199.68239999980142,
+        "tokens_per_second": 182.35227580430623,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 24,
+        "prompt": "Por que no hay datos de desgaste de neumaticos?",
+        "ticker_id": "D",
+        "response": "El piloto está en pista 3 con 13 vueltas restantes y un desgaste neumatico del 72%. No hay datos para los últimos 3 laps.",
+        "ttft_ms": 139.00490000014543,
+        "tokens_per_second": 128.8395456032925,
+        "score": 0.8,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.8
+        }
+      },
+      {
+        "level": 1,
+        "index": 25,
+        "prompt": "Cual es la posicion?",
+        "ticker_id": "D",
+        "response": "**DRV:** P5|L2|F:96.8L/3.2(28L)  \n**BRK:** 72/68/65/63 | Desgaste neumaticos 0-100%  \n**GAP:** VST|+3.5|V2.ALO|HY|-2.1|V2",
+        "ttft_ms": 172.10230000091542,
+        "tokens_per_second": 169.26808261243386,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 26,
+        "prompt": "Cuantas vueltas de combustible restan?",
+        "ticker_id": "D",
+        "response": "| Vuelta | Combustible | Restante |\n|--------|-------------|----------|\n| 26     | F:96.8L/3.2(28L) | 13L |\n\n¡En la vuelta actual hay combustible suficiente para 13 vueltas!",
+        "ttft_ms": 149.9693000005209,
+        "tokens_per_second": 155.52272873958253,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 27,
+        "prompt": "Cuantos coches hay en total?",
+        "ticker_id": "E",
+        "response": "**RIV:** 22  \nClasificación: GT3",
+        "ttft_ms": 151.75830000043788,
+        "tokens_per_second": 76.50127874866867,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 28,
+        "prompt": "Que desgaste de freno tiene la rueda trasera izquierda?",
+        "ticker_id": "E",
+        "response": "**BRK:** 75/72/68/65  \n**GAP:** ALB +15.2 | 49.8s  \n**SES:** GT3 | RACE | 38L | 3:45  \n**RIV:** 22 cars – desgaste ligero detrás.",
+        "ttft_ms": 184.0700000011566,
+        "tokens_per_second": 155.0512599465616,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 1,
+        "index": 29,
+        "prompt": "Cuantas vueltas de combustible quedan?",
+        "ticker_id": "E",
+        "response": "DRV: L26 | F:5.2L/3.4(0L) | TYR:88/85/83/80.95/97/98/94  \nBRK: 75/72/68/65 | GAP: ALB+15.2  \nSES: GT3|RACE|38L|3:45  \nWTH: LOW|15|90%+0m | SC:N  \nRIV: 22 cars",
+        "ttft_ms": 168.7246999990748,
+        "tokens_per_second": 180.41318823948382,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 30,
+        "prompt": "Cual es la temperatura del neumatico delantero derecho?",
+        "ticker_id": "F",
+        "response": "El neumático delantero derecho muestra una temperatura de .92.",
+        "ttft_ms": 158.03820000110136,
+        "tokens_per_second": 85.99132519469282,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 1,
+        "index": 31,
+        "prompt": "Cual es la temperatura del neumatico trasero derecho?",
+        "ticker_id": "F",
+        "response": "El neumático trasero derecho muestra una temperatura de .92.",
+        "ttft_ms": 168.15349999887985,
+        "tokens_per_second": 69.59692938336639,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      }
+    ]
+  },
+  "2": {
+    "name": "Interpretacion de campos",
+    "prompts": [
+      {
+        "level": 2,
+        "index": 1,
+        "prompt": "Vas ganando o perdiendo tiempo respecto al coche de detras?",
+        "ticker_id": "A",
+        "response": "**Respuesta:** Sí, el piloto detrás (ALO) está 1:47.9 minutos por delante del líder.",
+        "ttft_ms": 153.7186000005022,
+        "tokens_per_second": 117.74876515750577,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 2,
+        "prompt": "Deberias preocuparte por la lluvia?",
+        "ticker_id": "B",
+        "response": "El piloto VST lidera con un margen sólido (+5.3 segundos).  \nLa carrera muestra un ritmo muy competitivo, con un gap de 47.5 segundos.",
+        "ttft_ms": 154.15869999924325,
+        "tokens_per_second": 138.28429707873303,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 3,
+        "prompt": "Acabas de salir de boxes?",
+        "ticker_id": "C",
+        "response": "El piloto está en la posición 8, con 3 vueltas restantes y un consumo promedio de 3.2 L/vuelta. El desgaste neumatico es del 72%. Los competidores están muy cerca: el líder lidera 0.8 segundos.",
+        "ttft_ms": 138.82890000058978,
+        "tokens_per_second": 160.39745454421657,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 2,
+        "index": 4,
+        "prompt": "Es normal que no haya datos de desgaste de neumaticos?",
+        "ticker_id": "D",
+        "response": "Sí, es común omitir el desgaste de frenos cuando no hay datos recientes. El informe solo muestra los datos disponibles.",
+        "ttft_ms": 168.6202000000776,
+        "tokens_per_second": 114.07473035525854,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 5,
+        "prompt": "Queda mucho tiempo de carrera?",
+        "ticker_id": "E",
+        "response": "El piloto VST lidera con ventaja y mantiene un ritmo sólido, pero el tiempo restante es corto.",
+        "ttft_ms": 122.71360000158893,
+        "tokens_per_second": 124.63544133412125,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 6,
+        "prompt": "Las temperaturas de los neumaticos son normales?",
+        "ticker_id": "F",
+        "response": "El piloto VST está en la posición 18, con un consumo promedio de 3.2 L/vuelta y 13 vueltas restantes. El desgaste neumatico es del 65%, con una diferencia de +6.2 segundos frente al líder.",
+        "ttft_ms": 153.06410000084725,
+        "tokens_per_second": 154.4856054174727,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 7,
+        "prompt": "Tienes combustible suficiente para terminar la carrera?",
+        "ticker_id": "E",
+        "response": "DRV:P12|L35|F:5.2L/3.4(0L)|TYR:88/85/83/80.95/97/98/94|  \nBRK:75/72/68/65  \nGAP:ALB+15.2|1:49.8  \nSES:GT3|RACE|38L|3:45  \nWTH:LOW|15|90%+0m|SC:N  \nRIV:22 cars",
+        "ttft_ms": 202.35200000024633,
+        "tokens_per_second": 174.6463211714095,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 2,
+        "index": 8,
+        "prompt": "Que implica que el Safety Car este activo para tu estrategia",
+        "ticker_id": "H",
+        "response": "El Safety Car está activo (SC:S=S). El gap es muy corto, lo que indica una carrera muy competitiva.",
+        "ttft_ms": 122.94560000009369,
+        "tokens_per_second": 116.517926499116,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 9,
+        "prompt": "El coche de delante esta lejos o cerca?",
+        "ticker_id": "C",
+        "response": "El piloto VST está a 2.1 segundos detrás del líder, lo que indica una brecha significativa.",
+        "ttft_ms": 138.67239999854064,
+        "tokens_per_second": 114.52222388625017,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 10,
+        "prompt": "Estas en zona de podio?",
+        "ticker_id": "A",
+        "response": "El piloto está en posición 3, con 13 vueltas restantes y un desgaste del 72%. El rival VST lidera 2.1 segundos.",
+        "ttft_ms": 120.18990000069607,
+        "tokens_per_second": 134.02255290281676,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 2,
+        "index": 11,
+        "prompt": "Cuantos rivales tienes a menos de 5 segundos?",
+        "ticker_id": "A",
+        "response": "**Respuesta:** Tienes 20 rivales a menos de 5 segundos.",
+        "ttft_ms": 154.92710000035004,
+        "tokens_per_second": 87.39284602173989,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 12,
+        "prompt": "Como esta el agarre de la pista?",
+        "ticker_id": "A",
+        "response": "El piloto VST tiene un agarre MED, con un desgaste del 72%.",
+        "ttft_ms": 139.02969999980996,
+        "tokens_per_second": 98.77304128087066,
+        "score": 0.3333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 2,
+        "index": 13,
+        "prompt": "De que clase es tu coche?",
+        "ticker_id": "E",
+        "response": "**Clase:** GT3  \n**Ganancia:** +15.2 segundos.",
+        "ttft_ms": 137.6774000000296,
+        "tokens_per_second": 102.09861006192577,
+        "score": 1.0,
+        "passed": true,
+        "details": {
+          "keyword_match": 1.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 14,
+        "prompt": "Hay coches doblados?",
+        "ticker_id": "A",
+        "response": "**Respuesta:** Sí, hay 20 coches detrás.  \n**Explicación:** El desgaste de frenos muestra un gap significativo (+45s), indicando varios vehículos.",
+        "ttft_ms": 170.64299999947252,
+        "tokens_per_second": 134.25362156805306,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 2,
+        "index": 15,
+        "prompt": "Deberias preocuparte por los frenos?",
+        "ticker_id": "E",
+        "response": "El piloto VST lidera con un desgaste del 38% en los frenos.",
+        "ttft_ms": 166.29070000089996,
+        "tokens_per_second": 90.59921023351478,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 16,
+        "prompt": "Si la lluvia llega en 3 minutos y estas con slicks, que debe",
+        "ticker_id": "B",
+        "response": "El piloto está en posición 1 con 13 vueltas restantes. El desgaste neumaticos es del 72%. Con condiciones húmedas, se recomienda ajustar la estrategia para conservar combustible y mantener el ritmo.",
+        "ttft_ms": 123.57019999944896,
+        "tokens_per_second": 154.86977789352082,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 17,
+        "prompt": "Estas en los puntos?",
+        "ticker_id": "E",
+        "response": "**En resumen:**  \nPiloto VST lidera con ventaja, pero el desgaste es moderado y hay un pequeño gap hacia atrás.",
+        "ttft_ms": 138.2279000008566,
+        "tokens_per_second": 127.88071287084675,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 2,
+        "index": 18,
+        "prompt": "La sesion es de que tipo?",
+        "ticker_id": "E",
+        "response": "**SES:** GT3|RACE|38L|3:45  \n**BRK:** 75/72/68/65  \n**GAP:** ALB+15.2 | TTL 49.8  \n**DRV:** P12|L35|F:5.2L/3.4(0L)|TYR:88/85/83/80.95/97/98/94  \n**RESPONSE:** Clasificado en GT3, con ventaja de 15 segundos y ritmo sólido.",
+        "ttft_ms": 168.8728999997693,
+        "tokens_per_second": 180.25747978410473,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 2,
+        "index": 19,
+        "prompt": "Hay trafico significativo de doblados?",
+        "ticker_id": "A",
+        "response": "El piloto está en posición 3, con 13 vueltas restantes y un desgaste neumatico del 72%. Los rivales están muy cerca (VST +2.1s) y el tiempo restante es mínimo.",
+        "ttft_ms": 138.40199999867764,
+        "tokens_per_second": 148.09818182948572,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.25
+        }
+      },
+      {
+        "level": 2,
+        "index": 20,
+        "prompt": "La temperatura ambiente de 18C es normal?",
+        "ticker_id": "B",
+        "response": "El piloto VST lidera con un desgaste mínimo y la carrera muestra un ritmo sólido.",
+        "ttft_ms": 137.72380000045814,
+        "tokens_per_second": 114.09591084788464,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      }
+    ]
+  },
+  "3": {
+    "name": "Respuesta a triggers",
+    "prompts": [
+      {
+        "level": 3,
+        "index": 1,
+        "prompt": "Combustible criticamente bajo. Evalua la situacion.",
+        "ticker_id": "E",
+        "response": "El piloto está en posición 12, con 3 vueltas restantes y un consumo promedio de 3.2L/vuelta. El desgaste neumaticos es del 72%. La diferencia con ALB es significativa (49.8s). Combustible crítico.",
+        "ttft_ms": 154.4547000012244,
+        "tokens_per_second": 154.89985109942364,
+        "score": 0.325,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rubric_score": 0.2
+        }
+      },
+      {
+        "level": 3,
+        "index": 2,
+        "prompt": "Combustible criticamente bajo. Evalua la situacion.",
+        "ticker_id": "A",
+        "response": "El piloto está en posición 3, con combustible medio y 13 vueltas restantes. El desgaste neumatico es sólido (72/68/65/63). Vence rápidamente a sus rivales (VST +2.1) y lidera ligeramente (1:48.2).",
+        "ttft_ms": 183.97779999941122,
+        "tokens_per_second": 148.48975314661166,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 3,
+        "prompt": "Safety Car desplegado. Que recomiendas?",
+        "ticker_id": "C",
+        "response": "**Resumen clave:**  \n- Velocidad actual: P3, 13 vueltas restantes.  \n- Desgaste neumaticos: 72/68/65/63 (todos por debajo de 5).  \n- Ventaja: +0.8 segundos sobre el líder.  \n- Clima: GRN, 26°C, lluvia baja, seguridad activa.  \n\n¡Preparado para la carrera!",
+        "ttft_ms": 139.46469999973488,
+        "tokens_per_second": 173.113031511616,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 4,
+        "prompt": "Safety Car desplegado. Que recomiendas?",
+        "ticker_id": "A",
+        "response": "**Resumen clave:**  \nPiloto VST lidera con 72% de avance; desgaste 38/35/22/20. Rival VST tiene +2.1 segundos. Safety Car activo.",
+        "ttft_ms": 214.21360000022105,
+        "tokens_per_second": 147.68558231863108,
+        "score": 0.16666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.3333333333333333,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 5,
+        "prompt": "Desgaste critico de frenos (>80%). Evalua.",
+        "ticker_id": "E",
+        "response": "El piloto VST muestra un desgaste crítico en los frenos (38/35/22/20).  \nEn la distancia, está 2 vueltas por delante y el ritmo es excelente (+15.2).",
+        "ttft_ms": 246.97899999955553,
+        "tokens_per_second": 112.89797365866765,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 6,
+        "prompt": "Desgaste critico de frenos (>80%). Evalua.",
+        "ticker_id": "A",
+        "response": "El piloto VST muestra un desgaste crítico (38/35/22/20), con un ritmo muy lento (48.2 seg). Los rivales están muy cerca, con una brecha de 2.1 seg.",
+        "ttft_ms": 137.98359999964305,
+        "tokens_per_second": 145.6131517798925,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.5,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 7,
+        "prompt": "Degradacion acelerada de neumaticos. Analiza.",
+        "ticker_id": "F",
+        "response": "La pista muestra un desgaste significativo (gap +6.2) y una degradación acelerada (GR:+4.1). Rivales cercanos en 48 segundos. Condiciones moderadas, pero riesgo alto.",
+        "ttft_ms": 123.52819999978237,
+        "tokens_per_second": 150.304438750104,
+        "score": 0.08333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.16666666666666666,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 8,
+        "prompt": "Degradacion acelerada de neumaticos. Analiza.",
+        "ticker_id": "C",
+        "response": "El piloto está mostrando desgaste neumatico elevado (72/68/65/63) y temperaturas altas en la pista. La diferencia con el líder es sólida, lo que refuerza la preocupación por la degradación.",
+        "ttft_ms": 140.0482999997621,
+        "tokens_per_second": 153.2154206029951,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 9,
+        "prompt": "Bateria hibrida baja. Evalua el estado.",
+        "ticker_id": "F",
+        "response": "El piloto está en la posición 6, con 3 vueltas restantes y un consumo promedio de 3.2L/vuelta. El desgaste neumatico es del 72%. La diferencia con el líder es de +2.1 segundos. Batería baja y rendimiento moderado.",
+        "ttft_ms": 135.92349999998987,
+        "tokens_per_second": 161.7695302809094,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 10,
+        "prompt": "Amenaza de lluvia inminente. Que hago?",
+        "ticker_id": "B",
+        "response": "El piloto está en posición 1, con 13 vueltas restantes y un desgaste neumatico del 72%. Hay una brecha de 2.1 segundos detrás. Riesgo de lluvia en los próximos 5 segundos.",
+        "ttft_ms": 122.76029999884486,
+        "tokens_per_second": 161.7736190183241,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 11,
+        "prompt": "Amenaza de lluvia inminente. Que hago?",
+        "ticker_id": "A",
+        "response": "El piloto está en posición 3, con 13 vueltas restantes y un desgaste neumatico del 72%. Hay una brecha de 2.1 segundos frente al líder. La carrera sigue con un clima seco (SC:N).",
+        "ttft_ms": 152.97259999897506,
+        "tokens_per_second": 147.00113809847886,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 12,
+        "prompt": "Ventana de paradas abierta. Recomienda estrategia.",
+        "ticker_id": "G",
+        "response": "El piloto está en posición P4 con 15.3 L de combustible y un consumo promedio de 3.2 L/vuelta. Tiene 13 vueltas restantes, desgaste neumaticos del 72%. La ventana está abierta, ritmo sólido pero con margen para ajustes.",
+        "ttft_ms": 154.38480000011623,
+        "tokens_per_second": 154.50236443778488,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 13,
+        "prompt": "Ventana de paradas cerrándose. Quedan 2 vueltas.",
+        "ticker_id": "E",
+        "response": "**Resumen clave:**  \nPiloto VST lidera con 88/85; 3 vueltas restantes. Desgaste neumaticos 72/68/65/63. Condiciones: pista GRN(0), LOW, MED. Rival ALB a +15.2s.",
+        "ttft_ms": 120.86769999950775,
+        "tokens_per_second": 169.9507065702183,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 14,
+        "prompt": "Rival directo (SAI) ha entrado a boxes. Que hago?",
+        "ticker_id": "C",
+        "response": "El piloto está en posición 8, con 27 vueltas restantes y un desgaste neumaticos del 98%. El rival está a 0.8 segundos, lo que indica una brecha significativa.",
+        "ttft_ms": 137.3273999997764,
+        "tokens_per_second": 144.02233815860603,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 15,
+        "prompt": "Brecha cerrada con rival < 1.5s. Evalua.",
+        "ticker_id": "C",
+        "response": "El piloto lidera con ventaja y el gap se reduce.",
+        "ttft_ms": 139.5527000004222,
+        "tokens_per_second": 80.96861598611822,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 16,
+        "prompt": "Brecha cerrada con rival < 1.5s. Evalua.",
+        "ticker_id": "B",
+        "response": "**Resumen:**  \nVentaja significativa frente a competidores; brecha cerrada en menos de 1.5 segundos.",
+        "ttft_ms": 155.01840000069933,
+        "tokens_per_second": 116.49112658984012,
+        "score": 0.125,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 17,
+        "prompt": "La fase de carrera ha cambiado. Evalua.",
+        "ticker_id": "A",
+        "response": "El piloto está en la posición 3, con 13 vueltas restantes y un desgaste del 72%. El rival VST lidera por 2.1 segundos.",
+        "ttft_ms": 152.91749999960302,
+        "tokens_per_second": 131.42904402341426,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 3,
+        "index": 18,
+        "prompt": "Temperatura excesiva de neumaticos (>105C). Analiza.",
+        "ticker_id": "F",
+        "response": "El piloto VST lidera con un desgaste moderado y mantiene un ritmo competitivo, pero la temperatura de los frenos supera el límite seguro.",
+        "ttft_ms": 152.47030000136874,
+        "tokens_per_second": 129.07195115910667,
+        "score": 0.3,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.3
+        }
+      },
+      {
+        "level": 3,
+        "index": 19,
+        "prompt": "Temperatura excesiva de neumaticos (>105C). Analiza.",
+        "ticker_id": "C",
+        "response": "El piloto está sobrecalentando los frenos (gap alto), con desgaste moderado y condiciones de pista que requieren atención inmediata.",
+        "ttft_ms": 122.1267999990232,
+        "tokens_per_second": 132.6251418695989,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      }
+    ]
+  },
+  "4": {
+    "name": "Razonamiento multicampo",
+    "prompts": [
+      {
+        "level": 4,
+        "index": 1,
+        "prompt": "80% de lluvia en 3 min y llevas slicks. Que recomiendas?",
+        "ticker_id": "B",
+        "response": "El piloto VST lidera con ventaja, pero el desgaste es moderado. Recomiendo ajustar la estrategia para conservar frenos.",
+        "ttft_ms": 137.84409999971103,
+        "tokens_per_second": 129.67259956899844,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 2,
+        "prompt": "VST esta 2.1s adelante, llevais 10 vueltas, quedan 45 min. E",
+        "ticker_id": "A",
+        "response": "VST está 2.1 segundos adelante, con 10 vueltas completadas y 13 vueltas restantes. El desgaste es sólido (72/68/65/63). Rival VST lidera 0.3 segundos.",
+        "ttft_ms": 153.4771999995428,
+        "tokens_per_second": 149.15620023049877,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 3,
+        "prompt": "SC activo, estas P2 a 1.5s de VER. Entras a boxes?",
+        "ticker_id": "H",
+        "response": "**Resumen clave:**  \nPiloto en posición 2, 6 vueltas restantes, desgaste C 72/68/65/63. Rival detrás +1.5s. Condiciones: GRN(0), lluvia baja.",
+        "ttft_ms": 154.95259999988775,
+        "tokens_per_second": 148.83436117650257,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.25
+        }
+      },
+      {
+        "level": 4,
+        "index": 4,
+        "prompt": "Quedan 40 min de carrera, tienes 53.1L y consumes 3.2L/v. Ll",
+        "ticker_id": "G",
+        "response": "El piloto está en posición 14, con 13 vueltas restantes y un desgaste neumatico del 72%. Aproximadamente 40 minutos quedan.",
+        "ttft_ms": 121.96229999972275,
+        "tokens_per_second": 140.66290459561753,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 4,
+        "index": 5,
+        "prompt": "Tus neumaticos estan al 72% y el de detras es 0.3s mas rapid",
+        "ticker_id": "A",
+        "response": "El piloto está en posición 3, con 13 vueltas restantes y un desgaste del 72%. El frenado muestra un ligero avance (+2.1s). Con un ritmo de 72%, sí, es recomendable priorizar el ahorro de neumáticos.",
+        "ttft_ms": 154.59699999883014,
+        "tokens_per_second": 149.83788967351265,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 4,
+        "index": 6,
+        "prompt": "Frenos al 75% y combustible para 0 vueltas. Prioridad?",
+        "ticker_id": "E",
+        "response": "**Resumen:**  \nFrenos: 75/72/68/65 (gap +2.1s).  \nCombustible: 5.2L/3.4L (vuelta 5).  \nClase: GT3, ritmo lento, seguridad activa.",
+        "ttft_ms": 152.71059999940917,
+        "tokens_per_second": 155.1802874725486,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 4,
+        "index": 7,
+        "prompt": "Es carrera HYpercar y hay 80% lluvia en 3 min. Impacto?",
+        "ticker_id": "B",
+        "response": "La carrera es HYpercar con condiciones húmedas. El desgaste está en el orden correcto y el ritmo es competitivo.",
+        "ttft_ms": 137.83349999903294,
+        "tokens_per_second": 124.89308547608806,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 4,
+        "index": 8,
+        "prompt": "ALO esta 1.2s detras y es 0.3s mas rapido. Ademas hay 3 coch",
+        "ticker_id": "A",
+        "response": "El piloto está a 1.2 segundos detrás y lidera 0.3 segundos. Con 3 rivales, está muy por delante.",
+        "ttft_ms": 181.49149999953806,
+        "tokens_per_second": 119.71345387695119,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 9,
+        "prompt": "Pista MED (nivel 2), neumaticos a 100-103C. Hay sobrecalenta",
+        "ticker_id": "F",
+        "response": "El piloto está en posición P3, con 13 vueltas restantes y desgaste del 72%. El gap frente es +6.2 segundos, superando el umbral crítico.",
+        "ttft_ms": 138.45629999923403,
+        "tokens_per_second": 135.37886698952028,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 4,
+        "index": 10,
+        "prompt": "Sin combustible, P12, GT3. Entrar a boxes ahora o esperar?",
+        "ticker_id": "E",
+        "response": "**Resumen clave:**  \nPiloto P12 en GT3 con 5.2L/3.4L. Tiro 35 vueltas, desgaste 88/85/83/80.95%. Rival ALB lidera +15.2s. Condiciones: clima seco, ritmo sólido.",
+        "ttft_ms": 123.99890000051528,
+        "tokens_per_second": 165.19478874673737,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 11,
+        "prompt": "BOT +0.8s (1:49.5), SAI -0.4s (1:49.1). Estrategia?",
+        "ticker_id": "C",
+        "response": "El piloto está en posición 8, con 27 vueltas restantes y un desgaste neumatico del 98%. Supera a sus rivales por 0.8 segundos.",
+        "ttft_ms": 123.7394999989192,
+        "tokens_per_second": 138.30702551468377,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 12,
+        "prompt": "Hay 3 coches en CLS1. Eres P3. Describe la situacion.",
+        "ticker_id": "A",
+        "response": "El piloto P3 está en posición 3, con 13 vueltas restantes y un desgaste neumatico del 72%. Los rivales están entre VST y ALO, con una brecha de +2.1 segundos.",
+        "ttft_ms": 138.66550000057032,
+        "tokens_per_second": 149.93694318548657,
+        "score": 0.6666666666666666,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6666666666666666
+        }
+      },
+      {
+        "level": 4,
+        "index": 13,
+        "prompt": "SC activo, tienes 82.4L. Entrar ahora o esperar?",
+        "ticker_id": "H",
+        "response": "**En resumen:**  \nPiloto VST lidera con un desgaste moderado y 38 segundos detrás; la carrera está en ritmo sólido (GRN).",
+        "ttft_ms": 135.46930000120483,
+        "tokens_per_second": 137.1607585813068,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 14,
+        "prompt": "20:15 restantes, 7 vueltas de combustible. Suficiente?",
+        "ticker_id": "B",
+        "response": "El piloto está en posición P3 con 13 vueltas restantes. El desgaste neumaticos es del 72%. Hay un gap de +2.1 segundos detrás y un mejor tiempo de 1:48.2. ¿Suficiente combustible?",
+        "ttft_ms": 139.3339999995078,
+        "tokens_per_second": 153.25709644237728,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 15,
+        "prompt": "Frenos 75/72/68/65, neumaticos 88/85/83/80, combustible 5.2L",
+        "ticker_id": "E",
+        "response": "El piloto está en posición P12, con 3 vueltas restantes y desgaste neumaticos del 88%. Combustible: 5.2L. Riesgo alto en frenos y pista.",
+        "ttft_ms": 140.2892999994947,
+        "tokens_per_second": 146.51366163586383,
+        "score": 0.6,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.6
+        }
+      },
+      {
+        "level": 4,
+        "index": 16,
+        "prompt": "80% lluvia en 3 min, liderando. Abres ventana de lluvia?",
+        "ticker_id": "B",
+        "response": "El piloto está en posición P1 con 28.5L de combustible y un consumo promedio de 3.3L por vuelta. Tiene 7 vueltas restantes y un desgaste neumatico del 55%. Lidera con ventaja de 47.5 segundos.",
+        "ttft_ms": 153.64779999981693,
+        "tokens_per_second": 154.7480879683233,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.25
+        }
+      },
+      {
+        "level": 4,
+        "index": 17,
+        "prompt": "P12 en GT3, ultimos compases. Que dices al piloto?",
+        "ticker_id": "E",
+        "response": "**DRV:** P12|L35|F:5.2L/3.4(0L)|TYR:88/85/83/80.95/97/98/94|  \n**BRK:** 75/72/68/65  \n**GAP:** ALB+15.2|1:49.8  \n**SES:** GT3|RACE|38L|3:45  \n**RIV:** 22 cars | CLS1(0): V34.TSU GT3 +18.7 | SC:N",
+        "ttft_ms": 169.86379999980272,
+        "tokens_per_second": 179.48436833257554,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 4,
+        "index": 18,
+        "prompt": "ALB va +15.2s, TSU viene -8.3s, quedan 3:45. Que haces?",
+        "ticker_id": "E",
+        "response": "ALB está en la posición 12, con 3 vueltas restantes y un desgaste del 88%. El rival ALB está 15.2 segundos adelante.",
+        "ttft_ms": 123.12810000003083,
+        "tokens_per_second": 139.08339761540105,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 4,
+        "index": 19,
+        "prompt": "50% lluvia en 10 min, neumaticos al 45%, combustible 53.1L. ",
+        "ticker_id": "G",
+        "response": "El piloto está en posición P4 con 15 vueltas restantes y un desgaste neumatico del 72%. Combustible disponible: 53.1L. Condiciones: 45% lluvia, temperatura 22°C.",
+        "ttft_ms": 154.1207000009308,
+        "tokens_per_second": 141.4475475127261,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 4,
+        "index": 20,
+        "prompt": "Hay 4 doblados. Eres P3. Como gestionas el trafico?",
+        "ticker_id": "A",
+        "response": "**Respuesta:**  \nCon un pelotón de 4 doblados, mantengo el ritmo con un agarre MED y lidero con una ventaja de +2.1 segundos.",
+        "ttft_ms": 169.7303999990254,
+        "tokens_per_second": 131.20928888564632,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      }
+    ]
+  },
+  "5": {
+    "name": "Razonamiento con RAG",
+    "prompts": [
+      {
+        "level": 5,
+        "index": 1,
+        "prompt": "Hemos perdido tiempo desde el SC de la vuelta 8?",
+        "ticker_id": "A",
+        "response": "El piloto está en posición 3, con 13 vueltas restantes y un desgaste neumatico del 72%. La brecha frente es +2.1 segundos.",
+        "ttft_ms": 136.98459999977786,
+        "tokens_per_second": 131.51618595364218,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 2,
+        "prompt": "ALO paro en V9. Ha ganado o perdido con el undercut?",
+        "ticker_id": "A",
+        "response": "**ALO:** Ganó. El desgaste y la diferencia de ritmo lo favorecen.",
+        "ttft_ms": 185.1742999988346,
+        "tokens_per_second": 90.09754990444894,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 3,
+        "prompt": "Nuestro consumo es consistente con vueltas anteriores?",
+        "ticker_id": "E",
+        "response": "El piloto está en posición P12, con 13 vueltas restantes y un consumo promedio de 3.2L/vuelta. El desgaste neumatico se sitúa entre 72% y 65%. Los rivales lideran con una ventaja de +15.2 segundos.",
+        "ttft_ms": 153.5063999999693,
+        "tokens_per_second": 152.6929483619884,
+        "score": 0.26666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.3333333333333333,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 4,
+        "prompt": "Ya habia aviso de lluvia antes? Cuanto ha cambiado?",
+        "ticker_id": "B",
+        "response": "El piloto está en la posición 1 con 13 vueltas restantes. El desgaste neumaticos es del 72%. Hay lluvia con un 30% de probabilidad y un mínimo de 15 minutos.",
+        "ttft_ms": 137.59469999968132,
+        "tokens_per_second": 146.38039345835432,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 5,
+        "prompt": "VST esta mas lento que en vueltas anteriores?",
+        "ticker_id": "A",
+        "response": "VST está liderando con un desgaste moderado y un ritmo sólido, pero el análisis muestra una ligera brecha respecto a sus mejores tiempos recientes.",
+        "ttft_ms": 154.5642000000953,
+        "tokens_per_second": 118.5241754084597,
+        "score": 0.6000000000000001,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.75,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 6,
+        "prompt": "La degradacion de neumaticos se esta acelerando?",
+        "ticker_id": "F",
+        "response": "El piloto está mostrando un desgaste neumatico moderado (72/68/65/63), pero no crítico.",
+        "ttft_ms": 139.99479999984032,
+        "tokens_per_second": 122.50455062150307,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 7,
+        "prompt": "La ultima vez que paramos, funciono la estrategia?",
+        "ticker_id": "G",
+        "response": "El piloto está en posición 4, con 15 laps restantes y un desgaste neumatico del 72%. La diferencia con el líder es de 0.3 segundos.",
+        "ttft_ms": 137.1871999999712,
+        "tokens_per_second": 139.323472403345,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 8,
+        "prompt": "Cuantas veces ha salido el SC en esta carrera?",
+        "ticker_id": "H",
+        "response": "El SC ha salido 38 veces.",
+        "ttft_ms": 151.50549999998475,
+        "tokens_per_second": 53.30856656841883,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 9,
+        "prompt": "SAI nos esta alcanzando o alejando?",
+        "ticker_id": "C",
+        "response": "El piloto está a 3 vueltas y 13 laps restantes, con un desgaste del 72% en los frenos. La brecha frente es muy estrecha (+0.8 segundos), mientras que detrás se mantiene estable. Condiciones: pista seca, ritmo sólido.",
+        "ttft_ms": 140.43649999985064,
+        "tokens_per_second": 164.535764795256,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 10,
+        "prompt": "Resume los eventos importantes de la carrera hasta ahora.",
+        "ticker_id": "A",
+        "response": "La VST lidera con ventaja, 2.1 segundos sobre el ALO, y el ritmo es muy bueno (d-0.3).",
+        "ttft_ms": 137.72830000016256,
+        "tokens_per_second": 128.7004697187392,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 11,
+        "prompt": "Ya empezo a llover? El forecast anterior era 40%, ahora 80%.",
+        "ticker_id": "B",
+        "response": "El piloto está en posición 1, con 13 vueltas restantes. La diferencia frente al líder es de 0.3 segundos.",
+        "ttft_ms": 136.23439999901166,
+        "tokens_per_second": 122.54897267580533,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 12,
+        "prompt": "Nuestro consumo de combustible ha sido consistente?",
+        "ticker_id": "A",
+        "response": "El piloto está manteniendo un consumo promedio estable (3.2 L/vuelta) y el desgaste neumatico es bajo (72/68/65/63). La ventaja frente a VST es sólida (+2.1 segundos).",
+        "ttft_ms": 138.43980000092415,
+        "tokens_per_second": 144.2852354205448,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 13,
+        "prompt": "Hemos ganado o perdido posiciones desde el inicio?",
+        "ticker_id": "C",
+        "response": "El piloto está en la posición 8 del podio (P8). Con 27 vueltas restantes y un rendimiento sólido, sigue una carrera competitiva.",
+        "ttft_ms": 137.35910000104923,
+        "tokens_per_second": 129.98558870269682,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 14,
+        "prompt": "Estoy rindiendo mejor o peor que al inicio de carrera?",
+        "ticker_id": "A",
+        "response": "El piloto está mejorando: su tiempo promedio (3.2 L/vuelta) supera el promedio del grupo y el desgaste es aceptable.",
+        "ttft_ms": 139.4227000000683,
+        "tokens_per_second": 124.68925655955519,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.25,
+          "rag_references": 0
+        }
+      },
+      {
+        "level": 5,
+        "index": 15,
+        "prompt": "La temperatura de la pista esta subiendo o bajando?",
+        "ticker_id": "F",
+        "response": "El piloto VST lidera con un margen sólido (+6.2 segundos).",
+        "ttft_ms": 167.7153000000544,
+        "tokens_per_second": 90.0384078123809,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rag_references": 0
+        }
+      }
+    ]
+  },
+  "6": {
+    "name": "Estrategia multi-trigger",
+    "prompts": [
+      {
+        "level": 6,
+        "index": 1,
+        "prompt": "Combustible critico (0L rest), ventana cerrándose y ALB paro",
+        "ticker_id": "E",
+        "response": "El piloto está con combustible crítico (5.2L/3.4L) y la ventana se cierra, mientras que el ALB detiene en 1 vuelta. Es urgente reabastecerse y prepararse para un pit stop.",
+        "ttft_ms": 121.70900000091933,
+        "tokens_per_second": 153.93287295279643,
+        "score": 0.6000000000000001,
+        "passed": true,
+        "details": {
+          "keyword_score": 0.4,
+          "rubric_score": 0.4
+        }
+      },
+      {
+        "level": 6,
+        "index": 2,
+        "prompt": "SC activo, gap con VER solo 1.5s, ventana abierta. Entro?",
+        "ticker_id": "H",
+        "response": "El piloto está en posición 2, con 13 vueltas restantes y un desgaste neumaticos del 72%. La brecha frente es muy estrecha (+1.5s), pero el coche está en safety car. Con esas condiciones, sí entro.",
+        "ttft_ms": 122.32820000099309,
+        "tokens_per_second": 151.60235985752135,
+        "score": 0.08333333333333333,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.16666666666666666,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 3,
+        "prompt": "Degradacion alta (45%), lluvia 50% en 10 min, ventana abiert",
+        "ticker_id": "G",
+        "response": "El piloto está en posición 4 con 13 vueltas restantes y desgaste moderado. La temperatura es favorable, pero la lluvia es probable. Estrategia ajustada.",
+        "ttft_ms": 136.13070000064909,
+        "tokens_per_second": 138.28520277509367,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 4,
+        "prompt": "Neumaticos sobrecalentados (100-103C), bateria baja (no se m",
+        "ticker_id": "F",
+        "response": "El piloto está en posición 6, con 9 vueltas restantes y un desgaste neumatico del 65%. La diferencia con el líder es de +6.2 segundos.",
+        "ttft_ms": 138.40960000015912,
+        "tokens_per_second": 137.9305920433289,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 5,
+        "prompt": "90% lluvia ahora, combustible 0L, ventana cerrándose. Priori",
+        "ticker_id": "E",
+        "response": "El piloto está en posición 12, con 3 vueltas restantes y un desgaste neumatico del 72%. La ventana se cierra y hay lluvia del 30%.",
+        "ttft_ms": 139.88939999944705,
+        "tokens_per_second": 137.51414716787193,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 6,
+        "prompt": "SC activo, SAI entro a boxes, BOT esta a +0.8s. Entro ahora?",
+        "ticker_id": "C",
+        "response": "El piloto está en la posición 8, con 3 vueltas restantes y un desgaste del 72%. El rival está 2 segundos detrás.",
+        "ttft_ms": 169.14440000073228,
+        "tokens_per_second": 118.95840024716054,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 7,
+        "prompt": "0L combustible, frenos 75%, neumaticos 88%. Que es mas criti",
+        "ticker_id": "E",
+        "response": "El piloto VST lidera con un desgaste del 88% y un rendimiento sólido. La diferencia frente a ALO es significativa (+15.2 seg).",
+        "ttft_ms": 152.56439999939175,
+        "tokens_per_second": 132.78534975846512,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 8,
+        "prompt": "SC en V6, combustible lleno (82.4L), neumaticos nuevos. Espe",
+        "ticker_id": "H",
+        "response": "**Resumen:**  \nPiloto VST lidera con buen desgaste y 38 segundos detrás. Clase HY, 82.4L de gas, desgaste 95% en la vuelta. Rival cerca (GT3) a 1 minuto. Condiciones seguras.",
+        "ttft_ms": 154.78040000016335,
+        "tokens_per_second": 154.30812864339617,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.0,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 9,
+        "prompt": "BOT +0.8s (CLS1), SAI en boxes, ventana cerrándose. Riesgo d",
+        "ticker_id": "C",
+        "response": "El piloto está en posición 8 con 3 vueltas restantes y un desgaste neumatico del 72%. El rival está a 20 segundos detrás, con un gap de +0.8s. Riesgo bajo de subestimar el tiempo.",
+        "ttft_ms": 139.30749999963155,
+        "tokens_per_second": 154.25346209054058,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      },
+      {
+        "level": 6,
+        "index": 10,
+        "prompt": "50% lluvia en 10 min, combustible para 15 vueltas pero neuma",
+        "ticker_id": "G",
+        "response": "El piloto está en posición 4, con 15 vueltas restantes y desgaste del 45%. Con lluvia prevista, combustible suficiente y buen ritmo, el plan es mantener la velocidad y aprovechar la ventaja.",
+        "ttft_ms": 121.67829999998503,
+        "tokens_per_second": 150.1263268882482,
+        "score": 0.1,
+        "passed": false,
+        "details": {
+          "keyword_score": 0.2,
+          "rubric_score": 0.0
+        }
+      }
+    ]
+  },
+  "7": {
+    "name": "Casos limite y anomalias",
+    "prompts": [
+      {
+        "level": 7,
+        "index": 1,
+        "prompt": "Neumaticos nuevos? Como estan?",
+        "ticker_id": "D",
+        "response": "El piloto está en la posición 5, con 13 vueltas restantes y un desgaste neumatico del 72%. El equipo tiene un ligero gap de 3.5 segundos.",
+        "ttft_ms": 155.28610000001208,
+        "tokens_per_second": 136.88537705254325,
+        "score": 0.3333333333333333,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.3333333333333333
+        }
+      },
+      {
+        "level": 7,
+        "index": 2,
+        "prompt": "Como estan los frenos?",
+        "ticker_id": "D",
+        "response": "Los frenos están en 38/35/22/20 (desgaste 38%).",
+        "ttft_ms": 120.38030000076105,
+        "tokens_per_second": 107.70929261900261,
+        "score": 0.4,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.4
+        }
+      },
+      {
+        "level": 7,
+        "index": 3,
+        "prompt": "Como esta la bateria?",
+        "ticker_id": "B",
+        "response": "El piloto está en posición 1 con 13 vueltas restantes. La diferencia de ritmo es sólida (+0.3).",
+        "ttft_ms": 153.884499999549,
+        "tokens_per_second": 116.24741349475562,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 4,
+        "prompt": "El gap con BOT es exactamente 1.5s? Que tan cerca esta?",
+        "ticker_id": "C",
+        "response": "El gap con BOT es +0.8 segundos, muy cercano (d-0.3 ≈ -0.3).",
+        "ttft_ms": 167.77139999976498,
+        "tokens_per_second": 106.15598560479282,
+        "score": 0.5,
+        "passed": true,
+        "details": {
+          "keyword_match": 0.5
+        }
+      },
+      {
+        "level": 7,
+        "index": 5,
+        "prompt": "Voy a 0 km/h y estoy en la pista. Que pasa?",
+        "ticker_id": "H",
+        "response": "El piloto está en posición 2, con 13 vueltas restantes y un desgaste neumatico del 72%. La diferencia frente es +1.5 segundos.",
+        "ttft_ms": 152.23780000087572,
+        "tokens_per_second": 123.42818068975585,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 6,
+        "prompt": "Si tengo el deposito lleno (89.7L) pero estoy P8, que estrat",
+        "ticker_id": "C",
+        "response": "Estamos en un lap 8 con 89.7L de combustible. Con posición P8 y consumo promedio 3.1L/vuelta, quedan ~29 vueltas. El desgaste está en el rango normal (98/96/96.85/96), así que no hay alerta crítica. Estratégicamente, mantén presión y aprovecha la ventaja de ser P8.",
+        "ttft_ms": 138.51009999962116,
+        "tokens_per_second": 171.77767050365168,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 7,
+        "prompt": "Que datos faltan en este ticker?",
+        "ticker_id": "D",
+        "response": "El ticker carece de información detallada sobre el piloto (BRK), los datos específicos del lap y la clasificación exacta.",
+        "ttft_ms": 153.14810000018042,
+        "tokens_per_second": 114.2314489075673,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.25
+        }
+      },
+      {
+        "level": 7,
+        "index": 8,
+        "prompt": "Las temperaturas de neumaticos estan cerca del limite (105C)",
+        "ticker_id": "F",
+        "response": "El piloto VST lidera con un desgaste moderado y la diferencia de ritmo es mínima.",
+        "ttft_ms": 152.4410000001808,
+        "tokens_per_second": 103.14346912745484,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 9,
+        "prompt": "Es una sesion de practica. Cambia la estrategia?",
+        "ticker_id": "D",
+        "response": "**Resumen clave:**  \nDRV P5 | L2 | 96.8L / 3.2 (avg 3.2L/vuelta) | GAP +3.5s en 1 minuto.  \nRival VST lidera con 47.8 segundos; mejorará en ritmo.  \nClase HY, condiciones favorables. Estrategia ajustada.",
+        "ttft_ms": 139.09200000125566,
+        "tokens_per_second": 168.0094726079915,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 10,
+        "prompt": "Solo tengo 2 rivales en CLS1. Es buena senal?",
+        "ticker_id": "B",
+        "response": "El piloto está en posición 1, con 13 vueltas restantes y un desgaste neumatico del 72%. Los rivales están muy cerca (menos de 5 segundos), así que sí es una buena señal.",
+        "ttft_ms": 139.8298000003706,
+        "tokens_per_second": 151.1047647113819,
+        "score": 0.25,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.25
+        }
+      },
+      {
+        "level": 7,
+        "index": 11,
+        "prompt": "Por que no hay seccion '>' en el GAP?",
+        "ticker_id": "B",
+        "response": "El desgaste de frenos muestra un ligero avance (38/35/22/20), pero como todos los laps ≤3, la sección de rendimiento se omite.",
+        "ttft_ms": 134.9781000008079,
+        "tokens_per_second": 130.21315207604445,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 12,
+        "prompt": "Hay rivales muy lejanos?",
+        "ticker_id": "B",
+        "response": "El piloto está en posición 1, con 13 vueltas restantes. El desgaste neumatico es bajo (72/68/65/63). Los rivales están a menos de 5 segundos, lo que indica una brecha significativa.",
+        "ttft_ms": 139.10690000011527,
+        "tokens_per_second": 151.809287052928,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 13,
+        "prompt": "Hay coches doblados?",
+        "ticker_id": "D",
+        "response": "El piloto VST lidera con ventaja de 3.5 segundos.  \nRival detrás: ALO con 47.8 segundos.",
+        "ttft_ms": 154.8664000001736,
+        "tokens_per_second": 120.72075974568348,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 14,
+        "prompt": "Que tiempo hace?",
+        "ticker_id": "D",
+        "response": "El piloto VST lidera con un ritmo de 96.8 L/3.2 y 28 vueltas restantes.  \nEn la carrera, el mejor rival está a 47.8 segundos detrás.",
+        "ttft_ms": 153.874800000267,
+        "tokens_per_second": 143.12520008299194,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 7,
+        "index": 15,
+        "prompt": "Las temperaturas de neumaticos son muy uniformes. Que indica",
+        "ticker_id": "C",
+        "response": "Los frenos muestran un desgaste constante (38/35/22/20), indicando condiciones estables. La pista presenta un agarre medio (GRN). El pelotón está muy cerrado, con un gap de 0.8 segundos.",
+        "ttft_ms": 139.27879999937431,
+        "tokens_per_second": 149.10319751812736,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      }
+    ]
+  },
+  "8": {
+    "name": "Razonamiento temporal",
+    "prompts": [
+      {
+        "level": 8,
+        "index": 1,
+        "prompt": "Analiza la tendencia de degradacion de neumaticos en los 3 t",
+        "ticker_id": "A",
+        "response": "La neumática mostró una degradación constante, pasando de 72% a 65%, con un descenso del 7 puntos.",
+        "ttft_ms": 229.83160000148928,
+        "tokens_per_second": 91.95323381093647,
+        "score": 0.14285714285714285,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.14285714285714285
+        }
+      },
+      {
+        "level": 8,
+        "index": 2,
+        "prompt": "VST se esta alejando o acercando? Y ALO?",
+        "ticker_id": "A",
+        "response": "VST está acelerando (desgaste 38/35/22/20) y ALO está reduciendo la brecha (48.2s).",
+        "ttft_ms": 138.5139000012714,
+        "tokens_per_second": 120.9048375798091,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 8,
+        "index": 3,
+        "prompt": "La degradacion de frenos se esta acelerando?",
+        "ticker_id": "A",
+        "response": "El desgaste de los frenos está aumentando (BRK:38/35/22/20).  \nEl piloto VST lidera con una ventaja de 2.1 segundos.",
+        "ttft_ms": 155.05379999922297,
+        "tokens_per_second": 131.46956372618484,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 8,
+        "index": 4,
+        "prompt": "Recomienda estrategia basada en la tendencia de los 3 ticks.",
+        "ticker_id": "A",
+        "response": "El piloto lidera con ventaja y desgaste moderado; mantén el ritmo y aprovecha la ventaja.",
+        "ttft_ms": 138.20639999903506,
+        "tokens_per_second": 116.44777360482782,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 8,
+        "index": 5,
+        "prompt": "Estamos ganando posiciones? Que esta cambiando?",
+        "ticker_id": "A",
+        "response": "**Sí, el piloto lidera con un desgaste moderado y ventaja clara.**  \nEl rendimiento es sólido: menor consumo, buen desgaste y tiempo competitivo.",
+        "ttft_ms": 139.86259999910544,
+        "tokens_per_second": 137.84030527427706,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 8,
+        "index": 6,
+        "prompt": "Estamos alcanzando a VER?",
+        "ticker_id": "A",
+        "response": "Estamos en la posición 3, con 13 vueltas restantes y un desgaste del 72%. El piloto detrás lidera 1 minuto.",
+        "ttft_ms": 136.94909999867377,
+        "tokens_per_second": 132.752427845198,
+        "score": 0.16666666666666666,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.16666666666666666
+        }
+      },
+      {
+        "level": 8,
+        "index": 7,
+        "prompt": "Como esta la degradacion de neumaticos en esta serie?",
+        "ticker_id": "A",
+        "response": "El piloto VST muestra un desgaste moderado (72/68/65/63%), mientras que el frenado registra 38/35/22/20, indicando buena condición. La ventaja frente a ALO es sólida (+2.1 segundos).",
+        "ttft_ms": 154.1295999995782,
+        "tokens_per_second": 150.22539966729622,
+        "score": 0.2,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.2
+        }
+      },
+      {
+        "level": 8,
+        "index": 8,
+        "prompt": "Nuestro ritmo relativo a LEC esta mejorando o empeorando?",
+        "ticker_id": "A",
+        "response": "El piloto lidera con un ritmo de +2.1 segundos y un desgaste del 72%. Mantiene una ventaja competitiva.",
+        "ttft_ms": 165.687099999559,
+        "tokens_per_second": 118.81500395866148,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 8,
+        "index": 9,
+        "prompt": "Resume la evolucion de la carrera en estos 3 ticks.",
+        "ticker_id": "A",
+        "response": "La VST lideró con un buen ritmo, manteniendo una ventaja constante y un desgaste moderado. Tras el adelanto, el ritmo se mantuvo sólido pero con ligera presión.",
+        "ttft_ms": 153.1118000002607,
+        "tokens_per_second": 138.1092536263729,
+        "score": 0.0,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.0
+        }
+      },
+      {
+        "level": 8,
+        "index": 10,
+        "prompt": "Compara la degradacion entre la Serie 1 y la Serie 2.",
+        "ticker_id": "A",
+        "response": "**Resumen:**  \nEl piloto VST lidera con un desgaste moderado (72/68/65/63%), mientras que el rival ALO muestra un mejor ritmo (1:48.2). La diferencia de ritmo es sólida (d-0.3).",
+        "ttft_ms": 150.4478000006202,
+        "tokens_per_second": 154.80177632546693,
+        "score": 0.14285714285714285,
+        "passed": false,
+        "details": {
+          "keyword_match": 0.14285714285714285
+        }
+      }
+    ]
+  }
+}

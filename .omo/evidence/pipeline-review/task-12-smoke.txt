@@ -1,0 +1,32 @@
+TASK 12 SMOKE TEST EVIDENCE
+==========================
+Date: 2026-06-03
+
+(a) INSTALL SUCCESS
+-------------------
+- Added @playwright/test to frontend/package.json devDependencies
+- Playwright version resolved from frontend/node_modules: 1.60.0
+- Installed browsers: chromium-1223, chromium_headless_shell-1223
+- Note: Firefox/WebKit were already present globally but not required/used.
+
+(b) CONFIG FILE CONTENT
+-----------------------
+File: frontend/playwright.config.ts
+- testDir: ./e2e
+- timeout: 30s
+- baseURL: http://localhost:1420
+- projects: chromium only (Desktop Chrome)
+- webServer: npm run dev, reuseExistingServer=true, timeout 30s
+
+(c) SMOKE TEST RESULT
+---------------------
+Command: cd frontend && npx playwright test e2e/smoke.spec.ts --reporter=list
+
+Result: 1 passed (3.1s)
+- [chromium] › e2e\smoke.spec.ts:14:1 › smoke: Vite dev server loads homepage without errors (371ms)
+
+(d) NOTES / LEARNINGS
+---------------------
+- App.tsx does not set a document.title, so the HTML <title> must be in index.html. The assertion toHaveTitle(/Vantare/i) passed.
+- The page intentionally logs console errors when backend (port 8008) is unavailable. The smoke test filters those expected backend errors.
+- No code changes were needed in existing frontend files.

@@ -45,6 +45,10 @@ class NoisyCartesianCoordinateSpotter:
         clear_delay: Delay para decir "clear" (s, default 0.5)
         repeat_freq: Frecuencia de "still there" (s, default 3.0)
         to_3wide: Delay para decir "three wide" (s, default 0.5)
+        min_speed_for_spotter: Velocidad mínima del rival para considerar (m/s, default 0)
+        max_closing_speed: Velocidad máxima del rival para considerar (m/s, default 50)
+        overlap_delay_ms: Delay en ms antes de anunciar "car left/right" (default 0)
+        clear_delay_ms: Delay en ms antes de anunciar "clear" tras perder coche (default 0)
     """
 
     def __init__(self, ap=None, **kwargs):
@@ -59,6 +63,10 @@ class NoisyCartesianCoordinateSpotter:
         self.clear_delay = kwargs.get("clear_delay", 0.5)
         self.repeat_freq = kwargs.get("repeat_freq", 3.0)
         self.to_3wide = kwargs.get("to_3wide", 0.5)
+        self.min_speed_for_spotter = kwargs.get("min_speed_for_spotter", 0.0)
+        self.max_closing_speed = kwargs.get("max_closing_speed", 50.0)
+        self.overlap_delay_ms = kwargs.get("overlap_delay_ms", 0)
+        self.clear_delay_ms = kwargs.get("clear_delay_ms", 0)
         self.ap = ap
         # Estado
         self.cl = 0  # current count left
@@ -69,6 +77,9 @@ class NoisyCartesianCoordinateSpotter:
         self._v: Dict[int, dict] = {}  # tracked rivals: {oid: {x,z,t,xs,zs}}
         self._next: Optional[str] = None  # pending message name
         self._due: float = 0.0  # when to play _next
+        # Timestamp tracking for debounce delays
+        self._overlap_start: Dict[int, float] = {}  # oid -> timestamp when overlap started
+        self._clear_start: Optional[float] = None  # timestamp when overlap ended
 
     def trigger(self, st: dict, opps: List[dict], now: Optional[float] = None):
         """Evalúa el estado y emite mensajes del spotter.
@@ -238,9 +249,10 @@ class NoisyCartesianCoordinateSpotter:
                     # Fallback: si el audio_player no tiene play_spotter_message,
                     # usar play() normal
                     self.ap.play(audio_path, priority=20)  # SPOTTER priority
-        # Después de "car left/right" o "three wide": programar "still there"
+        # Después de "car left/right", "three wide" o "still there": programar siguiente repetición
         if self._next in ("car_left", "car_right", "three_wide",
-                          "three_wide_on_left", "three_wide_on_right"):
+                          "three_wide_on_left", "three_wide_on_right",
+                          "still_there"):
             self._next = "still_there"
             self._due = now + self.repeat_freq
         elif self._next in ("clear_left", "clear_right", "clear_all_round"):

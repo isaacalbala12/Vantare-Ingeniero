@@ -54,6 +54,21 @@ class AlertMessage(BaseMessage):
     dismissable: bool = True
 
 
+class CrewChiefAlertMessage(BaseMessage):
+    """Mensaje de alerta del CrewChief V4 para enviar por WebSocket.
+
+    Generado por event_bridge.queued_to_crewchief_alert() a partir de
+    QueuedMessage del EventEngine. Se transmite como evento
+    'crewchief_alert' a clientes WebSocket.
+    """
+    event: str = "crewchief_alert"
+    category: str  # e.g. "fuel", "tyres", "pit_stops", "flags"
+    subtype: str   # e.g. "fuel/low_fuel_warning", "fcy/fcy_deployed"
+    message: str   # Human-readable description
+    severity: str  # "low", "medium", "high", "critical"
+    audio_priority: int = 5
+    payload: Dict[str, Any] = Field(default_factory=dict)
+
 
 # ==============================================================
 # CrewChief V4 — Queue & Message System

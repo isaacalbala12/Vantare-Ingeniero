@@ -1,0 +1,20 @@
+TASK 13 — Frontend WebSocket Connection E2E
+===========================================
+Date: 2026-06-03T11:30:46.063Z
+BaseURL: http://localhost:1420
+Backend reachable at probe time: false
+WS endpoint attempted: ws://localhost:8008/ws
+Final WS state (from spy): CLOSED
+Store wsStatus (initial): DISCONNECTED
+Store wsStatus (after dispatch): DISCONNECTED
+messageHistory length: 0 -> 1
+latestAdvice after dispatch: "T13-PROBE-Box jetzt, Reifen sind am Limit"
+lastMessage sender: engineer
+lastMessage text:   T13-PROBE-Box jetzt, Reifen sind am Limit
+Total elapsed (ms): 2718
+Console errors: 4 (expected backend-related: 4)
+Screenshot: C:\Users\isaac\Desktop\Vantare-Ingeniero\.omo\evidence\pipeline-review\task-13-ws-store.png
+
+All WS attempts captured by spy:
+  - [OPEN      ] ws://localhost:1420/?token=iMSWpEYuiDxd
+  - [CLOSED    ] ws://localhost:8008/ws

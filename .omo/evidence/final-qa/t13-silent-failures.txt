@@ -1,0 +1,15 @@
+T13: Silent failures tests
+Command: cd backend && pytest tests/test_silent_failures.py -v
+Result: 10 passed in 1.20s
+Tests:
+  - test_silent_sound_cache_miss_does_not_crash PASSED
+  - test_silent_broadcast_none_does_not_crash PASSED
+  - test_silent_broadcast_exception_does_not_stop_audio PASSED
+  - test_silent_event_exception_does_not_block_other_events PASSED
+  - test_silent_empty_frame_recovery PASSED
+  - test_silent_no_changes_no_false_positives PASSED
+  - test_silent_pyaudio_unavailable_falls_back_to_null PASSED
+  - test_silent_no_ws_clients_message_dropped_gracefully PASSED
+  - test_silent_message_without_name_graceful PASSED
+  - test_silent_event_auto_disabled_after_max_failures PASSED
+Status: PASS [10/10]

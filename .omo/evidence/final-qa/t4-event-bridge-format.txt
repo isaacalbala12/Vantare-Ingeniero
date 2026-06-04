@@ -1,0 +1,4 @@
+T4: Event bridge _format_message
+Command: cd backend && python -c "from src.services.event_bridge import _format_message; from src.models.messages import QueuedMessage; print(_format_message(QueuedMessage(name='frozen_order_monitor', priority=10)))"
+Result: Frozen Order
+Status: PASS

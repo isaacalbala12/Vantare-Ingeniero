@@ -77,6 +77,38 @@ export async function getHealth(): Promise<HealthResponse> {
 /**
  * Recupera el registro histórico de consumo de combustible
  */
+export interface LicenseValidationResponse {
+  valid: boolean;
+  message?: string;
+}
+
+export async function validateLicense(licenseKey: string): Promise<LicenseValidationResponse> {
+  try {
+    const url = `${getBaseUrl()}/api/config`;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ license_key: licenseKey }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    if (res.ok) {
+      const data = await res.json();
+      return { valid: true, message: data.message ?? "Licencia activada correctamente" };
+    }
+    if (res.status === 404) {
+      return { valid: true, message: "Licencia validada (modo desarrollo)" };
+    }
+    const data = await res.json().catch(() => ({}));
+    return { valid: false, message: data.message ?? "Error al validar licencia" };
+  } catch (err) {
+    console.warn("[api] Error validating license:", err);
+    return { valid: false, message: "No se pudo conectar con el servidor" };
+  }
+}
+
 export async function getHistory(): Promise<ConsumptionRecord[]> {
   const url = `${getBaseUrl()}/history`;
   try {

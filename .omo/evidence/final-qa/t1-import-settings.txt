@@ -1,0 +1,4 @@
+T1: Import settings
+Command: cd backend && python -c "from src.config import settings; print(type(settings))"
+Result: <class 'src.config.settings.Settings'>
+Status: PASS

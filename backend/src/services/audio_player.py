@@ -15,6 +15,7 @@ from collections import OrderedDict
 
 from src.models.messages import QueuedMessage
 from src.services.sound_cache import SoundCache
+from src.services.playback_moderator import PlaybackModerator
 
 logger = logging.getLogger("vantare.audio_player")
 
@@ -23,6 +24,12 @@ PRIORITY_CRITICAL = 15
 PRIORITY_IMPORTANT = 10
 PRIORITY_VOICE = 8
 PRIORITY_NORMAL = 5
+
+# Default expiry (seconds) applied when a QueuedMessage has no explicit expiry.
+# Spotter messages get a short window; crew-chief messages get a longer one.
+EXPIRY_SPOTTER_CLEAR = 2.0
+EXPIRY_SPOTTER_STILL = 1.0
+EXPIRY_CHIEF_DEFAULT = 30.0
 
 
 class AudioOutput:
@@ -108,14 +115,26 @@ class AudioPlayer:
         self._audio_output = audio_output
         self._owned_output = audio_output is None
         self._is_message_still_valid: Optional[Callable[[QueuedMessage], bool]] = None
+        self._interrupt_threshold: int = PRIORITY_SPOTTER
+        self._moderator = PlaybackModerator()
 
     def set_validator(self, validator: Callable[[QueuedMessage], bool]) -> None:
         """Registra un callback que valida si un mensaje sigue siendo relevante antes de reproducirlo."""
         self._is_message_still_valid = validator
 
+    def set_interrupt_threshold(self, threshold: int) -> None:
+        """Establece la prioridad mínima para que un mensaje pueda interrumpir la reproducción actual."""
+        self._interrupt_threshold = threshold
+        logger.info("AudioPlayer interrupt threshold set to %d", threshold)
+
     def play(self, msg: QueuedMessage) -> None:
         """Añade un mensaje a la cola normal. Thread-safe."""
         with self._lock:
+            if msg.expiry <= 0:
+                msg.expiry = time.time() + (
+                    EXPIRY_SPOTTER_CLEAR if msg.priority >= PRIORITY_SPOTTER
+                    else EXPIRY_CHIEF_DEFAULT
+                )
             prio = msg.priority
             if prio not in self._queue:
                 prio = PRIORITY_NORMAL
@@ -125,9 +144,14 @@ class AudioPlayer:
     def play_imm(self, msg: QueuedMessage) -> None:
         """Añade un mensaje a la cola inmediata. Thread-safe."""
         with self._lock:
+            if msg.expiry <= 0:
+                msg.expiry = time.time() + (
+                    EXPIRY_SPOTTER_CLEAR if msg.priority >= PRIORITY_SPOTTER
+                    else EXPIRY_CHIEF_DEFAULT
+                )
             self._immediate[msg.id] = msg
-            # Si hay reproducción actual y el nuevo mensaje es spotter con interrupt
-            if msg.priority >= PRIORITY_SPOTTER and self._current is not None:
+            # Si hay reproducción actual y el nuevo mensaje alcanza el umbral de interrupción
+            if msg.priority >= self._interrupt_threshold and self._current is not None:
                 if getattr(msg, "_interrupt", False):
                     self._stop_flag.set()
             logger.debug("AudioPlayer immediate queued: %s", msg.name)
@@ -203,6 +227,10 @@ class AudioPlayer:
             self._stop_flag.clear()
             # Validar que el mensaje sigue siendo relevante
             if self._is_message_still_valid and not self._is_message_still_valid(msg):
+                self._current = None
+                continue
+            # Descartar mensajes expirados antes de tocar la cache
+            if hasattr(msg, 'is_expired') and msg.expiry > 0 and msg.is_expired():
                 self._current = None
                 continue
             # Obtener el WAV

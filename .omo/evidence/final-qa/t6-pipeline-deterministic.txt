@@ -1,0 +1,12 @@
+T6: Pipeline deterministic tests
+Command: cd backend && pytest tests/test_pipeline_deterministic.py -v
+Result: 7 passed in 0.18s
+Tests:
+  - TestDeterministicFuelWarning::test_deterministic_path_emits_fuel_warning PASSED
+  - TestDeterministicTyreOverheating::test_deterministic_path_emits_tyre_overheating PASSED
+  - TestDeterministicDamageImpact::test_deterministic_path_damage_impact PASSED
+  - TestDeterministicEngineOverheating::test_deterministic_path_engine_overheating PASSED
+  - TestDeterministicPitEntry::test_deterministic_path_pit_entry PASSED
+  - TestDeterministicMessageShape::test_deterministic_path_event_bridge_message_shape PASSED
+  - TestDeterministicSilentNormal::test_deterministic_path_silent_on_normal PASSED
+Status: PASS [7/7]

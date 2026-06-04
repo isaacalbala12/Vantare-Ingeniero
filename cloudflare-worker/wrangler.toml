@@ -1,0 +1,18 @@
+name = "vantare-llm-proxy"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+
+# KV namespace for global rate limiting
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = ""
+
+# Environment variables
+[vars]
+STEPFUN_API_URL = "https://api.stepfun.com/v1/chat/completions"
+RATE_LIMIT_PER_KEY = "60"
+RATE_LIMIT_PER_IP = "600"
+
+# License keys are stored as a comma-separated env var or JSON array
+# Example: LICENSE_KEYS = "VNT-BETA-0001-ABCD,VNT-BETA-0002-EFGH"
+# In production, use KV or secrets

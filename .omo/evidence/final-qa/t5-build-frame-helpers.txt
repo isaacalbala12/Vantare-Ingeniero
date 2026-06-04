@@ -1,0 +1,4 @@
+T5: Build frame helpers
+Command: cd backend && python -c "from tests.helpers import build_frame, BroadcastCapture; f=build_frame(); print('OK: %d keys' % len(f))"
+Result: OK: 46 keys
+Status: PASS

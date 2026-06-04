@@ -1,0 +1,952 @@
+{
+  "model": "unsloth-granite-4.1-3b",
+  "timestamp": "20260601_120216",
+  "total": 105,
+  "results": [
+    {
+      "idx": 1,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Cuanta gasolina me queda?",
+      "response": "Gasolina disponible: 18.2L",
+      "error": "",
+      "elapsed": 11.014214038848877
+    },
+    {
+      "idx": 2,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Que marcha llevo?",
+      "response": "You are on Gear 6.",
+      "error": "",
+      "elapsed": 2.4717366695404053
+    },
+    {
+      "idx": 3,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Van bien los frenos?",
+      "response": "FL_Brake: 342°C | FR_Brake: 338°C | RL_Brake: 298°C | RR_Brake: 295°C. Los frenos están dentro de las especificaciones normales.",
+      "error": "",
+      "elapsed": 2.926936149597168
+    },
+    {
+      "idx": 4,
+      "tier": "tier1",
+      "level": "a",
+      "question": "¿Temperatura del motor esta bien?",
+      "response": "El temperatura del motor es de 102°C, lo cual está dentro de los límites normales para este tipo de vehículos raciales.",
+      "error": "",
+      "elapsed": 2.7682721614837646
+    },
+    {
+      "idx": 5,
+      "tier": "tier1",
+      "level": "b",
+      "question": "¿Tengo DRS disponible?",
+      "response": "Sí, tienes DRS disponible.",
+      "error": "",
+      "elapsed": 2.490208864212036
+    },
+    {
+      "idx": 6,
+      "tier": "tier1",
+      "level": "b",
+      "question": "¿ERS activo?",
+      "response": "Sí, el ERS (Energy Recovery System) está activo.",
+      "error": "",
+      "elapsed": 2.5875954627990723
+    },
+    {
+      "idx": 7,
+      "tier": "tier1",
+      "level": "b",
+      "question": "¿KERS tengo?",
+      "response": "Sí, el KERS (Energy Recovery System) está activo con un torque de 145Nm.",
+      "error": "",
+      "elapsed": 2.639284610748291
+    },
+    {
+      "idx": 8,
+      "tier": "tier1",
+      "level": "c",
+      "question": "¿Fuel y bateria como van?",
+      "response": "Fuel: 18.2L remaining. Battery level: 0.72 (72%).",
+      "error": "",
+      "elapsed": 2.5995876789093018
+    },
+    {
+      "idx": 9,
+      "tier": "tier1",
+      "level": "c",
+      "question": "¿Motor y frenos OK?",
+      "response": "Yes, both the engine (RPM 8472, ERS Active) and brakes are functioning normally (Brake temps between 295C and 342C). No issues detected.",
+      "error": "",
+      "elapsed": 2.8151233196258545
+    },
+    {
+      "idx": 10,
+      "tier": "tier1",
+      "level": "c",
+      "question": "¿Temperatura motor y aceite?",
+      "response": "Motor Temperature: 102°C | Oil Temperature: 102°C",
+      "error": "",
+      "elapsed": 2.5357179641723633
+    },
+    {
+      "idx": 11,
+      "tier": "tier1",
+      "level": "d",
+      "question": "¡Dame rapido! Motor, fuel, RPMs.",
+      "response": "Motor: Active (ERS_Torque: 145Nm) | Fuel: 18.2L remaining | RPM: 8472",
+      "error": "",
+      "elapsed": 2.67678165435791
+    },
+    {
+      "idx": 12,
+      "tier": "tier1",
+      "level": "d",
+      "question": "¡Ya! Neumaticos, motor, bateria. Responde.",
+      "response": "Motor: Consumo actual de 0.82L/v. Bateria: 0.72 (nivel). No hay información específica sobre el estado del motor en los datos disponibles.",
+      "error": "",
+      "elapsed": 2.856440782546997
+    },
+    {
+      "idx": 13,
+      "tier": "tier1",
+      "level": "d",
+      "question": "¿Todo bien o no? Frenos, motor, suspension.",
+      "response": "Frenos: Generalmente bien (temperaturas de freno entre 295°C y 342°C). Motor: RPM en 8472 con consumo de 0.82L/v. Suspensión: Desplazamientos menores que el promedio (FL 0.038m a RR 0.039m), lo que sugiere buena estabilidad. No hay problemas aparentes significativos en frenos, motor o suspensión según los datos actuales.",
+      "error": "",
+      "elapsed": 3.5468552112579346
+    },
+    {
+      "idx": 14,
+      "tier": "tier1",
+      "level": "e",
+      "question": "¡URGENTE! ¿Llego o no? Fuel, consumo, revoluciones.",
+      "response": "Fuel remaining: 18.2L | Consumption: 0.82L per lap | Current RPM: 8472.",
+      "error": "",
+      "elapsed": 2.7419276237487793
+    },
+    {
+      "idx": 15,
+      "tier": "tier1",
+      "level": "e",
+      "question": "¡EMERGENCY! ¿Puedo terminar o no?",
+      "response": "No, según la telemetría actual en el lap 25 de 65, tu posición es P3 con un récord personal de mejor vuelta de 1:31.234. Terminar la carrera ahora significaría perder posiciones importantes y potencialmente quedar fuera del top-5 para clasificaciones. Necesitas mejorar tu estrategia o velocidad para mantener o ganar posición antes de la llegada.",
+      "error": "",
+      "elapsed": 3.399481773376465
+    },
+    {
+      "idx": 16,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Las revoluciones del motor estan en rango?",
+      "response": "Sí, las revoluciones del motor están en el rango normal (8472 RPM).",
+      "error": "",
+      "elapsed": 2.628490447998047
+    },
+    {
+      "idx": 17,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Presion del aceite correcta?",
+      "response": "Oil_Temp: 102°C (data available, but no specific pressure value provided)",
+      "error": "",
+      "elapsed": 2.6033990383148193
+    },
+    {
+      "idx": 18,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Temperatura del agua OK?",
+      "response": "Sí, la temperatura del agua está en 94°C, lo cual es dentro de los límites normales.",
+      "error": "",
+      "elapsed": 2.6733312606811523
+    },
+    {
+      "idx": 19,
+      "tier": "tier2",
+      "level": "a",
+      "question": "¿Suspension normal?",
+      "response": "Sí, las suspensiones están dentro del rango normal (FL 0.038m, FR 0.036m, RL 0.041m, RR 0.039m).",
+      "error": "",
+      "elapsed": 2.860342264175415
+    },
+    {
+      "idx": 20,
+      "tier": "tier2",
+      "level": "b",
+      "question": "¿DRS activado?",
+      "response": "No, DRS está desactivado (TC: OFF).",
+      "error": "",
+      "elapsed": 2.5625033378601074
+    },
+    {
+      "idx": 21,
+      "tier": "tier2",
+      "level": "b",
+      "question": "¿ABS funcionando?",
+      "response": "Sí, ABS está desactivado (ABS: OFF).",
+      "error": "",
+      "elapsed": 2.526319742202759
+    },
+    {
+      "idx": 22,
+      "tier": "tier2",
+      "level": "b",
+      "question": "¿Control de traccion activo?",
+      "response": "ABS: OFF (Active Tire Control not enabled)",
+      "error": "",
+      "elapsed": 2.5265424251556396
+    },
+    {
+      "idx": 23,
+      "tier": "tier2",
+      "level": "c",
+      "question": "Temperatura motor y aceite. ¿Estan bien?",
+      "response": "La temperatura del motor es de 102°C y la del aceite es de 94°C. Ambas están dentro de los rangos normales para el funcionamiento seguro del vehículo.",
+      "error": "",
+      "elapsed": 2.8645029067993164
+    },
+    {
+      "idx": 24,
+      "tier": "tier2",
+      "level": "c",
+      "question": "Presion hidraulica y RPM. ¿Todo OK?",
+      "response": "Sí, todo está en orden. La presión hidráulica y el RPM están dentro de los rangos normales. No hay indicadores de problemas detectados en la telemetría actual.",
+      "error": "",
+      "elapsed": 2.8886146545410156
+    },
+    {
+      "idx": 25,
+      "tier": "tier2",
+      "level": "c",
+      "question": "Ride height y deflection. ¿Como vamos?",
+      "response": "The current ride height is 0.072m with front-left suspension at 0.038m, front-right at 0.036m, rear-left at 0.041m, and rear-right at 0.039m. Deflections are within normal operating range for the conditions.",
+      "error": "",
+      "elapsed": 3.06831955909729
+    },
+    {
+      "idx": 26,
+      "tier": "tier2",
+      "level": "d",
+      "question": "¡YA! Agua motor, aceite, RPMs.",
+      "response": "Oil temperature is at 102°C.",
+      "error": "",
+      "elapsed": 2.463574171066284
+    },
+    {
+      "idx": 27,
+      "tier": "tier2",
+      "level": "d",
+      "question": "Suspension, frenos, motor. ¿Todo bien?",
+      "response": "Sí, todo está bien. Los datos de suspensión muestran variaciones normales (FL 0.038m, FR 0.036m, RL 0.041m, RR 0.039m). Los frenos están dentro del rango esperado (FL_Brake 342C, etc.). El motor funciona con consumo normal (0.82L/v) y la temperatura del motor es adecuada (102°C).",
+      "error": "",
+      "elapsed": 3.464371681213379
+    },
+    {
+      "idx": 28,
+      "tier": "tier2",
+      "level": "d",
+      "question": "¡DAME rapido! Temperaturas y presiones.",
+      "response": "FL_Tyre: 89°C | FR_Tyre: 87°C | RL_Tyre: 78°C | RR_Tyre: 76°C",
+      "error": "",
+      "elapsed": 2.738353729248047
+    },
+    {
+      "idx": 29,
+      "tier": "tier2",
+      "level": "e",
+      "question": "¡ALARMA! Motor sobrecalentando. ¿Que hago?",
+      "response": "No tengo datos de temperatura del motor en la telemetría actual disponible. Solo se proporciona la temperatura del aceite (102°C) y el agua (94°C). Recomiendo verificar el sistema de enfriamiento del motor fuera del vehículo o consultar al equipo técnico para abordar el problema de sobrecalentamiento.",
+      "error": "",
+      "elapsed": 3.1850545406341553
+    },
+    {
+      "idx": 30,
+      "tier": "tier2",
+      "level": "e",
+      "question": "¡CRITICO! Aceite y agua en rojo.",
+      "response": "Oil temperature is at 102°C and water temperature is at 94°C, both above normal operating ranges.",
+      "error": "",
+      "elapsed": 2.666353225708008
+    },
+    {
+      "idx": 31,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿Subio la temperatura del motor en las ultimas vueltas?",
+      "response": "No, no hay datos de temperatura del motor disponibles en el telemetría actual.",
+      "error": "",
+      "elapsed": 2.603790760040283
+    },
+    {
+      "idx": 32,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿Bajo la presion de los neumaticos?",
+      "response": "Los compresiones en las llantas son: FL_Tyre 89°C, FR_Tyre 87°C, RL_Tyre 78°C, RR_Tyre 76°C.",
+      "error": "",
+      "elapsed": 2.8438096046447754
+    },
+    {
+      "idx": 33,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿Aumento el consumo de gasolina?",
+      "response": "Sí, el consumo actual es de 0.82 litros por vuelta.",
+      "error": "",
+      "elapsed": 2.6012768745422363
+    },
+    {
+      "idx": 34,
+      "tier": "tier3",
+      "level": "a",
+      "question": "¿RPM estable o subiendo?",
+      "response": "RPM actual: 8472 rpm (no datos de tendencia disponibles).",
+      "error": "",
+      "elapsed": 2.59855055809021
+    },
+    {
+      "idx": 35,
+      "tier": "tier3",
+      "level": "b",
+      "question": "¿DRS como va funcionando esta carrera?",
+      "response": "No data available on DRS usage in the current telemetry.",
+      "error": "",
+      "elapsed": 2.5543694496154785
+    },
+    {
+      "idx": 36,
+      "tier": "tier3",
+      "level": "b",
+      "question": "¿ERS generando bien?",
+      "response": "Sí, el ERS (Energy Recovery System) está activo y generando 145 Nm de torque.",
+      "error": "",
+      "elapsed": 2.6469085216522217
+    },
+    {
+      "idx": 37,
+      "tier": "tier3",
+      "level": "b",
+      "question": "¿KERS recuperacion funcionando?",
+      "response": "Sí, el KERS (Energy Recovery System) está activo con un torque de 145Nm.",
+      "error": "",
+      "elapsed": 2.642043113708496
+    },
+    {
+      "idx": 38,
+      "tier": "tier3",
+      "level": "c",
+      "question": "Fuel consumption y battery. ¿Mejorando o piorando?",
+      "response": "El consumo de combustible es estable en aproximadamente 0.82L/v, y la batería se encuentra a 0.72 (probablemente porcentual). No hay datos disponibles para determinar si está mejorando o empeorando en este momento.",
+      "error": "",
+      "elapsed": 3.0879697799682617
+    },
+    {
+      "idx": 39,
+      "tier": "tier3",
+      "level": "c",
+      "question": "Temperatura motor y frenos. ¿Estables?",
+      "response": "Motor Temp: 102°C, Brake Temp: FR 338°C, RL 298°C. Los temperaturas del motor y los freones están dentro de los rangos normales para este momento de la carrera. No hay indicios de inestabilidad.",
+      "error": "",
+      "elapsed": 2.9839227199554443
+    },
+    {
+      "idx": 40,
+      "tier": "tier3",
+      "level": "c",
+      "question": "Presion aceite y agua. ¿Tendencia?",
+      "response": "No data available on tire pressure trends in the current telemetry.",
+      "error": "",
+      "elapsed": 2.6595511436462402
+    },
+    {
+      "idx": 41,
+      "tier": "tier3",
+      "level": "d",
+      "question": "Historico! Consumo, temps motor, battery. Como vamos.",
+      "response": "Consumo de combustível atual é de 0.82L/voltidão. Temperatura do motor: 94°C. Nível da bateria: 0.72 (aprox.). Você está na pole position com uma vantagem sobre o segundo carro de +2.341s e um recorde interno de -4.127s sobre o quarto.",
+      "error": "",
+      "elapsed": 3.2665159702301025
+    },
+    {
+      "idx": 42,
+      "tier": "tier3",
+      "level": "d",
+      "question": "Ultimas 5 vueltas: RPM, oil presion, water temp.",
+      "response": "RPM: 8472 | Oil Pressure: Not available in telemetry | Water Temperature: 94°C",
+      "error": "",
+      "elapsed": 2.6322689056396484
+    },
+    {
+      "idx": 43,
+      "tier": "tier3",
+      "level": "d",
+      "question": "¡EVOLUCION! Todo el trenmotriz.",
+      "response": "No data available on current tire wear or degradation levels in the telemetry.",
+      "error": "",
+      "elapsed": 2.5554463863372803
+    },
+    {
+      "idx": 44,
+      "tier": "tier3",
+      "level": "e",
+      "question": "¡RAPIDO! Tendencia de consumo ultimas 3 vueltas.",
+      "response": "Telemetry does not provide specific data on the consumption trend over the last three laps. Only average fuel consumption and current values are available.",
+      "error": "",
+      "elapsed": 2.741579532623291
+    },
+    {
+      "idx": 45,
+      "tier": "tier3",
+      "level": "e",
+      "question": "¡SITUACION! Evolucion del motor completo.",
+      "response": "No hay datos de telemetría disponibles sobre la evolución del motor completo en el registro actual.",
+      "error": "",
+      "elapsed": 2.7066445350646973
+    },
+    {
+      "idx": 46,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Cuanto hago boxes?",
+      "response": "No data available on the number of box stops from the current telemetry.",
+      "error": "",
+      "elapsed": 2.548100471496582
+    },
+    {
+      "idx": 47,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Puedo hacer stint entero con este fuel?",
+      "response": "No, no tienes suficiente combustible para completar el estint completo. Tienes 18.2L y la consumición promedio es de 0.82L por vuelta. Con 65 vueltas restantes, necesitarías aproximadamente 53.3L, lo que excede tu combustible actual.",
+      "error": "",
+      "elapsed": 3.1793253421783447
+    },
+    {
+      "idx": 48,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Neumaticos van a llegar al final?",
+      "response": "Telemetry does not provide specific data on the remaining lifespan of the tires. However, current tire temperatures are FL_Tyre: 89°C, FR_Tyre: 87°C, RL_Tyre: 78°C, RR_Tyre: 76°C, which suggest they have moderate wear but may still be usable for the remainder of the race. For a precise answer, direct tire condition monitoring would be needed.",
+      "error": "",
+      "elapsed": 3.3291971683502197
+    },
+    {
+      "idx": 49,
+      "tier": "tier4",
+      "level": "a",
+      "question": "¿Estrategia de una o dos paradas?",
+      "response": "Based on the current telemetry, a single stop strategy is feasible. You are leading the field (P3) with a favorable gap to P2 and a decent position relative to P4. Fuel level (18.2L) and tire temperatures suggest you have sufficient resources for one more stint before needing a pit stop. Weather conditions (LightRain) may favor a single stop as well, allowing you to maximize track time without excessive wet-weather degradation risks.",
+      "error": "",
+      "elapsed": 3.478370428085327
+    },
+    {
+      "idx": 50,
+      "tier": "tier4",
+      "level": "b",
+      "question": "¿DRS ayuda para adelantar?",
+      "response": "No, actualmente no se está utilizando DRS ya que no hay una ventaja de velocidad significativa con respecto al coche de segundo lugar. La diferencia de tiempo es de +2.341 segundos.",
+      "error": "",
+      "elapsed": 2.915539026260376
+    },
+    {
+      "idx": 51,
+      "tier": "tier4",
+      "level": "b",
+      "question": "¿ERS para el ataque?",
+      "response": "Sí, el ERS está activo con 145 Nm de torque disponible para el ataque.",
+      "error": "",
+      "elapsed": 2.6453161239624023
+    },
+    {
+      "idx": 52,
+      "tier": "tier4",
+      "level": "b",
+      "question": "¿DRS en este sector?",
+      "response": "No data available regarding DRS status in the telemetry provided.",
+      "error": "",
+      "elapsed": 2.5425302982330322
+    },
+    {
+      "idx": 53,
+      "tier": "tier4",
+      "level": "c",
+      "question": "Fuel queda, consumo, vueltas restantes. ¿Que hago?",
+      "response": "Con base en los datos de telemetría actuales, el coche tiene 18.2L de combustible con una consumición de 0.82L por vuelta. Se han completado 25 de 65 vueltas. Te recomendaría evaluar la estrategia de repostaje en la próxima parada del grid, ya que se está acercando al final de la carrera y el combustible es un factor crítico para mantener el rendimiento.",
+      "error": "",
+      "elapsed": 3.5272490978240967
+    },
+    {
+      "idx": 54,
+      "tier": "tier4",
+      "level": "c",
+      "question": "Motor temps, tire wear, brake temps. Estrategia optima.",
+      "response": "Motor Temperatures not available in telemetry. Tire Wear inferred from tyre temperatures (RR and RL are coolest, indicating higher wear). Brake Temperatures moderate (FR and RR around 338-342°C). Optimal Strategy: Consider tyre management—medium compounds may need replacement soon given wear patterns. Maintain current brake temps; no immediate cooling needed. Adjust strategy based on upcoming track conditions and fuel position.",
+      "error": "",
+      "elapsed": 3.2847423553466797
+    },
+    {
+      "idx": 55,
+      "tier": "tier4",
+      "level": "c",
+      "question": "Todo junto: fuel, tires, brakes, engine. Plan.",
+      "response": "Current fuel is 18.2L with a consumption of 0.82L per lap. Tyres are FL 89°C, FR 87°C, RL 78°C, RR 76°C. Brakes are FL 342°C, FR 338°C, RL 298°C, RR 295°C. Engine RPM is 8472 with throttle at 85% and brake at 62%. ERS is active providing 145Nm of torque. Weather is light rain at 70% humidity with a track temperature of 28°C and ambient temperature of 22°C.",
+      "error": "",
+      "elapsed": 3.8249592781066895
+    },
+    {
+      "idx": 56,
+      "tier": "tier4",
+      "level": "d",
+      "question": "¡TODO! Fuel, tires, brakes, engine. Dame plan.",
+      "response": "Con base en la telemetría actual:\n\n1. **Combustible**: Con 18.2L restantes y una consumición de 0.82L/v, se espera alcanzar al menos otro 22 vueltas aproximadamente (18.2L / 0.82L/v ≈ 22 vuelta). Mantén el ritmo moderado para conservar combustible.\n\n2. **Neumáticos**: Las temperaturas de los neumáticos son variables (78C y 87C en las alas, 89C y 76C en la marcha). Evita curvas ágiles; usa los neumáticos principalmente en su punto óptimo para maximizar el agarre.\n\n3. **Frenos**: Las temperaturas de frenado son bajas (295C-338C), lo que indica buen desempeño. Mantén la presión de aire adecuada y usa los frenos cuando sea necesario sin abusar, ya que están calientes pero no sobrecalentados.\n\n4. **Motor**: El ERS está activo con 145Nm de torque disponible. Usa estratégicamente el ERS para mantener ritmo en las curvas, especialmente si necesitas aceleración adicional o control en la marcha.\n\n5. **Planificación**: Con un rango estimado de combustible de ~22 vueltas más y condiciones actuales (luz de lluvia, temperatura del suelo 28°C), prioriza conservar el motor y los neumáticos para mantener una posición estable frente al líder (+2.341s) mientras intentas cerrar la diferencia con el segundo lugar (-4.127s). Mantén un ritmo constante en las curvas principales y usa el ERS estratégicamente en las secciones de alta velocidad o cuando sea necesario para recuperar tiempo.\n\nAsegúrate de ajustar el plan según cualquier cambio repentino en las condiciones del circuito o la situación de otros pilotos.",
+      "error": "",
+      "elapsed": 7.228390693664551
+    },
+    {
+      "idx": 57,
+      "tier": "tier4",
+      "level": "d",
+      "question": "Situacion completa: necesito estrategia para acabar.",
+      "response": "Actualmente lidera la pista con una ventaja de 2.341s sobre el segundo y es el tercer mejor. La temperatura del aceite es de 102°C, lo que podría indicar un uso moderado pero cercano al límite. La estrategia recomendada sería mantener el consumo actual para no agotar el combustible antes de la vuelta final, ya que tienes buen control térmico y aerodinámico. Considera si se necesita un cambio de neumáticos basándote en las temperaturas del suelo (FL_Tyre 89°C, FR_Tyre 87°C, RL_Tyre 78°C, RR_Tyre 76°C) y la estrategia prevista para los posibles cambios de pista.",
+      "error": "",
+      "elapsed": 4.271836519241333
+    },
+    {
+      "idx": 58,
+      "tier": "tier4",
+      "level": "d",
+      "question": "¡PLANE A! Combustible, gomas, motor, boxes.",
+      "response": "Combustible: 18.2L consumido (0.82 L/v).  \nGomas: FL 89°C, FR 87°C, RL 78°C, RR 76°C.  \nMotor: RPM 8472, ERS activo (Torque 145Nm).  \nBoxes: No información disponible en la telemetría.",
+      "error": "",
+      "elapsed": 3.2357006072998047
+    },
+    {
+      "idx": 59,
+      "tier": "tier4",
+      "level": "e",
+      "question": "¡PILOTO orden! Fuel critico, tires acabados, motor fundido. ¿BOX ahora o no?",
+      "response": "No data available on tire wear percentage or fuel level in the current telemetry. Please check specific telemetry for those metrics before deciding on a pit stop.",
+      "error": "",
+      "elapsed": 2.7532858848571777
+    },
+    {
+      "idx": 60,
+      "tier": "tier4",
+      "level": "e",
+      "question": "¡IMPOSIBLE! Todo mal. ¿Que hago?",
+      "response": "Based on the current telemetry, your fuel level is at 18.2L with a consumption of 0.82L per lap, and the battery is at 72%. The temperatures are within normal ranges (oil 102°C, water 94°C), but the tires show significant wear: FL_Tyre 89C, FR_Tyre 87C, RL_Tyre 78C, RR_Tyre 76C. Suspension offsets are relatively high (FL 0.038m to RR 0.039m), indicating some understeer or oversteer issues. The car is in Medium tire compound with Light Rain conditions. Consider reducing fuel load if possible, and monitor tire wear closely for the remainder of the race.",
+      "error": "",
+      "elapsed": 4.1247498989105225
+    },
+    {
+      "idx": 61,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡RAPIDO! ¿Llego o no?",
+      "response": "No, aún queda tiempo para llegar al final de la carrera. Te encuentras en P3 con un récord personal de 1:31.234 y solo falta una vuelta (65/25). La situación actual muestra que estás cerca pero no has completado la carrera todavía.",
+      "error": "",
+      "elapsed": 3.107407331466675
+    },
+    {
+      "idx": 62,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡YA! ¿Boxes o sigo?",
+      "response": "No hay datos de boxeo disponibles en la telemetría actual.",
+      "error": "",
+      "elapsed": 2.6045539379119873
+    },
+    {
+      "idx": 63,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡PRONTO! ¿Termino o no?",
+      "response": "No, aún no terminaste la carrera (Lap 25 de 65).",
+      "error": "",
+      "elapsed": 2.6052277088165283
+    },
+    {
+      "idx": 64,
+      "tier": "tier5",
+      "level": "a",
+      "question": "¡INMEDIATO! ¿Que hago?",
+      "response": "Con base en los datos de telemetría actuales, te recomendaría enfocarte en mantener la posición en P3. La diferencia con el líder (P2) es de +2.341 segundos, mientras que estás a -4.127 segundos del tercer lugar (P4), lo cual indica una buena oportunidad para un adelantamiento. Asegúrate de gestionar bien el freno y la aceleración en las curvas clave, y considera ajustar ligeramente la configuración de suspensión si notas inestabilidad en ciertos puntos del circuito. Mantén el motor a una revolución estable alrededor de 8500 rpm para optimizar el ERS y asegura que los neumáticos mantengan su temperatura óptima, ya que están dentro del rango deseado (78-89°C).",
+      "error": "",
+      "elapsed": 4.4685728549957275
+    },
+    {
+      "idx": 65,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Seguridad motor? Tengo miedo.",
+      "response": "No hay información de seguridad en los datos de telemetría disponibles.",
+      "error": "",
+      "elapsed": 2.5720021724700928
+    },
+    {
+      "idx": 66,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Motor va a partirse?",
+      "response": "No data available indicating the engine is about to fail.",
+      "error": "",
+      "elapsed": 2.5096137523651123
+    },
+    {
+      "idx": 67,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Frenos van a fallar?",
+      "response": "No data available indicating brake failure. Current brake temps are within normal range (FL_Brake: 342°C, FR_Brake: 338°C, RL_Brake: 298°C, RR_Brake: 295°C).",
+      "error": "",
+      "elapsed": 2.9937212467193604
+    },
+    {
+      "idx": 68,
+      "tier": "tier5",
+      "level": "b",
+      "question": "¿Aceite OK? Veo warning.",
+      "response": "Oil_Temp: 102°C (within normal range, no issue)",
+      "error": "",
+      "elapsed": 2.5715792179107666
+    },
+    {
+      "idx": 69,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡ADELANTE! ¿Puedo atacar ya?",
+      "response": "Sí, puedes atacar ahora. Tu posición es P3 con una ventaja sobre P2 de +2.341 segundos y una desventaja sobre P4 de -4.127 segundos, lo que indica que tienes margen para intentar un adelantamiento. Sin embargo, asegúrate de gestionar bien el consumo de combustible (0.82 L/v) y la temperatura del motor (102°C) durante el intento.",
+      "error": "",
+      "elapsed": 3.443551778793335
+    },
+    {
+      "idx": 70,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡PUSH! ¿Aguantan los Michelin?",
+      "response": "No data available on tire wear or condition for the specific brand (Michelin) in the current telemetry.",
+      "error": "",
+      "elapsed": 2.6316494941711426
+    },
+    {
+      "idx": 71,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡SACRIFICE todo! ¿Boxes o sigo hasta final?",
+      "response": "No tengo datos de la situación del circuito o estrategia de boxes disponibles en el telemetría actual. Por favor, proporcione más información sobre las opciones de boxes y la posición relativa a los otros pilotos para poder asesorar con precisión.",
+      "error": "",
+      "elapsed": 3.0942275524139404
+    },
+    {
+      "idx": 72,
+      "tier": "tier5",
+      "level": "c",
+      "question": "¡MAXIMO PUSH! ¿Puedo?",
+      "response": "No, no puedes hacer un despegue máximo ahora. Tienes una ventaja de -4.127s sobre el segundo lugar y la temperatura del óleo es de 102°C, lo que indica que el motor está caliente y no es seguro aumentar mucho la presión de combustible o el régimen de RPM para un despegue extremo sin riesgo de sobrecalentamiento. Además, tu suspensión trasera (RL) está ligeramente más comprimida (0.041m) que la delantera, lo que podría afectar la estabilidad en curvas fuertes si intentas un despegue agresivo.",
+      "error": "",
+      "elapsed": 3.9774770736694336
+    },
+    {
+      "idx": 73,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Que pasa? No entiendo los numeros.",
+      "response": "Actualmente en la posición P3 en el lap 25 de 65. La diferencia de tiempo con el líder es +2.341 segundos y con el segundo es -4.127 segundos (lo que indica está adelantado al segundo). El consumo de combustible es de 0.82 litros por vuelta, con una batería en 72% de carga. Los tiempos de los neumáticos izquierda-fuerte son de 89°C y derecha-rueda trasera son de 78°C. La temperatura del aceite es de 102°C y el agua de 94°C. El compás lateral izquierdo está a 0.038 metros, derecho a 0.036 metros, izquierda trasera a 0.041 metros y derecha trasera a 0.039 metros. La altura de suspensión es de 0.072 metros. La resistencia aerodinámica es de 0.98 y la fuerza descendente en la parte delantera es de 825N mientras que en la parte trasera es de 1120N. El ERS (Energy Recovery System) está activo con un torque de 145Nm. Estamos utilizando neumáticos de compresión media. El último lap fue de 1:32.847 segundos y el mejor tiempo del día de entrenamiento es de 1:31.234 segundos. El clima es con lluvia ligera a un 70%, la temperatura del suelo es de 28°C mientras que la ambiante es de 22°C.",
+      "error": "",
+      "elapsed": 6.217324256896973
+    },
+    {
+      "idx": 74,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Esto verde o rojo? No veo bien.",
+      "response": "No está disponible información específica sobre una “señal verde o roja” en los datos de telemetría proporcionados. Solo se muestran posiciones, tiempos, temperatura del circuito y otros parámetros técnicos del vehículo. No hay indicación de una bandera de pista.",
+      "error": "",
+      "elapsed": 3.187312126159668
+    },
+    {
+      "idx": 75,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Cuanto fuel? No me aclaro.",
+      "response": "Actualmente se ha consumido 18.2 litros de combustible.",
+      "error": "",
+      "elapsed": 2.581148386001587
+    },
+    {
+      "idx": 76,
+      "tier": "tier5",
+      "level": "d",
+      "question": "¿Que me dices? Estoy perdido.",
+      "response": "Te encuentras en P3 con un régistro de tiempo +2.341 segundos sobre el líder y -4.127 segundos sobre el tercer lugar. El tráfico parece complicado; considera enfocarte en mantenerte entre los primeros tres posiciones. Las condiciones actuales son lluvia ligera a 28 °C, con temperaturas del circuito y ambiente de 22 °C. Recuerda que la suspensión lateral izquierda está ligeramente más comprimida (0.038 m) en comparación con la derecha (0.036 m), lo cual podría afectar el manejo en seco o mojado. Mantén el ritmo y no te desanimes, estás dentro de los primeros tres.",
+      "error": "",
+      "elapsed": 4.304272651672363
+    },
+    {
+      "idx": 77,
+      "tier": "tier5",
+      "level": "e",
+      "question": "¡ALARMA! ¡PILOTO! Motor rojo, fuel cero, tires quemados.",
+      "response": "The telemetry shows the driver has run out of fuel (Fuel: 18.2L with Consumption: 0.82L/v), indicating a critical situation as stated in the alert. Tire temperatures are high (FL_Tyre: 89C, FR_Tyre: 87C, RL_Tyre: 78C, RR_Tyre: 76C) suggesting overheating or wear, and there is no data on tire compound beyond being identified as Medium. The vehicle’s Electronic Stability Control (ESC) is OFF, which may have contributed to the issue.",
+      "error": "",
+      "elapsed": 3.678621292114258
+    },
+    {
+      "idx": 78,
+      "tier": "tier5",
+      "level": "e",
+      "question": "¡EMERGENCIA! Todo fallando. ¡AYUDA!",
+      "response": "Telemetry does not provide specific information about mechanical failures or emergency situations. Please check with the pit crew for details on any issues encountered.",
+      "error": "",
+      "elapsed": 2.701526403427124
+    },
+    {
+      "idx": 79,
+      "tier": "tier5",
+      "level": "e",
+      "question": "¡PELIGRO! Critical en todas partes. ¡ACCION YA!",
+      "response": "No hay información específica sobre la posición del rival directo (P2) en el telemetría proporcionada. Solo se muestra la diferencia de tiempo (+2.341s) con respecto a P2, pero no su velocidad exacta o ubicación.",
+      "error": "",
+      "elapsed": 3.031444787979126
+    },
+    {
+      "idx": 80,
+      "tier": "tier5",
+      "level": "e",
+      "question": "DANGER everywhere. Everything failing. RESPOND.",
+      "response": "Based on the current telemetry, several issues appear:\n\n1. Temperature: Both oil (102°C) and water (94°C) temperatures are elevated, indicating potential overheating.\n2. Tyre condition: Left rear tyre is significantly cooler (78°C) compared to other tires, suggesting possible underinflation or wear.\n3. Suspension: Front left suspension is slightly stiffer (0.038m) than the front right (0.036m), which could affect handling.\n4. Drag and Downforce: Higher drag (0.98) and lower rear downforce (R1120N vs front F825N) may reduce aerodynamic efficiency.\n\nThese factors combined suggest multiple systems are underperforming, likely contributing to the \"DANGER everywhere\" situation reported by the driver. Immediate attention to cooling, tyre management, suspension balance, and aerodynamics is recommended.",
+      "error": "",
+      "elapsed": 4.481314420700073
+    },
+    {
+      "idx": 81,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Que hago? ¿Paro ahora o sigo?",
+      "response": "Based on the current data, it is recommended to continue racing rather than pitting at this moment. Your position (P3) and gap to the leader (+18.4s) suggest you are still in a competitive position. The tire wear is low (FL:0.12, FR:0.11, RL:0.14, RR:0.13), and there is no immediate rain threat indicated. Your pit window opens at lap 35-38, so you have some time before needing to consider a stop. Monitor the race situation closely, but for now, maintaining your current stint is advisable.",
+      "error": "",
+      "elapsed": 4.390197277069092
+    },
+    {
+      "idx": 82,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Boxes ahora o espero hasta el final?",
+      "response": "Based on the current data, your box window is open from laps 35 to 38. It would be advisable to use it within this window rather than waiting until the end of the race.",
+      "error": "",
+      "elapsed": 2.8722219467163086
+    },
+    {
+      "idx": 83,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Stint strategy? ¿Una o dos paradas?",
+      "response": "Based on the current data, your stint is 25 laps long (from lap 21 to lap 45). The box window is open for laps 35-38, and you have already made one pit stop at lap 20. Given your position P3, a single pit stop strategy would be optimal to maintain pace while minimizing time lost in the pits.",
+      "error": "",
+      "elapsed": 3.269629716873169
+    },
+    {
+      "idx": 84,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Cuando es el momento optimo para boxes?",
+      "response": "The optimal time for a pit stop is typically when you have used up your set of tires or when fuel consumption becomes too high, usually around laps 30-35 depending on tire wear and strategy. With your current stint at lap 25 using Medium tires, the window to pit is open from laps 35-38 as indicated by the box status. Consider factors like track position, competitor positions (Verstappen +18.4s ahead), and tire degradation before deciding.",
+      "error": "",
+      "elapsed": 3.5087332725524902
+    },
+    {
+      "idx": 85,
+      "tier": "tier6",
+      "level": "a",
+      "question": "¿Puedo terminar sin entrar a boxes?",
+      "response": "No, según la información de la ventana del box y las especificaciones actuales, necesitarás hacer un pit stop entre los vueltas 35 y 38. No hay suficientes ERS disponibles para completar el gran premio sin una parada en boxes.",
+      "error": "",
+      "elapsed": 3.0530800819396973
+    },
+    {
+      "idx": 86,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Leclerc viene fuerte por detras. ¿Defiendo o dejo pasar?",
+      "response": "Based on the current data, Verstappen leads by 18.432 seconds. Your position is P3 with Leclerc behind you by -4.127 seconds. Consider defending your position unless you can safely overtake without risking a penalty or losing too much time. Monitor tire wear and track conditions closely.",
+      "error": "",
+      "elapsed": 3.1501450538635254
+    },
+    {
+      "idx": 87,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Hamilton a 2 decimas. ¿Que hago?",
+      "response": "With the current gap of +2.341 seconds to P2 (Hamilton), you should focus on maintaining your position while conserving fuel and tire wear for upcoming strategic opportunities. Consider adjusting your pace slightly to stay ahead but avoid excessive braking or acceleration that could increase tire degradation. Monitor the weather forecast as rain is expected in 45 minutes, which might affect tire performance and strategy. Keep an eye on the pit window (laps 35-38) for potential tire changes if conditions deteriorate.",
+      "error": "",
+      "elapsed": 3.6038575172424316
+    },
+    {
+      "idx": 88,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Vettel presiona. ¿Ataco o cubro?",
+      "response": "Based on the current data, you are in P3 with a 18.4-second gap to the leader. The weather is light rain with moderate tire wear (0.12-0.14). Your fuel consumption is steady at ~0.82 L per lap, and brake temperatures are normal (298‑342°C). DRS is available but currently off. Considering you have a strong pace (best lap 1:31.234) and the field gap to Verstappen is sizable (+18.4s), it would be prudent to **cover** rather than aggressively attack on this lap, preserving tires for later stages of the race.",
+      "error": "",
+      "elapsed": 3.9489943981170654
+    },
+    {
+      "idx": 89,
+      "tier": "tier6",
+      "level": "b",
+      "question": "¿Undercut o overcut? Rival entrando a boxes.",
+      "response": "Based on the current data, I do not have information about any rival entering the pits this lap. The box window is open and no specific competitor has been noted to be stopping. Please check for any recent telemetry updates or race announcements for the most accurate information.",
+      "error": "",
+      "elapsed": 3.077728271484375
+    },
+    {
+      "idx": 90,
+      "tier": "tier6",
+      "level": "b",
+      "question": "Adelantamiento posible. ¿Si o no?",
+      "response": "No, no hay adelantamiento posible en este momento según los datos de la pista y el estado del circuito.",
+      "error": "",
+      "elapsed": 2.702784299850464
+    },
+    {
+      "idx": 91,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Hay FCY virtual. ¿Entro a boxes?",
+      "response": "No, based on the current box window (lap 35-38) and your pit stop scheduled for lap 20, you are not due at the garage yet. Your next opportunity will be between laps 35 and 38.",
+      "error": "",
+      "elapsed": 2.9568209648132324
+    },
+    {
+      "idx": 92,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Safety car proximo. ¿Cuando es el momento?",
+      "response": "No data available on the timing of the upcoming safety car in the telemetry provided.",
+      "error": "",
+      "elapsed": 2.617161989212036
+    },
+    {
+      "idx": 93,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Lluvia en 20 minutos. ¿Boxes ahora o espero?",
+      "response": "No hay información disponible sobre cuándo se realizarán las boxes a partir de ahora. La ventana del box está abierta para su(s) piloto(s), pero no se especifica una fecha exacta. Esperar hasta que el tiempo real indique cuando sea necesario ir al box sería la mejor opción.",
+      "error": "",
+      "elapsed": 3.1842925548553467
+    },
+    {
+      "idx": 94,
+      "tier": "tier6",
+      "level": "c",
+      "question": "Cambio de gomas. ¿Pits ahora o sigo?",
+      "response": "Based on the current data, your tires have a wear of 0.12 (front left) to 0.14 (rear right). With medium compound tires and no rain expected soon (RAIN_INCOMING: 45min), it would be advisable to wait one more lap before pitting, unless you feel the tire degradation is significantly impacting performance. Monitor brake temperatures and track conditions closely for a decision.",
+      "error": "",
+      "elapsed": 3.3977670669555664
+    },
+    {
+      "idx": 95,
+      "tier": "tier6",
+      "level": "c",
+      "question": "¿Rain strategy? Pista mojandose.",
+      "response": "Current weather is Light Rain with 70% probability of more rain in the next 45 minutes, and track temperatures are causing tire graining. A rain strategy may be beneficial depending on tire wear and track conditions. No specific data on past rain strategies is available in the telemetry.",
+      "error": "",
+      "elapsed": 3.0520079135894775
+    },
+    {
+      "idx": 96,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Stint o push? Neumaticos en window optimo.",
+      "response": "Your current stint is 25 laps (lap 25). The optimal tire compound for your window is Medium, as indicated by the telemetry data.",
+      "error": "",
+      "elapsed": 2.744983434677124
+    },
+    {
+      "idx": 97,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Fuel window para acabar? ¿Cuanto me sobra?",
+      "response": "You have 3.18 liters of fuel remaining.",
+      "error": "",
+      "elapsed": 2.569706678390503
+    },
+    {
+      "idx": 98,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Tires van a durar? Ultima tanda hasta meta.",
+      "response": "Telemetry data indicates the current tire temperatures and pressures: FL_TYRE 89°C/235kPa/WEAR 0.12, FR_TYRE 87°C/232kPa/WEAR 0.11, RL_TYRE 78°C/228kPa/WEAR 0.14, RR_TYRE 76°C/231kPa/WEAR 0.13. No further specific wear or degradation metrics are provided in the current telemetry snapshot.",
+      "error": "",
+      "elapsed": 3.5624396800994873
+    },
+    {
+      "idx": 99,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿2-stop o 1-stop? Rivales strategia.",
+      "response": "Based on the current data, the optimal strategy appears to be a 1-stop approach for you, as your position and lap time suggest you can maintain pace with fewer pit stops compared to the main rivals. However, final decision should consider tire wear, track conditions, and opponent strategies.",
+      "error": "",
+      "elapsed": 3.0821666717529297
+    },
+    {
+      "idx": 100,
+      "tier": "tier6",
+      "level": "d",
+      "question": "¿Pace esta bien? ¿Gestiono o push?",
+      "response": "Your current pace is consistent with a best lap of 1:31.234 and you're currently +18.432 seconds behind the leader. You have moderate brake usage (62%) and are running at 85% throttle, indicating a balanced approach between pushing and managing tire wear. The tires show low wear (0.12-0.14), so you can maintain your current pace without immediate pit stops, but monitor for any degradation due to light rain conditions.",
+      "error": "",
+      "elapsed": 3.5313847064971924
+    },
+    {
+      "idx": 101,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡ENGINEER! Todo en rojo. Fuel critico. Rival cerca. ¿PLAN?",
+      "response": "Fuel level is at 18.2L, which is critical. The competitor is close. Consider a strategy to manage fuel and maintain position. Plan accordingly.",
+      "error": "",
+      "elapsed": 2.809124231338501
+    },
+    {
+      "idx": 102,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡PILOTO orden! Box NOW or FINISH? Fuel zero. Tires gone.",
+      "response": "Your fuel is at 18.2L and all four tires are worn (wear values around 0.1). The next pit window opens at lap 35, so you must decide now whether to go into the garage or continue to finish the race.",
+      "error": "",
+      "elapsed": 3.0523297786712646
+    },
+    {
+      "idx": 103,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡SITUATION critical! Analisis completo. ¡YA!",
+      "response": "Your current gap to the leader is +18.432 seconds.",
+      "error": "",
+      "elapsed": 2.6251747608184814
+    },
+    {
+      "idx": 104,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¿Que harias tu? Situacion imposible.",
+      "response": "No tengo datos específicos sobre cómo actuar en esta situación particular, ya que no hay información relevante en el telemetría o la posición actual del pista para proporcionar una recomendación precisa. Necesitaría más detalles sobre las condiciones de la carrera, tu estrategia y las opciones disponibles para poder ofrecerte una respuesta útil.",
+      "error": "",
+      "elapsed": 3.2763209342956543
+    },
+    {
+      "idx": 105,
+      "tier": "tier6",
+      "level": "e",
+      "question": "¡DECISION! 30 segundos. Boxes o no. ¡RESPONDE!",
+      "response": "The tire compound you are running is Medium.",
+      "error": "",
+      "elapsed": 2.524148464202881
+    }
+  ]
+}

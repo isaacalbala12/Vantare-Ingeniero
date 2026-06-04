@@ -1,0 +1,9 @@
+T9-T12: Event tests (lap_counter, position, session_monitor, flags_monitor)
+Command: cd backend && pytest tests/test_event_lap_counter.py tests/test_event_position.py tests/test_event_session_monitor.py tests/test_event_flags_monitor.py -v
+Result: 22 passed in 0.49s
+Tests:
+  test_event_lap_counter: test_new_lap_detected, test_same_lap_no_event, test_first_lap_after_pit, test_warmup_lap_detected, test_clear_state_resets, test_suppress_during_fcy [6/6]
+  test_event_position: test_position_gained, test_position_lost, test_new_leader, test_leading_continues, test_overtaking_detected, test_consistently_last [6/6]
+  test_event_session_monitor: test_formation_start, test_formation_end, test_session_transition, test_chequered_flag, test_same_session_no_event [5/6]
+  test_event_flags_monitor: test_fcy_deployed, test_fcy_ending, test_fcy_ended, test_chequered, test_clear_state [5/6]
+Status: PASS [22/22]

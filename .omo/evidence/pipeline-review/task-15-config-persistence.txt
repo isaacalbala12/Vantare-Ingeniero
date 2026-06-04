@@ -1,0 +1,36 @@
+TASK 15 — Frontend Config Persistence Across Reload
+===================================================
+Date: 2026-06-03T11:30:40.546Z
+BaseURL: http://localhost:1420
+Backend reachable at probe time: false
+
+Sentinel values written via updateConfig:
+  wakeWord     = "t15-persistencia-vantare"
+  sensitivity  = 73
+  serverPort   = 8765
+
+Phase 1 — in-memory after updateConfig:
+  wakeWord     = "t15-persistencia-vantare"
+  sensitivity  = 73
+  serverPort   = 8765
+  localStorage["vantare_config"] present: true
+
+Phase 2 — after page.reload():
+  wakeWord     = "t15-persistencia-vantare"
+  sensitivity  = 73
+  serverPort   = 8765
+  vllmIP (untouched)        = "localhost"
+  micDevice (untouched)     = "default"
+  speakerDevice (untouched) = "default"
+  pttHotkey (untouched)     = "Ctrl+Shift+Space"
+  wakeWordEnabled (untouched) = true
+  localStorage["vantare_config"] present: true
+
+Phase 3 — restore:
+  wakeWord     = "ingeniero"
+  sensitivity  = 50
+  serverPort   = 8008
+
+Total elapsed (ms): 566
+Console errors: 2 (expected backend-related: 2)
+Screenshot: C:\Users\isaac\Desktop\Vantare-Ingeniero\.omo\evidence\pipeline-review\task-15-config-persistence.png

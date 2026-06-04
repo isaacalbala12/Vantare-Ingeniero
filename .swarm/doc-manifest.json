@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "scanned_at": "2026-06-02T08:18:12.450Z",
+  "files": [
+    {
+      "path": ".github\\workflows\\release.yml",
+      "title": "release.yml",
+      "summary": "name: Build Release on: push: branches: - master tags: - 'v*' workflow_dispatch: {} env: FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true' PYTHON_VERSION: '3.12' VERSION: '0.1.0-alpha' jobs: build-backend...",
+      "lines": 291,
+      "mtime": 1780076587729.219
+    },
+    {
+      "path": ".pytest_cache\\README.md",
+      "title": "pytest cache directory #",
+      "summary": "This directory contains data from the pytest's cache plugin, which provides the `--lf` and `--ff` options, as well as the `cache` fixture. **Do not** commit this to version control. See [the docs](...",
+      "lines": 9,
+      "mtime": 1780308072635.3916
+    },
+    {
+      "path": "backend\\.pytest_cache\\README.md",
+      "title": "pytest cache directory #",
+      "summary": "This directory contains data from the pytest's cache plugin, which provides the `--lf` and `--ff` options, as well as the `cache` fixture. **Do not** commit this to version control. See [the docs](...",
+      "lines": 9,
+      "mtime": 1780228150527.179
+    },
+    {
+      "path": "backend\\AGENTS.md",
+      "title": "BACKEND",
+      "summary": "**Branch:** `feature/benchmark-llm` | **Updated:** 2026-06-01 Python FastAPI backend — LLM orchestration, real-time telemetry ingestion, audio TTS pipeline, WebSocket pub/sub, and race strategy com...",
+      "lines": 79,
+      "mtime": 1780337471225.5051
+    },
+    {
+      "path": "backend\\README.md",
+      "title": "Vantare Ingeniero IA - Backend",
+      "summary": "Real-time race strategy assistant backend for Le Mans Ultimate.",
+      "lines": 4,
+      "mtime": 1780076587746.757
+    },
+    {
+      "path": "docs\\ai\\2026-05-27-quality-analysis-findings.md",
+      "title": "Quality Analysis & Refactor Plan — 27 Mayo 2026",
+      "summary": "> Análisis exhaustivo de calidad de código para todo el proyecto Vantare Ingeniero IA. > Cubre: Python (backend + shared + sidecar), TypeScript (frontend), Rust (Tauri). --- | Métrica | Valor | Δ v...",
+      "lines": 342,
+      "mtime": 1780076588711.336
+    },
+    {
+      "path": "docs\\ai\\2026-05-27-security-audit.md",
+      "title": "Security Audit — Vantare Ingeniero IA",
+      "summary": "**Fecha:** 27 Mayo 2026 **Scope:** Full repo (backend Python + frontend React/TS + Rust Tauri) **Tipo:** AI-assisted static review (no penetration test) --- | Severidad | Encontrados | Reportados |...",
+      "lines": 226,
+      "mtime": 1780076588711.336
+    },
+    {
+      "path": "docs\\ai\\ANALISIS_CREWCHIEFV4_Y_MODELO_IMPLEMENTACION.md",
+      "title": "🏗️ ANÁLISIS DE INGENIERÍA INVERSA — CrewChiefV4",
+      "summary": "--- **Repositorio fuente**: https://gitlab.com/mr_belowski/CrewChiefV4 **Ramas analizadas**: `master` + `lmu` **Archivos analizados**: ~30 archivos core de C# (~50K líneas) **Fecha**: 31 mayo 2026 ---",
+      "lines": 706,
+      "mtime": 1780298660426.6233
+    },
+    {
+      "path": "docs\\ai\\ANALISIS_EXHAUSTIVO_CREWCHIEF_VS_VANTARE.md",
+      "title": "📋 ANÁLISIS EXHAUSTIVO COMPLETO — Vantare Ingeniero vs CrewChiefV4",
+      "summary": "--- 1. Arquitectura de eventos: Comparación estructural 2. El Spotter Cartesiano (el sistema más crítico) 3. Sistema de oponentes y seguimiento 4. Sistema de vueltas y sectores 5. Sistema de combus...",
+      "lines": 1468,
+      "mtime": 1780299314649.7302
+    },
+    {
+      "path": "docs\\ai\\orchestrator.md",
+      "title": "🏎️ Vantare Ingeniero IA — Orquestador de Proyecto",
+      "summary": "| Componente | Puerto | Estado | Notas | |-----------|--------|--------|-------| | **Hipfire** (Qwen 3.5 4B) | `:11435` | ✅ `hipfire serve` | Usa puerto 11435 por defecto | | **LiteLLM** (proxy) | ...",
+      "lines": 1424,
+      "mtime": 1780388288811.6824
+    },
+    {
+      "path": "docs\\ai\\plans\\2026-05-26-fase-3-rag.md",
+      "title": "Fase 3: RAG Implementation Plan",
+      "summary": "> **For agentic workers:** Use subagent-driven-development. Steps use checkbox (`- [ ]`) syntax for tracking. Each task is implemented by a fresh subagent with code review + tests between tasks. **...",
+      "lines": 1263,
+      "mtime": 1780076588713.3408
+    },
+    {
+      "path": "docs\\ai\\ROADMAP_COMPLETO_CREWCHIEF_EN_VANTARE.md",
+      "title": "🏗️ ROADMAP COMPLETO — Replicar CrewChiefV4 en Vantare Ingeniero",
+      "summary": "**Versión**: 1.0 **Fecha**: 31 mayo 2026 **Basado en**: 30+ pasadas de análisis sobre ~30 archivos core de CrewChiefV4 (C#, ~50K líneas) **Repo fuente**: https://gitlab.com/mr_belowski/CrewChiefV4 ...",
+      "lines": 2069,
+      "mtime": 1780388288809.684
+    },
+    {
+      "path": "docs\\ai\\technical-debt-rust-migration.md",
+      "title": "Deuda Técnica: ¿Migrar a Rust?",
+      "summary": "> **Contexto:** 27 mayo 2026. Después del análisis de calidad completo, surgió la pregunta > de si valdría la pena migrar componentes a Rust para mejorar eficiencia. > > **Veredicto:** ❌ **No recom...",
+      "lines": 91,
+      "mtime": 1780076588714.341
+    },
+    {
+      "path": "docs\\plans\\2026-05-22-ingeniero-robustez.md",
+      "title": "Plan de Robustez — Ingeniero de IA",
+      "summary": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [...",
+      "lines": 814,
+      "mtime": 1780076588714.8452
+    },
+    {
+      "path": "docs\\plans\\2026-05-23-correccion-flujo-ingeniero.md",
+      "title": "Plan de Corrección — Flujo Completo del Ingeniero de IA",
+      "summary": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [...",
+      "lines": 900,
+      "mtime": 1780076588714.8452
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-05-25-diagnostico-ventana-tauri-vacia.md",
+      "title": "Diagnóstico: Ventana Tauri Vacía — Plan de Investigación",
+      "summary": "> **For agentic workers:** This is a diagnosis-only plan. No code implementation is required. Each step is a verification that either confirms or rules out a hypothesis. **Goal:** Identificar la ca...",
+      "lines": 308,
+      "mtime": 1780076588715.8513
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-05-25-edge-tts-fixes.md",
+      "title": "Edge TTS como Motor de Voz Principal — Correcciones",
+      "summary": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [...",
+      "lines": 389,
+      "mtime": 1780076588715.8513
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-05-26-fase-1-correcciones-robustez.md",
+      "title": "Plan de Implementación: Fase 1 + Fase 6 — Correcciones Robustez y Unificación",
+      "summary": "> **Para agentic workers:** REQUIRED SUB-SKILL: Usar `superpowers:subagent-driven-development` (recomendado) o `superpowers:executing-plans` para implementar este plan tarea por tarea. Los pasos us...",
+      "lines": 695,
+      "mtime": 1780076588717.3596
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-05-26-websocket-telemetria.md",
+      "title": "Reparar WebSocket — Telemetría Frontend → Backend (Fase 0)",
+      "summary": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [...",
+      "lines": 322,
+      "mtime": 1780076588717.3596
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-05-27-fase-7-sidecar-windows.md",
+      "title": "Fase 7: Sidecar Windows + Integración Tauri — Plan de Implementación",
+      "summary": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [...",
+      "lines": 539,
+      "mtime": 1780076588718.3665
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-05-31-crewchief-rewrite.md",
+      "title": "CrewChief-Style Rewrite — Plan de Implementación",
+      "summary": "> **For agentic workers:** This plan is sequential. Tasks MUST be executed in order. Each task depends on the previous. **Goal:** Reestructurar el pipeline de datos para que funcione como CrewChief...",
+      "lines": 1109,
+      "mtime": 1780261753803.9434
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-05-31-fix-spotter-loop-and-audio-test.md",
+      "title": "Fix Bucle de Alertas + Audio Test — Plan de Implementación",
+      "summary": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [...",
+      "lines": 644,
+      "mtime": 1780261753803.9434
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-06-01-crewchiefv4-complete-implementation.md",
+      "title": "CrewChiefV4 Complete Implementation Plan — CORRECTED VERSION",
+      "summary": "> **Target:** Fresh model executing in a separate chat. This is your ONLY reference — all bugs from the previous plan v1 have been fixed inline. **Goal:** Replicate 100% of CrewChiefV4 for Le Mans ...",
+      "lines": 940,
+      "mtime": 1780388288812.684
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-06-01-crewchiefv4-complete-reimplementation.md",
+      "title": "2026-06-01-crewchiefv4-complete-reimplementation.md",
+      "summary": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [...",
+      "lines": 774,
+      "mtime": 1780302070807.1375
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-06-01-crewchiefv4-full-implementation.md",
+      "title": "CrewChiefV4 Complete Implementation — MASTER DOCUMENT",
+      "summary": "> **Target:** Fresh model executing in a separate chat. This is your ONLY reference. All 28 bugs from v1 have been fixed inline. **Goal:** Replicate 100% of CrewChiefV4 for Le Mans Ultimate — Carte...",
+      "lines": 1945,
+      "mtime": 1780303368303.9602
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-06-01-crewchiefv4-subproject1-pipeline.md",
+      "title": "Sub-proyecto 1: Pipeline de Datos — Plan de Implementación",
+      "summary": "> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [...",
+      "lines": 2478,
+      "mtime": 1780306612494.1294
+    },
+    {
+      "path": "docs\\superpowers\\plans\\2026-06-01-crewchiefv4-subproject3-spotter.md",
+      "title": "Sub-proyecto 3: Spotter Cartesiano — Plan de Implementación",
+      "summary": "> **Para el siguiente agente/chat:** Sigue las tareas en orden. Cada archivo tiene código de implementación que se ha revisado contra bugs. Tests con MockAudioPlayer (no requiere hardware). **Goal:...",
+      "lines": 755,
+      "mtime": 1780325183002.2898
+    },
+    {
+      "path": "docs\\superpowers\\specs\\2026-05-26-arquitectura-contexto-llm-design.md",
+      "title": "🏎️ Vantare Ingeniero IA — Diseño de Arquitectura: Contexto de Carrera para el LLM",
+      "summary": "**Fecha**: 2026-05-26 **Estado**: Diseño validado, pendiente de implementación --- El Ingeniero de IA de Vantare es un sistema distribuido en 2 PCs: | PC | Rol | Componentes | |----|-----|---------...",
+      "lines": 180,
+      "mtime": 1780076588718.8704
+    },
+    {
+      "path": "docs\\superpowers\\specs\\2026-05-27-fase-7-sidecar-windows-design.md",
+      "title": "Fase 7: Sidecar Windows + Integración Tauri",
+      "summary": "**Fecha:** 27 mayo 2026 **Estado:** Aprobado (v2 — corregida) **Autor:** Brainstorming session Empaquetar backend + sidecar como dos ejecutables independientes. Tauri spawna ambos en Windows. El si...",
+      "lines": 136,
+      "mtime": 1780076588718.8704
+    },
+    {
+      "path": "docs\\superpowers\\specs\\2026-06-01-crewchiefv4-backend-design.md",
+      "title": "CrewChief V4 — Diseño de Implementación (Backend)",
+      "summary": "> **Estado:** Borrador inicial — en progreso durante brainstorming > **Objetivo:** Documentar decisiones de diseño para la réplica de CrewChiefV4 en Vantare Ingeniero --- El sistema actual ya tiene...",
+      "lines": 196,
+      "mtime": 1780388288814.6865
+    },
+    {
+      "path": "frontend\\AGENTS.md",
+      "title": "FRONTEND",
+      "summary": "**Branch:** `feature/benchmark-llm` | **Updated:** 2026-06-01 Tauri v2 desktop app — React 18 + TypeScript + Vite. Overlay UI for the AI race engineer: PTT voice chat, radio overlay, system tray, c...",
+      "lines": 83,
+      "mtime": 1780337475913.384
+    },
+    {
+      "path": "frontend\\README.md",
+      "title": "Tauri + React + Typescript",
+      "summary": "This template should help get you started developing with Tauri, React and Typescript in Vite. - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemN...",
+      "lines": 8,
+      "mtime": 1780076588720.8752
+    },
+    {
+      "path": "installer\\README.md",
+      "title": "=============================================",
+      "summary": "- [Instaladores Disponibles](#instaladores-disponibles) - [Instalación Windows](#instalación-windows) - [Instalación Linux](#instalación-linux) - [Requisitos del Sistema](#requisitos-del-sistema) -...",
+      "lines": 180,
+      "mtime": 1780076588930.9565
+    },
+    {
+      "path": "shared-strategy\\README.md",
+      "title": "shared-strategy",
+      "summary": "Motor de estrategia de carrera determinista sin dependencias de UI para Le Mans Ultimate (LMU). Este paquete proporciona toda la lógica de cálculo de combustible, desgaste de neumáticos, ventanas d...",
+      "lines": 6,
+      "mtime": 1780076588932.958
+    },
+    {
+      "path": "shared-telemetry\\README.md",
+      "title": "shared-telemetry",
+      "summary": "Extractor de telemetría en tiempo real para Le Mans Ultimate (LMU) basado en memoria compartida. Este paquete forma parte del ecosistema MOTEC y proporciona una API backend limpia, independiente y ...",
+      "lines": 50,
+      "mtime": 1780076588940.497
+    },
+    {
+      "path": "shared-telemetry\\shared_telemetry\\pyLMUSharedMemory\\README.md",
+      "title": "pyLMUSharedMemory",
+      "summary": "Python library for accessing Le Mans Ultimate's built-in shared memory interface. This library is based on: - LMU SharedMemoryInterface header file by S397, found in game's `Support\\SharedMemoryInt...",
+      "lines": 8,
+      "mtime": 1780076588942.5073
+    },
+    {
+      "path": "sidecar\\README.md",
+      "title": "Vantare Ingeniero IA — Strategy Sidecar",
+      "summary": "Sidecar de estrategia para Windows. Lee shared memory de Le Mans Ultimate, calcula estrategia determinista y envía datos al backend vía WebSocket localhost. ``` LMU Shared Memory (20Hz) │ ├→ Strate...",
+      "lines": 53,
+      "mtime": 1780076588948.0286
+    }
+  ]
+}

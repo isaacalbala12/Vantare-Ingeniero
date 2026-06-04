@@ -1,0 +1,4 @@
+T3: Vitest frontend tests
+Command: cd frontend && npx vitest run
+Result: Test Files 7 passed (7), Tests 88 passed (88)
+Status: PASS

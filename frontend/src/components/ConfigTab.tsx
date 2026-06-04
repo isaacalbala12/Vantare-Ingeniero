@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useAppStore } from "../store/config";
+import { useAppStore, type InterruptThreshold } from "../store/config";
 import { getHealth } from "../services/api";
 
-type TabName = "conexion" | "audio" | "voz";
+type TabName = "conexion" | "audio" | "voz" | "spotter" | "avanzado";
 
 /**
- * Panel de configuración unificado con 3 pestañas:
+ * Panel de configuración unificado con 5 pestañas:
  * - Conexión: IP del servidor, puerto, test de conexión
- * - Audio: dispositivo de micrófono, sensibilidad, vúmetro
+ * - Audio: micrófono, sensibilidad, VAD, vúmetro
  * - Voz: hotkey PTT, palabra de activación
+ * - Spotter: parámetros del spotter automático
+ * - Avanzado: TTS, templates, driver name
  */
 export const ConfigTab: React.FC = () => {
   const { config, connectivity, updateConfig, setMicLevel } = useAppStore();
@@ -21,6 +23,29 @@ export const ConfigTab: React.FC = () => {
   const [sensitivity, setSensitivity] = useState(config.sensitivity ?? 50);
   const [pttHotkey, setPttHotkey] = useState(config.pttHotkey ?? "P");
   const [pttStopHotkey, setPttStopHotkey] = useState(config.pttStopHotkey ?? "P");
+  // Audio tab
+  const [chiefVoice, setChiefVoice] = useState(config.chiefVoice);
+  const [spotterVoice, setSpotterVoice] = useState(config.spotterVoice);
+  const [chiefRate, setChiefRate] = useState(config.chiefRate);
+  const [spotterRate, setSpotterRate] = useState(config.spotterRate);
+  const [chiefPitch, setChiefPitch] = useState(config.chiefPitch);
+  const [spotterPitch, setSpotterPitch] = useState(config.spotterPitch);
+  const [spotterVolumeBoost, setSpotterVolumeBoost] = useState(config.spotterVolumeBoost);
+  const [audioOutputDevice, setAudioOutputDevice] = useState(config.audioOutputDevice);
+  const [interruptThreshold, setInterruptThreshold] = useState<InterruptThreshold>(config.interruptThreshold);
+  const [autoVerbosityEnabled, setAutoVerbosityEnabled] = useState(config.autoVerbosityEnabled);
+  // Spotter tab
+  const [spotterGapForClear, setSpotterGapForClear] = useState(config.spotterGapForClear);
+  const [spotterOverlapDelay, setSpotterOverlapDelay] = useState(config.spotterOverlapDelay);
+  const [spotterClearDelay, setSpotterClearDelay] = useState(config.spotterClearDelay);
+  const [spotterRepeatFrequency, setSpotterRepeatFrequency] = useState(config.spotterRepeatFrequency);
+  const [spotterMinSpeed, setSpotterMinSpeed] = useState(config.spotterMinSpeed);
+  const [spotterMaxClosingSpeed, setSpotterMaxClosingSpeed] = useState(config.spotterMaxClosingSpeed);
+  const [spotterEnable3Wide, setSpotterEnable3Wide] = useState(config.spotterEnable3Wide);
+  // Advanced tab
+  const [driverName, setDriverName] = useState(config.driverName);
+  const [workerUrl, setWorkerUrl] = useState(config.workerUrl);
+  const [enableTemplates, setEnableTemplates] = useState(config.enableTemplates);
 
   // Estados de test y dispositivos
   const [testStatus, setTestStatus] = useState<string | null>(null);
@@ -174,6 +199,29 @@ export const ConfigTab: React.FC = () => {
       sensitivity,
       pttHotkey: pttHotkey.trim(),
       pttStopHotkey: pttStopHotkey.trim(),
+      // Audio
+      chiefVoice,
+      spotterVoice,
+      chiefRate,
+      spotterRate,
+      chiefPitch,
+      spotterPitch,
+      spotterVolumeBoost,
+      audioOutputDevice,
+      interruptThreshold,
+      autoVerbosityEnabled,
+      // Spotter
+      spotterGapForClear,
+      spotterOverlapDelay,
+      spotterClearDelay,
+      spotterRepeatFrequency,
+      spotterMinSpeed,
+      spotterMaxClosingSpeed,
+      spotterEnable3Wide,
+      // Advanced
+      driverName,
+      workerUrl: workerUrl.trim(),
+      enableTemplates,
     });
     setSaveStatus("✅ Guardado");
     setTimeout(() => setSaveStatus(null), 2000);
@@ -197,7 +245,7 @@ export const ConfigTab: React.FC = () => {
     <div className="w-full h-full flex flex-col text-white" style={{ fontFamily: "system-ui, sans-serif" }}>
       {/* Tabs */}
       <div className="flex border-b border-[#222]">
-        {(["conexion", "audio", "voz"] as TabName[]).map((tab) => (
+        {(["conexion", "audio", "voz", "spotter", "avanzado"] as TabName[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -207,7 +255,7 @@ export const ConfigTab: React.FC = () => {
                 : "text-[#555] hover:text-[#888]"
             }`}
           >
-            {tab === "conexion" ? "Conexión" : tab === "audio" ? "Audio" : "Voz"}
+            {tab === "conexion" ? "Conexión" : tab === "audio" ? "Audio" : tab === "voz" ? "Voz" : tab === "spotter" ? "Spotter" : "Avanzado"}
           </button>
         ))}
       </div>
@@ -285,6 +333,17 @@ export const ConfigTab: React.FC = () => {
               </select>
             </div>
             <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Salida de Audio</label>
+              <input
+                type="text"
+                value={audioOutputDevice}
+                onChange={(e) => setAudioOutputDevice(e.target.value)}
+                placeholder="default"
+                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+              />
+              <span className="text-[9px] text-[#555]">Vacío = dispositivo por defecto</span>
+            </div>
+            <div className="flex flex-col gap-1">
               <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Sensibilidad ({sensitivity}%)</label>
               <input
                 type="range"
@@ -298,6 +357,124 @@ export const ConfigTab: React.FC = () => {
             <div className="mt-2">
               <Vumeter level={localLevel} label="Nivel del micrófono" />
             </div>
+
+            <div className="border-t border-[#222] my-1" />
+
+            {/* Voz del Jefe */}
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Voz del Jefe de Equipo</label>
+              <input
+                type="text"
+                value={chiefVoice}
+                onChange={(e) => setChiefVoice(e.target.value)}
+                placeholder="es-ES-AlvaroNeural"
+                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Voz del Spotter</label>
+              <input
+                type="text"
+                value={spotterVoice}
+                onChange={(e) => setSpotterVoice(e.target.value)}
+                placeholder="es-MX-JorgeNeural"
+                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+              />
+            </div>
+
+            {/* Ajustes TTS */}
+            <div className="flex gap-2">
+              <div className="flex flex-col gap-1 flex-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Ritmo Jefe ({chiefRate})</label>
+                <input
+                  type="range"
+                  min="-50"
+                  max="50"
+                  value={chiefRate}
+                  onChange={(e) => setChiefRate(Number(e.target.value))}
+                  className="w-full accent-[#8a2be2]"
+                />
+              </div>
+              <div className="flex flex-col gap-1 flex-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Ritmo Spotter ({spotterRate})</label>
+                <input
+                  type="range"
+                  min="-50"
+                  max="50"
+                  value={spotterRate}
+                  onChange={(e) => setSpotterRate(Number(e.target.value))}
+                  className="w-full accent-[#8a2be2]"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <div className="flex flex-col gap-1 flex-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Tono Jefe ({chiefPitch})</label>
+                <input
+                  type="range"
+                  min="-50"
+                  max="50"
+                  value={chiefPitch}
+                  onChange={(e) => setChiefPitch(Number(e.target.value))}
+                  className="w-full accent-[#8a2be2]"
+                />
+              </div>
+              <div className="flex flex-col gap-1 flex-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Tono Spotter ({spotterPitch})</label>
+                <input
+                  type="range"
+                  min="-50"
+                  max="50"
+                  value={spotterPitch}
+                  onChange={(e) => setSpotterPitch(Number(e.target.value))}
+                  className="w-full accent-[#8a2be2]"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Boost Volumen Spotter ({spotterVolumeBoost}%)</label>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={spotterVolumeBoost}
+                onChange={(e) => setSpotterVolumeBoost(Number(e.target.value))}
+                className="w-full accent-[#8a2be2]"
+              />
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Umbral de Interrupción</label>
+              <select
+                value={interruptThreshold}
+                onChange={(e) => setInterruptThreshold(e.target.value as InterruptThreshold)}
+                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[12px] text-white focus:border-[#8a2be2] focus:outline-none"
+              >
+                <option value="NEVER">Nunca interrumpir</option>
+                <option value="SPOTTER">Solo spotter</option>
+                <option value="CRITICAL">Crítico y spotter</option>
+                <option value="IMPORTANT">Todo importante</option>
+              </select>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Verbosidad Automática</label>
+              <button
+                onClick={() => setAutoVerbosityEnabled(!autoVerbosityEnabled)}
+                className={`w-10 h-5 rounded-full transition-none flex items-center ${
+                  autoVerbosityEnabled ? "bg-[#8a2be2]" : "bg-[#333]"
+                }`}
+              >
+                <div
+                  className={`w-4 h-4 bg-white rounded-full transition-none ${
+                    autoVerbosityEnabled ? "ml-[20px]" : "ml-[2px]"
+                  }`}
+                />
+              </button>
+            </div>
+
             <button
               onClick={handleSave}
               className="mt-2 bg-[#333] hover:bg-[#444] text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-none"
@@ -330,6 +507,30 @@ export const ConfigTab: React.FC = () => {
               />
               <span className="text-[9px] text-[#555] mt-1">STOP: envía y recibe respuesta</span>
             </div>
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Palabra de Activación</label>
+              <input
+                type="text"
+                value={config.wakeWord}
+                readOnly
+                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-[#888] w-28 text-center"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Wake Word Activada</label>
+              <button
+                onClick={() => updateConfig({ wakeWordEnabled: !config.wakeWordEnabled })}
+                className={`w-10 h-5 rounded-full transition-none flex items-center ${
+                  config.wakeWordEnabled ? "bg-[#8a2be2]" : "bg-[#333]"
+                }`}
+              >
+                <div
+                  className={`w-4 h-4 bg-white rounded-full transition-none ${
+                    config.wakeWordEnabled ? "ml-[20px]" : "ml-[2px]"
+                  }`}
+                />
+              </button>
+            </div>
             <div className="mt-2 p-2 bg-[#1a1a1a] border border-[#222] rounded text-[10px] flex flex-col gap-1.5">
               <div className="text-[#666] uppercase tracking-wider mb-1">Configuración del Backend:</div>
               <div className="flex justify-between">
@@ -344,7 +545,7 @@ export const ConfigTab: React.FC = () => {
               </div>
               <div className="flex justify-between">
                 <span className="text-[#888]">TTS:</span>
-                <span className="text-[#aaa]">Piper (lessac-medium)</span>
+                <span className="text-[#aaa]">Edge TTS ({chiefVoice})</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-[#888]">Estado:</span>
@@ -357,6 +558,158 @@ export const ConfigTab: React.FC = () => {
               {pttHotkey.trim().toLowerCase() === pttStopHotkey.trim().toLowerCase()
                 ? "Modo toggle: pulsa y suelta la tecla PTT para transmitir."
                 : "Pulsa START para hablar, pulsa STOP para enviar y recibir respuesta."}
+            </div>
+            <button
+              onClick={handleSave}
+              className="mt-2 bg-[#333] hover:bg-[#444] text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-none"
+            >
+              {saveStatus || "Guardar"}
+            </button>
+          </div>
+        )}
+
+        {/* TAB: SPOTTER */}
+        {activeTab === "spotter" && (
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Distancia para "Clear" ({spotterGapForClear}m)</label>
+              <input
+                type="range"
+                min="1.0"
+                max="20.0"
+                step="0.5"
+                value={spotterGapForClear}
+                onChange={(e) => setSpotterGapForClear(Number(e.target.value))}
+                className="w-full accent-[#8a2be2]"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Delay Overlap ({spotterOverlapDelay}ms)</label>
+              <input
+                type="range"
+                min="50"
+                max="1000"
+                step="50"
+                value={spotterOverlapDelay}
+                onChange={(e) => setSpotterOverlapDelay(Number(e.target.value))}
+                className="w-full accent-[#8a2be2]"
+              />
+              <span className="text-[9px] text-[#555]">Ms antes de decir "coche a la izquierda"</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Delay "Clear" ({spotterClearDelay}ms)</label>
+              <input
+                type="range"
+                min="50"
+                max="2000"
+                step="50"
+                value={spotterClearDelay}
+                onChange={(e) => setSpotterClearDelay(Number(e.target.value))}
+                className="w-full accent-[#8a2be2]"
+              />
+              <span className="text-[9px] text-[#555]">Ms antes de decir "clear"</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Frecuencia de Repetición ({spotterRepeatFrequency}s)</label>
+              <input
+                type="range"
+                min="0.5"
+                max="10.0"
+                step="0.5"
+                value={spotterRepeatFrequency}
+                onChange={(e) => setSpotterRepeatFrequency(Number(e.target.value))}
+                className="w-full accent-[#8a2be2]"
+              />
+              <span className="text-[9px] text-[#555]">Segundos entre "sigue ahí"</span>
+            </div>
+            <div className="flex gap-2">
+              <div className="flex flex-col gap-1 flex-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Vel. Mínima ({spotterMinSpeed} m/s)</label>
+                <input
+                  type="range"
+                  min="0"
+                  max="30"
+                  step="0.5"
+                  value={spotterMinSpeed}
+                  onChange={(e) => setSpotterMinSpeed(Number(e.target.value))}
+                  className="w-full accent-[#8a2be2]"
+                />
+              </div>
+              <div className="flex flex-col gap-1 flex-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Cierre Máx ({spotterMaxClosingSpeed} m/s)</label>
+                <input
+                  type="range"
+                  min="5.0"
+                  max="60.0"
+                  step="1.0"
+                  value={spotterMaxClosingSpeed}
+                  onChange={(e) => setSpotterMaxClosingSpeed(Number(e.target.value))}
+                  className="w-full accent-[#8a2be2]"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Detectar 3 Anchos</label>
+              <button
+                onClick={() => setSpotterEnable3Wide(!spotterEnable3Wide)}
+                className={`w-10 h-5 rounded-full transition-none flex items-center ${
+                  spotterEnable3Wide ? "bg-[#8a2be2]" : "bg-[#333]"
+                }`}
+              >
+                <div
+                  className={`w-4 h-4 bg-white rounded-full transition-none ${
+                    spotterEnable3Wide ? "ml-[20px]" : "ml-[2px]"
+                  }`}
+                />
+              </button>
+            </div>
+            <button
+              onClick={handleSave}
+              className="mt-2 bg-[#333] hover:bg-[#444] text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-none"
+            >
+              {saveStatus || "Guardar"}
+            </button>
+          </div>
+        )}
+
+        {/* TAB: AVANZADO */}
+        {activeTab === "avanzado" && (
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Nombre del Piloto</label>
+              <input
+                type="text"
+                value={driverName}
+                onChange={(e) => setDriverName(e.target.value)}
+                placeholder="Ej: Carlos"
+                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+              />
+              <span className="text-[9px] text-[#555]">Se usa en plantillas &#123;driver_name&#125;</span>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">URL del Worker Proxy</label>
+              <input
+                type="text"
+                value={workerUrl}
+                onChange={(e) => setWorkerUrl(e.target.value)}
+                placeholder="https://vantare-llm-proxy.workers.dev"
+                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Plantillas Habilitadas</label>
+              <button
+                onClick={() => setEnableTemplates(!enableTemplates)}
+                className={`w-10 h-5 rounded-full transition-none flex items-center ${
+                  enableTemplates ? "bg-[#8a2be2]" : "bg-[#333]"
+                }`}
+              >
+                <div
+                  className={`w-4 h-4 bg-white rounded-full transition-none ${
+                    enableTemplates ? "ml-[20px]" : "ml-[2px]"
+                  }`}
+                />
+              </button>
             </div>
             <button
               onClick={handleSave}

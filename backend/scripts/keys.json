@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-06-04T11:38:25.951877",
+  "count": 3,
+  "keys": [
+    {
+      "key": "VNT-BETA-8VNJ-8U8U-8",
+      "created_at": "2026-06-04T11:38:25.951877",
+      "prefix": "VNT-BETA",
+      "expires_at": null
+    },
+    {
+      "key": "VNT-BETA-86EM-CF5B-4",
+      "created_at": "2026-06-04T11:38:25.951877",
+      "prefix": "VNT-BETA",
+      "expires_at": null
+    },
+    {
+      "key": "VNT-BETA-NA1T-6297-4",
+      "created_at": "2026-06-04T11:38:25.951877",
+      "prefix": "VNT-BETA",
+      "expires_at": null
+    }
+  ]
+}

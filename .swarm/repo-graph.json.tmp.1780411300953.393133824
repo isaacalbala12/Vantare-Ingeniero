@@ -1,0 +1,4382 @@
+{
+  "schema_version": "1.0.0",
+  "workspaceRoot": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero",
+  "nodes": {
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/_test_all_triggers.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\_test_all_triggers.py",
+      "moduleName": "backend/_test_all_triggers.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T15:45:25.428Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/_test_edge_tts_integration.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\_test_edge_tts_integration.py",
+      "moduleName": "backend/_test_edge_tts_integration.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.746Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/_test_triggers.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\_test_triggers.py",
+      "moduleName": "backend/_test_triggers.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T15:44:59.651Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/build_backend.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\build_backend.py",
+      "moduleName": "backend/build_backend.py",
+      "exports": [
+        "build"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.747Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/build.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\build.py",
+      "moduleName": "backend/build.py",
+      "exports": [
+        "REPO_ROOT",
+        "SHARED_TELEMETRY",
+        "SHARED_STRATEGY"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.747Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/launch_tauri.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\launch_tauri.py",
+      "moduleName": "backend/launch_tauri.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.748Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/qa_test_script.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\qa_test_script.py",
+      "moduleName": "backend/qa_test_script.py",
+      "exports": [
+        "test_websocket_telemetry"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.749Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/run_dev.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\run_dev.py",
+      "moduleName": "backend/run_dev.py",
+      "exports": [
+        "main"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:09:02.512Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/config.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\config.py",
+      "moduleName": "backend/src/config.py",
+      "exports": [
+        "Settings"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T11:10:05.064Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/config/__init__.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\config\\__init__.py",
+      "moduleName": "backend/src/config/__init__.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.759Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/config/global_behaviour.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\config\\global_behaviour.py",
+      "moduleName": "backend/src/config/global_behaviour.py",
+      "exports": [
+        "GlobalBehaviour"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.760Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/data/car_class_data.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\data\\car_class_data.py",
+      "moduleName": "backend/src/data/car_class_data.py",
+      "exports": [
+        "CarClassEnum",
+        "TyreTemp",
+        "BrakeTemp",
+        "DamageLevel",
+        "Threshold",
+        "CarClass",
+        "TYRE_TEMP_THRESHOLDS",
+        "BRAKE_TEMP_THRESHOLDS",
+        "CAR_CLASSES",
+        "get_car_class",
+        "get_tyre_thresholds",
+        "get_brake_thresholds"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.761Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/__init__.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\__init__.py",
+      "moduleName": "backend/src/intelligence/__init__.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.751Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/base_event.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\base_event.py",
+      "moduleName": "backend/src/intelligence/base_event.py",
+      "exports": [
+        "AbstractEvent",
+        "FakeAudioPlayer"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.761Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/context_builder.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\context_builder.py",
+      "moduleName": "backend/src/intelligence/context_builder.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.751Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/coordinate_math.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\coordinate_math.py",
+      "moduleName": "backend/src/intelligence/coordinate_math.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T14:46:41.009Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/engine.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\engine.py",
+      "moduleName": "backend/src/intelligence/engine.py",
+      "exports": [
+        "StrategyUpdateMessage",
+        "IntelligenceEngine"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:09:02.513Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/event_engine.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\event_engine.py",
+      "moduleName": "backend/src/intelligence/event_engine.py",
+      "exports": [
+        "EventEngine"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.762Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/event_flags.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\event_flags.py",
+      "moduleName": "backend/src/intelligence/event_flags.py",
+      "exports": [
+        "EventFlags"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.763Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/__init__.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\__init__.py",
+      "moduleName": "backend/src/intelligence/events/__init__.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T16:39:32.520Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/battery.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\battery.py",
+      "moduleName": "backend/src/intelligence/events/battery.py",
+      "exports": [
+        "BatteryEvent"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:15:30.244Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/conditions_monitor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\conditions_monitor.py",
+      "moduleName": "backend/src/intelligence/events/conditions_monitor.py",
+      "exports": [
+        "ConditionsMonitor"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:00:54.290Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/damage_reporting.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\damage_reporting.py",
+      "moduleName": "backend/src/intelligence/events/damage_reporting.py",
+      "exports": [
+        "DamageReporting"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:15:34.552Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/engine_monitor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\engine_monitor.py",
+      "moduleName": "backend/src/intelligence/events/engine_monitor.py",
+      "exports": [
+        "EngineMonitor"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:14:41.625Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/flags_monitor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\flags_monitor.py",
+      "moduleName": "backend/src/intelligence/events/flags_monitor.py",
+      "exports": [
+        "F_FCY_DEPLOYED",
+        "F_FCY_ENDING",
+        "F_FCY_ENDED",
+        "F_CHEQUERED",
+        "F_FINISHED",
+        "FlagsMonitor"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.763Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/frozen_order_monitor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\frozen_order_monitor.py",
+      "moduleName": "backend/src/intelligence/events/frozen_order_monitor.py",
+      "exports": [
+        "FrozenOrderMonitor"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:15:32.869Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/fuel.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\fuel.py",
+      "moduleName": "backend/src/intelligence/events/fuel.py",
+      "exports": [
+        "FuelEvent"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:15:31.751Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/lap_counter.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\lap_counter.py",
+      "moduleName": "backend/src/intelligence/events/lap_counter.py",
+      "exports": [
+        "F_LAP",
+        "F_FIRST_LAP_AFTER_PIT",
+        "F_WARMUP",
+        "LapCounter"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.764Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/pit_stops.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\pit_stops.py",
+      "moduleName": "backend/src/intelligence/events/pit_stops.py",
+      "exports": [
+        "C_PIT_ENTRY",
+        "C_PIT_COUNTDOWN",
+        "C_GOGOGO",
+        "C_MANDATORY_DONE",
+        "C_LIMITER",
+        "C_PIT_WINDOW",
+        "C_PIT_REQUESTED",
+        "LMU_PIT_NONE",
+        "LMU_PIT_REQUEST",
+        "LMU_PIT_ENTERING",
+        "LMU_PIT_STOPPED",
+        "LMU_PIT_EXITING",
+        "PitStops"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:15:29.840Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/position.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\position.py",
+      "moduleName": "backend/src/intelligence/events/position.py",
+      "exports": [
+        "F_LEADING",
+        "F_NEW_LEADER",
+        "F_LOST_LEAD",
+        "F_OVERTAKE",
+        "F_BEING_OVERTAKEN",
+        "F_LAST",
+        "F_CONSISTENTLY_LAST",
+        "F_POLE",
+        "PositionEvent"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.765Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/session_monitor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\session_monitor.py",
+      "moduleName": "backend/src/intelligence/events/session_monitor.py",
+      "exports": [
+        "F_FORMATION_START",
+        "F_FORMATION_END",
+        "SessionMonitor"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.766Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/events/tyre_monitor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\events\\tyre_monitor.py",
+      "moduleName": "backend/src/intelligence/events/tyre_monitor.py",
+      "exports": [
+        "CORNERS",
+        "TyreMonitor"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:14:39.793Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/formatter.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\formatter.py",
+      "moduleName": "backend/src/intelligence/formatter.py",
+      "exports": [
+        "format_event_text"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.759Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/live_context.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\live_context.py",
+      "moduleName": "backend/src/intelligence/live_context.py",
+      "exports": [
+        "LiveContextManager"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.760Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/llm_client.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\llm_client.py",
+      "moduleName": "backend/src/intelligence/llm_client.py",
+      "exports": [
+        "VLLMClient"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.760Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/noisy_cartesian_spotter.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\noisy_cartesian_spotter.py",
+      "moduleName": "backend/src/intelligence/noisy_cartesian_spotter.py",
+      "exports": [
+        "NoisyCartesianCoordinateSpotter"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T15:03:05.459Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/prompt_templates.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\prompt_templates.py",
+      "moduleName": "backend/src/intelligence/prompt_templates.py",
+      "exports": [
+        "SYSTEM_PROMPT_BASIC",
+        "SYSTEM_PROMPT_TICKER",
+        "DRV",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "UI_TOOLS",
+        "render"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.761Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/spotter_messages.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\spotter_messages.py",
+      "moduleName": "backend/src/intelligence/spotter_messages.py",
+      "exports": [
+        "CAR_LEFT",
+        "CAR_RIGHT",
+        "CLEAR_LEFT",
+        "CLEAR_RIGHT",
+        "CLEAR_ALL_ROUND",
+        "THREE_WIDE",
+        "STILL_THERE",
+        "THREE_WIDE_ON_LEFT",
+        "THREE_WIDE_ON_RIGHT",
+        "ALL_MESSAGES"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T14:47:22.053Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/spotter.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\spotter.py",
+      "moduleName": "backend/src/intelligence/spotter.py",
+      "exports": [
+        "SpotterService"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:09:02.515Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/ticker.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\ticker.py",
+      "moduleName": "backend/src/intelligence/ticker.py",
+      "exports": [
+        "CLASS_ABBREV",
+        "SESSION_ABBREV",
+        "GRIP_ABBREV",
+        "abbreviate_name",
+        "generate_ticker"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.762Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/intelligence/triggers.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\intelligence\\triggers.py",
+      "moduleName": "backend/src/intelligence/triggers.py",
+      "exports": [
+        "TriggerAction",
+        "Priority",
+        "ContextTier",
+        "BaseTrigger",
+        "FuelCriticalTrigger",
+        "SafetyCarTrigger",
+        "BrakeWearCriticalTrigger",
+        "TyreDegAccelTrigger",
+        "HybridDeployMapTrigger",
+        "WeatherChangeTrigger",
+        "PitWindowOpenedTrigger",
+        "PitWindowClosingTrigger",
+        "CompetitorPittedTrigger",
+        "GapClosedTrigger",
+        "PhaseChangedTrigger",
+        "PilotQuestionTrigger",
+        "TiresThermalOverheatingTrigger",
+        "get_all_triggers"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.762Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/main.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\main.py",
+      "moduleName": "backend/src/main.py",
+      "exports": [
+        "lifespan"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:54:35.531Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/models/enums.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\models\\enums.py",
+      "moduleName": "backend/src/models/enums.py",
+      "exports": [
+        "SessionType",
+        "SessionPhase",
+        "FlagEnum",
+        "FullCourseYellowPhase",
+        "FrozenOrderPhase",
+        "FrozenOrderColumn",
+        "FrozenOrderAction",
+        "PitWindow",
+        "ControlType",
+        "TyreType"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T09:43:50.398Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/models/game_state_data.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\models\\game_state_data.py",
+      "moduleName": "backend/src/models/game_state_data.py",
+      "exports": [
+        "Rotation",
+        "PositionAndMotionData",
+        "SessionData",
+        "PitData",
+        "FlagData",
+        "TyreData",
+        "CarDamageData",
+        "EngineData",
+        "FuelData",
+        "BatteryData",
+        "OpponentData",
+        "PenaltiesData",
+        "OvertakingAidsData",
+        "FrozenOrderData",
+        "TimingData",
+        "GameStateData"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.768Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/models/messages.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\models\\messages.py",
+      "moduleName": "backend/src/models/messages.py",
+      "exports": [
+        "UIAction",
+        "BaseMessage",
+        "LLMPendingMessage",
+        "AdviceStartMessage",
+        "AdviceTokenMessage",
+        "AdviceEndMessage",
+        "AlertMessage",
+        "CrewChiefAlertMessage",
+        "FragmentType",
+        "Precision",
+        "TimeSpanWrapper",
+        "MessageFragment",
+        "DelayedMessageEvent",
+        "QueuedMessage",
+        "contents",
+        "Pause"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:54:35.532Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/persistence/__init__.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\persistence\\__init__.py",
+      "moduleName": "backend/src/persistence/__init__.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.764Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/persistence/event_store.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\persistence\\event_store.py",
+      "moduleName": "backend/src/persistence/event_store.py",
+      "exports": [
+        "EventStore"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.765Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/persistence/history_store.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\persistence\\history_store.py",
+      "moduleName": "backend/src/persistence/history_store.py",
+      "exports": [
+        "DATA_DIR",
+        "SESSION_FILE",
+        "HistoryStore"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.765Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/routers/health.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\routers\\health.py",
+      "moduleName": "backend/src/routers/health.py",
+      "exports": [
+        "health_check"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:09:02.516Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/routers/history.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\routers\\history.py",
+      "moduleName": "backend/src/routers/history.py",
+      "exports": [
+        "get_history"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.766Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/routers/llm.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\routers\\llm.py",
+      "moduleName": "backend/src/routers/llm.py",
+      "exports": [
+        "ChatMessage",
+        "AskRequest",
+        "ask_copilot"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.766Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/routers/transcribe.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\routers\\transcribe.py",
+      "moduleName": "backend/src/routers/transcribe.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.766Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/routers/tts.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\routers\\tts.py",
+      "moduleName": "backend/src/routers/tts.py",
+      "exports": [
+        "synthesize_tts"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.767Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/routers/websocket.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\routers\\websocket.py",
+      "moduleName": "backend/src/routers/websocket.py",
+      "exports": [
+        "ConnectionManager",
+        "broadcast_sync",
+        "telemetry_sender_loop",
+        "strategy_sender_loop",
+        "sidecar_endpoint",
+        "websocket_endpoint"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.770Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/audio_player.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\audio_player.py",
+      "moduleName": "backend/src/services/audio_player.py",
+      "exports": [
+        "PRIORITY_SPOTTER",
+        "PRIORITY_CRITICAL",
+        "PRIORITY_IMPORTANT",
+        "PRIORITY_VOICE",
+        "PRIORITY_NORMAL",
+        "AudioOutput",
+        "PyAudioOutput",
+        "NullAudioOutput",
+        "AudioPlayer"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:54:35.533Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/colloquial_time.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\colloquial_time.py",
+      "moduleName": "backend/src/services/colloquial_time.py",
+      "exports": [
+        "ColloquialTimeReader",
+        "SpanishColloquialTimeReader"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T11:34:33.150Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/crewchief_loop.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\crewchief_loop.py",
+      "moduleName": "backend/src/services/crewchief_loop.py",
+      "exports": [
+        "CREWCHIEF_HZ",
+        "CREWCHIEF_INTERVAL",
+        "MAX_EMPTY_FRAMES",
+        "CrewChiefRuntime",
+        "init_crewchief",
+        "get_crewchief"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T06:35:11.474Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/delta_time.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\delta_time.py",
+      "moduleName": "backend/src/services/delta_time.py",
+      "exports": [
+        "DeltaTime"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T09:54:20.966Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/edge_tts_service.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\edge_tts_service.py",
+      "moduleName": "backend/src/services/edge_tts_service.py",
+      "exports": [
+        "EdgeTTSService"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.769Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/elevenlabs_tts_service.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\elevenlabs_tts_service.py",
+      "moduleName": "backend/src/services/elevenlabs_tts_service.py",
+      "exports": [
+        "ElevenLabsTTSService"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.769Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/event_bridge.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\event_bridge.py",
+      "moduleName": "backend/src/services/event_bridge.py",
+      "exports": [
+        "queued_to_crewchief_alert"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:48:45.104Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/frame_cache.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\frame_cache.py",
+      "moduleName": "backend/src/services/frame_cache.py",
+      "exports": [
+        "FrameCache"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.771Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/game_state_builder.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\game_state_builder.py",
+      "moduleName": "backend/src/services/game_state_builder.py",
+      "exports": [
+        "build"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.772Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/gemini_tts_service.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\gemini_tts_service.py",
+      "moduleName": "backend/src/services/gemini_tts_service.py",
+      "exports": [
+        "GeminiTTSService"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.769Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/lmu_api.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\lmu_api.py",
+      "moduleName": "backend/src/services/lmu_api.py",
+      "exports": [
+        "get_weather",
+        "get_strategy_usage",
+        "get_garage_wear",
+        "get_additional_data",
+        "get_cache_sizes",
+        "poll_api"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.770Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/lmu_reader.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\lmu_reader.py",
+      "moduleName": "backend/src/services/lmu_reader.py",
+      "exports": [
+        "decode_name",
+        "calculate_rotation",
+        "orientation_to_dict",
+        "LMUReader"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.773Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/lmu_rest_api.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\lmu_rest_api.py",
+      "moduleName": "backend/src/services/lmu_rest_api.py",
+      "exports": [
+        "API_BASE",
+        "LMURestData",
+        "LMURestAPI",
+        "merge_rest_into_flat"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T19:53:44.370Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/msgpack_codec.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\msgpack_codec.py",
+      "moduleName": "backend/src/services/msgpack_codec.py",
+      "exports": [
+        "encode",
+        "decode",
+        "apply_delta",
+        "is_full_frame"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:07.770Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/number_reader.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\number_reader.py",
+      "moduleName": "backend/src/services/number_reader.py",
+      "exports": [
+        "NumberReader",
+        "PRECISION_AUTO_LAPTIMES",
+        "PRECISION_AUTO_GAPS",
+        "PRECISION_SECONDS",
+        "PRECISION_TENTHS",
+        "PRECISION_HUNDREDTHS",
+        "PRECISION_MINUTES",
+        "SpanishNumberReader"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.773Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/sound_cache.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\sound_cache.py",
+      "moduleName": "backend/src/services/sound_cache.py",
+      "exports": [
+        "SoundEntry",
+        "SoundCache"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.774Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/state_diff.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\state_diff.py",
+      "moduleName": "backend/src/services/state_diff.py",
+      "exports": [
+        "TickChanges",
+        "StateDiff"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.775Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/strategy_service.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\strategy_service.py",
+      "moduleName": "backend/src/services/strategy_service.py",
+      "exports": [
+        "safe_float",
+        "safe_str",
+        "StrategyService"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:09:02.517Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/track_definition.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\track_definition.py",
+      "moduleName": "backend/src/services/track_definition.py",
+      "exports": [
+        "TrackLengthClass",
+        "OUTLIER_PACE_LIMITS",
+        "FUEL_WINDOW_LENGTH",
+        "LAPS_BEFORE_GAPS",
+        "get_length_class",
+        "TrackDefinition"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T09:46:29.888Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/tts_service.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\tts_service.py",
+      "moduleName": "backend/src/services/tts_service.py",
+      "exports": [
+        "TTSService"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.698Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/services/utilities.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\services\\utilities.py",
+      "moduleName": "backend/src/services/utilities.py",
+      "exports": [
+        "set_random_seed",
+        "random_int",
+        "random_double",
+        "WholeAndFractionalPart"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.776Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/src/transport/broadcaster.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\src\\transport\\broadcaster.py",
+      "moduleName": "backend/src/transport/broadcaster.py",
+      "exports": [
+        "send"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.698Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/analyze_m3_structure.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\analyze_m3_structure.py",
+      "moduleName": "backend/tests/analyze_m3_structure.py",
+      "exports": [
+        "SYS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T07:14:25.649Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_compare_cloud.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_compare_cloud.py",
+      "moduleName": "backend/tests/benchmark_compare_cloud.py",
+      "exports": [
+        "MODELS_CONFIG",
+        "SYSTEM",
+        "TICKERS",
+        "HISTORICO_A",
+        "HISTORICO_E",
+        "extract_response",
+        "run_benchmark"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.777Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_launch_all.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_launch_all.py",
+      "moduleName": "backend/tests/benchmark_launch_all.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T09:46:34.483Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_llm_v2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_llm_v2.py",
+      "moduleName": "backend/tests/benchmark_llm_v2.py",
+      "exports": [
+        "SYSTEM_PROMPT",
+        "IMPORTANTE",
+        "TICKERS",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "FAR",
+        "LAP",
+        "SES",
+        "WTH",
+        "RIV",
+        "FAR",
+        "LAP",
+        "SES",
+        "WTH",
+        "RIV",
+        "FAR",
+        "LAP",
+        "SES",
+        "WTH",
+        "RIV",
+        "FAR",
+        "LAP",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "FAR",
+        "LAP",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "FAR",
+        "LAP",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "FAR",
+        "LAP",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "FAR",
+        "LAP",
+        "HISTORICO_L5",
+        "V5",
+        "V6",
+        "V7",
+        "V8",
+        "V9",
+        "V5",
+        "V6",
+        "V7",
+        "V8",
+        "V9",
+        "TENDENCIA",
+        "V15",
+        "V18",
+        "V20",
+        "V22",
+        "V24",
+        "TENDENCIA",
+        "V18",
+        "V19",
+        "V20",
+        "V30",
+        "V31",
+        "V32",
+        "V33",
+        "V34",
+        "V10",
+        "V11",
+        "V12",
+        "V10",
+        "V11",
+        "V12",
+        "V13",
+        "V13",
+        "V14",
+        "V15",
+        "V16",
+        "V17",
+        "ALERTA",
+        "CAUSA",
+        "generate_level_1",
+        "generate_level_2",
+        "generate_level_3",
+        "generate_level_4",
+        "generate_level_5",
+        "generate_level_6",
+        "generate_level_7",
+        "generate_level_8",
+        "GENERATORS",
+        "generate_all_prompts",
+        "PASS_THRESHOLDS",
+        "LLMClient",
+        "Evaluator",
+        "generate_report",
+        "run_benchmark",
+        "main"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T22:13:00.721Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_llm.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_llm.py",
+      "moduleName": "backend/tests/benchmark_llm.py",
+      "exports": [
+        "SYSTEM_PROMPT_TICKER",
+        "DRV",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "TICKERS",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "SES",
+        "WTH",
+        "RIV",
+        "SES",
+        "WTH",
+        "RIV",
+        "SES",
+        "WTH",
+        "RIV",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "SES",
+        "WTH",
+        "RIV",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "generate_level_1",
+        "generate_level_2",
+        "generate_level_3",
+        "generate_level_4",
+        "generate_level_5",
+        "generate_level_6",
+        "generate_level_7",
+        "generate_level_8",
+        "GENERATORS",
+        "generate_all_prompts",
+        "PASS_THRESHOLDS",
+        "LLMClient",
+        "Evaluator",
+        "LEVEL_EVALUATORS",
+        "DEFAULT_MODELS",
+        "main"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:18:15.323Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_local_v2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_local_v2.py",
+      "moduleName": "backend/tests/benchmark_local_v2.py",
+      "exports": [
+        "BASE_URL",
+        "SYSTEM",
+        "TICKERS",
+        "HISTORICO_A",
+        "V5",
+        "V6",
+        "V7",
+        "V8",
+        "V9",
+        "HISTORICO_E",
+        "V30",
+        "V31",
+        "V32",
+        "V33",
+        "V34",
+        "ANALISIS",
+        "MODELS",
+        "extract_response",
+        "run_benchmark"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.777Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_m3_full.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_m3_full.py",
+      "moduleName": "backend/tests/benchmark_m3_full.py",
+      "exports": [
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "SYS",
+        "extract_answer",
+        "sc"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T07:19:54.643Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_m3_quick.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_m3_quick.py",
+      "moduleName": "backend/tests/benchmark_m3_quick.py",
+      "exports": [
+        "HIST",
+        "SYS",
+        "extract_answer",
+        "sc"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T07:30:29.425Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_minimax_full.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_minimax_full.py",
+      "moduleName": "backend/tests/benchmark_minimax_full.py",
+      "exports": [
+        "SYSTEM_PROMPT_TICKER",
+        "DRV",
+        "SES",
+        "WTH",
+        "TICKERS",
+        "BRK",
+        "SES",
+        "WTH",
+        "RIV",
+        "SES",
+        "WTH",
+        "RIV",
+        "SES",
+        "WTH",
+        "RIV",
+        "SES",
+        "WTH",
+        "RIV",
+        "PROMPTS",
+        "score_response",
+        "run_minimax_benchmark",
+        "generate_report",
+        "main"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:59:38.682Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_minimax_m3.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_minimax_m3.py",
+      "moduleName": "backend/tests/benchmark_minimax_m3.py",
+      "exports": [
+        "TICKERS",
+        "HISTORICO_A",
+        "HISTORICO_E",
+        "ORIG_Q",
+        "ORIG_SYS",
+        "NEW_SYS",
+        "extract_mm",
+        "sc",
+        "build_content"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.779Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_minimax.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_minimax.py",
+      "moduleName": "backend/tests/benchmark_minimax.py",
+      "exports": [
+        "SYSTEM_PROMPT_TICKER",
+        "DRV",
+        "TICKER_A",
+        "BRK",
+        "SES",
+        "WTH",
+        "PROMPTS",
+        "SES",
+        "WTH",
+        "SES",
+        "WTH",
+        "SES",
+        "WTH",
+        "keyword_score",
+        "run_benchmark_minimax",
+        "main"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.778Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_stepfun.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_stepfun.py",
+      "moduleName": "backend/tests/benchmark_stepfun.py",
+      "exports": [
+        "SYSTEM",
+        "TICKERS",
+        "HISTORICO_A",
+        "V5",
+        "V6",
+        "V7",
+        "V8",
+        "V9",
+        "HISTORICO_E",
+        "V30",
+        "V31",
+        "V32",
+        "V33",
+        "V34",
+        "ANALISIS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.780Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_v2_runner.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_v2_runner.py",
+      "moduleName": "backend/tests/benchmark_v2_runner.py",
+      "exports": [
+        "MODELS",
+        "SIMPLE_CONTEXT",
+        "RPM",
+        "TC",
+        "call_model",
+        "build_messages",
+        "PILOTO",
+        "run_benchmark",
+        "save_results"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.781Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/benchmark_v2_script.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\benchmark_v2_script.py",
+      "moduleName": "backend/tests/benchmark_v2_script.py",
+      "exports": [
+        "QUESTIONS",
+        "RAG_CONTEXT",
+        "FL_TYRE",
+        "RL_TYRE",
+        "FL_BRAKE",
+        "RL_BRAKE",
+        "OIL_TEMP",
+        "DRAG",
+        "BATTERY",
+        "THIRD_FL",
+        "TC_ACTIVE",
+        "LAST_LAP",
+        "GAP_P2",
+        "TIRE_COMPOUND",
+        "COMPETITORS",
+        "P1_VERSTAPPEN",
+        "P2_HAMILTON",
+        "P4_LECLERC",
+        "P5_NORRIS",
+        "BOX_WINDOW",
+        "SC_PROBABILITY",
+        "FLAGS",
+        "TOTAL_LAPS",
+        "SYSTEM_PROMPT"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T08:16:14.890Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/compare_full.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\compare_full.py",
+      "moduleName": "backend/tests/compare_full.py",
+      "exports": [
+        "Q_TEST",
+        "SYS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T07:07:30.799Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/compare_m3.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\compare_m3.py",
+      "moduleName": "backend/tests/compare_m3.py",
+      "exports": [
+        "SYS",
+        "sc"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T06:52:43.101Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/compare_minimax.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\compare_minimax.py",
+      "moduleName": "backend/tests/compare_minimax.py",
+      "exports": [
+        "analyze"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.782Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/compare_raw.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\compare_raw.py",
+      "moduleName": "backend/tests/compare_raw.py",
+      "exports": [
+        "SYS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T07:06:04.810Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/compare_results.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\compare_results.py",
+      "moduleName": "backend/tests/compare_results.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T09:21:45.884Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/conftest.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\conftest.py",
+      "moduleName": "backend/tests/conftest.py",
+      "exports": [
+        "mock_race_state",
+        "mock_telemetry_dict",
+        "mock_strategy_dict",
+        "mock_session_dict",
+        "mock_telemetry_reader",
+        "broadcast_messages",
+        "mock_broadcast"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.699Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/debug_all_models.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\debug_all_models.py",
+      "moduleName": "backend/tests/debug_all_models.py",
+      "exports": [
+        "MINIMAX_KEY",
+        "STEPFUN_KEY",
+        "SYSTEM",
+        "TELEMETRIA",
+        "TESTS",
+        "MODELS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:18:18.038Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/debug_keywords.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\debug_keywords.py",
+      "moduleName": "backend/tests/debug_keywords.py",
+      "exports": [
+        "STEPFUN_KEY",
+        "SYSTEM",
+        "TELEMETRIA",
+        "TEST_QUESTIONS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:19:26.138Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/debug_mm_22q.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\debug_mm_22q.py",
+      "moduleName": "backend/tests/debug_mm_22q.py",
+      "exports": [
+        "TICKERS",
+        "HISTORICO_A",
+        "HISTORICO_E",
+        "ORIG_Q",
+        "ORIG_SYS",
+        "NEW_SYS",
+        "extract_mm",
+        "sc",
+        "build_content"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T05:09:56.383Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/debug_sf_mismatch.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\debug_sf_mismatch.py",
+      "moduleName": "backend/tests/debug_sf_mismatch.py",
+      "exports": [
+        "TICKERS",
+        "HISTORICO_A",
+        "HISTORICO_E",
+        "ORIG_Q",
+        "ORIG_SYS",
+        "extract_response",
+        "sc",
+        "build_content",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T04:55:21.029Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/debug_sf_orig_vs_new.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\debug_sf_orig_vs_new.py",
+      "moduleName": "backend/tests/debug_sf_orig_vs_new.py",
+      "exports": [
+        "TICKERS",
+        "HISTORICO_A",
+        "HISTORICO_E",
+        "ORIG_Q",
+        "ORIG_SYS",
+        "NEW_SYS",
+        "extract_response",
+        "sc",
+        "build_content",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T04:57:41.999Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/debug_stepfun_thinking.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\debug_stepfun_thinking.py",
+      "moduleName": "backend/tests/debug_stepfun_thinking.py",
+      "exports": [
+        "STEPFUN_KEY"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:19:51.298Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/debug_stepfun.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\debug_stepfun.py",
+      "moduleName": "backend/tests/debug_stepfun.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:07:08.030Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/debug_sync_22q.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\debug_sync_22q.py",
+      "moduleName": "backend/tests/debug_sync_22q.py",
+      "exports": [
+        "TICKERS",
+        "HISTORICO_A",
+        "HISTORICO_E",
+        "ORIG_Q",
+        "ORIG_SYS",
+        "NEW_SYS",
+        "extract_response",
+        "sc",
+        "build_content",
+        "run_sync"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T04:59:55.115Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/debug_sync_vs_async.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\debug_sync_vs_async.py",
+      "moduleName": "backend/tests/debug_sync_vs_async.py",
+      "exports": [
+        "TICKERS",
+        "Q_TEST",
+        "ORIG_SYS",
+        "extract_response",
+        "sc",
+        "build_content",
+        "test_async"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T04:58:49.019Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/iter_v3.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\iter_v3.py",
+      "moduleName": "backend/tests/iter_v3.py",
+      "exports": [
+        "HIST",
+        "ex",
+        "sc"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:50:19.446Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/list_stepfun_models.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\list_stepfun_models.py",
+      "moduleName": "backend/tests/list_stepfun_models.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T22:57:28.019Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/m3_big_tokens.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\m3_big_tokens.py",
+      "moduleName": "backend/tests/m3_big_tokens.py",
+      "exports": [
+        "SYS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T07:16:24.393Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/m3_tokens_test.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\m3_tokens_test.py",
+      "moduleName": "backend/tests/m3_tokens_test.py",
+      "exports": [
+        "SYS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T07:15:51.791Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/m3_unlimited.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\m3_unlimited.py",
+      "moduleName": "backend/tests/m3_unlimited.py",
+      "exports": [
+        "HIST",
+        "SYS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.783Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/manual_eval.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\manual_eval.py",
+      "moduleName": "backend/tests/manual_eval.py",
+      "exports": [
+        "KEY_QUESTIONS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.784Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_best_combo.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_best_combo.py",
+      "moduleName": "backend/tests/night_best_combo.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "ORIG_SF",
+        "NEW2",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T01:11:23.173Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_best.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_best.py",
+      "moduleName": "backend/tests/night_best.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.785Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_definitive.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_definitive.py",
+      "moduleName": "backend/tests/night_definitive.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:39:47.914Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_diag.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_diag.py",
+      "moduleName": "backend/tests/night_diag.py",
+      "exports": [
+        "PROMPTS",
+        "ex"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.786Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_diag2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_diag2.py",
+      "moduleName": "backend/tests/night_diag2.py",
+      "exports": [
+        "TICKERS",
+        "PROMPTS",
+        "ex",
+        "sc",
+        "build_content"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:09:23.475Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_extract_test.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_extract_test.py",
+      "moduleName": "backend/tests/night_extract_test.py",
+      "exports": [
+        "extract_mm_v1",
+        "extract_mm_v2",
+        "extract_mm_v3",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "SYS",
+        "build_content"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:18:06.967Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_extractor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_extractor.py",
+      "moduleName": "backend/tests/night_extractor.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "ex_mm",
+        "ex_sf",
+        "sc",
+        "TICKERS",
+        "build_content",
+        "PROMPTS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:10:53.501Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_final_report.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_final_report.py",
+      "moduleName": "backend/tests/night_final_report.py",
+      "exports": [
+        "TICKERS",
+        "HISTORICO_A",
+        "HISTORICO_E",
+        "ORIG_Q",
+        "ORIG_SYS",
+        "NEW_SYS",
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "build_content",
+        "run_model"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T05:20:59.998Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_final_test.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_final_test.py",
+      "moduleName": "backend/tests/night_final_test.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T01:09:18.330Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_final_v2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_final_v2.py",
+      "moduleName": "backend/tests/night_final_v2.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.786Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_final.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_final.py",
+      "moduleName": "backend/tests/night_final.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:32:23.798Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_full_verify.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_full_verify.py",
+      "moduleName": "backend/tests/night_full_verify.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "SYS_MM",
+        "SYS_SF",
+        "build_content",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.787Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_fullbench.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_fullbench.py",
+      "moduleName": "backend/tests/night_fullbench.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.788Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_iter_v1.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_iter_v1.py",
+      "moduleName": "backend/tests/night_iter_v1.py",
+      "exports": [
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "ex",
+        "sc",
+        "run_model"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.789Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_iter_v2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_iter_v2.py",
+      "moduleName": "backend/tests/night_iter_v2.py",
+      "exports": [
+        "PROMPTS",
+        "ex",
+        "sc",
+        "TICKERS",
+        "build_content",
+        "call_model",
+        "run_prompt",
+        "main"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.790Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_l3_diag.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_l3_diag.py",
+      "moduleName": "backend/tests/night_l3_diag.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "L3_Q",
+        "PROMPTS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.791Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_last.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_last.py",
+      "moduleName": "backend/tests/night_last.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.792Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_real_bench.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_real_bench.py",
+      "moduleName": "backend/tests/night_real_bench.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:48:59.357Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_screen.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_screen.py",
+      "moduleName": "backend/tests/night_screen.py",
+      "exports": [
+        "ex",
+        "sc",
+        "TICKERS",
+        "PROMPTS",
+        "build_content",
+        "call_model",
+        "run_prompt",
+        "main"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.794Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_sf_diag.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_sf_diag.py",
+      "moduleName": "backend/tests/night_sf_diag.py",
+      "exports": [
+        "TICKERS",
+        "SYS",
+        "Q_L3"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:57:12.576Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_sf_iter.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_sf_iter.py",
+      "moduleName": "backend/tests/night_sf_iter.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T01:08:11.777Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_side_by_side.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_side_by_side.py",
+      "moduleName": "backend/tests/night_side_by_side.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "ORIG_SYS",
+        "NEW_SYS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T01:06:06.681Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_temp.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_temp.py",
+      "moduleName": "backend/tests/night_temp.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:54:26.148Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_think.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_think.py",
+      "moduleName": "backend/tests/night_think.py",
+      "exports": [
+        "SYS",
+        "ex"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:15:15.823Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_think2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_think2.py",
+      "moduleName": "backend/tests/night_think2.py",
+      "exports": [
+        "SYS",
+        "ex"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:15:41.917Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_v4.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_v4.py",
+      "moduleName": "backend/tests/night_v4.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:14:23.051Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_v5.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_v5.py",
+      "moduleName": "backend/tests/night_v5.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "build_content",
+        "PROMPTS",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:16:31.624Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_v6.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_v6.py",
+      "moduleName": "backend/tests/night_v6.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:22:20.138Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_v7.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_v7.py",
+      "moduleName": "backend/tests/night_v7.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:26:51.542Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_v8.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_v8.py",
+      "moduleName": "backend/tests/night_v8.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:28:20.278Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_v9.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_v9.py",
+      "moduleName": "backend/tests/night_v9.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "PROMPTS",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:50:54.311Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/night_verify.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\night_verify.py",
+      "moduleName": "backend/tests/night_verify.py",
+      "exports": [
+        "extract_mm",
+        "extract_sf",
+        "sc",
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "BEST_PROMPT",
+        "build_content",
+        "call",
+        "run"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T00:53:16.245Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/optimize_fast.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\optimize_fast.py",
+      "moduleName": "backend/tests/optimize_fast.py",
+      "exports": [
+        "MINIMAX_KEY",
+        "STEPFUN_KEY",
+        "TELEMETRIA",
+        "PROMPTS",
+        "SYSTEMS",
+        "extract",
+        "score"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:40:48.255Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/optimize_prompt.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\optimize_prompt.py",
+      "moduleName": "backend/tests/optimize_prompt.py",
+      "exports": [
+        "MINIMAX_KEY",
+        "STEPFUN_KEY",
+        "TELEMETRIA",
+        "HISTORICO",
+        "PROMPTS",
+        "SYSTEM_PROMPTS",
+        "extract_response",
+        "test_prompt"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:30:15.061Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/optimize_v2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\optimize_v2.py",
+      "moduleName": "backend/tests/optimize_v2.py",
+      "exports": [
+        "MINIMAX_KEY",
+        "STEPFUN_KEY",
+        "TELE",
+        "PROMPTS",
+        "ex",
+        "sc",
+        "SYSTEMS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:45:03.828Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/quick_benchmark_v2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\quick_benchmark_v2.py",
+      "moduleName": "backend/tests/quick_benchmark_v2.py",
+      "exports": [
+        "SYSTEM",
+        "TICKERS",
+        "HISTORICO_A",
+        "V5",
+        "V6",
+        "V7",
+        "V8",
+        "V9",
+        "HISTORICO_E",
+        "V30",
+        "V31",
+        "V32",
+        "V33",
+        "V34",
+        "ANALISIS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.794Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/quick_iter.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\quick_iter.py",
+      "moduleName": "backend/tests/quick_iter.py",
+      "exports": [
+        "ex",
+        "sc"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:48:27.049Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/quick_m3.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\quick_m3.py",
+      "moduleName": "backend/tests/quick_m3.py",
+      "exports": [
+        "ORIG_SYS",
+        "NEW_SYS",
+        "extract_mm",
+        "sc"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T06:49:58.106Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/quick_minimax.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\quick_minimax.py",
+      "moduleName": "backend/tests/quick_minimax.py",
+      "exports": [
+        "API_KEY",
+        "MODEL",
+        "URL",
+        "OUT_DIR",
+        "SYSTEM",
+        "TICKERS",
+        "PROMPTS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.795Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/quick_v2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\quick_v2.py",
+      "moduleName": "backend/tests/quick_v2.py",
+      "exports": [
+        "SYSTEM",
+        "TICKERS",
+        "HISTORICO_A",
+        "V5",
+        "V6",
+        "V7",
+        "V8",
+        "V9",
+        "HISTORICO_E",
+        "V30",
+        "V31",
+        "V32",
+        "V33",
+        "V34",
+        "ANALISIS"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T22:28:40.696Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/run_benchmark_v2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\run_benchmark_v2.py",
+      "moduleName": "backend/tests/run_benchmark_v2.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T22:13:10.157Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/run_final_batch.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\run_final_batch.py",
+      "moduleName": "backend/tests/run_final_batch.py",
+      "exports": [
+        "BASE",
+        "API",
+        "CMD",
+        "OUT",
+        "PROJ",
+        "MODELS",
+        "log",
+        "unload",
+        "load_model",
+        "run_model",
+        "main"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:18:08.165Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/run_minimax_full.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\run_minimax_full.py",
+      "moduleName": "backend/tests/run_minimax_full.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:59:42.944Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/run_minimax.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\run_minimax.py",
+      "moduleName": "backend/tests/run_minimax.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.796Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/run_nemotron.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\run_nemotron.py",
+      "moduleName": "backend/tests/run_nemotron.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:26:36.087Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/run_qwen.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\run_qwen.py",
+      "moduleName": "backend/tests/run_qwen.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:49:24.016Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/run_smollm.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\run_smollm.py",
+      "moduleName": "backend/tests/run_smollm.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:20:22.670Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_audio_player_broadcast.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_audio_player_broadcast.py",
+      "moduleName": "backend/tests/test_audio_player_broadcast.py",
+      "exports": [
+        "mock_cache",
+        "test_broadcast_called_when_callback_set",
+        "test_broadcast_not_called_when_callback_none",
+        "test_broadcast_exception_does_not_crash"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:41:42.989Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_audio_player.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_audio_player.py",
+      "moduleName": "backend/tests/test_audio_player.py",
+      "exports": [
+        "MockSoundCache",
+        "CountedAudioOutput",
+        "player",
+        "TestQueueBehavior",
+        "TestPriorityOrdering",
+        "TestPauseResume",
+        "TestValidator",
+        "TestPlayState",
+        "TestNullAudioOutput",
+        "TestPyAudioOutput",
+        "TestThreadSafety",
+        "TestStartStop"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.796Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_base_event.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_base_event.py",
+      "moduleName": "backend/tests/test_base_event.py",
+      "exports": [
+        "TestAbstractEventBasics",
+        "TestAbstractEventSuppression",
+        "TestAbstractEventPlayback",
+        "TestAbstractEventIsValid",
+        "TestStaticHelpers",
+        "TestFakeAudioPlayer"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.797Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_base_events.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_base_events.py",
+      "moduleName": "backend/tests/test_base_events.py",
+      "exports": [
+        "reset_event_flags",
+        "TestFlagsMonitor",
+        "TestSessionMonitor",
+        "TestLapCounter",
+        "TestPositionEvent",
+        "TestBugDefensiveCurrNone",
+        "TestBugLapCounterMonotonic",
+        "TestBugSessionMonitorFirstTick",
+        "TestBugPlayWithInvalidMessage",
+        "TestBugConsistentlyLastSpam",
+        "TestBugSessionMonitorFormationEndThroughCountdown",
+        "TestBugShouldSuppressDefensive"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.799Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_battery.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_battery.py",
+      "moduleName": "backend/tests/test_battery.py",
+      "exports": [
+        "TestSilentFailures",
+        "TestPipelineIntegration",
+        "TestSilentState"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T20:59:45.132Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_broadcaster.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_broadcaster.py",
+      "moduleName": "backend/tests/test_broadcaster.py",
+      "exports": [
+        "FakeMessage",
+        "TestBroadcasterSend"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.699Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_car_class_data.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_car_class_data.py",
+      "moduleName": "backend/tests/test_car_class_data.py",
+      "exports": [
+        "TestEnums",
+        "TestCarClass",
+        "TestTyreThresholds",
+        "TestBrakeThresholds"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.800Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_colloquial_time.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_colloquial_time.py",
+      "moduleName": "backend/tests/test_colloquial_time.py",
+      "exports": [
+        "reader",
+        "TestEnPunto",
+        "TestYCuartoyMedia",
+        "TestMenos",
+        "TestCasosEspeciales",
+        "TestMinutosIntermedios",
+        "TestArticulos",
+        "TestExtensibility"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.802Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_conditions_monitor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_conditions_monitor.py",
+      "moduleName": "backend/tests/test_conditions_monitor.py",
+      "exports": [
+        "TestSilentSuppression",
+        "TestPipelineIntegration",
+        "TestCrossEvent",
+        "TestClearState"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:08:32.229Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_context_builder.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_context_builder.py",
+      "moduleName": "backend/tests/test_context_builder.py",
+      "exports": [
+        "test_build_ticker_data_has_fields",
+        "test_build_prompt_with_ticker",
+        "test_build_prompt_legacy"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.700Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_coordinate_math.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_coordinate_math.py",
+      "moduleName": "backend/tests/test_coordinate_math.py",
+      "exports": [
+        "TestAlignedXzBasics",
+        "TestAlignedXzRotations",
+        "TestAlignedXzWithPilotOffset",
+        "TestReturnsFloats"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T15:43:42.419Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_crewchief_integration.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_crewchief_integration.py",
+      "moduleName": "backend/tests/test_crewchief_integration.py",
+      "exports": [
+        "TestAllEventsSilent",
+        "TestCrossEventIntegration",
+        "TestSequenceOrdering",
+        "TestSessionReset",
+        "TestMemory"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T06:36:09.098Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_crewchief_pipeline.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_crewchief_pipeline.py",
+      "moduleName": "backend/tests/test_crewchief_pipeline.py",
+      "exports": [
+        "TestTyreMonitorNoFalseLockup",
+        "TestEngineMonitorIconImmediate",
+        "TestEventSequenceOrder",
+        "TestPitWindowUsesTrackDef",
+        "TestPitRequestDetection",
+        "TestBatteryRechargeThreshold",
+        "TestFuelConsumptionCapped",
+        "TestFcyToGreenDirect",
+        "TestProgressiveRollover",
+        "TestEndToEndPipeline"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:32:58.296Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_crewchief_ws_integration.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_crewchief_ws_integration.py",
+      "moduleName": "backend/tests/test_crewchief_ws_integration.py",
+      "exports": [
+        "TestCrewChiefAlertRoundtrip"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T09:21:31.037Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_damage_reporting.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_damage_reporting.py",
+      "moduleName": "backend/tests/test_damage_reporting.py",
+      "exports": [
+        "TestSilentFailures",
+        "TestPipelineIntegration"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T21:03:46.777Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_delta_time.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_delta_time.py",
+      "moduleName": "backend/tests/test_delta_time.py",
+      "exports": [
+        "TestCreation",
+        "TestSignedLapDiff",
+        "TestAbsoluteTimeDelta"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T12:19:01.847Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_engine_monitor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_engine_monitor.py",
+      "moduleName": "backend/tests/test_engine_monitor.py",
+      "exports": [
+        "TestSilentFailures",
+        "TestPipelineIntegration"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T21:03:23.473Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_engine.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_engine.py",
+      "moduleName": "backend/tests/test_engine.py",
+      "exports": [
+        "mock_live_context",
+        "mock_context_builder",
+        "mock_prompt_templates",
+        "mock_llm_client",
+        "mock_broadcaster",
+        "mock_strategy_service",
+        "mock_lmu_api",
+        "TestIntelligenceEngine"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.700Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_enums.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_enums.py",
+      "moduleName": "backend/tests/test_enums.py",
+      "exports": [
+        "TestSessionType",
+        "TestSessionPhase",
+        "TestFlagEnum",
+        "TestFullCourseYellowPhase",
+        "TestFrozenOrder",
+        "TestPitWindow",
+        "TestControlType",
+        "TestTyreType"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T12:19:37.096Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_event_engine.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_event_engine.py",
+      "moduleName": "backend/tests/test_event_engine.py",
+      "exports": [
+        "TestEventEngineBasics",
+        "TestEventEngineTick",
+        "TestEventEngineFaultTolerance",
+        "TestEventEngineClearAll"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.802Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_event_flags.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_event_flags.py",
+      "moduleName": "backend/tests/test_event_flags.py",
+      "exports": [
+        "TestEventFlagsBasics",
+        "TestEventFlagsReset",
+        "TestSingleton",
+        "TestGlobalBehaviour"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.803Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_event_store.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_event_store.py",
+      "moduleName": "backend/tests/test_event_store.py",
+      "exports": [
+        "TestEventStore"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.701Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_fix.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_fix.py",
+      "moduleName": "backend/tests/test_fix.py",
+      "exports": [
+        "STEPFUN_KEY",
+        "extract_response"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:20:27.735Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_formatter.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_formatter.py",
+      "moduleName": "backend/tests/test_formatter.py",
+      "exports": [
+        "TestSafeFloat",
+        "TestFormatEventText"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.701Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_frame_cache.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_frame_cache.py",
+      "moduleName": "backend/tests/test_frame_cache.py",
+      "exports": [
+        "MockReader",
+        "TestFrameCache",
+        "TestSpotterFrame",
+        "TestRestMerge"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.804Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_frozen_order_monitor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_frozen_order_monitor.py",
+      "moduleName": "backend/tests/test_frozen_order_monitor.py",
+      "exports": [
+        "TestSilentSuppression",
+        "TestPipelineIntegration",
+        "TestSilentState",
+        "TestCrossEventOrdering"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T07:24:49.810Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_fuel.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_fuel.py",
+      "moduleName": "backend/tests/test_fuel.py",
+      "exports": [
+        "TestSilentFailures",
+        "TestPipelineIntegration",
+        "TestCrossEvent",
+        "TestMessageFlow"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T06:33:26.435Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_game_state_builder.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_game_state_builder.py",
+      "moduleName": "backend/tests/test_game_state_builder.py",
+      "exports": [
+        "TestBuild",
+        "TestBuildWithPrev",
+        "TestPopulateDerived"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.805Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_game_state_data.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_game_state_data.py",
+      "moduleName": "backend/tests/test_game_state_data.py",
+      "exports": [
+        "TestGameStateDataDefaults",
+        "TestMotion",
+        "TestBattery",
+        "TestTyre",
+        "TestDamage",
+        "TestOpponent",
+        "TestPenalties",
+        "TestTiming",
+        "TestFrozenOrder"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T12:21:56.713Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_health.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_health.py",
+      "moduleName": "backend/tests/test_health.py",
+      "exports": [
+        "app",
+        "TestHealthEndpoint"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.702Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_history.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_history.py",
+      "moduleName": "backend/tests/test_history.py",
+      "exports": [
+        "app",
+        "app_empty",
+        "app_no_store",
+        "TestHistoryEndpoint"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.702Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_integration.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_integration.py",
+      "moduleName": "backend/tests/test_integration.py",
+      "exports": [
+        "integration_app",
+        "TestWebSocketIntegration"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.702Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_lfm_v2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_lfm_v2.py",
+      "moduleName": "backend/tests/test_lfm_v2.py",
+      "exports": [
+        "BASE",
+        "API",
+        "MODEL",
+        "SYSTEM",
+        "PROMPTS",
+        "log",
+        "load_model",
+        "send_prompt",
+        "main"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T19:33:43.156Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_live_context.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_live_context.py",
+      "moduleName": "backend/tests/test_live_context.py",
+      "exports": [
+        "TestMissingFields",
+        "TestDamageAeroFix",
+        "TestUpdateRealtime"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.703Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_llm_async.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_llm_async.py",
+      "moduleName": "backend/tests/test_llm_async.py",
+      "exports": [
+        "TestVLLMClientHealthCheck",
+        "TestVLLMClientAskStreaming"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.704Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_llm_client_advanced.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_llm_client_advanced.py",
+      "moduleName": "backend/tests/test_llm_client_advanced.py",
+      "exports": [
+        "AsyncStreamContextManager",
+        "make_async_iter",
+        "TestVLLMClientGetClient",
+        "TestVLLMClientHealthCheckAdvanced",
+        "TestVLLMClientAskStreamingAdvanced",
+        "TestVLLMClientAskStreamingText"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.704Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_llm_router.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_llm_router.py",
+      "moduleName": "backend/tests/test_llm_router.py",
+      "exports": [
+        "make_app_with_engine",
+        "MockEngine",
+        "TestAskEndpoint"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.704Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_lmu_api.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_lmu_api.py",
+      "moduleName": "backend/tests/test_lmu_api.py",
+      "exports": [
+        "reset_caches",
+        "TestCacheGetters",
+        "TestGetAdditionalData",
+        "TestGetCacheSizes",
+        "TestPollAPICacheLogic"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.704Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_lmu_reader.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_lmu_reader.py",
+      "moduleName": "backend/tests/test_lmu_reader.py",
+      "exports": [
+        "TestDecodeName",
+        "TestCalculateRotation",
+        "TestOrientationToDict",
+        "TestRivalsTelemetrySlotId",
+        "MockVec3",
+        "MockWheel",
+        "MockVehicleScoring",
+        "MockVehicleTelemetry",
+        "MockScoringInfo",
+        "MockScoringData",
+        "MockTelemetryData",
+        "MockLMUObject",
+        "MockMMap",
+        "TestLMUReader"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.806Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_m3_full.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_m3_full.py",
+      "moduleName": "backend/tests/test_m3_full.py",
+      "exports": [
+        "TICKERS",
+        "HIST_A",
+        "HIST_E",
+        "SYS",
+        "sc"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T06:57:28.778Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_m3_only.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_m3_only.py",
+      "moduleName": "backend/tests/test_m3_only.py",
+      "exports": [
+        "HIST",
+        "SYS",
+        "sc"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T06:55:44.176Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_messages_crewchief.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_messages_crewchief.py",
+      "moduleName": "backend/tests/test_messages_crewchief.py",
+      "exports": [
+        "TestMessageFragment",
+        "TestQueuedMessage",
+        "TestPrepareRepeat",
+        "TestContents",
+        "TestPauseFunction",
+        "TestDelayedMessageEvent",
+        "TestExistingPydanticModels"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.807Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_minimax_m25.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_minimax_m25.py",
+      "moduleName": "backend/tests/test_minimax_m25.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:56:47.607Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_minimax_m27.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_minimax_m27.py",
+      "moduleName": "backend/tests/test_minimax_m27.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:57:05.546Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_minimax_models.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_minimax_models.py",
+      "moduleName": "backend/tests/test_minimax_models.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:56:29.778Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_msgpack_codec.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_msgpack_codec.py",
+      "moduleName": "backend/tests/test_msgpack_codec.py",
+      "exports": [
+        "TestEncodeDecode",
+        "TestApplyDelta",
+        "TestComputeDelta",
+        "TestIsFullFrame"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.705Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_noisy_cartesian_spotter.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_noisy_cartesian_spotter.py",
+      "moduleName": "backend/tests/test_noisy_cartesian_spotter.py",
+      "exports": [
+        "MockAudioPlayer",
+        "make_spotter",
+        "TestDefaults",
+        "TestInactiveStates",
+        "TestCarLeft",
+        "TestCarRight",
+        "TestFilters",
+        "TestClearMessages",
+        "TestThreeWide",
+        "TestStillThere",
+        "TestMaxPerSide",
+        "TestClearState",
+        "TestGetGridSide",
+        "TestEdgeCases",
+        "TestCheckV",
+        "TestSide",
+        "TestAntiBounce",
+        "TestStateBetweenTicks",
+        "TestThreadSafety"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T15:49:26.876Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_number_reader.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_number_reader.py",
+      "moduleName": "backend/tests/test_number_reader.py",
+      "exports": [
+        "r",
+        "TestReadInteger",
+        "TestReadTime",
+        "TestReadGap",
+        "TestExtensibility"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T12:14:24.212Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_persistence.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_persistence.py",
+      "moduleName": "backend/tests/test_persistence.py",
+      "exports": [
+        "temp_history_file",
+        "TestHistoryStoreBasic",
+        "TestHistoryStorePersistence",
+        "TestHistoryStoreEdgeCases"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.705Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_pit_stops.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_pit_stops.py",
+      "moduleName": "backend/tests/test_pit_stops.py",
+      "exports": [
+        "TestSilentFailures",
+        "TestPipelineIntegration",
+        "TestCrossEvent",
+        "TestMessageFlow"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T20:57:41.861Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_preemption.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_preemption.py",
+      "moduleName": "backend/tests/test_preemption.py",
+      "exports": [
+        "test_llm_task_preemption"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.705Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_prompt_templates.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_prompt_templates.py",
+      "moduleName": "backend/tests/test_prompt_templates.py",
+      "exports": [
+        "TestSystemPromptTicker",
+        "TestRenderWithTickerText",
+        "TestRenderLegacyMode",
+        "TestTiers",
+        "TestTokenSize",
+        "TestSystemPromptsDifference"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.705Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_rag_integration.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_rag_integration.py",
+      "moduleName": "backend/tests/test_rag_integration.py",
+      "exports": [
+        "TestEngineEventStoreIntegration",
+        "TestEventStoreRealIntegration",
+        "TestSnapshotToFrameEdgeCases"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.707Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_sidecar_integration.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_sidecar_integration.py",
+      "moduleName": "backend/tests/test_sidecar_integration.py",
+      "exports": [
+        "app",
+        "TestSidecarHealth",
+        "TestSidecarWebSocket"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.707Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_sound_cache.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_sound_cache.py",
+      "moduleName": "backend/tests/test_sound_cache.py",
+      "exports": [
+        "MockTTSService",
+        "TestInit",
+        "TestIndexing",
+        "TestGet",
+        "TestExists",
+        "TestReindex",
+        "TestListCategories",
+        "TestConcurrency",
+        "TestGenerationEdgeCases"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T12:12:09.224Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_spotter_messages.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_spotter_messages.py",
+      "moduleName": "backend/tests/test_spotter_messages.py",
+      "exports": [
+        "TestMessageConstants",
+        "TestMessageSemantics"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T15:44:29.352Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_spotter.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_spotter.py",
+      "moduleName": "backend/tests/test_spotter.py",
+      "exports": [
+        "spotter",
+        "normal_tick",
+        "TestSpotterEvaluate",
+        "TestSpotterEvaluateTick"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:09:02.519Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_state_diff.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_state_diff.py",
+      "moduleName": "backend/tests/test_state_diff.py",
+      "exports": [
+        "TestInit",
+        "TestLapDetection",
+        "TestSectorDetection",
+        "TestSessionPhaseChanges",
+        "TestLeaderChanges",
+        "TestPositionAntiBounce",
+        "TestRivals",
+        "TestMultipleChanges"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T12:09:35.748Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_stepfun_configs.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_stepfun_configs.py",
+      "moduleName": "backend/tests/test_stepfun_configs.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:06:40.664Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_stepfun_correct.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_stepfun_correct.py",
+      "moduleName": "backend/tests/test_stepfun_correct.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:07:19.252Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_stepfun_quick.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_stepfun_quick.py",
+      "moduleName": "backend/tests/test_stepfun_quick.py",
+      "exports": [
+        "SYSTEM"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:06:20.084Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_strategy_service.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_strategy_service.py",
+      "moduleName": "backend/tests/test_strategy_service.py",
+      "exports": [
+        "TestStrategyService",
+        "TestStrategyHelpers",
+        "TestStrategyServiceState"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:09:02.519Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_telemetry_mapping.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_telemetry_mapping.py",
+      "moduleName": "backend/tests/test_telemetry_mapping.py",
+      "exports": [
+        "mock_reader",
+        "test_strategy_service_mapping"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.708Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_ticker.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_ticker.py",
+      "moduleName": "backend/tests/test_ticker.py",
+      "exports": [
+        "TestAbbreviateName",
+        "TestFormatDRV",
+        "TestFormatBRK",
+        "TestFormatGAP",
+        "TestFormatSES",
+        "TestFormatWTH",
+        "TestFormatRIV",
+        "TestFormatTime",
+        "TestFormatLaptime",
+        "TestGenerateTicker"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.709Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_track_definition.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_track_definition.py",
+      "moduleName": "backend/tests/test_track_definition.py",
+      "exports": [
+        "TestLengthClassification",
+        "TestTrackDefinition",
+        "TestConfigDictionaries"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T12:18:27.034Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_triggers.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_triggers.py",
+      "moduleName": "backend/tests/test_triggers.py",
+      "exports": [
+        "TestTriggerStructure",
+        "TestFuelCriticalTrigger",
+        "TestSafetyCarTrigger",
+        "TestBrakeWearCriticalTrigger",
+        "TestTiresThermalOverheatingTrigger",
+        "TestTyreDegAccelTrigger",
+        "TestHybridDeployMapTrigger",
+        "TestWeatherChangeTrigger",
+        "TestPitWindowOpenedTrigger",
+        "TestPitWindowClosingTrigger",
+        "TestGapClosedTrigger",
+        "TestCooldown",
+        "TestPilotQuestionTrigger"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.709Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_tts.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_tts.py",
+      "moduleName": "backend/tests/test_tts.py",
+      "exports": [
+        "make_app_with_tts_services",
+        "TestTTSEndpoint"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.709Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_tyre_monitor.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_tyre_monitor.py",
+      "moduleName": "backend/tests/test_tyre_monitor.py",
+      "exports": [
+        "TestSilentFailures",
+        "TestPipelineIntegration"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-01T21:00:39.059Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_utilities.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_utilities.py",
+      "moduleName": "backend/tests/test_utilities.py",
+      "exports": [
+        "TestRandom",
+        "TestSeedReproducibility",
+        "TestWholeAndFractionalPart"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-06-02T08:18:08.807Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/test_ws_integration.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\test_ws_integration.py",
+      "moduleName": "backend/tests/test_ws_integration.py",
+      "exports": [
+        "ws_app",
+        "ws_client",
+        "send_full_frame",
+        "send_delta_frame",
+        "read_binary_message",
+        "read_json_message",
+        "TestMsgpackWebSocketIntegration"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:09:02.520Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/backend/tests/ultra_fast.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\tests\\ultra_fast.py",
+      "moduleName": "backend/tests/ultra_fast.py",
+      "exports": [
+        "ex",
+        "sc"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T23:52:42.043Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/__tests__/api.test.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\api.test.ts",
+      "moduleName": "frontend/src/__tests__/api.test.ts",
+      "exports": [],
+      "imports": [
+        "vitest",
+        "../services/api",
+        "../services/api",
+        "../services/api",
+        "../services/api",
+        "../services/api",
+        "../services/api",
+        "../services/api",
+        "../services/api"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.914Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/__tests__/appStore.test.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\appStore.test.ts",
+      "moduleName": "frontend/src/__tests__/appStore.test.ts",
+      "exports": [],
+      "imports": [
+        "vitest",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore",
+        "../store/appStore"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.914Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/__tests__/audioQueue.test.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\audioQueue.test.ts",
+      "moduleName": "frontend/src/__tests__/audioQueue.test.ts",
+      "exports": [],
+      "imports": [
+        "vitest",
+        "../services/audioQueue"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.915Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/__tests__/configStore.test.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\configStore.test.ts",
+      "moduleName": "frontend/src/__tests__/configStore.test.ts",
+      "exports": [],
+      "imports": [
+        "vitest",
+        "../store/config"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.915Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/__tests__/filters.test.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\filters.test.ts",
+      "moduleName": "frontend/src/__tests__/filters.test.ts",
+      "exports": [],
+      "imports": [
+        "vitest"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.916Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/__tests__/msgpack.test.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\msgpack.test.ts",
+      "moduleName": "frontend/src/__tests__/msgpack.test.ts",
+      "exports": [],
+      "imports": [
+        "vitest",
+        "../services/msgpack"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.916Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/__tests__/setup.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\setup.ts",
+      "moduleName": "frontend/src/__tests__/setup.ts",
+      "exports": [],
+      "imports": [],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.917Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/__tests__/useWebSocket.test.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\useWebSocket.test.ts",
+      "moduleName": "frontend/src/__tests__/useWebSocket.test.ts",
+      "exports": [],
+      "imports": [
+        "vitest",
+        "@testing-library/react",
+        "../hooks/useWebSocket",
+        "../hooks/useWebSocket",
+        "../hooks/useWebSocket",
+        "../hooks/useWebSocket",
+        "../hooks/useWebSocket",
+        "../hooks/useWebSocket",
+        "../hooks/useWebSocket",
+        "../hooks/useWebSocket",
+        "../hooks/useWebSocket"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.917Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/App.tsx": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "moduleName": "frontend/src/App.tsx",
+      "exports": [
+        "App",
+        "App"
+      ],
+      "imports": [
+        "./components/RadioOverlay",
+        "./components/ConfigTab",
+        "./store/config",
+        "./hooks/useWebSocket",
+        "./hooks/useHotkey",
+        "./hooks/useAudioCapture",
+        "./hooks/useAudioContext",
+        "./services/api",
+        "./services/audioQueue",
+        "@tauri-apps/api/window",
+        "@tauri-apps/api/event"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.914Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/components/ChatBubble.tsx": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\ChatBubble.tsx",
+      "moduleName": "frontend/src/components/ChatBubble.tsx",
+      "exports": [
+        "ChatBubble",
+        "ChatBubble"
+      ],
+      "imports": [
+        "react"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.919Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/components/ConfigTab.tsx": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\ConfigTab.tsx",
+      "moduleName": "frontend/src/components/ConfigTab.tsx",
+      "exports": [
+        "ConfigTab",
+        "ConfigTab"
+      ],
+      "imports": [
+        "../store/config",
+        "../services/api"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.919Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/components/PTTIndicator.tsx": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\PTTIndicator.tsx",
+      "moduleName": "frontend/src/components/PTTIndicator.tsx",
+      "exports": [
+        "PTTIndicator",
+        "PTTIndicator"
+      ],
+      "imports": [
+        "react",
+        "../store/config"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.920Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/components/RadioOverlay.tsx": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\RadioOverlay.tsx",
+      "moduleName": "frontend/src/components/RadioOverlay.tsx",
+      "exports": [
+        "DashboardProps",
+        "Dashboard",
+        "Dashboard"
+      ],
+      "imports": [
+        "react",
+        "../store/config",
+        "./PTTIndicator",
+        "./ChatBubble"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.920Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/components/SystemTrayMenu.tsx": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\SystemTrayMenu.tsx",
+      "moduleName": "frontend/src/components/SystemTrayMenu.tsx",
+      "exports": [
+        "SystemTrayMenu",
+        "SystemTrayMenu"
+      ],
+      "imports": [
+        "../store/config",
+        "lucide-react",
+        "@tauri-apps/api/webviewWindow",
+        "@tauri-apps/api/webviewWindow",
+        "@tauri-apps/api/window"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.920Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/hooks/useAudioCapture.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useAudioCapture.ts",
+      "moduleName": "frontend/src/hooks/useAudioCapture.ts",
+      "exports": [
+        "useAudioCapture",
+        "useAudioCapture"
+      ],
+      "imports": [
+        "react",
+        "../store/config"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.921Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/hooks/useAudioContext.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useAudioContext.ts",
+      "moduleName": "frontend/src/hooks/useAudioContext.ts",
+      "exports": [
+        "useAudioContext",
+        "useAudioContext"
+      ],
+      "imports": [
+        "react"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.921Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/hooks/useHotkey.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useHotkey.ts",
+      "moduleName": "frontend/src/hooks/useHotkey.ts",
+      "exports": [
+        "useHotkey",
+        "useHotkey"
+      ],
+      "imports": [
+        "react",
+        "../store/config",
+        "@tauri-apps/plugin-global-shortcut"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-31T21:09:02.810Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/hooks/usePTT.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\usePTT.ts",
+      "moduleName": "frontend/src/hooks/usePTT.ts",
+      "exports": [
+        "usePTT",
+        "usePTT"
+      ],
+      "imports": [
+        "react",
+        "../store/config",
+        "./useAudioCapture",
+        "./useAudioContext",
+        "./useWebSocket"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-31T21:09:02.811Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/hooks/useWebSocket.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useWebSocket.ts",
+      "moduleName": "frontend/src/hooks/useWebSocket.ts",
+      "exports": [
+        "useWebSocket",
+        "useWebSocket"
+      ],
+      "imports": [
+        "react",
+        "../store/config",
+        "../services/audioQueue",
+        "../services/msgpack"
+      ],
+      "language": "typescript",
+      "mtime": "2026-06-02T09:12:15.092Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/main.tsx": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\main.tsx",
+      "moduleName": "frontend/src/main.tsx",
+      "exports": [],
+      "imports": [
+        "react",
+        "react-dom/client",
+        "./App.tsx",
+        "./styles/index.css"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.922Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/services/api.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\api.ts",
+      "moduleName": "frontend/src/services/api.ts",
+      "exports": [
+        "HealthResponse",
+        "ConsumptionRecord",
+        "getHealth",
+        "getHistory"
+      ],
+      "imports": [
+        "../store/config"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.924Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/services/audioQueue.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\audioQueue.ts",
+      "moduleName": "frontend/src/services/audioQueue.ts",
+      "exports": [
+        "audioQueue"
+      ],
+      "imports": [],
+      "language": "typescript",
+      "mtime": "2026-05-31T11:10:05.069Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/services/msgpack.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\msgpack.ts",
+      "moduleName": "frontend/src/services/msgpack.ts",
+      "exports": [
+        "SNAPSHOT_INTERVAL",
+        "encodeMsgpack",
+        "decodeMsgpack"
+      ],
+      "imports": [
+        "@msgpack/msgpack"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.925Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/store/appStore.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\appStore.ts",
+      "moduleName": "frontend/src/store/appStore.ts",
+      "exports": [
+        "RadioMode",
+        "ConnectionStatus",
+        "SpotterAlert",
+        "TelemetryData",
+        "RadioMessage",
+        "AppConfig",
+        "useAppStore"
+      ],
+      "imports": [
+        "zustand"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-31T11:10:05.069Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/store/config.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "moduleName": "frontend/src/store/config.ts",
+      "exports": [
+        "WebSocketStatus",
+        "RadioMode",
+        "ConnectivityState",
+        "MessageRecord",
+        "RadioState",
+        "TelemetryState",
+        "CrewchiefAlert",
+        "CrewchiefState",
+        "AppConfig",
+        "Screen",
+        "GlobalStore",
+        "useAppStore"
+      ],
+      "imports": [
+        "zustand"
+      ],
+      "language": "typescript",
+      "mtime": "2026-06-02T08:54:35.534Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/src/vite-env.d.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\vite-env.d.ts",
+      "moduleName": "frontend/src/vite-env.d.ts",
+      "exports": [],
+      "imports": [],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.927Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/tailwind.config.js": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\tailwind.config.js",
+      "moduleName": "frontend/tailwind.config.js",
+      "exports": [],
+      "imports": [
+        "tailwindcss"
+      ],
+      "language": "javascript",
+      "mtime": "2026-05-29T17:43:08.927Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/vite.config.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\vite.config.ts",
+      "moduleName": "frontend/vite.config.ts",
+      "exports": [
+        "defineConfig"
+      ],
+      "imports": [
+        "vite",
+        "@vitejs/plugin-react",
+        "@tailwindcss/vite"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.929Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/frontend/vitest.config.ts": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\vitest.config.ts",
+      "moduleName": "frontend/vitest.config.ts",
+      "exports": [
+        "defineConfig"
+      ],
+      "imports": [
+        "vitest/config"
+      ],
+      "language": "typescript",
+      "mtime": "2026-05-29T17:43:08.929Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/src/shared_strategy/__init__.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\src\\shared_strategy\\__init__.py",
+      "moduleName": "shared-strategy/src/shared_strategy/__init__.py",
+      "exports": [
+        "autocalibrate_track"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.934Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/src/shared_strategy/calculation.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\src\\shared_strategy\\calculation.py",
+      "moduleName": "shared-strategy/src/shared_strategy/calculation.py",
+      "exports": [
+        "linear_interp",
+        "binary_search_higher_column",
+        "binary_search_lower_column",
+        "delta_telemetry",
+        "exp_mov_avg",
+        "ema_factor",
+        "lap_type_full_laps_remain",
+        "lap_type_laps_remain",
+        "time_type_full_laps_remain",
+        "time_type_laps_remain",
+        "end_timer_laps_remain",
+        "total_fuel_needed",
+        "end_lap_consumption",
+        "end_stint_fuel",
+        "end_stint_laps",
+        "end_stint_minutes",
+        "pit_in_countdown_laps",
+        "end_lap_empty_capacity",
+        "end_stint_pit_counts",
+        "end_lap_pit_counts",
+        "one_less_pit_stop_consumption",
+        "fuel_to_energy_ratio",
+        "pitlane_length"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.935Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/src/shared_strategy/competitors.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\src\\shared_strategy\\competitors.py",
+      "moduleName": "shared-strategy/src/shared_strategy/competitors.py",
+      "exports": [
+        "pace_advice_best_fallback"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.935Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/src/shared_strategy/fuel.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\src\\shared_strategy\\fuel.py",
+      "moduleName": "shared-strategy/src/shared_strategy/fuel.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.935Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/src/shared_strategy/hybrid.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\src\\shared_strategy\\hybrid.py",
+      "moduleName": "shared-strategy/src/shared_strategy/hybrid.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.936Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/src/shared_strategy/models.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\src\\shared_strategy\\models.py",
+      "moduleName": "shared-strategy/src/shared_strategy/models.py",
+      "exports": [
+        "CompetitorTelemetry",
+        "TelemetryFrame",
+        "TrackConfig",
+        "SpatialDeltaPair",
+        "ConsumptionDataSet",
+        "StintData",
+        "FuelState",
+        "TyreState",
+        "BrakeState",
+        "HybridState",
+        "CompetitorHistoryState",
+        "CompetitorTrackerState",
+        "StrategyState",
+        "FuelAdvice",
+        "TyreAdvice",
+        "BrakeAdvice",
+        "HybridAdvice",
+        "CompetitorPace",
+        "PitWindowAdvice",
+        "StrategyAdvice"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:09:02.812Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/src/shared_strategy/pit_window.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\src\\shared_strategy\\pit_window.py",
+      "moduleName": "shared-strategy/src/shared_strategy/pit_window.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.937Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/src/shared_strategy/tyres.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\src\\shared_strategy\\tyres.py",
+      "moduleName": "shared-strategy/src/shared_strategy/tyres.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.937Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/tests/__init__.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\tests\\__init__.py",
+      "moduleName": "shared-strategy/tests/__init__.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.937Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/tests/conftest.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\tests\\conftest.py",
+      "moduleName": "shared-strategy/tests/conftest.py",
+      "exports": [
+        "MockTelemetryFrameBuilder",
+        "telemetry_builder"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.938Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/tests/test_calculation.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\tests\\test_calculation.py",
+      "moduleName": "shared-strategy/tests/test_calculation.py",
+      "exports": [
+        "test_linear_interp",
+        "test_binary_search_higher_column",
+        "test_binary_search_lower_column",
+        "test_total_fuel_needed",
+        "test_end_stint_laps",
+        "test_one_less_pit_stop_consumption"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.938Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-strategy/tests/test_strategy.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-strategy\\tests\\test_strategy.py",
+      "moduleName": "shared-strategy/tests/test_strategy.py",
+      "exports": [
+        "test_full_strategy_pipeline",
+        "test_fcy_adaptation",
+        "test_competitor_pace"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.939Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/__init__.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\__init__.py",
+      "moduleName": "shared-telemetry/shared_telemetry/__init__.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.941Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/models.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\models.py",
+      "moduleName": "shared-telemetry/shared_telemetry/models.py",
+      "exports": [
+        "TyreData",
+        "BrakeData",
+        "EngineData",
+        "DriverInputs",
+        "LapData",
+        "VehicleData",
+        "SessionData",
+        "RaceState"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.941Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/pyLMUSharedMemory/__init__.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\pyLMUSharedMemory\\__init__.py",
+      "moduleName": "shared-telemetry/shared_telemetry/pyLMUSharedMemory/__init__.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.942Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/pyLMUSharedMemory/lmu_data.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\pyLMUSharedMemory\\lmu_data.py",
+      "moduleName": "shared-telemetry/shared_telemetry/pyLMUSharedMemory/lmu_data.py",
+      "exports": [
+        "LMUConstants",
+        "LMUVect3",
+        "LMUWheel",
+        "LMUVehicleTelemetry",
+        "LMUVehicleScoring",
+        "LMUScoringInfo",
+        "LMUApplicationState",
+        "LMUScoringData",
+        "LMUTelemetryData",
+        "LMUPathData",
+        "LMUEvent",
+        "LMUGeneric",
+        "LMUObjectOut",
+        "LMULayout",
+        "SimInfo"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.943Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/pyLMUSharedMemory/lmu_enum.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\pyLMUSharedMemory\\lmu_enum.py",
+      "moduleName": "shared-telemetry/shared_telemetry/pyLMUSharedMemory/lmu_enum.py",
+      "exports": [
+        "enum_map",
+        "LMUVehicleClass",
+        "LMUVehicleChampionship",
+        "LMUGameMode",
+        "LMUGamePhase",
+        "LMUYellowFlagState",
+        "LMUSurfaceType",
+        "LMUSession",
+        "LMUSector",
+        "LMUFinishStatus",
+        "LMUControl",
+        "LMUPitState",
+        "LMUPrimaryFlag",
+        "LMUCountLapFlag",
+        "LMURearFlapLegalStatus",
+        "LMUIgnitionStarterStatus",
+        "LMUWiperStatus",
+        "LMUWheelIndex",
+        "LMUCompoundType",
+        "LMUTrackGripLevel",
+        "LMUCloudCoverage",
+        "test"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.944Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/pyLMUSharedMemory/lmu_mmap.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\pyLMUSharedMemory\\lmu_mmap.py",
+      "moduleName": "shared-telemetry/shared_telemetry/pyLMUSharedMemory/lmu_mmap.py",
+      "exports": [
+        "PLATFORM",
+        "MAX_VEHICLES",
+        "INVALID_INDEX",
+        "get_root_logger_name",
+        "platform_mmap",
+        "windows_mmap",
+        "linux_mmap",
+        "MMapControl"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.944Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/pyLMUSharedMemory/lmu_type.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\pyLMUSharedMemory\\lmu_type.py",
+      "moduleName": "shared-telemetry/shared_telemetry/pyLMUSharedMemory/lmu_type.py",
+      "exports": [
+        "LMUVect3",
+        "LMUWheel",
+        "LMUVehicleTelemetry",
+        "LMUVehicleScoring",
+        "LMUScoringInfo",
+        "LMUApplicationState",
+        "LMUScoringData",
+        "LMUTelemetryData",
+        "LMUPathData",
+        "LMUEvent",
+        "LMUGeneric",
+        "LMUObjectOut",
+        "LMULayout"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.945Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/pyLMUSharedMemory/tests/__init__.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\pyLMUSharedMemory\\tests\\__init__.py",
+      "moduleName": "shared-telemetry/shared_telemetry/pyLMUSharedMemory/tests/__init__.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.945Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/pyLMUSharedMemory/tests/read_lmu_api.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\pyLMUSharedMemory\\tests\\read_lmu_api.py",
+      "moduleName": "shared-telemetry/shared_telemetry/pyLMUSharedMemory/tests/read_lmu_api.py",
+      "exports": [
+        "verify_struct_size",
+        "compare_struct_size",
+        "event_info",
+        "generic_info",
+        "path_info",
+        "scoring_info",
+        "player_scoring_info",
+        "player_telemetry_info",
+        "player_wheel_info",
+        "vehicle_model_info",
+        "test"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.945Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/reader.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\reader.py",
+      "moduleName": "shared-telemetry/shared_telemetry/reader.py",
+      "exports": [
+        "infnan_to_zero",
+        "bytes_to_str",
+        "TelemetryReader"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.946Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/shared-telemetry/shared_telemetry/sync.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\shared-telemetry\\shared_telemetry\\sync.py",
+      "moduleName": "shared-telemetry/shared_telemetry/sync.py",
+      "exports": [
+        "INVALID_INDEX",
+        "local_scoring_index",
+        "TelemetrySync"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.946Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/sidecar/build.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\sidecar\\build.py",
+      "moduleName": "sidecar/build.py",
+      "exports": [
+        "REPO_ROOT",
+        "SHARED_TELEMETRY",
+        "SHARED_STRATEGY"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-31T21:09:02.813Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/sidecar/src/sidecar/__init__.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\sidecar\\src\\sidecar\\__init__.py",
+      "moduleName": "sidecar/src/sidecar/__init__.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.950Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/sidecar/src/sidecar/event_detector.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\sidecar\\src\\sidecar\\event_detector.py",
+      "moduleName": "sidecar/src/sidecar/event_detector.py",
+      "exports": [
+        "StateChangeDetector"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.950Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/sidecar/src/sidecar/main.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\sidecar\\src\\sidecar\\main.py",
+      "moduleName": "sidecar/src/sidecar/main.py",
+      "exports": [
+        "main"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.951Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/sidecar/src/sidecar/strategy_runner.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\sidecar\\src\\sidecar\\strategy_runner.py",
+      "moduleName": "sidecar/src/sidecar/strategy_runner.py",
+      "exports": [
+        "safe_float",
+        "safe_str",
+        "StrategyRunner"
+      ],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.951Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/test_qwen_tts.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\test_qwen_tts.py",
+      "moduleName": "test_qwen_tts.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.953Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/test_qwen2.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\test_qwen2.py",
+      "moduleName": "test_qwen2.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.952Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/test_voxtral_gguf.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\test_voxtral_gguf.py",
+      "moduleName": "test_voxtral_gguf.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.953Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/test_voxtral.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\test_voxtral.py",
+      "moduleName": "test_voxtral.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.953Z"
+    },
+    "C:/Users/isaac/Desktop/Vantare-Ingeniero/tmp_delete_llm_service.py": {
+      "filePath": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\tmp_delete_llm_service.py",
+      "moduleName": "tmp_delete_llm_service.py",
+      "exports": [],
+      "imports": [],
+      "language": "python",
+      "mtime": "2026-05-29T17:43:08.953Z"
+    }
+  },
+  "edges": [
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\api.test.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\api.ts",
+      "importSpecifier": "../services/api",
+      "importType": "sideeffect"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\appStore.test.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\appStore.ts",
+      "importSpecifier": "../store/appStore",
+      "importType": "sideeffect"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\audioQueue.test.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\audioQueue.ts",
+      "importSpecifier": "../services/audioQueue",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\configStore.test.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "../store/config",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\msgpack.test.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\msgpack.ts",
+      "importSpecifier": "../services/msgpack",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\__tests__\\useWebSocket.test.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useWebSocket.ts",
+      "importSpecifier": "../hooks/useWebSocket",
+      "importType": "sideeffect"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\ConfigTab.tsx",
+      "importSpecifier": "./components/ConfigTab",
+      "importType": "default"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\RadioOverlay.tsx",
+      "importSpecifier": "./components/RadioOverlay",
+      "importType": "default"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useAudioCapture.ts",
+      "importSpecifier": "./hooks/useAudioCapture",
+      "importType": "default"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useAudioContext.ts",
+      "importSpecifier": "./hooks/useAudioContext",
+      "importType": "default"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useHotkey.ts",
+      "importSpecifier": "./hooks/useHotkey",
+      "importType": "default"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useWebSocket.ts",
+      "importSpecifier": "./hooks/useWebSocket",
+      "importType": "default"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\api.ts",
+      "importSpecifier": "./services/api",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\audioQueue.ts",
+      "importSpecifier": "./services/audioQueue",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "./store/config",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\ConfigTab.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\api.ts",
+      "importSpecifier": "../services/api",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\ConfigTab.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "../store/config",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\PTTIndicator.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "../store/config",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\RadioOverlay.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "../store/config",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\RadioOverlay.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\ChatBubble.tsx",
+      "importSpecifier": "./ChatBubble",
+      "importType": "default"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\RadioOverlay.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\PTTIndicator.tsx",
+      "importSpecifier": "./PTTIndicator",
+      "importType": "default"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\components\\SystemTrayMenu.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "../store/config",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useAudioCapture.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "../store/config",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useHotkey.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "../store/config",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\usePTT.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "../store/config",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\usePTT.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useAudioCapture.ts",
+      "importSpecifier": "./useAudioCapture",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\usePTT.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useAudioContext.ts",
+      "importSpecifier": "./useAudioContext",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\usePTT.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useWebSocket.ts",
+      "importSpecifier": "./useWebSocket",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useWebSocket.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\audioQueue.ts",
+      "importSpecifier": "../services/audioQueue",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useWebSocket.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\msgpack.ts",
+      "importSpecifier": "../services/msgpack",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\hooks\\useWebSocket.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "../store/config",
+      "importType": "named"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\main.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\App.tsx",
+      "importSpecifier": "./App.tsx",
+      "importType": "default"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\main.tsx",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\styles\\index.css",
+      "importSpecifier": "./styles/index.css",
+      "importType": "sideeffect"
+    },
+    {
+      "source": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\services\\api.ts",
+      "target": "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\frontend\\src\\store\\config.ts",
+      "importSpecifier": "../store/config",
+      "importType": "named"
+    }
+  ],
+  "metadata": {
+    "generatedAt": "2026-06-02T14:41:40.953Z",
+    "generator": "repo-graph",
+    "nodeCount": 291,
+    "edgeCount": 34
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "1": {
+    "prompts": [
+      {
+        "question": "Cual es la posicion actual?",
+        "score": 1.0,
+        "ttft_ms": 3477.233409881592,
+        "level": 1
+      },
+      {
+        "question": "Cuanto combustible queda en el tanque?",
+        "score": 1.0,
+        "ttft_ms": 4286.936283111572,
+        "level": 1
+      },
+      {
+        "question": "Cual es el consumo promedio por vuelta?",
+        "score": 1.0,
+        "ttft_ms": 2690.7854080200195,
+        "level": 1
+      },
+      {
+        "question": "Cuantas vueltas restantes de combustible estimadas?",
+        "score": 1.0,
+        "ttft_ms": 6863.040924072266,
+        "level": 1
+      },
+      {
+        "question": "Cual es el desgaste del neumatico delantero izquierdo?",
+        "score": 1.0,
+        "ttft_ms": 7372.896194458008,
+        "level": 1
+      },
+      {
+        "question": "Esta activo el Safety Car?",
+        "score": 1.0,
+        "ttft_ms": 7091.098308563232,
+        "level": 1
+      },
+      {
+        "question": "Cual es la probabilidad de lluvia?",
+        "score": 1.0,
+        "ttft_ms": 5921.105623245239,
+        "level": 1
+      },
+      {
+        "question": "En que vuelta estamos?",
+        "score": 0.0,
+        "ttft_ms": 4854.146480560303,
+        "level": 1
+      },
+      {
+        "question": "Esta activo el Safety Car?",
+        "score": 1.0,
+        "ttft_ms": 4910.586833953857,
+        "level": 1
+      },
+      {
+        "question": "Cual es la posicion?",
+        "score": 1.0,
+        "ttft_ms": 2241.791248321533,
+        "level": 1
+      }
+    ],
+    "name": "L1"
+  },
+  "2": {
+    "prompts": [
+      {
+        "question": "El piloto esta liderando o no?",
+        "score": 0.6666666666666666,
+        "ttft_ms": 30000.136613845825,
+        "level": 2
+      },
+      {
+        "question": "Cuanto falta para que termine la carrera?",
+        "score": 1.0,
+        "ttft_ms": 7120.990037918091,
+        "level": 2
+      },
+      {
+        "question": "El piloto lidera con cuanta ventaja?",
+        "score": 1.0,
+        "ttft_ms": 5887.729167938232,
+        "level": 2
+      },
+      {
+        "question": "Hay SC en pista?",
+        "score": 0.6666666666666666,
+        "ttft_ms": 7049.665927886963,
+        "level": 2
+      },
+      {
+        "question": "Por que no hay datos de neumaticos?",
+        "score": 1.0,
+        "ttft_ms": 9360.27455329895,
+        "level": 2
+      }
+    ],
+    "name": "L2"
+  },
+  "3": {
+    "prompts": [
+      {
+        "question": "Combustible 42.3L, consumo 3.2L. Cuantas vueltas quedan?",
+        "score": 0.3333333333333333,
+        "ttft_ms": 3841.7766094207764,
+        "level": 3
+      },
+      {
+        "question": "Lluvia en 3min, 80% probabilidad. Neumaticos slicks. Que recomiendas?",
+        "score": 1.0,
+        "ttft_ms": 2953.2418251037598,
+        "level": 3
+      },
+      {
+        "question": "Safety Car activo con pneus 95%. Estrategia?",
+        "score": 0.3333333333333333,
+        "ttft_ms": 3992.997407913208,
+        "level": 3
+      }
+    ],
+    "name": "L3"
+  },
+  "4": {
+    "prompts": [
+      {
+        "question": "El piloto esta en P3 con VST a +2.1s y ALO a -1.2s. Analiza la batalla.",
+        "score": 1.0,
+        "ttft_ms": 3828.4871578216553,
+        "level": 4
+      },
+      {
+        "question": "P1 con 28.5L, lluvia en 3min. Estrategia optima?",
+        "score": 0.6666666666666666,
+        "ttft_ms": 7429.300785064697,
+        "level": 4
+      }
+    ],
+    "name": "L4"
+  },
+  "5": {
+    "prompts": [
+      {
+        "question": "Historico: hace 5 vueltas consumia 3.0L/v, ahora 3.2L. Tendencia?",
+        "score": 0.0,
+        "ttft_ms": 1759.2194080352783,
+        "level": 5
+      },
+      {
+        "question": "Consumo aumento de 3.1L a 3.3L. Por que?",
+        "score": 0.0,
+        "ttft_ms": 3425.6949424743652,
+        "level": 5
+      }
+    ],
+    "name": "L5"
+  },
+  "6": {
+    "prompts": [
+      {
+        "question": "SC activo, pneus 95%, combustible 89.7L, P8. Recomendacion urgente.",
+        "score": 0.6666666666666666,
+        "ttft_ms": 2200.1047134399414,
+        "level": 6
+      },
+      {
+        "question": "Combustible critico 5L y lluvia en 3min. Prioridad?",
+        "score": 0.0,
+        "ttft_ms": 5382.405996322632,
+        "level": 6
+      }
+    ],
+    "name": "L6"
+  },
+  "7": {
+    "prompts": [
+      {
+        "question": "Por que no hay datos de neumaticos en este ticker?",
+        "score": 0.6666666666666666,
+        "ttft_ms": 6605.694532394409,
+        "level": 7
+      },
+      {
+        "question": "Piloto en vuelta 10 con 42.3L. Es normal?",
+        "score": 1.0,
+        "ttft_ms": 7784.203052520752,
+        "level": 7
+      }
+    ],
+    "name": "L7"
+  },
+  "8": {
+    "prompts": [
+      {
+        "question": "Cual es la tendencia del desgaste de neumaticos?",
+        "score": 0.0,
+        "ttft_ms": 8010.273456573486,
+        "level": 8
+      },
+      {
+        "question": "El consumo aumento de 3.1L a 3.3L. Por que?",
+        "score": 0.5,
+        "ttft_ms": 5960.424900054932,
+        "level": 8
+      }
+    ],
+    "name": "L8"
+  }
+}

@@ -1,0 +1,19 @@
+TASK 14 — CrewChief alert visual (LOW severity)
+==============================================
+Date: 2026-06-04T07:20:33.468Z
+BaseURL: http://localhost:1420
+Dispatch ok: true
+Frame category: fuel
+Frame subtype: fuel_low
+Frame severity: low
+Frame message: T14-LOW Combustible bajo, planifica pits en 3 vueltas
+
+Store snapshot after dispatch:
+  crewchief.events.length: 1
+  crewchief.latestByCategory.fuel.severity: low
+  crewchief.latestByCategory.fuel.message: T14-LOW Combustible bajo, planifica pits en 3 vueltas
+  radio.latestAlert: "" (expected: "")
+  telemetry.alerts: [] (expected: [])
+
+DOM-rendering: low-severity alert rendered in DOM
+Screenshot: C:\Users\isaac\Desktop\Vantare-Ingeniero\.omo\evidence\pipeline-review\task-14-crewchief-visual-low.png
