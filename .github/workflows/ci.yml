@@ -1,0 +1,177 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch: {}
+
+env:
+  PYTHON_VERSION: '3.12'
+  NODE_VERSION: '20'
+
+jobs:
+  # ───────────────────────────────────────────
+  # Backend tests + coverage (Windows — shared-telemetry needs Windows APIs)
+  # ───────────────────────────────────────────
+  test-backend:
+    name: Backend Tests + Coverage
+    runs-on: windows-2022
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ./shared-telemetry
+          pip install -e ./shared-strategy
+          pip install -e ./backend[dev]
+
+      - name: Run backend tests with coverage
+        run: |
+          cd backend
+          python -m pytest tests/ -v --cov=src/ --cov-report=term --cov-fail-under=70 --timeout=120
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-coverage
+          path: backend/htmlcov/
+
+  # ───────────────────────────────────────────
+  # Frontend unit tests + coverage
+  # ───────────────────────────────────────────
+  test-frontend:
+    name: Frontend Tests + Coverage
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Run vitest with coverage
+        run: |
+          cd frontend
+          npx vitest run --coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+
+  # ───────────────────────────────────────────
+  # Cloudflare Worker tests + coverage
+  # ───────────────────────────────────────────
+  test-worker:
+    name: Cloudflare Worker Tests + Coverage
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: cloudflare-worker/package-lock.json
+
+      - name: Install worker dependencies
+        run: |
+          cd cloudflare-worker
+          npm ci
+
+      - name: Run worker tests with coverage
+        run: |
+          cd cloudflare-worker
+          npx vitest run --coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: worker-coverage
+          path: cloudflare-worker/coverage/
+
+  # ───────────────────────────────────────────
+  # Smoke tests — fast sanity checks
+  # ───────────────────────────────────────────
+  smoke-backend:
+    name: Smoke Test — Backend Import
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ./shared-telemetry
+          pip install -e ./shared-strategy
+          pip install -e ./backend
+
+      - name: Smoke import check
+        run: |
+          cd backend
+          python -c "from src.main import app; print('Backend import OK')"
+
+      - name: Syntax check all Python files
+        run: |
+          cd backend
+          python -m compileall src/ -q
+          echo "Python syntax OK"
+
+  smoke-frontend:
+    name: Smoke Test — Frontend Build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: TypeScript check
+        run: |
+          cd frontend
+          npx tsc --noEmit
+
+      - name: Vite build check
+        run: |
+          cd frontend
+          npm run build
