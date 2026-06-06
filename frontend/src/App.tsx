@@ -8,6 +8,7 @@ import useAudioCapture from "./hooks/useAudioCapture";
 import useAudioContext from "./hooks/useAudioContext";
 import { getHealth } from "./services/api";
 import { audioQueue } from "./services/audioQueue";
+import { parseSpotterCommand } from "./services/spotterCommands";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
 // Verificar disponibilidad de Web Speech API
@@ -233,6 +234,15 @@ export const App: React.FC = () => {
       return;
     }
 
+    const spotterAction = parseSpotterCommand(questionText);
+    if (spotterAction) {
+      sendJson("spotter_command", { action: spotterAction });
+      addMessageToHistory("pilot", questionText);
+      setRadioMode("IDLE");
+      setCurrentTokens("");
+      return;
+    }
+
     // Añadir mensaje del piloto al historial del chat
     addMessageToHistory("pilot", questionText);
 
@@ -251,6 +261,14 @@ export const App: React.FC = () => {
     if (!trimmed) return;
 
     console.log("[App] Texto enviado:", trimmed);
+
+    const spotterAction = parseSpotterCommand(trimmed);
+    if (spotterAction) {
+      sendJson("spotter_command", { action: spotterAction });
+      addMessageToHistory("pilot", trimmed);
+      setRadioMode("IDLE");
+      return;
+    }
     
     // Interrumpir reproducción de audio TTS en curso
     audioQueue.stop();

@@ -12,6 +12,7 @@ from src.intelligence.triggers import (
     get_all_triggers,
     BaseTrigger,
     FuelCriticalTrigger,
+    FlagsMonitorTrigger,
     SafetyCarTrigger,
     BrakeWearCriticalTrigger,
     TiresThermalOverheatingTrigger,
@@ -106,12 +107,12 @@ class TestFuelCriticalTrigger:
         assert trigger.condition(mock_telemetry_dict, strategy, mock_session_dict) is False
 
 
-class TestSafetyCarTrigger:
-    """Safety Car o FCY activo."""
+class TestFlagsMonitorTrigger:
+    """Flags monitor — SC/FCY y transiciones de bandera."""
 
     @pytest.fixture
     def trigger(self):
-        return SafetyCarTrigger()
+        return FlagsMonitorTrigger()
 
     def test_triggers_on_safety_car(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         telemetry = dict(mock_telemetry_dict)

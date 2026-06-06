@@ -254,3 +254,14 @@ class TestSystemPromptsDifference:
     def test_ticker_is_longer_than_basic(self):
         """SYSTEM_PROMPT_TICKER debe ser más largo (contiene tabla)."""
         assert len(SYSTEM_PROMPT_TICKER) > len(SYSTEM_PROMPT_BASIC)
+
+    def test_sweary_prompt_includes_colorful_language(self):
+        context = {"ticker_text": "DRV:P1|L10", "sweary": True}
+        result = render(context, "FAST")
+        assert "colorido" in result.lower() or "paddock" in result.lower()
+
+    def test_clean_prompt_excludes_profanity_authorization(self):
+        context = {"ticker_text": "DRV:P1|L10", "sweary": False}
+        result = render(context, "FAST")
+        assert "profesional" in result.lower() or "limpio" in result.lower()
+        assert "colorido" not in result.lower()

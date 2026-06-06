@@ -63,6 +63,9 @@ export interface AppConfig {
   pttHotkey: string;
   pttStopHotkey: string;
   wakeWordEnabled: boolean;
+  swearyMessages: boolean;
+  spotterOffQualifying: boolean;
+  spotterExcludeStopped: boolean;
 }
 
 // --- INTERFAZ GLOBAL DEL STORE ---
@@ -108,6 +111,9 @@ const loadSavedConfig = (): AppConfig => {
         pttHotkey: parsed.pttHotkey ?? "Ctrl+Shift+Space",
         pttStopHotkey: parsed.pttStopHotkey ?? "Ctrl+Shift+Space",
         wakeWordEnabled: parsed.wakeWordEnabled ?? true,
+        swearyMessages: parsed.swearyMessages ?? false,
+        spotterOffQualifying: parsed.spotterOffQualifying ?? true,
+        spotterExcludeStopped: parsed.spotterExcludeStopped ?? true,
       };
     }
   } catch (e) {
@@ -123,6 +129,9 @@ const loadSavedConfig = (): AppConfig => {
     pttHotkey: "Ctrl+Shift+Space",
     pttStopHotkey: "Ctrl+Shift+Space",
     wakeWordEnabled: true,
+    swearyMessages: false,
+    spotterOffQualifying: true,
+    spotterExcludeStopped: true,
   };
 };
 

@@ -89,6 +89,21 @@ class StrategyService:
         """Obtiene el último consejo estratégico calculado."""
         return self.latest_advice
 
+    def reset_stint_on_driver_swap(self) -> None:
+        """Resetea acumuladores de stint tras cambio de piloto (endurance)."""
+        if self.latest_frame is not None:
+            self._lap_fuel_start = self.latest_frame.fuel_in_tank
+        self._lap_battery_drain = 0.0
+        self._lap_battery_regen = 0.0
+
+        new_state = self.state.model_copy(deep=True)
+        new_state.fuel.consumption_history = []
+        new_state.fuel.delta_array_raw = []
+        new_state.fuel.delta_array_last = []
+        new_state.fuel.validating = True
+        self.state = new_state
+        logger.info("Stint reseteado por cambio de piloto")
+
     async def wait_until_ready(self, timeout: float = 10.0) -> bool:
         """Espera hasta que el primer ciclo de estrategia se complete."""
         try:
@@ -185,12 +200,18 @@ class StrategyService:
         is_invalid_lap = False
         pit_limiter_active = False
         speed = 0.0
+        vel_x = vel_y = vel_z = 0.0
         motor_state = 1
         battery_charge = 100.0
         session_laps_left = 999.0
         safety_car_active = False
         full_course_yellow_active = False
         yellow_flag_active = False
+        blue_flag_active = False
+        session_stopped = False
+        session_over = False
+        num_penalties = 0
+        driver_name = safe_str(player.driver_name)
 
         if not self.reader.offline and self.reader.shmm and self.reader.shmm.data:
             data = self.reader.shmm.data
@@ -207,23 +228,29 @@ class StrategyService:
                 session_laps_left = max(0.0, float(max_laps - player.current_lap))
 
             # Banderas de la sesión
-            safety_car_active = (scoring_info.mGamePhase == 6)
-            full_course_yellow_active = (scoring_info.mGamePhase == 6)
+            game_phase = int(scoring_info.mGamePhase)
+            safety_car_active = (game_phase == 6)
+            full_course_yellow_active = (game_phase == 6)
+            session_stopped = (game_phase == 7)
+            session_over = (game_phase == 8)
             has_sector_yellow = any(scoring_info.mSectorFlag[i] != 0 for i in range(3))
-            yellow_flag_active = (scoring_info.mGamePhase == 6 or has_sector_yellow)
+            yellow_flag_active = (game_phase == 6 or has_sector_yellow)
+
+            if player_scor is not None:
+                num_penalties = max(0, int(player_scor.mNumPenalties))
+                blue_flag_active = (int(player_scor.mFlag) == 6)
 
             if player_tele is not None:
                 fuel_in_tank = safe_float(player_tele.mFuel)
                 fuel_capacity = safe_float(player_tele.mFuelCapacity)
                 is_invalid_lap = bool(player_tele.mLapInvalidated)
                 pit_limiter_active = bool(player_tele.mSpeedLimiterActive)
+                vel_x = safe_float(player_tele.mLocalVel.x)
+                vel_y = safe_float(player_tele.mLocalVel.y)
+                vel_z = safe_float(player_tele.mLocalVel.z)
                 
                 # Velocidad real en m/s desde vector de velocidad local
-                speed = math.sqrt(
-                    safe_float(player_tele.mLocalVel.x) ** 2 +
-                    safe_float(player_tele.mLocalVel.y) ** 2 +
-                    safe_float(player_tele.mLocalVel.z) ** 2
-                )
+                speed = math.sqrt(vel_x ** 2 + vel_y ** 2 + vel_z ** 2)
                 
                 # Mapear boost motor state
                 # LMU: 0=unavailable, 1=inactive, 2=propulsion (drain), 3=regeneration (regen)
@@ -244,9 +271,11 @@ class StrategyService:
                 is_invalid_lap = False
                 pit_limiter_active = False
                 speed = 0.0
+                vel_x = vel_y = vel_z = 0.0
                 motor_state = 1
                 battery_charge = 100.0
         else:
+            vel_x = vel_y = vel_z = 0.0
             # Modo Offline / Simulado
             # Laps left
             if session.time_remaining > 0:
@@ -384,7 +413,10 @@ class StrategyService:
                         pit_requested=pit_requested,
                         estimated_time_into_lap=safe_float(veh_info.mTimeIntoLap),
                         speed=opp_speed,
-                        fuel_capacity_fraction=fuel_fraction
+                        fuel_capacity_fraction=fuel_fraction,
+                        pos_x=safe_float(veh_info.mPos.x),
+                        pos_y=safe_float(veh_info.mPos.y),
+                        pos_z=safe_float(veh_info.mPos.z),
                     )
                     competitors_list.append(comp)
         else:
@@ -404,7 +436,10 @@ class StrategyService:
                     pit_requested=False,
                     estimated_time_into_lap=0.0,
                     speed=opp_data.lap_distance / 90.0,
-                    fuel_capacity_fraction=0.8
+                    fuel_capacity_fraction=0.8,
+                    pos_x=opp_data.position_xyz[0],
+                    pos_y=opp_data.position_xyz[1],
+                    pos_z=opp_data.position_xyz[2],
                 )
                 competitors_list.append(comp)
 
@@ -425,6 +460,11 @@ class StrategyService:
             yellow_flag_active=yellow_flag_active,
             safety_car_active=safety_car_active,
             full_course_yellow_active=full_course_yellow_active,
+            blue_flag_active=blue_flag_active,
+            session_stopped=session_stopped,
+            session_over=session_over,
+            driver_name=driver_name,
+            num_penalties=num_penalties,
 
             fuel_in_tank=fuel_in_tank,
             fuel_capacity=fuel_capacity,
@@ -454,7 +494,12 @@ class StrategyService:
             pos_x=player.position_xyz[0],
             pos_y=player.position_xyz[1],
             pos_z=player.position_xyz[2],
-
+            vel_x=vel_x,
+            vel_y=vel_y,
+            vel_z=vel_z,
+            player_class=player.class_name,
+            vehicle_name=player.vehicle_name,
+            standing_position=int(player.place),
             competitors=competitors_list
         )
 

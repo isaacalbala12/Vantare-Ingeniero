@@ -99,6 +99,12 @@ class IntelligenceEngine:
         self._active_trigger_priority: str = "LOW"
         self._active_trigger_name: str = ""
         self._last_lap_number: int = 0
+        self.sweary_messages: bool = False
+        self._last_standing_position: Optional[int] = None
+        self._last_driver_name: str = ""
+        
+        from src.intelligence.pearls_of_wisdom import PearlsService
+        self.pearls = PearlsService()
         
         self.triggers = get_all_triggers()
         self._event_store = event_store
@@ -114,6 +120,67 @@ class IntelligenceEngine:
     def _get_event_store(self):
         """Obtiene el EventStore (ChromaDB RAG) si está disponible."""
         return getattr(self, "_event_store", None)
+
+    def get_competitors_list(self) -> list:
+        """Lista de CompetitorPace del sidecar para consultas de rivales."""
+        svc = self._get_strategy_service()
+        if not svc:
+            return []
+        advice = svc.get_latest_advice()
+        if not advice or not advice.competitors:
+            return []
+        return list(advice.competitors)
+
+    def apply_monitor_competitor(self, action: str, driver_index: int) -> str:
+        """Inicia o detiene monitorización de un rival vía tool call del LLM."""
+        svc = self._get_strategy_service()
+        if not svc:
+            return "Sin datos de rivales disponibles."
+
+        from shared_strategy.competitors import start_monitoring, stop_monitoring
+
+        idx = int(driver_index)
+        if action == "start":
+            svc.state.competitors = start_monitoring(svc.state.competitors, idx)
+            return f"Monitorizando rival {idx}."
+        if action == "stop":
+            svc.state.competitors = stop_monitoring(svc.state.competitors, idx)
+            return f"Dejé de monitorizar rival {idx}."
+        return "Acción de monitor no válida."
+
+    def _emit_pearl(self, pearl_type) -> None:
+        from src.intelligence.pearls_of_wisdom import PearlType
+        message = self.pearls.on_event(pearl_type, sweary=self.sweary_messages)
+        if not message:
+            return
+        alert = AlertMessage(
+            event="alert",
+            alert_id=str(uuid.uuid4()),
+            category="pearl",
+            message=message,
+            audio_priority="1",
+            severity="INFO",
+            ttl=8,
+            dismissable=True,
+            payload={"pearl_type": pearl_type.value},
+        )
+        self.broadcaster.send(alert)
+
+    def _maybe_emit_pearls(self, telemetry_dict: dict) -> None:
+        from src.intelligence.pearls_of_wisdom import PearlType
+        pos = telemetry_dict.get("standing_position")
+        if pos is not None and self._last_standing_position is not None:
+            if int(pos) < int(self._last_standing_position):
+                self._emit_pearl(PearlType.OVERTAKE)
+        if pos is not None:
+            self._last_standing_position = int(pos)
+
+    def _check_fast_lap_pearl(self, telemetry_dict: dict) -> None:
+        from src.intelligence.pearls_of_wisdom import PearlType
+        prev = float(telemetry_dict.get("lap_time_previous") or 0)
+        best = float(telemetry_dict.get("lap_time_best") or 0)
+        if prev > 0 and best > 0 and abs(prev - best) < 0.05:
+            self._emit_pearl(PearlType.FAST_LAP)
 
     async def evaluate_cycle(self, telemetry_state, strategy_state, session_state=None, pilot_question: Optional[str] = None) -> None:
         """Ciclo principal invocado periódicamente para evaluar los triggers de carrera."""
@@ -149,7 +216,18 @@ class IntelligenceEngine:
         current_lap = telemetry_dict.get("lap_number", 0)
         if self._last_lap_number > 0 and current_lap > self._last_lap_number:
             self.live_context.on_lap_completed(telemetry_dict, strategy_dict, session_dict)
+            self._check_fast_lap_pearl(telemetry_dict)
         self._last_lap_number = current_lap
+
+        self._maybe_emit_pearls(telemetry_dict)
+
+        driver_name = str(telemetry_dict.get("driver_name", "") or "").strip()
+        if driver_name and self._last_driver_name and driver_name != self._last_driver_name:
+            svc = self._get_strategy_service()
+            if svc:
+                svc.reset_stint_on_driver_swap()
+        if driver_name:
+            self._last_driver_name = driver_name
 
         # 2. Manejo de la pregunta del piloto (PilotQuestionTrigger manual)
         if pilot_question:
@@ -192,6 +270,8 @@ class IntelligenceEngine:
                 telemetry_frame=telemetry_dict,
                 strategy_advice=strategy_dict,
                 lmu_api=self.lmu_api,
+                sweary=self.sweary_messages,
+                strategy_service=self._get_strategy_service(),
             )
 
             # Lanza ask_streaming
@@ -250,6 +330,8 @@ class IntelligenceEngine:
                             telemetry_frame=telemetry_dict,
                             strategy_advice=strategy_dict,
                             lmu_api=self.lmu_api,
+                            sweary=self.sweary_messages,
+                            strategy_service=self._get_strategy_service(),
                         )
 
                         # Lanza ask_streaming
@@ -374,6 +456,7 @@ class IntelligenceEngine:
             chat_history=chat_history,
             templates=self.prompt_templates,
             event_store=self._get_event_store(),
+            sweary=self.sweary_messages,
         )
         
         # 5. Ejecutar streaming del LLM usando ask_streaming_text
@@ -456,7 +539,27 @@ class IntelligenceEngine:
         self._active_trigger_name = ""
 
     async def handle_pilot_question(self, question: str) -> None:
-        """Dispara PilotQuestionTrigger manualmente y llama a evaluate_cycle con la pregunta."""
+        """Dispara evaluate_cycle con pregunta del piloto; emite datos de rival si aplica."""
+        from src.intelligence.context_builder import _resolve_competitor_context
+
+        competitors = self.get_competitors_list()
+        if competitors:
+            comp_dicts = [c.model_dump() if hasattr(c, "model_dump") else c for c in competitors]
+            ctx = _resolve_competitor_context(question, {"competitors": comp_dicts})
+            if ctx:
+                alert = AlertMessage(
+                    event="alert",
+                    alert_id=str(uuid.uuid4()),
+                    category="competitor",
+                    message=ctx,
+                    audio_priority="1",
+                    severity="INFO",
+                    ttl=10,
+                    dismissable=True,
+                    payload={"query": question[:120]},
+                )
+                self.broadcaster.send(alert)
+
         strat_service = self._get_strategy_service()
         telemetry_state = strat_service.latest_frame if strat_service else None
         strategy_state = strat_service.latest_advice if strat_service else None

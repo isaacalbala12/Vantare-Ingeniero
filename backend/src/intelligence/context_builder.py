@@ -120,6 +120,58 @@ def _build_ticker_data(
     return data
 
 
+def _resolve_competitor_context(
+    pilot_question: str,
+    strategy_advice: Optional[dict],
+) -> Optional[str]:
+    """Pre-resuelve consultas de rivales por nombre en la pregunta del piloto."""
+    if not pilot_question or not strategy_advice:
+        return None
+    competitors = strategy_advice.get("competitors") or []
+    if not competitors:
+        return None
+
+    from src.intelligence.competitor_queries import CompetitorQuery, CompetitorQueryType, resolve_query
+    from src.intelligence.driver_names import get_driver_by_partial
+    import re
+
+    match_driver = get_driver_by_partial(pilot_question, competitors)
+    if not match_driver:
+        for token in re.findall(r"[\w']+", pilot_question, flags=re.UNICODE):
+            if len(token) >= 3:
+                match_driver = get_driver_by_partial(token, competitors)
+                if match_driver:
+                    break
+    if match_driver:
+        result = resolve_query(
+            CompetitorQuery(query_type=CompetitorQueryType.BY_NAME, name=match_driver.get("driver_name", "")),
+            competitors,
+        )
+        if result.found:
+            return result.summary
+    return None
+
+
+def _build_sector_context(strategy_service: Optional[Any] = None) -> Optional[str]:
+    if strategy_service is None:
+        return None
+    try:
+        from src.intelligence.sector_analysis import analyze_sectors, format_sector_analysis
+
+        fuel = strategy_service.state.fuel
+        track_length = strategy_service.track.track_length
+        insights = analyze_sectors(
+            fuel.delta_array_raw,
+            fuel.delta_array_last,
+            "Spa-Francorchamps",
+            track_length,
+        )
+        text = format_sector_analysis(insights)
+        return text or None
+    except Exception:
+        return None
+
+
 def build_prompt(
     snapshot: dict,
     trigger_reason: str,
@@ -129,6 +181,8 @@ def build_prompt(
     telemetry_frame: Optional[dict] = None,
     strategy_advice: Optional[dict] = None,
     lmu_api: Optional[Any] = None,
+    sweary: bool = False,
+    strategy_service: Optional[Any] = None,
 ) -> str:
     """Construye el prompt completo para el LLM.
 
@@ -148,9 +202,17 @@ def build_prompt(
     context_dict: dict = {
         "snapshot": snapshot,
         "trigger_reason": trigger_reason,
+        "sweary": sweary,
     }
     if pilot_question:
         context_dict["pilot_question"] = pilot_question
+        competitor_ctx = _resolve_competitor_context(pilot_question, strategy_advice)
+        if competitor_ctx:
+            context_dict["competitor_context"] = competitor_ctx
+
+    sector_ctx = _build_sector_context(strategy_service)
+    if sector_ctx:
+        context_dict["sector_context"] = sector_ctx
 
     # Si hay telemetry_frame, usar ticker en vez de snapshot crudo
     if telemetry_frame is not None:
@@ -183,14 +245,24 @@ def build_prompt_for_question(
     telemetry_frame: Optional[dict] = None,
     strategy_advice: Optional[dict] = None,
     lmu_api: Optional[Any] = None,
+    sweary: bool = False,
+    strategy_service: Optional[Any] = None,
 ) -> str:
     """Construye prompt para pregunta directa del piloto con RAG y ticker."""
     context_dict: dict = {
         "snapshot": snapshot,
         "pilot_question": pilot_question,
+        "sweary": sweary,
     }
     if chat_history:
         context_dict["chat_history"] = chat_history
+
+    competitor_ctx = _resolve_competitor_context(pilot_question, strategy_advice)
+    if competitor_ctx:
+        context_dict["competitor_context"] = competitor_ctx
+    sector_ctx = _build_sector_context(strategy_service)
+    if sector_ctx:
+        context_dict["sector_context"] = sector_ctx
 
     # Si hay telemetry_frame, usar ticker en vez de snapshot crudo
     if telemetry_frame is not None:

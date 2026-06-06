@@ -1,6 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+mod audio_duck;
+
 use std::net::TcpStream;
 use std::sync::Mutex;
 use std::time::Duration;
@@ -20,6 +22,7 @@ fn main() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .plugin(tauri_plugin_websocket::init())
+        .invoke_handler(tauri::generate_handler![audio_duck::duck_lmu])
         .setup(|app| {
             // ================================================================
             // Sidecars Python
@@ -33,91 +36,88 @@ fn main() {
                 app.manage(BackendChild(Mutex::new(None)));
                 app.manage(SidecarChild(Mutex::new(None)));
             } else {
+                let resource_dir = match app.path().resource_dir() {
+                    Ok(dir) => dir,
+                    Err(e) => {
+                        eprintln!("[Rust] ERROR al obtener resource dir: {}", e);
+                        app.manage(BackendChild(Mutex::new(None)));
+                        app.manage(SidecarChild(Mutex::new(None)));
+                        return Ok(());
+                    }
+                };
                 let shell = app.shell();
 
                 // --- vantare-engine (backend FastAPI) ---
-                println!("[Rust] Iniciando el sidecar vantare-engine...");
-                match shell.sidecar("vantare-engine") {
-                    Ok(command) => {
-                        let configured_command = command.env("PORT", "8008");
-                        match configured_command.spawn() {
-                            Ok((mut rx, child)) => {
-                                app.manage(BackendChild(Mutex::new(Some(child))));
-                                tauri::async_runtime::spawn(async move {
-                                    let mut is_ready = false;
-                                    while let Some(event) = rx.recv().await {
-                                        match event {
-                                            tauri_plugin_shell::process::CommandEvent::Stdout(line) => {
-                                                let s = String::from_utf8_lossy(&line);
-                                                println!("[vantare-engine STDOUT] {}", s.trim());
-                                                if s.contains("Uvicorn running") || s.contains("Starting server") {
-                                                    is_ready = true;
-                                                    println!("[Rust] vantare-engine confirmado y LISTO en el puerto 8008!");
-                                                }
-                                            }
-                                            tauri_plugin_shell::process::CommandEvent::Stderr(line) => {
-                                                let s = String::from_utf8_lossy(&line);
-                                                eprintln!("[vantare-engine STDERR] {}", s.trim());
-                                            }
-                                            tauri_plugin_shell::process::CommandEvent::Terminated(status) => {
-                                                println!("[vantare-engine] Detenido con código: {:?}", status.code);
-                                            }
-                                            _ => {}
+                let backend_path = resource_dir.join("backend").join("backend.exe");
+                println!("[Rust] Iniciando vantare-engine desde: {:?}", backend_path);
+                let command = shell.command(backend_path.to_str().unwrap_or("backend.exe"));
+                let configured_command = command.env("PORT", "8008");
+                match configured_command.spawn() {
+                    Ok((mut rx, child)) => {
+                        app.manage(BackendChild(Mutex::new(Some(child))));
+                        tauri::async_runtime::spawn(async move {
+                            let mut is_ready = false;
+                            while let Some(event) = rx.recv().await {
+                                match event {
+                                    tauri_plugin_shell::process::CommandEvent::Stdout(line) => {
+                                        let s = String::from_utf8_lossy(&line);
+                                        println!("[vantare-engine STDOUT] {}", s.trim());
+                                        if s.contains("Uvicorn running") || s.contains("Starting server") {
+                                            is_ready = true;
+                                            println!("[Rust] vantare-engine confirmado y LISTO en el puerto 8008!");
                                         }
                                     }
-                                    if !is_ready {
-                                        eprintln!("[Rust] ERROR: vantare-engine finalizo de forma prematura sin arrancar el servidor.");
+                                    tauri_plugin_shell::process::CommandEvent::Stderr(line) => {
+                                        let s = String::from_utf8_lossy(&line);
+                                        eprintln!("[vantare-engine STDERR] {}", s.trim());
                                     }
-                                });
-                                println!("[Rust] Hilo de monitorizacion de vantare-engine lanzado con exito.");
+                                    tauri_plugin_shell::process::CommandEvent::Terminated(status) => {
+                                        println!("[vantare-engine] Detenido con código: {:?}", status.code);
+                                    }
+                                    _ => {}
+                                }
                             }
-                            Err(e) => {
-                                eprintln!("[Rust] ERROR al spawnear vantare-engine: {:?}", e);
-                                app.manage(BackendChild(Mutex::new(None)));
+                            if !is_ready {
+                                eprintln!("[Rust] ERROR: vantare-engine finalizo de forma prematura sin arrancar el servidor.");
                             }
-                        }
+                        });
+                        println!("[Rust] Hilo de monitorizacion de vantare-engine lanzado con exito.");
                     }
                     Err(e) => {
-                        eprintln!("[Rust] ERROR al resolver el sidecar 'vantare-engine': {:?}", e);
+                        eprintln!("[Rust] ERROR al spawnear vantare-engine: {:?}", e);
                         app.manage(BackendChild(Mutex::new(None)));
                     }
                 }
 
                 // --- strategy-sidecar (lector LMU) ---
-                println!("[Rust] Iniciando el sidecar strategy-sidecar...");
-                match shell.sidecar("strategy-sidecar") {
-                    Ok(command) => {
-                        match command.spawn() {
-                            Ok((mut rx, child)) => {
-                                app.manage(SidecarChild(Mutex::new(Some(child))));
-                                tauri::async_runtime::spawn(async move {
-                                    while let Some(event) = rx.recv().await {
-                                        match event {
-                                            tauri_plugin_shell::process::CommandEvent::Stdout(line) => {
-                                                let s = String::from_utf8_lossy(&line);
-                                                println!("[strategy-sidecar STDOUT] {}", s.trim());
-                                            }
-                                            tauri_plugin_shell::process::CommandEvent::Stderr(line) => {
-                                                let s = String::from_utf8_lossy(&line);
-                                                eprintln!("[strategy-sidecar STDERR] {}", s.trim());
-                                            }
-                                            tauri_plugin_shell::process::CommandEvent::Terminated(status) => {
-                                                println!("[strategy-sidecar] Detenido con codigo: {:?}", status.code);
-                                            }
-                                            _ => {}
-                                        }
+                let sidecar_path = resource_dir.join("sidecar").join("strategy-sidecar.exe");
+                println!("[Rust] Iniciando strategy-sidecar desde: {:?}", sidecar_path);
+                let command = shell.command(sidecar_path.to_str().unwrap_or("strategy-sidecar.exe"));
+                match command.spawn() {
+                    Ok((mut rx, child)) => {
+                        app.manage(SidecarChild(Mutex::new(Some(child))));
+                        tauri::async_runtime::spawn(async move {
+                            while let Some(event) = rx.recv().await {
+                                match event {
+                                    tauri_plugin_shell::process::CommandEvent::Stdout(line) => {
+                                        let s = String::from_utf8_lossy(&line);
+                                        println!("[strategy-sidecar STDOUT] {}", s.trim());
                                     }
-                                });
-                                println!("[Rust] Hilo de monitorizacion de strategy-sidecar lanzado con exito.");
+                                    tauri_plugin_shell::process::CommandEvent::Stderr(line) => {
+                                        let s = String::from_utf8_lossy(&line);
+                                        eprintln!("[strategy-sidecar STDERR] {}", s.trim());
+                                    }
+                                    tauri_plugin_shell::process::CommandEvent::Terminated(status) => {
+                                        println!("[strategy-sidecar] Detenido con codigo: {:?}", status.code);
+                                    }
+                                    _ => {}
+                                }
                             }
-                            Err(e) => {
-                                eprintln!("[Rust] ERROR al spawnear strategy-sidecar: {:?}", e);
-                                app.manage(SidecarChild(Mutex::new(None)));
-                            }
-                        }
+                        });
+                        println!("[Rust] Hilo de monitorizacion de strategy-sidecar lanzado con exito.");
                     }
                     Err(e) => {
-                        eprintln!("[Rust] ERROR al resolver el sidecar 'strategy-sidecar': {:?}", e);
+                        eprintln!("[Rust] ERROR al spawnear strategy-sidecar: {:?}", e);
                         app.manage(SidecarChild(Mutex::new(None)));
                     }
                 }

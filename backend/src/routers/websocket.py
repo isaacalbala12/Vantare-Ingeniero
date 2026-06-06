@@ -5,6 +5,7 @@ from typing import Set
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from src.models.messages import BaseMessage
+from src.intelligence.spotter_adapter import frame_to_spotter_tick, resolve_spotter_input
 from src.services.msgpack_codec import encode as mp_encode, decode as mp_decode, apply_delta, is_full_frame
 
 logger = logging.getLogger("vantare.websocket")
@@ -99,12 +100,13 @@ async def telemetry_sender_loop(websocket: WebSocket, app_state) -> None:
                 logger.debug("Usando TelemetryReader (offline)")
 
             # 3. Evaluar el SpotterService de ultra-baja latencia (20Hz)
-            # Spotter requiere RaceState (Pydantic model), no dict
             spotter = getattr(app_state, "spotter_service", None)
             if spotter:
-                reader_state = reader.get_state()
-                if reader_state is not None:
-                    spotter.evaluate_tick(reader_state)
+                sidecar_advice = None
+                if sidecar_frame:
+                    sidecar_advice = sidecar_frame.get("advice")
+                spotter_tick = frame_to_spotter_tick(state_dict, sidecar_advice)
+                spotter.evaluate_tick(spotter_tick)
 
             # 4. Enviar datos al frontend vía MessagePack
             raw = mp_encode(state_dict)
@@ -222,12 +224,14 @@ async def sidecar_endpoint(websocket: WebSocket):
 
                     # Indexar eventos en EventStore (RAG) — asíncrono, no bloquea
                     events = frame_data.get("events", [])
-                    if events and hasattr(app_state, "event_store"):
+                    if events and getattr(app_state, "event_store", None) is not None:
                         frame = frame_data.get("frame", {})
                         event_store = app_state.event_store
                         asyncio.ensure_future(
                             _index_events_async(event_store, frame, events)
                         )
+            elif event == "ping":
+                await websocket.send_json({"event": "pong", "data": {}})
     except WebSocketDisconnect:
         logger.info("Sidecar desconectado de /ws/sidecar")
     except Exception as e:
@@ -275,6 +279,9 @@ async def websocket_endpoint(websocket: WebSocket):
                             else:
                                 # Primer frame tras conexión, guardar como está
                                 app_state.latest_client_frame = frame
+                        mqtt_svc = getattr(app_state, "mqtt_service", None)
+                        if mqtt_svc and app_state.latest_client_frame:
+                            asyncio.create_task(mqtt_svc.publish_telemetry(app_state.latest_client_frame))
                     except Exception as e:
                         logger.warning(f"Error decoding MessagePack telemetry: {e}")
                     continue
@@ -293,6 +300,40 @@ async def websocket_endpoint(websocket: WebSocket):
                     telemetry_data = msg.get("data", {})
                     if telemetry_data:
                         app_state.latest_client_frame = telemetry_data
+                elif event == "config_update":
+                    cfg = msg.get("data", {})
+                    if "swearyMessages" in cfg:
+                        app_state.sweary_messages = bool(cfg["swearyMessages"])
+                        engine = getattr(app_state, "intelligence_engine", None)
+                        if engine is not None:
+                            engine.sweary_messages = app_state.sweary_messages
+                        logger.info("[WS] sweary_messages=%s", app_state.sweary_messages)
+                    spotter = getattr(app_state, "spotter_service", None)
+                    if spotter is not None:
+                        if "spotterOffQualifying" in cfg:
+                            spotter.spotter_off_qualifying = bool(cfg["spotterOffQualifying"])
+                        if "spotterExcludeStopped" in cfg:
+                            spotter.spotter_exclude_stopped = bool(cfg["spotterExcludeStopped"])
+                elif event == "spotter_command":
+                    action = msg.get("data", {}).get("action", "")
+                    spotter = getattr(app_state, "spotter_service", None)
+                    if spotter and action in ("enable", "disable"):
+                        spotter.enabled = action == "enable"
+                        from src.models.messages import AlertMessage
+                        import uuid as _uuid
+                        ack = AlertMessage(
+                            event="alert",
+                            alert_id=str(_uuid.uuid4()),
+                            category="spotter",
+                            message="Spotter activado." if spotter.enabled else "Spotter desactivado.",
+                            audio_priority="1",
+                            severity="INFO",
+                            ttl=3,
+                            dismissable=True,
+                            payload={"spotter_enabled": spotter.enabled},
+                        )
+                        await manager.broadcast(ack)
+                        logger.info("[WS] spotter enabled=%s", spotter.enabled)
                 elif event == "pilot_question":
                     question = msg.get("data", {}).get("question", "")
                     if question:

@@ -38,9 +38,18 @@ dev = [
     "pytest-cov>=5.0.0",
     "pytest-timeout>=2.0.0",
 ]
+mqtt = [
+    "paho-mqtt>=2.0.0",
+]
 
 [tool.hatch.metadata]
 allow-direct-references = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 60
+asyncio_mode = "auto"
+norecursedirs = [".git", "__pycache__", "benchmarks", "node_modules"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src"]

@@ -42,6 +42,19 @@ class Settings(BaseSettings):
     # Configuración de Pistas
     TRACK_LENGTH_DEFAULT: float = 7004.0  # Spa-Francorchamps por defecto (metros)
 
+    # Spotter / Voz
+    USE_SWEARY_MESSAGES: bool = False
+    SPOTTER_PROXIMITY_THRESHOLD_M: float = 3.0
+    SPOTTER_OFF_QUALIFYING: bool = True
+    SPOTTER_EXCLUDE_STOPPED: bool = True
+    AUDIO_DUCK_LEVEL: float = 0.2  # 20% volumen LMU durante TTS
+
+    # MQTT (opt-in, broker local por defecto)
+    MQTT_ENABLED: bool = False
+    MQTT_BROKER: str = "localhost"
+    MQTT_PORT: int = 1883
+    MQTT_TOPIC: str = "vantare/telemetry"
+
     # TTS Settings
     TTS_BACKEND: str = "edge"  # "edge", "piper", o "elevenlabs"
     EDGE_TTS_VOICE: str = "es-ES-AlvaroNeural"

@@ -35,6 +35,7 @@ def ws_app():
     app.state.latest_client_frame = None
     app.state.latest_strategy_frame = None
     app.state._last_telemetry_t = 0.0
+    app.state.event_store = None
 
     return app
 
@@ -81,6 +82,16 @@ def read_json_message(ws) -> dict | None:
     return None
 
 
+def _wait_frontend_telemetry(client, timeout: float = 1.0) -> bool:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        resp = client.get("/health")
+        if resp.status_code == 200 and resp.json()["frontend_telemetry"]["received"]:
+            return True
+        time.sleep(0.05)
+    return False
+
+
 # =========================================================================
 # Tests
 # =========================================================================
@@ -117,14 +128,8 @@ class TestMsgpackWebSocketIntegration:
                 "throttle": 0.85,
             }
             send_full_frame(ws, full_frame)
-            # Dar tiempo al loop asíncrono para procesar
-            time.sleep(0.1)
 
-        # Verificar via health endpoint
-        response = ws_client.get("/health")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["frontend_telemetry"]["received"] is True
+        assert _wait_frontend_telemetry(ws_client), "Telemetría no recibida a tiempo"
 
     def test_frontend_delta_received(self, ws_client):
         """
@@ -143,12 +148,8 @@ class TestMsgpackWebSocketIntegration:
             # Enviar delta con solo campos cambiados
             delta = {"speed": 75.0, "throttle": 0.90}
             send_delta_frame(ws, delta, base)
-            time.sleep(0.1)
 
-        # Verificar que el delta fue aplicado
-        response = ws_client.get("/health")
-        assert response.status_code == 200
-        assert response.json()["frontend_telemetry"]["received"] is True
+        assert _wait_frontend_telemetry(ws_client)
 
     def test_delta_ignored_when_no_base(self, ws_client):
         """
@@ -159,14 +160,8 @@ class TestMsgpackWebSocketIntegration:
             # Delta sin base — compute_delta emitirá un full frame
             delta_only = {"speed": 80.0}
             send_delta_frame(ws, delta_only, None)
-            time.sleep(0.1)
 
-        # No crash y health refleja que se recibió algo
-        response = ws_client.get("/health")
-        assert response.status_code == 200
-        # El backend guarda el frame aunque venga con _full=False
-        # porque detectamos que no había base
-        assert response.json()["frontend_telemetry"]["received"] is True
+        assert _wait_frontend_telemetry(ws_client)
 
     def test_gap_detection_no_crash(self, ws_client):
         """
@@ -219,9 +214,7 @@ class TestMsgpackWebSocketIntegration:
             send_full_frame(ws, full)
             time.sleep(0.15)
 
-        response = ws_client.get("/health")
-        assert response.status_code == 200
-        assert response.json()["frontend_telemetry"]["received"] is True
+        assert _wait_frontend_telemetry(ws_client)
 
     def test_backward_compatibility_json(self, ws_client):
         """
@@ -261,10 +254,7 @@ class TestMsgpackWebSocketIntegration:
             send_full_frame(ws, full)
             time.sleep(0.1)
 
-        # Verificar que health refleja los datos
-        response = ws_client.get("/health")
-        assert response.status_code == 200
-        assert response.json()["frontend_telemetry"]["received"] is True
+        assert _wait_frontend_telemetry(ws_client)
 
     def test_multiple_clients_delta_isolation(self, ws_client):
         """
@@ -280,11 +270,7 @@ class TestMsgpackWebSocketIntegration:
                 send_full_frame(ws2, frame2)
                 time.sleep(0.1)
 
-        # Ambos clientes deberían haber enviado datos
-        response = ws_client.get("/health")
-        assert response.status_code == 200
-        # Al menos un cliente envió datos
-        assert response.json()["frontend_telemetry"]["received"] is True
+        assert _wait_frontend_telemetry(ws_client)
 
     def test_invalid_msgpack_handled_gracefully(self, ws_client):
         """

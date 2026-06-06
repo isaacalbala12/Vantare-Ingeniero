@@ -110,7 +110,9 @@ async def lifespan(app: FastAPI):
         history_store=history_store,
         event_store=event_store,
     )
+    intelligence_engine.sweary_messages = settings.USE_SWEARY_MESSAGES
     app.state.intelligence_engine = intelligence_engine
+    app.state.sweary_messages = settings.USE_SWEARY_MESSAGES
     logger.info("IntelligenceEngine initialized and hooked to WS broadcaster")
 
     if not settings.LLM_API_KEY:
@@ -201,6 +203,11 @@ async def lifespan(app: FastAPI):
         "OK" if app.state.gemini_tts_service else "NO",
     )
 
+    from src.services.mqtt_service import get_mqtt_service
+    app.state.mqtt_service = get_mqtt_service()
+    if settings.MQTT_ENABLED:
+        logger.info("MQTT habilitado → %s:%s/%s", settings.MQTT_BROKER, settings.MQTT_PORT, settings.MQTT_TOPIC)
+
     yield
 
     # --- Shutdown ---
@@ -238,6 +245,9 @@ async def lifespan(app: FastAPI):
     if hasattr(app.state, "event_store"):
         app.state.event_store.clear()
         logger.info("EventStore cleaned up (ChromaDB RAG)")
+
+    if hasattr(app.state, "mqtt_service"):
+        app.state.mqtt_service.shutdown()
 
     # 5. Detener el lector físico de shared memory
     if reader:
