@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useAppStore } from "../store/config";
-import { getHealth } from "../services/api";
+import { useAppStore, AppConfig } from "../store/config";
+import { getHealth, listProfiles, loadProfile, saveProfile, deleteProfile } from "../services/api";
 
 type TabName = "conexion" | "audio" | "voz";
 
@@ -11,8 +11,13 @@ type TabName = "conexion" | "audio" | "voz";
  * - Voz: hotkey PTT, palabra de activación
  */
 export const ConfigTab: React.FC = () => {
-  const { config, connectivity, updateConfig, setMicLevel } = useAppStore();
+  const { config, connectivity, updateConfig, applyProfileConfig, setMicLevel } = useAppStore();
   const [activeTab, setActiveTab] = useState<TabName>("conexion");
+
+  const [profiles, setProfiles] = useState<string[]>([]);
+  const [selectedProfile, setSelectedProfile] = useState("");
+  const [newProfileName, setNewProfileName] = useState("");
+  const [profileStatus, setProfileStatus] = useState<string | null>(null);
 
   // Estados locales para los campos del formulario
   const [vllmIP, setVllmIP] = useState(config.vllmIP);
@@ -24,6 +29,9 @@ export const ConfigTab: React.FC = () => {
   const [swearyMessages, setSwearyMessages] = useState(config.swearyMessages ?? false);
   const [spotterOffQualifying, setSpotterOffQualifying] = useState(config.spotterOffQualifying ?? true);
   const [spotterExcludeStopped, setSpotterExcludeStopped] = useState(config.spotterExcludeStopped ?? true);
+  const [mqttEnabled, setMqttEnabled] = useState(config.mqttEnabled ?? false);
+  const [mqttBroker, setMqttBroker] = useState(config.mqttBroker ?? "localhost");
+  const [mqttPort, setMqttPort] = useState(config.mqttPort ?? 1883);
 
   // Estados de test y dispositivos
   const [testStatus, setTestStatus] = useState<string | null>(null);
@@ -49,6 +57,102 @@ export const ConfigTab: React.FC = () => {
     };
     getDevices();
   }, []);
+
+  const refreshProfiles = async () => {
+    const names = await listProfiles();
+    setProfiles(names);
+  };
+
+  useEffect(() => {
+    if (activeTab === "conexion") {
+      refreshProfiles();
+    }
+  }, [activeTab]);
+
+  const buildConfigPayload = (): AppConfig => ({
+    vllmIP: vllmIP.trim(),
+    serverPort: Number(serverPort),
+    micDevice,
+    speakerDevice: config.speakerDevice,
+    wakeWord: config.wakeWord,
+    sensitivity,
+    pttHotkey: pttHotkey.trim(),
+    pttStopHotkey: pttStopHotkey.trim(),
+    wakeWordEnabled: config.wakeWordEnabled,
+    swearyMessages,
+    spotterOffQualifying,
+    spotterExcludeStopped,
+    mqttEnabled,
+    mqttBroker: mqttBroker.trim(),
+    mqttPort: Number(mqttPort),
+  });
+
+  const applyLoadedConfig = (loaded: Record<string, unknown>) => {
+    const merged: AppConfig = {
+      ...config,
+      ...loaded,
+    } as AppConfig;
+    applyProfileConfig(merged);
+    setVllmIP(merged.vllmIP);
+    setServerPort(merged.serverPort);
+    setMicDevice(merged.micDevice);
+    setSensitivity(merged.sensitivity);
+    setPttHotkey(merged.pttHotkey);
+    setPttStopHotkey(merged.pttStopHotkey);
+    setSwearyMessages(merged.swearyMessages);
+    setSpotterOffQualifying(merged.spotterOffQualifying);
+    setSpotterExcludeStopped(merged.spotterExcludeStopped);
+    setMqttEnabled(merged.mqttEnabled ?? false);
+    setMqttBroker(merged.mqttBroker ?? "localhost");
+    setMqttPort(merged.mqttPort ?? 1883);
+  };
+
+  const handleLoadProfile = async () => {
+    if (!selectedProfile) return;
+    const loaded = await loadProfile(selectedProfile);
+    if (!loaded) {
+      setProfileStatus("❌ No se pudo cargar el perfil");
+      setTimeout(() => setProfileStatus(null), 3000);
+      return;
+    }
+    applyLoadedConfig(loaded);
+    setProfileStatus(`✅ Perfil "${selectedProfile}" cargado`);
+    setTimeout(() => setProfileStatus(null), 2500);
+  };
+
+  const handleSaveProfile = async () => {
+    const name = (newProfileName || selectedProfile).trim();
+    if (!name) {
+      setProfileStatus("❌ Indica un nombre de perfil");
+      setTimeout(() => setProfileStatus(null), 3000);
+      return;
+    }
+    const ok = await saveProfile(name, buildConfigPayload() as unknown as Record<string, unknown>);
+    if (!ok) {
+      setProfileStatus("❌ Error al guardar perfil");
+      setTimeout(() => setProfileStatus(null), 3000);
+      return;
+    }
+    setSelectedProfile(name);
+    setNewProfileName("");
+    await refreshProfiles();
+    setProfileStatus(`✅ Perfil "${name}" guardado`);
+    setTimeout(() => setProfileStatus(null), 2500);
+  };
+
+  const handleDeleteProfile = async () => {
+    if (!selectedProfile) return;
+    const ok = await deleteProfile(selectedProfile);
+    if (!ok) {
+      setProfileStatus("❌ Error al eliminar");
+      setTimeout(() => setProfileStatus(null), 3000);
+      return;
+    }
+    setSelectedProfile("");
+    await refreshProfiles();
+    setProfileStatus("✅ Perfil eliminado");
+    setTimeout(() => setProfileStatus(null), 2500);
+  };
 
   // 2. Captura local de audio para el vúmetro (solo en pestaña Audio)
   useEffect(() => {
@@ -170,17 +274,7 @@ export const ConfigTab: React.FC = () => {
       return;
     }
 
-    updateConfig({
-      vllmIP: vllmIP.trim(),
-      serverPort: portNum,
-      micDevice,
-      sensitivity,
-      pttHotkey: pttHotkey.trim(),
-      pttStopHotkey: pttStopHotkey.trim(),
-      swearyMessages,
-      spotterOffQualifying,
-      spotterExcludeStopped,
-    });
+    updateConfig(buildConfigPayload());
     setSaveStatus("✅ Guardado");
     setTimeout(() => setSaveStatus(null), 2000);
   };
@@ -263,6 +357,32 @@ export const ConfigTab: React.FC = () => {
                 <div>WebSocket: <span className={connectivity.backendHealth.websocket ? "text-[#4f4]" : "text-[#f44]"}>{connectivity.backendHealth.websocket ? "ON" : "OFF"}</span></div>
               </div>
             )}
+            <div className="mt-3 p-2 bg-[#1a1a1a] border border-[#222] rounded flex flex-col gap-2">
+              <div className="text-[10px] text-[#666] uppercase tracking-wider">Perfiles</div>
+              <select
+                value={selectedProfile}
+                onChange={(e) => setSelectedProfile(e.target.value)}
+                className="bg-[#111] border border-[#333] rounded px-2 py-1.5 text-[12px] text-white"
+              >
+                <option value="">Seleccionar perfil...</option>
+                {profiles.map((p) => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+              <input
+                type="text"
+                placeholder="Nombre nuevo (ej: endurance)"
+                value={newProfileName}
+                onChange={(e) => setNewProfileName(e.target.value)}
+                className="bg-[#111] border border-[#333] rounded px-2 py-1.5 text-[12px] text-white"
+              />
+              <div className="flex gap-2 flex-wrap">
+                <button onClick={handleLoadProfile} className="text-[10px] bg-[#333] px-2 py-1 rounded uppercase">Cargar</button>
+                <button onClick={handleSaveProfile} className="text-[10px] bg-[#333] px-2 py-1 rounded uppercase">Guardar</button>
+                <button onClick={handleDeleteProfile} className="text-[10px] bg-[#442222] px-2 py-1 rounded uppercase">Eliminar</button>
+              </div>
+              {profileStatus && <span className="text-[11px] text-[#aaa]">{profileStatus}</span>}
+            </div>
             <button
               onClick={handleSave}
               className="mt-2 bg-[#333] hover:bg-[#444] text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-none"
@@ -363,6 +483,33 @@ export const ConfigTab: React.FC = () => {
               />
               Ignorar coches parados o en boxes
             </label>
+            <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={mqttEnabled}
+                onChange={(e) => setMqttEnabled(e.target.checked)}
+                className="accent-[#8a2be2]"
+              />
+              Publicar telemetría vía MQTT (broker local)
+            </label>
+            {mqttEnabled && (
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="text"
+                  value={mqttBroker}
+                  onChange={(e) => setMqttBroker(e.target.value)}
+                  placeholder="Broker"
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white"
+                />
+                <input
+                  type="number"
+                  value={mqttPort}
+                  onChange={(e) => setMqttPort(Number(e.target.value))}
+                  placeholder="Puerto"
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white"
+                />
+              </div>
+            )}
             <div className="mt-2 p-2 bg-[#1a1a1a] border border-[#222] rounded text-[10px] flex flex-col gap-1.5">
               <div className="text-[#666] uppercase tracking-wider mb-1">Configuración del Backend:</div>
               <div className="flex justify-between">

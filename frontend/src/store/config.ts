@@ -66,6 +66,9 @@ export interface AppConfig {
   swearyMessages: boolean;
   spotterOffQualifying: boolean;
   spotterExcludeStopped: boolean;
+  mqttEnabled: boolean;
+  mqttBroker: string;
+  mqttPort: number;
 }
 
 // --- INTERFAZ GLOBAL DEL STORE ---
@@ -92,6 +95,7 @@ export interface GlobalStore {
   
   updateTelemetry: (data: Partial<TelemetryState>) => void;
   updateConfig: (newConfig: Partial<AppConfig>) => void;
+  applyProfileConfig: (config: AppConfig) => void;
   setScreen: (screen: Screen) => void;
 }
 
@@ -114,6 +118,9 @@ const loadSavedConfig = (): AppConfig => {
         swearyMessages: parsed.swearyMessages ?? false,
         spotterOffQualifying: parsed.spotterOffQualifying ?? true,
         spotterExcludeStopped: parsed.spotterExcludeStopped ?? true,
+        mqttEnabled: parsed.mqttEnabled ?? false,
+        mqttBroker: parsed.mqttBroker ?? "localhost",
+        mqttPort: parsed.mqttPort ?? 1883,
       };
     }
   } catch (e) {
@@ -132,6 +139,9 @@ const loadSavedConfig = (): AppConfig => {
     swearyMessages: false,
     spotterOffQualifying: true,
     spotterExcludeStopped: true,
+    mqttEnabled: false,
+    mqttBroker: "localhost",
+    mqttPort: 1883,
   };
 };
 
@@ -222,6 +232,15 @@ export const useAppStore = create<GlobalStore>((set) => ({
         console.error("Fallo al guardar en localStorage:", e);
       }
       return { config: updated };
+    }),
+  applyProfileConfig: (config) =>
+    set(() => {
+      try {
+        localStorage.setItem("vantare_config", JSON.stringify(config));
+      } catch (e) {
+        console.error("Fallo al guardar perfil en localStorage:", e);
+      }
+      return { config };
     }),
   setScreen: (screen) => set({ screen }),
 }));
