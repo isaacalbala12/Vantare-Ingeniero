@@ -94,13 +94,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: cloudflare-worker/package-lock.json
 
       - name: Install worker dependencies
         run: |
           cd cloudflare-worker
-          npm ci
+          npm install
 
       - name: Run worker tests with coverage
         run: |
