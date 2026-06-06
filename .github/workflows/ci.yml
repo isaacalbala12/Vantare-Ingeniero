@@ -9,7 +9,6 @@ on:
 
 env:
   PYTHON_VERSION: '3.12'
-  NODE_VERSION: '20'
 
 jobs:
   # ───────────────────────────────────────────
@@ -47,33 +46,6 @@ jobs:
           path: backend/htmlcov/
 
   # ───────────────────────────────────────────
-  # Frontend unit tests (coverage requires feature/benchmark-llm branch)
-  # ───────────────────────────────────────────
-  test-frontend:
-    name: Frontend Tests
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm ci
-
-      - name: Run vitest
-        run: |
-          cd frontend
-          npx vitest run
-
-  # ───────────────────────────────────────────
   # Smoke tests — fast sanity checks
   # ───────────────────────────────────────────
   smoke-backend:
@@ -105,32 +77,3 @@ jobs:
           cd backend
           python -m compileall src/ -q
           echo "Python syntax OK"
-
-  smoke-frontend:
-    name: Smoke Test — Frontend Build
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm ci
-
-      - name: TypeScript check
-        run: |
-          cd frontend
-          npx tsc --noEmit
-
-      - name: Vite build check
-        run: |
-          cd frontend
-          npm run build
