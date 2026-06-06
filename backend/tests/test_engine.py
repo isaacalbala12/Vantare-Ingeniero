@@ -97,9 +97,9 @@ class TestIntelligenceEngine:
         """evaluate_cycle sin triggers no debe enviar mensajes LLM."""
         with patch.object(engine, '_current_llm_task', None):
             await engine.evaluate_cycle(
-                telemetry_state={"speed": 180},
-                strategy_state={"fuel": 42.0},
-                session_state=None,
+                telemetry_state={"speed": 180, "lap_number": 0},
+                strategy_state={"fuel": {"estimated_laps_remaining": 10.0}, "pit_window": {"pit_window_open": False}},
+                session_state={"phase": "RACE"},
             )
         assert mock_broadcaster.send.call_count == 0 or all(
             not isinstance(c[0][0] if c else None, type(None))
@@ -132,8 +132,9 @@ class TestIntelligenceEngine:
     @pytest.mark.asyncio
     async def test_cancel_current_llm_with_task(self, engine, mock_broadcaster):
         """cancel_current_llm debe cancelar tarea activa."""
-        mock_task = AsyncMock(spec=asyncio.Task)
+        mock_task = MagicMock()
         mock_task.done.return_value = False
+        mock_task.__await__ = lambda: iter([None])
         engine._current_llm_task = mock_task
         engine._current_advice_id = str(uuid.uuid4())
         await engine.cancel_current_llm()
