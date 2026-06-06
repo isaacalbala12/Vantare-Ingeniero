@@ -92,3 +92,83 @@ export async function getHistory(): Promise<ConsumptionRecord[]> {
   }
 }
 
+export interface VersionInfo {
+  version: string;
+  backend: string;
+  github_repo: string;
+}
+
+export interface UpdateCheckResult {
+  current_version: string;
+  latest_version: string;
+  update_available: boolean;
+  release_url: string;
+  release_name?: string;
+}
+
+export async function getVersion(): Promise<VersionInfo | null> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/version`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function checkForUpdate(): Promise<UpdateCheckResult | null> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/version/check`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function listProfiles(): Promise<string[]> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/profiles`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.profiles ?? [];
+  } catch {
+    return [];
+  }
+}
+
+export async function loadProfile(name: string): Promise<Record<string, unknown> | null> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/profiles/${encodeURIComponent(name)}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.config ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function saveProfile(name: string, config: Record<string, unknown>): Promise<boolean> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/profiles/${encodeURIComponent(name)}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ config }),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function deleteProfile(name: string): Promise<boolean> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/profiles/${encodeURIComponent(name)}`, {
+      method: "DELETE",
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+

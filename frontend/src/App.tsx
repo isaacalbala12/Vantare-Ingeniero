@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Dashboard from "./components/RadioOverlay";
 import ConfigTab from "./components/ConfigTab";
 import { useAppStore } from "./store/config";
@@ -9,6 +9,7 @@ import useAudioContext from "./hooks/useAudioContext";
 import { getHealth } from "./services/api";
 import { audioQueue } from "./services/audioQueue";
 import { parseSpotterCommand } from "./services/spotterCommands";
+import { fetchUpdateNotice, openReleaseUrl } from "./services/updateChecker";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 
 // Verificar disponibilidad de Web Speech API
@@ -32,6 +33,12 @@ export const App: React.FC = () => {
     screen,
     setScreen,
   } = useAppStore();
+
+  const [updateNotice, setUpdateNotice] = useState<{
+    latest_version: string;
+    release_url: string;
+    release_name?: string;
+  } | null>(null);
 
   // 1. Inicializar WebSocket (se conecta automáticamente en useEffect interno)
   const { sendJson } = useWebSocket();
@@ -406,6 +413,23 @@ export const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [setBackendHealth]);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const notice = await fetchUpdateNotice();
+      if (!cancelled && notice?.update_available && notice.release_url) {
+        setUpdateNotice({
+          latest_version: notice.latest_version,
+          release_url: notice.release_url,
+          release_name: notice.release_name,
+        });
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
 
 
   const isBackendOnline = connectivity.wsStatus === "CONNECTED" || connectivity.backendHealth !== null;
@@ -461,6 +485,21 @@ export const App: React.FC = () => {
           <button onClick={handleClose} className="text-[#666] hover:text-red-500 text-[14px] leading-none w-5 h-5 flex items-center justify-center rounded hover:bg-[#333]">✕</button>
         </div>
       </div>
+
+      {updateNotice && (
+        <div className="flex items-center justify-between px-3 py-1.5 bg-[#2a1a00] border-b border-[#553300] text-[11px]">
+          <span>Nueva versión disponible: v{updateNotice.latest_version}</span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => openReleaseUrl(updateNotice.release_url)}
+              className="text-[#ffb347] hover:text-white uppercase font-bold"
+            >
+              Descargar
+            </button>
+            <button onClick={() => setUpdateNotice(null)} className="text-[#888] hover:text-white">✕</button>
+          </div>
+        </div>
+      )}
 
       {/* Contenido principal que alterna entre Dashboard y Configuración */}
       <div className="flex-1 overflow-hidden relative bg-[#111]">

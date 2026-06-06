@@ -279,6 +279,9 @@ async def websocket_endpoint(websocket: WebSocket):
                             else:
                                 # Primer frame tras conexión, guardar como está
                                 app_state.latest_client_frame = frame
+                        trace_store = getattr(app_state, "trace_store", None)
+                        if trace_store and trace_store.is_recording and app_state.latest_client_frame:
+                            trace_store.append_frame(app_state.latest_client_frame)
                         mqtt_svc = getattr(app_state, "mqtt_service", None)
                         if mqtt_svc and app_state.latest_client_frame:
                             asyncio.create_task(mqtt_svc.publish_telemetry(app_state.latest_client_frame))
@@ -300,6 +303,9 @@ async def websocket_endpoint(websocket: WebSocket):
                     telemetry_data = msg.get("data", {})
                     if telemetry_data:
                         app_state.latest_client_frame = telemetry_data
+                        trace_store = getattr(app_state, "trace_store", None)
+                        if trace_store and trace_store.is_recording:
+                            trace_store.append_frame(telemetry_data)
                 elif event == "config_update":
                     cfg = msg.get("data", {})
                     if "swearyMessages" in cfg:

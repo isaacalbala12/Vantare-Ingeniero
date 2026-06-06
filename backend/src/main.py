@@ -33,6 +33,8 @@ from src.services.edge_tts_service import EdgeTTSService
 from src.services.elevenlabs_tts_service import ElevenLabsTTSService
 from src.services.gemini_tts_service import GeminiTTSService
 from src.persistence.history_store import HistoryStore
+from src.persistence.profile_store import ProfileStore
+from src.persistence.trace_store import TraceStore
 from shared_telemetry import TelemetryReader
 
 from src.routers.health import router as health_router
@@ -41,6 +43,10 @@ from src.routers.llm import router as llm_router
 from src.routers.tts import router as tts_router
 from src.routers.history import router as history_router
 from src.routers.transcribe import router as transcribe_router
+from src.routers.profiles import router as profiles_router
+from src.routers.version import router as version_router
+from src.routers.traces import router as traces_router
+from src.version import APP_VERSION
 
 from src.intelligence.spotter import SpotterService
 from src.intelligence.engine import IntelligenceEngine
@@ -95,6 +101,16 @@ async def lifespan(app: FastAPI):
     history_store = HistoryStore()
     app.state.history_store = history_store
     logger.info("HistoryStore initialized (%d records loaded)", len(history_store.get_history()))
+
+    profile_store = ProfileStore()
+    app.state.profile_store = profile_store
+    logger.info("ProfileStore initialized (%d profiles)", len(profile_store.list_profiles()))
+
+    trace_store = TraceStore()
+    app.state.trace_store = trace_store
+    app.state.trace_playback_task = None
+    app.state.trace_playback_active = False
+    logger.info("TraceStore initialized")
 
     # 5b. Inicializar EventStore (ChromaDB para RAG)
     import uuid
@@ -260,7 +276,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Vantare Ingeniero de IA Backend",
     description="Motor de estrategia y copiloto asíncrono para Le Mans Ultimate",
-    version="1.0.0",
+    version=APP_VERSION,
     lifespan=lifespan
 )
 
@@ -288,6 +304,9 @@ app.include_router(llm_router)
 app.include_router(tts_router)
 app.include_router(history_router)
 app.include_router(transcribe_router)
+app.include_router(profiles_router)
+app.include_router(version_router)
+app.include_router(traces_router)
 
 
 if __name__ == "__main__":
