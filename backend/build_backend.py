@@ -63,7 +63,7 @@ def build():
         "faster_whisper",
         "pyqtgraph",
         "ralph_workflow",
-        "mixpanel", "posthog",
+        "mixpanel",
         "notebook", "jupyter",
         "tensorflow", "keras", "sklearn",
         "django", "celery", "redis",
@@ -103,6 +103,7 @@ def build():
         "espeakng_loader",
         "edge_tts",
         "openai",
+        "chromadb.telemetry.product.posthog",
     ]
     for imp in HIDDEN_IMPORTS:
         cmd.append(f"--hidden-import={imp}")

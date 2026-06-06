@@ -21,6 +21,9 @@ export const ConfigTab: React.FC = () => {
   const [sensitivity, setSensitivity] = useState(config.sensitivity ?? 50);
   const [pttHotkey, setPttHotkey] = useState(config.pttHotkey ?? "P");
   const [pttStopHotkey, setPttStopHotkey] = useState(config.pttStopHotkey ?? "P");
+  const [swearyMessages, setSwearyMessages] = useState(config.swearyMessages ?? false);
+  const [spotterOffQualifying, setSpotterOffQualifying] = useState(config.spotterOffQualifying ?? true);
+  const [spotterExcludeStopped, setSpotterExcludeStopped] = useState(config.spotterExcludeStopped ?? true);
 
   // Estados de test y dispositivos
   const [testStatus, setTestStatus] = useState<string | null>(null);
@@ -174,6 +177,9 @@ export const ConfigTab: React.FC = () => {
       sensitivity,
       pttHotkey: pttHotkey.trim(),
       pttStopHotkey: pttStopHotkey.trim(),
+      swearyMessages,
+      spotterOffQualifying,
+      spotterExcludeStopped,
     });
     setSaveStatus("✅ Guardado");
     setTimeout(() => setSaveStatus(null), 2000);
@@ -330,6 +336,33 @@ export const ConfigTab: React.FC = () => {
               />
               <span className="text-[9px] text-[#555] mt-1">STOP: envía y recibe respuesta</span>
             </div>
+            <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={swearyMessages}
+                onChange={(e) => setSwearyMessages(e.target.checked)}
+                className="accent-[#8a2be2]"
+              />
+              Lenguaje de paddock (juramentos opcionales)
+            </label>
+            <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={spotterOffQualifying}
+                onChange={(e) => setSpotterOffQualifying(e.target.checked)}
+                className="accent-[#8a2be2]"
+              />
+              Silenciar spotter en clasificación (SC y combustible siguen activos)
+            </label>
+            <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={spotterExcludeStopped}
+                onChange={(e) => setSpotterExcludeStopped(e.target.checked)}
+                className="accent-[#8a2be2]"
+              />
+              Ignorar coches parados o en boxes
+            </label>
             <div className="mt-2 p-2 bg-[#1a1a1a] border border-[#222] rounded text-[10px] flex flex-col gap-1.5">
               <div className="text-[#666] uppercase tracking-wider mb-1">Configuración del Backend:</div>
               <div className="flex justify-between">

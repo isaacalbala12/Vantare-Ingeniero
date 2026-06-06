@@ -10,6 +10,7 @@ from openai import AsyncOpenAI
 from src.config import settings
 from src.models.messages import AdviceStartMessage, AdviceTokenMessage, AdviceEndMessage, UIAction
 from src.transport.broadcaster import send
+from src.intelligence import prompt_templates
 
 
 logger = logging.getLogger("vantare.llm_client")
@@ -100,6 +101,10 @@ class VLLMClient:
         try:
             client = self._get_client()
 
+            competitors = []
+            if engine_ref and hasattr(engine_ref, "get_competitors_list"):
+                competitors = engine_ref.get_competitors_list()
+
             stream = await client.chat.completions.create(
                 model=self._model,
                 messages=[
@@ -108,10 +113,12 @@ class VLLMClient:
                 temperature=0.2,
                 max_tokens=max_tokens,
                 stream=True,
+                tools=prompt_templates.get_llm_tools(include_competitor_query=bool(competitors)),
             )
 
             tool_call_name: Optional[str] = None
             tool_call_arguments: Dict[str, Any] = {}
+            competitor_query_args: Optional[Dict[str, Any]] = None
 
             async for chunk in stream:
                 if not chunk.choices:
@@ -136,12 +143,39 @@ class VLLMClient:
                         if tc.function and tc.function.name:
                             tool_call_name = tc.function.name
                         if tc.function and tc.function.arguments:
-                            # Acumular argumentos (pueden llegar en varios chunks)
                             existing = tool_call_arguments.get(tc.index, "")
                             tool_call_arguments[tc.index] = existing + tc.function.arguments
 
             # 3. Procesar tool calls al final del stream
-            if tool_call_name and tool_call_arguments:
+            if tool_call_name == "query_competitor" and tool_call_arguments and competitors:
+                for idx, args_str in tool_call_arguments.items():
+                    try:
+                        args = json.loads(args_str) if isinstance(args_str, str) else args_str
+                        from src.intelligence.competitor_queries import resolve_from_tool_args
+                        result = resolve_from_tool_args(args, competitors)
+                        competitor_query_args = args
+                        if result.summary:
+                            summary_token = f"\n[RIVAL] {result.summary}"
+                            full_text += summary_token
+                            send(AdviceTokenMessage(advice_id=advice_id, token=summary_token, event="advice_token"))
+                    except Exception as e:
+                        logger.warning("Error resolviendo query_competitor (idx=%s): %s", idx, e)
+
+            elif tool_call_name == "monitor_competitor" and tool_call_arguments and engine_ref:
+                for idx, args_str in tool_call_arguments.items():
+                    try:
+                        args = json.loads(args_str) if isinstance(args_str, str) else args_str
+                        action = args.get("action")
+                        driver_index = args.get("driver_index")
+                        if action and driver_index is not None and hasattr(engine_ref, "apply_monitor_competitor"):
+                            msg = engine_ref.apply_monitor_competitor(action, driver_index)
+                            summary_token = f"\n[MONITOR] {msg}"
+                            full_text += summary_token
+                            send(AdviceTokenMessage(advice_id=advice_id, token=summary_token, event="advice_token"))
+                    except Exception as e:
+                        logger.warning("Error resolviendo monitor_competitor (idx=%s): %s", idx, e)
+
+            elif tool_call_name and tool_call_arguments:
                 for idx, args_str in tool_call_arguments.items():
                     try:
                         args = json.loads(args_str) if isinstance(args_str, str) else args_str

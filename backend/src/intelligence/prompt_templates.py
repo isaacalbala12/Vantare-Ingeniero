@@ -106,6 +106,14 @@ Ejemplo: VST|HY|+2.1|V22 · ALO|HY|-1.2|V22
 
 Máximo 2-3 frases. Estilo radio. Técnico y conciso."""
 
+SWEARY_STYLE_HINT = (
+    "\n\nESTILO: Puedes usar lenguaje colorido y directo de paddock cuando encaje con la situación."
+)
+
+CLEAN_STYLE_HINT = (
+    "\n\nESTILO: Mantén un tono profesional y limpio, sin palabrotas ni vulgaridades."
+)
+
 UI_TOOLS = [
     {
         "type": "function",
@@ -136,6 +144,64 @@ UI_TOOLS = [
         }
     }
 ]
+
+COMPETITOR_QUERY_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "query_competitor",
+        "description": "Consulta datos de un rival: posición, gap, mejor vuelta, boxes.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query_type": {
+                    "type": "string",
+                    "enum": ["by_name", "by_position", "by_class"],
+                    "description": "Tipo de búsqueda del rival.",
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Nombre o apellido del piloto (query_type=by_name).",
+                },
+                "position": {
+                    "type": "integer",
+                    "description": "Posición en clasificación (query_type=by_position).",
+                },
+                "driver_class": {
+                    "type": "string",
+                    "description": "Clase del coche: Hypercar, GT3, LMP2, etc. (query_type=by_class).",
+                },
+            },
+            "required": ["query_type"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+MONITOR_COMPETITOR_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "monitor_competitor",
+        "description": "Monitoriza un rival (max 3). Acciones: start o stop.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action": {"type": "string", "enum": ["start", "stop"]},
+                "driver_index": {"type": "integer"},
+            },
+            "required": ["action", "driver_index"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+def get_llm_tools(include_competitor_query: bool = True) -> List[Dict[str, Any]]:
+    tools = list(UI_TOOLS)
+    if include_competitor_query:
+        tools.append(COMPETITOR_QUERY_TOOL)
+        tools.append(MONITOR_COMPETITOR_TOOL)
+    return tools
 
 
 def _has_telemetry(context: dict) -> bool:
@@ -184,6 +250,10 @@ def render(context_dict: dict, tier: str) -> str:
 
         # Construir prompt con formato ticker
         sections = [SYSTEM_PROMPT_TICKER]
+        if context_dict.get("sweary"):
+            sections.append(SWEARY_STYLE_HINT)
+        else:
+            sections.append(CLEAN_STYLE_HINT)
 
         # Sección de telemetría en formato ticker
         sections.append("\n### TELEMETRÍA ###\n")
@@ -197,6 +267,12 @@ def render(context_dict: dict, tier: str) -> str:
         # Sección de trigger o pregunta
         if pilot_question:
             sections.append(f"\n### PREGUNTA DEL PILOTO ###\n{pilot_question}")
+            competitor_context = context_dict.get("competitor_context")
+            if competitor_context:
+                sections.append(f"\n### DATOS RIVAL (consulta resuelta) ###\n{competitor_context}")
+            sector_context = context_dict.get("sector_context")
+            if sector_context:
+                sections.append(f"\n### ANÁLISIS SECTORES ###\n{sector_context}")
         elif trigger_reason:
             sections.append(f"\n### MOTIVO ###\n{trigger_reason}")
 

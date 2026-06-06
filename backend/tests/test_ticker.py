@@ -312,11 +312,9 @@ class TestFormatLaptime:
         assert _format_laptime(90.5) == "1:30.5"
 
     def test_laptime_under_minute(self):
-        """Tiempo de vuelta < 1 minuto."""
-        from src.intelligence.ticker import _format_laptime
+        """Tiempo de vuelta < 1 minuto — formato coloquial para TTS."""
         result = _format_laptime(45.2)
-        # Puede ser 0:45.2 o un valor cercano por redondeo
-        assert "0:45." in result
+        assert result == "45.2"
 
 
 class TestGenerateTicker:

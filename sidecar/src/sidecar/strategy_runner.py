@@ -99,11 +99,10 @@ class StrategyRunner:
             fuel_capacity = safe_float(player_tele.mFuelCapacity)
             is_invalid_lap = bool(player_tele.mLapInvalidated)
             pit_limiter_active = bool(player_tele.mSpeedLimiterActive)
-            speed = math.sqrt(
-                safe_float(player_tele.mLocalVel.x) ** 2
-                + safe_float(player_tele.mLocalVel.y) ** 2
-                + safe_float(player_tele.mLocalVel.z) ** 2
-            )
+            vel_x = safe_float(player_tele.mLocalVel.x)
+            vel_y = safe_float(player_tele.mLocalVel.y)
+            vel_z = safe_float(player_tele.mLocalVel.z)
+            speed = math.sqrt(vel_x ** 2 + vel_y ** 2 + vel_z ** 2)
             battery_charge = safe_float(player_tele.mStateOfCharge)
             motor_state_val = player_tele.mElectricBoostMotorState
             if motor_state_val == 2:
@@ -118,6 +117,7 @@ class StrategyRunner:
             is_invalid_lap = False
             pit_limiter_active = False
             speed = 0.0
+            vel_x = vel_y = vel_z = 0.0
             battery_charge = 100.0
             motor_state = 1
 
@@ -196,6 +196,9 @@ class StrategyRunner:
                 estimated_time_into_lap=safe_float(veh_info.mTimeIntoLap),
                 speed=opp_speed,
                 fuel_capacity_fraction=fuel_fraction,
+                pos_x=safe_float(veh_info.mPos.x),
+                pos_y=safe_float(veh_info.mPos.y),
+                pos_z=safe_float(veh_info.mPos.z),
             )
             competitors_list.append(competitor)
 
@@ -246,6 +249,12 @@ class StrategyRunner:
             pos_x=player.position_xyz[0],
             pos_y=player.position_xyz[1],
             pos_z=player.position_xyz[2],
+            vel_x=vel_x,
+            vel_y=vel_y,
+            vel_z=vel_z,
+            player_class=player.class_name,
+            vehicle_name=player.vehicle_name,
+            standing_position=int(player.place),
             competitors=competitors_list,
         )
 

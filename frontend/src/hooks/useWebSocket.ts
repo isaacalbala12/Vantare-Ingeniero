@@ -109,6 +109,15 @@ export function useWebSocket() {
           clearTimeout(reconnectTimeoutRef.current);
           reconnectTimeoutRef.current = null;
         }
+        const cfg = useAppStore.getState().config;
+        ws.send(JSON.stringify({
+          event: "config_update",
+          data: {
+            swearyMessages: cfg.swearyMessages ?? false,
+            spotterOffQualifying: cfg.spotterOffQualifying ?? true,
+            spotterExcludeStopped: cfg.spotterExcludeStopped ?? true,
+          },
+        }));
         // Reset delta tracking on reconnect
         previousFrameRef.current = null;
         frameCountRef.current = 0;

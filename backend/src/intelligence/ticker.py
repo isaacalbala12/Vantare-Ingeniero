@@ -98,19 +98,9 @@ def _format_time(seconds: float) -> str:
 
 
 def _format_laptime(seconds: float) -> str:
-    """Formatea tiempo de vuelta a M:SS.t.
-
-    Args:
-        seconds: Tiempo en segundos (puede tener decimales).
-
-    Returns:
-        Tiempo formateado como M:SS.t
-    """
-    total_seconds = int(seconds)
-    tenths = int((seconds - total_seconds) * 10) % 10
-    minutes = total_seconds // 60
-    secs = total_seconds % 60
-    return f"{minutes}:{secs:02d}.{tenths}"
+    """Formatea tiempo de vuelta para ticker/TTS (coloquial si < 60s)."""
+    from src.intelligence.time_format import format_laptime
+    return format_laptime(seconds, colloquial=True)
 
 
 def _format_drv(data: dict) -> str:

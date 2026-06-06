@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "test": "vitest run --config vitest.config.ts",
     "tauri": "tauri"
   },
   "dependencies": {
@@ -23,9 +24,11 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
     "@tauri-apps/cli": "^2.2.0",
+    "@testing-library/react": "^16.3.0",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^26.1.0",
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
     "vitest": "^4.1.7"

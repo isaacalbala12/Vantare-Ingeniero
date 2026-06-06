@@ -3,7 +3,17 @@
  * Evita que dos respuestas se pisen cuando llegan muy seguidas
  * (ej: trigger automático seguido de pregunta del piloto).
  */
+import { invoke } from "@tauri-apps/api/core";
+
 type PlaybackCallback = (isPlaying: boolean) => void;
+
+async function setLmuDuck(active: boolean): Promise<void> {
+  try {
+    await invoke("duck_lmu", { active, level: 0.2 });
+  } catch {
+    // Graceful si no estamos en Tauri Windows o falla COM
+  }
+}
 
 class AudioQueue {
   private queue: { text: string; url: string }[] = [];
@@ -28,6 +38,7 @@ class AudioQueue {
     this.queue = [];
     if (this.playing) {
       this.playing = false;
+      void setLmuDuck(false);
       if (this.onPlaybackChange) this.onPlaybackChange(false);
     }
   }
@@ -35,12 +46,14 @@ class AudioQueue {
   private playNext(): void {
     if (this.queue.length === 0) {
       this.playing = false;
+      void setLmuDuck(false);
       if (this.onPlaybackChange) this.onPlaybackChange(false);
       return;
     }
 
     this.playing = true;
     if (this.onPlaybackChange) this.onPlaybackChange(true);
+    void setLmuDuck(true);
     const task = this.queue.shift()!;
     const audio = new Audio(task.url);
 

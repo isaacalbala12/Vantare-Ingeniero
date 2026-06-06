@@ -99,17 +99,17 @@ async def test_llm_task_preemption():
     frame_critical.yellow_flag_active = False
     frame_critical.competitors = []
 
-    # Resetear el cooldown del trigger de Safety Car para asegurar evaluación
+    # Resetear el cooldown del trigger de Flags Monitor para asegurar evaluación
     for trigger in engine.triggers:
-        if trigger.name == "Safety Car Active":
+        if trigger.name == "Flags Monitor":
             trigger.last_triggered = 0.0
 
     # Inyectar el frame crítico
     await engine.evaluate_cycle(frame_critical, advice_high)
 
     # 6. Validar que la preempción se haya ejecutado
-    # La tarea anterior debió ser cancelada de inmediato y sustituida por el Safety Car
-    assert engine._active_trigger_name == "Safety Car Active"
+    # La tarea anterior debió ser cancelada de inmediato y sustituida por Flags Monitor
+    assert engine._active_trigger_name == "Flags Monitor"
     assert engine._active_trigger_priority == "CRITICAL"
 
     # Verificar que el mensaje especial de interrupción de radio fue enviado
@@ -122,5 +122,5 @@ async def test_llm_task_preemption():
     # Validar que los mensajes del stream contengan el inicio y fin correctos
     pending_msgs = [m for m in broadcast_messages if isinstance(m, LLMPendingMessage)]
     assert len(pending_msgs) >= 2  # Uno para el primer trigger, otro para el crítico
-    assert pending_msgs[-1].trigger_name == "Safety Car Active"
+    assert pending_msgs[-1].trigger_name == "Flags Monitor"
     assert pending_msgs[-1].priority == "CRITICAL"

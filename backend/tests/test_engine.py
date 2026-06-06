@@ -132,13 +132,17 @@ class TestIntelligenceEngine:
     @pytest.mark.asyncio
     async def test_cancel_current_llm_with_task(self, engine, mock_broadcaster):
         """cancel_current_llm debe cancelar tarea activa."""
-        mock_task = MagicMock()
-        mock_task.done.return_value = False
-        mock_task.__await__ = lambda: iter([None])
-        engine._current_llm_task = mock_task
+        async def long_running():
+            try:
+                await asyncio.sleep(3600)
+            except asyncio.CancelledError:
+                raise
+
+        task = asyncio.create_task(long_running())
+        engine._current_llm_task = task
         engine._current_advice_id = str(uuid.uuid4())
         await engine.cancel_current_llm()
-        mock_task.cancel.assert_called_once()
+        assert task.cancelled() or task.done()
 
     @pytest.mark.asyncio
     async def test_ask_async_returns_text(self, engine):
@@ -165,6 +169,28 @@ class TestIntelligenceEngine:
     def test_get_event_store_no_store(self, engine):
         """_get_event_store sin event_store debe devolver None."""
         assert engine._get_event_store() is None
+
+    def test_emit_pearl_sends_alert(self, engine, mock_broadcaster):
+        from src.intelligence.pearls_of_wisdom import PearlType
+        engine._emit_pearl(PearlType.FAST_LAP)
+        mock_broadcaster.send.assert_called_once()
+        alert = mock_broadcaster.send.call_args[0][0]
+        assert alert.category == "pearl"
+
+    @pytest.mark.asyncio
+    async def test_overtake_emits_pearl(self, engine, mock_broadcaster):
+        engine._last_standing_position = 5
+        with patch.object(engine, "_current_llm_task", None):
+            await engine.evaluate_cycle(
+                telemetry_state={"standing_position": 4, "lap_number": 1, "session_type": "RACE"},
+                strategy_state={},
+                session_state={"session_type": "RACE"},
+            )
+        pearl_calls = [
+            c for c in mock_broadcaster.send.call_args_list
+            if getattr(c[0][0], "category", None) == "pearl"
+        ]
+        assert len(pearl_calls) >= 1
 
 
 import asyncio

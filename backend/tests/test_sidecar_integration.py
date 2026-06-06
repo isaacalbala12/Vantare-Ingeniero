@@ -50,6 +50,13 @@ class TestSidecarHealth:
             assert "sidecar" in data
 
 
+def _sync_sidecar(ws) -> None:
+    """Fuerza procesamiento del handler async antes de assert."""
+    ws.send_json({"event": "ping"})
+    resp = ws.receive_json()
+    assert resp.get("event") == "pong"
+
+
 class TestSidecarWebSocket:
     """Endpoint /ws/sidecar debe aceptar conexiones y strategy_frames."""
 
@@ -65,6 +72,7 @@ class TestSidecarWebSocket:
                         "events": [{"type": "lap_completed", "lap": 1}],
                     }
                 })
+                _sync_sidecar(ws)
                 # Verificar que se almacenó en app.state
                 assert app.state.latest_strategy_frame is not None
                 assert app.state.latest_strategy_frame["advice"]["fuel_advice"] == "OK"
@@ -80,6 +88,7 @@ class TestSidecarWebSocket:
                         "frame": {"lap_number": 2},
                     }
                 })
+                _sync_sidecar(ws)
                 assert app.state.latest_strategy_frame is not None
                 assert app.state.latest_strategy_frame["frame"]["lap_number"] == 2
 
@@ -94,6 +103,7 @@ class TestSidecarWebSocket:
                     "event": "strategy_frame",
                     "data": {"advice": {}, "frame": {}}
                 })
+                _sync_sidecar(ws)
                 assert app.state.latest_strategy_frame is not None
 
     def test_sidecar_multiple_frames(self, app):
@@ -109,9 +119,7 @@ class TestSidecarWebSocket:
                             "events": [],
                         }
                     })
-                    # Trigger async processing: ping + receive
-                    ws.send_json({"event": "ping"})
-                    ws.receive_json()
+                    _sync_sidecar(ws)
                 # Verify last frame was processed
                 assert app.state.latest_strategy_frame["frame"]["lap_number"] == 3
                 assert app.state.latest_strategy_frame["advice"]["fuel_advice"] == "lap_3"
