@@ -3,8 +3,9 @@ from __future__ import annotations
 import json
 import logging
 
-from src.intelligence.crewchief_events.commands import match_fast_command
+from src.intelligence.crewchief_events.commands import count_fast_intent_groups, match_fast_command, match_radio_check
 from src.intelligence.pilot_tool_executor import PilotToolExecutor
+from src.intelligence.ptt_pipeline import normalize_pilot_question
 from src.intelligence import prompt_templates
 
 logger = logging.getLogger("vantare.pilot_ptt_agent")
@@ -13,12 +14,29 @@ _executor = PilotToolExecutor()
 
 
 async def handle_pilot_ptt(engine, question: str) -> None:
-    """PTT tool-first: LLM elige tools; loop corto si mixto; circuit breaker; free-form."""
-    question = (question or "").strip()
+    """PTT: fast path → free-form directo → tools solo si intención mixta."""
+    question = normalize_pilot_question(question)
     if not question:
         return
 
-    if _try_circuit_breaker(engine, question):
+    await engine.cancel_current_llm()
+
+    if match_radio_check(question):
+        engine._emit_voice_response("Afirmativo, recepción clara.")
+        return
+
+    intent_groups = count_fast_intent_groups(question)
+    cmd = match_fast_command(question)
+
+    if intent_groups == 1 and cmd is not None:
+        if engine._try_handle_fast_command(cmd):
+            return
+        if cmd.intent in ("fuel_status", "gap_status", "damage_status"):
+            await engine._handle_free_form_question(question)
+            return
+
+    if intent_groups == 0:
+        await engine._handle_free_form_question(question)
         return
 
     competitors = engine.get_competitors_list()
@@ -102,18 +120,3 @@ async def _turn_two_summary(engine, messages, tool_calls, results) -> str:
         logger.warning("PTT turno 2 falló: %s", exc)
         parts = [r.spoken_message for r in results if r.spoken_message]
         return " ".join(parts)
-
-
-def _try_circuit_breaker(engine, question: str) -> bool:
-    """Red de seguridad: speak_only y spotter si el LLM no invocó tool."""
-    cmd = match_fast_command(question)
-    if cmd is None:
-        return False
-    if cmd.intent not in (
-        "speak_only_on",
-        "speak_only_off",
-        "spotter_enable",
-        "spotter_disable",
-    ):
-        return False
-    return engine._try_handle_fast_command(cmd)

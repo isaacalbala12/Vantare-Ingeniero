@@ -18,7 +18,19 @@ from src.intelligence.flags_monitor import FCY_PHASE_MESSAGES
 from src.intelligence.spotter_adapter import resolve_spotter_input
 from src.intelligence.pit_limiter_monitor import PitLimiterMonitor
 from src.intelligence.spotter_state import SpotterStateMachine, ProximityTransition
-from src.intelligence.spotter_geometry import detect_lateral_proximity
+from src.intelligence.spotter_geometry import (
+    LateralProximity,
+    detect_lateral_proximity,
+    detect_path_lateral_proximity,
+    enrich_hits_with_closing_speed,
+    resolve_proximity_side,
+)
+from src.intelligence.cartesian_spotter import (
+    detect_cartesian_overlap,
+    local_hit_to_lateral_proximity,
+    resolve_player_forward_xz,
+)
+from shared_telemetry.session_kind import is_race_session
 from shared_strategy.models import VehicleClassInfo
 
 
@@ -42,10 +54,11 @@ class SpotterService:
         pit_limiter_disengage_window_s: Optional[float] = None,
         pit_limiter_cooldown_s: Optional[float] = None,
         invert_lateral: Optional[bool] = None,
+        enabled: bool = False,
     ) -> None:
         self.broadcast_callback = broadcast_callback
         self.vehicle_class_info = vehicle_class_info or VehicleClassInfo()
-        self.enabled = True
+        self.enabled = bool(enabled)
         self.proximity_threshold_m = proximity_threshold_m or settings.SPOTTER_PROXIMITY_THRESHOLD_M
         self.spotter_off_qualifying = (
             spotter_off_qualifying if spotter_off_qualifying is not None else settings.SPOTTER_OFF_QUALIFYING
@@ -117,6 +130,8 @@ class SpotterService:
         self._gap_frequency_s = settings.SPOTTER_GAP_FREQUENCY_S
         self._race_start_delay_s = settings.SPOTTER_RACE_START_DELAY_S
         self._fcy_spotter_paused_until: float = 0.0
+        self._fcy_sc_active_last: bool = False
+        self._last_forward_xz: Optional[tuple[float, float]] = None
         self._fcy_pause_min_s = settings.SPOTTER_FCY_PAUSE_MIN_S
         self._fcy_pause_max_s = settings.SPOTTER_FCY_PAUSE_MAX_S
         self._fcy_pause_speed_max_ms = 50.0
@@ -189,6 +204,10 @@ class SpotterService:
     def _qualifying_silent(self, tick: dict) -> bool:
         return self.spotter_off_qualifying and self._is_qualifying(tick)
 
+    def _cc_owns_message(self, tick: dict, cc_enabled: bool) -> bool:
+        """CC suite owns gap/fuel/lap alerts in race when the matching enable_* flag is on."""
+        return cc_enabled and is_race_session(tick, None)
+
     def _effective_threshold(self, tick: dict) -> float:
         vehicle = tick.get("vehicle_name", "")
         player_class = tick.get("player_class", "")
@@ -249,7 +268,7 @@ class SpotterService:
         return self._pit_limiter.evaluate(tick)
 
     def _eval_gaps(self, tick: dict) -> List[AlertMessage]:
-        if self._enable_gap_messages:
+        if self._cc_owns_message(tick, self._enable_gap_messages):
             return []
         now = time.monotonic()
         if now - self._last_gap_alert_at < self._gap_frequency_s:
@@ -454,11 +473,112 @@ class SpotterService:
             ]
         return []
 
+    def _collect_proximity_hits(
+        self,
+        tick: dict,
+        competitors: list[dict],
+        threshold: float,
+        excluded: set[int],
+    ) -> list[LateralProximity]:
+        """Fusiona path, cartesian y velocidad; reconcilia izquierda/derecha por rival."""
+        lap = int(tick.get("lap_number", 0) or 0)
+        lap_dist = float(tick.get("lap_distance", 0.0))
+        player_lateral = float(tick.get("path_lateral", 0.0))
+        vel_x = float(tick.get("vel_x", 0.0))
+        vel_z = float(tick.get("vel_z", 0.0))
+        player_vel = (vel_x, float(tick.get("vel_y", 0.0)), vel_z)
+        player_speed = math.hypot(vel_x, vel_z)
+        fwd = resolve_player_forward_xz(
+            float(tick.get("ori_fwd_x", 0.0)),
+            float(tick.get("ori_fwd_z", 0.0)),
+            vel_x,
+            vel_z,
+            self._last_forward_xz,
+        )
+        self._last_forward_xz = fwd
+        player_pos = (
+            float(tick.get("pos_x", 0.0)),
+            float(tick.get("pos_y", 0.0)),
+            float(tick.get("pos_z", 0.0)),
+        )
+
+        path_hits = detect_path_lateral_proximity(
+            lap,
+            lap_dist,
+            player_lateral,
+            competitors,
+            threshold,
+            exclude_indices=excluded,
+        )
+        path_by_idx = {h.driver_index: h for h in path_hits}
+
+        cart_by_idx = {
+            h.driver_index: local_hit_to_lateral_proximity(h)
+            for h in detect_cartesian_overlap(
+                player_pos,
+                fwd,
+                competitors,
+                lateral_threshold_m=threshold,
+                car_length_m=self._car_length_m,
+                player_speed_ms=player_speed,
+                invert_lateral=self.invert_lateral,
+                exclude_indices=excluded,
+            )
+        }
+
+        vel_by_idx = {
+            h.driver_index: h
+            for h in detect_lateral_proximity(
+                player_pos,
+                player_vel,
+                competitors,
+                threshold,
+                exclude_indices=excluded,
+                forward_xz=fwd,
+                invert_lateral=self.invert_lateral,
+            )
+        }
+
+        merged: list[LateralProximity] = []
+        for idx in set(path_by_idx) | set(cart_by_idx) | set(vel_by_idx):
+            if idx in excluded:
+                continue
+            path_h = path_by_idx.get(idx)
+            cart_h = cart_by_idx.get(idx)
+            vel_h = vel_by_idx.get(idx)
+            if path_h is not None:
+                base, source = path_h, "path"
+            elif cart_h is not None:
+                base, source = cart_h, "cartesian"
+            elif vel_h is not None:
+                base, source = vel_h, "velocity"
+            else:
+                continue
+
+            side = resolve_proximity_side(path_h, cart_h, vel_h, base.side)
+            merged.append(
+                LateralProximity(
+                    driver_index=base.driver_index,
+                    driver_class=base.driver_class,
+                    driver_name=base.driver_name,
+                    lateral_m=base.lateral_m,
+                    side=side,
+                    distance_m=base.distance_m,
+                    closing_mps=base.closing_mps,
+                    detection_source=source,
+                    longitudinal_m=base.longitudinal_m,
+                )
+            )
+
+        merged.sort(key=lambda h: (h.lateral_m, h.distance_m))
+        return enrich_hits_with_closing_speed(merged, player_vel, competitors)
+
     def _eval_proximity(self, tick: dict) -> List[AlertMessage]:
         if self._proximity_paused_for_fcy(tick):
             return []
         if bool(tick.get("in_pits", False)):
             self._proximity_state.reset()
+            self._last_forward_xz = None
             return []
 
         player_speed = math.hypot(float(tick.get("vel_x", 0.0)), float(tick.get("vel_z", 0.0)))
@@ -492,20 +612,22 @@ class SpotterService:
             excluded = {int(c["driver_index"]) for c in competitors if c.get("in_pits")}
 
         threshold = self._effective_threshold(tick)
-        hits = detect_lateral_proximity(
-            (tick.get("pos_x", 0.0), tick.get("pos_y", 0.0), tick.get("pos_z", 0.0)),
-            (tick.get("vel_x", 0.0), tick.get("vel_y", 0.0), tick.get("vel_z", 0.0)),
-            competitors,
-            threshold,
-            exclude_indices=excluded,
-        )
+        hits = self._collect_proximity_hits(tick, competitors, threshold, excluded)
+        hit_sources = {h.driver_index: h.detection_source for h in hits if h.detection_source}
         transitions = self._proximity_state.update(
             hits,
             player_class=str(tick.get("player_class", "") or ""),
             threshold_m=threshold,
             now=time.monotonic(),
         )
-        return [self._transition_to_alert(tr) for tr in transitions]
+        alerts: List[AlertMessage] = []
+        for tr in transitions:
+            alert = self._transition_to_alert(tr)
+            src = hit_sources.get(tr.driver_index)
+            if src and not tr.is_clear and not tr.is_clear_all:
+                alert.payload["detection_source"] = src
+            alerts.append(alert)
+        return alerts
 
     def _proximity_paused_for_fcy(self, tick: dict) -> bool:
         now = time.monotonic()
@@ -513,10 +635,11 @@ class SpotterService:
             return True
         sc = bool(tick.get("safety_car_active") or tick.get("full_course_yellow_active"))
         speed = float(tick.get("speed_ms") or tick.get("speed") or 0.0)
-        if sc and speed < self._fcy_pause_speed_max_ms:
-            pause = (self._fcy_pause_min_s + self._fcy_pause_max_s) / 2.0
-            self._fcy_spotter_paused_until = now + pause
+        if sc and not self._fcy_sc_active_last and speed < self._fcy_pause_speed_max_ms:
+            self._fcy_spotter_paused_until = now + self._fcy_pause_min_s
+            self._fcy_sc_active_last = True
             return True
+        self._fcy_sc_active_last = sc
         return False
 
     def _transition_to_alert(self, transition: ProximityTransition) -> AlertMessage:
@@ -549,7 +672,7 @@ class SpotterService:
         )
 
     def _eval_last_lap(self, tick: dict) -> List[AlertMessage]:
-        if self._enable_lap_counter_messages:
+        if self._cc_owns_message(tick, self._enable_lap_counter_messages):
             return []
         laps_left = tick.get("session_laps_left")
         is_last_lap = laps_left == 1.0 or tick.get("is_last_lap", False)
@@ -571,7 +694,7 @@ class SpotterService:
         )]
 
     def _eval_fuel_critical(self, tick: dict) -> List[AlertMessage]:
-        if self._enable_fuel_messages:
+        if self._cc_owns_message(tick, self._enable_fuel_messages):
             return []
         if not fuel_critical_from_tick(tick):
             self._warned_fuel_critical = False
@@ -610,6 +733,7 @@ class SpotterService:
             ttl=ttl,
             dismissable=dismissable,
             payload={
+                "service": "spotter",
                 "severity": severity,
                 "ttl": ttl,
                 "dismissable": dismissable,

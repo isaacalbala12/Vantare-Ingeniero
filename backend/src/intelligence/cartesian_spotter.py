@@ -69,7 +69,7 @@ def _longitudinal_half_window(
     car_length_m: float,
     *,
     tick_dt: float = 0.05,
-    ticks_margin: float = 2.5,
+    ticks_margin: float = 3.5,
 ) -> float:
     """Ventana longitudinal adaptada a velocidad (evita perder rivales entre ticks a 20Hz)."""
     speed_margin = max(player_speed_ms, 8.0) * tick_dt * ticks_margin
@@ -100,7 +100,7 @@ def detect_cartesian_overlap(
         if longitudinal_window_m is not None
         else _longitudinal_half_window(player_speed_ms, car_length_m)
     )
-    long_margin = 1.0
+    long_margin = 0.5
 
     hits: list[LocalOverlapHit] = []
     for comp in competitors:
@@ -126,6 +126,9 @@ def detect_cartesian_overlap(
         if lateral_abs > lateral_limit:
             continue
         if longitudinal < -(long_half + long_margin) or longitudinal > (long_half + long_margin):
+            continue
+        if longitudinal < -3.0 and lateral_abs > min(1.2, lateral_threshold_m * 0.4):
+            # Coche claramente por detrás con offset lateral = siguiendo, no lado a lado.
             continue
 
         side = lateral_offset_to_side(lateral, invert=invert_lateral)
@@ -158,4 +161,5 @@ def local_hit_to_lateral_proximity(hit: LocalOverlapHit):
         lateral_m=hit.lateral_m,
         side=hit.side,
         distance_m=hit.distance_m,
+        longitudinal_m=hit.longitudinal_m,
     )

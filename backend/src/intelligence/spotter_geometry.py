@@ -5,6 +5,12 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from typing import Optional
+from src.intelligence.cartesian_spotter import lateral_offset_to_side
+
+# Máx. separación longitudinal (m) para considerar "lado a lado".
+SIDE_BY_SIDE_LONGITUDINAL_HALF_M = 6.0
+# path_lateral delta (m) por encima de esto → lado fiable desde pista.
+PATH_SIDE_TRUST_M = 0.65
 
 
 @dataclass(frozen=True)
@@ -16,6 +22,8 @@ class LateralProximity:
     side: str  # "izquierda" | "derecha"
     distance_m: float
     closing_mps: float = 0.0
+    detection_source: str = ""
+    longitudinal_m: float = 0.0
 
 
 def _normalize_xz(x: float, z: float) -> tuple[float, float]:
@@ -55,6 +63,24 @@ def _normalize_class_label(class_name: str) -> str:
     return class_name or "Coche"
 
 
+def resolve_proximity_side(
+    path_hit: Optional[LateralProximity],
+    cart_hit: Optional[LateralProximity],
+    vel_hit: Optional[LateralProximity],
+    fallback_side: str,
+) -> str:
+    """Elige izquierda/derecha: path fiable > consenso cart+vel > cart > vel."""
+    if path_hit is not None and path_hit.lateral_m >= PATH_SIDE_TRUST_M:
+        return path_hit.side
+    if cart_hit is not None and vel_hit is not None and cart_hit.side == vel_hit.side:
+        return cart_hit.side
+    if cart_hit is not None:
+        return cart_hit.side
+    if vel_hit is not None:
+        return vel_hit.side
+    return fallback_side
+
+
 def build_proximity_message(
     player_class: str,
     comp_class: str,
@@ -82,6 +108,7 @@ def detect_lateral_proximity(
     exclude_indices: Optional[set[int]] = None,
     forward_xz: Optional[tuple[float, float]] = None,
     max_distance_m: Optional[float] = None,
+    invert_lateral: bool = False,
 ) -> list[LateralProximity]:
     """Detecta rivales dentro del umbral lateral respecto al vector de marcha."""
     px, _, pz = player_pos
@@ -106,13 +133,16 @@ def detect_lateral_proximity(
         distance = math.hypot(dx, dz)
         if distance > distance_limit:
             continue
+        longitudinal = dx * fwd_x + dz * fwd_z
+        if abs(longitudinal) > SIDE_BY_SIDE_LONGITUDINAL_HALF_M:
+            continue
         lateral = dx * right_x + dz * right_z
         lateral_abs = abs(lateral)
         if lateral_abs > threshold_m:
             continue
         if distance < 0.5:
             continue
-        side = "derecha" if lateral > 0 else "izquierda"
+        side = lateral_offset_to_side(lateral, invert=invert_lateral)
         hits.append(
             LateralProximity(
                 driver_index=idx,
@@ -121,6 +151,7 @@ def detect_lateral_proximity(
                 lateral_m=lateral_abs,
                 side=side,
                 distance_m=distance,
+                longitudinal_m=longitudinal,
             )
         )
     hits.sort(key=lambda h: h.distance_m)
@@ -156,6 +187,8 @@ def enrich_hits_with_closing_speed(
                 side=hit.side,
                 distance_m=hit.distance_m,
                 closing_mps=closing,
+                detection_source=hit.detection_source,
+                longitudinal_m=hit.longitudinal_m,
             )
         )
     return enriched
@@ -168,13 +201,14 @@ def detect_path_lateral_proximity(
     competitors: list[dict],
     threshold_m: float,
     *,
-    along_window_m: float = 18.0,
+    along_window_m: float = SIDE_BY_SIDE_LONGITUDINAL_HALF_M,
     exclude_indices: Optional[set[int]] = None,
+    min_lateral_ratio: float = 0.15,
 ) -> list[LateralProximity]:
     """Detección lateral vía mPathLateral + mLapDist (datos nativos LMU scoring)."""
     exclude = exclude_indices or set()
     hits: list[LateralProximity] = []
-    min_lateral = max(1.0, threshold_m * 0.35)
+    min_lateral = max(0.35, threshold_m * min_lateral_ratio)
 
     for comp in competitors:
         idx = int(comp.get("driver_index", -1))
@@ -184,8 +218,8 @@ def detect_path_lateral_proximity(
         if abs(comp_lap - player_lap) > 0:
             continue
         comp_dist = float(comp.get("lap_distance", 0.0))
-        along = abs(comp_dist - player_lap_dist)
-        if along > along_window_m:
+        signed_along = comp_dist - player_lap_dist
+        if abs(signed_along) > along_window_m:
             continue
         lat_delta = float(comp.get("path_lateral", 0.0)) - player_lateral
         lat_abs = abs(lat_delta)
@@ -199,7 +233,8 @@ def detect_path_lateral_proximity(
                 driver_name=str(comp.get("driver_name", "")),
                 lateral_m=lat_abs,
                 side=side,
-                distance_m=along,
+                distance_m=abs(signed_along),
+                longitudinal_m=signed_along,
             )
         )
     hits.sort(key=lambda h: (h.lateral_m, h.distance_m))

@@ -1,6 +1,6 @@
 import pytest
 
-from src.intelligence.crewchief_events.commands import match_fast_command
+from src.intelligence.crewchief_events.commands import count_fast_intent_groups, match_fast_command, match_radio_check
 from src.intelligence.engine import IntelligenceEngine
 from src.models.messages import AlertMessage
 
@@ -23,6 +23,14 @@ def test_match_keep_quiet_no_digas_nada():
     assert command.intent == "speak_only_on"
 
 
+def test_count_fast_intent_groups_mixed():
+    assert count_fast_intent_groups("cállate y dime el gap") >= 2
+
+
+def test_count_fast_intent_groups_open():
+    assert count_fast_intent_groups("explicame la estrategia completa de carrera") == 0
+
+
 def test_unknown_command_falls_back_to_llm():
     assert match_fast_command("explicame la estrategia completa de carrera") is None
 
@@ -37,6 +45,29 @@ def test_match_spotter_enable_command():
     command = match_fast_command("spot")
     assert command is not None
     assert command.intent == "spotter_enable"
+
+
+def test_match_radio_check_pure():
+    assert match_radio_check("¿me escuchas?") is True
+    assert match_radio_check("Hola ingeniero, me oyes") is True
+    assert match_radio_check("radio check") is True
+
+
+def test_match_radio_check_rejects_mixed():
+    assert match_radio_check("me escuchas, ¿cómo van los neumáticos?") is False
+    assert match_radio_check("¿me escuchas? dime el combustible") is False
+
+
+@pytest.mark.asyncio
+async def test_handle_pilot_question_radio_check_fast_path():
+    sent = []
+    eng = IntelligenceEngine(broadcast_callback=sent.append)
+    await eng.handle_pilot_question("¿me escuchas?")
+
+    alerts = [m for m in sent if isinstance(m, AlertMessage)]
+    assert len(alerts) == 1
+    assert "recepción clara" in alerts[0].message.lower()
+    assert alerts[0].payload.get("fast_command") is True
 
 
 @pytest.mark.asyncio

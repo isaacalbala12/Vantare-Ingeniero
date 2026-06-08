@@ -58,11 +58,11 @@ class Settings(BaseSettings):
     SPOTTER_GAP_FREQUENCY_S: float = 30.0
     SPOTTER_CAR_LENGTH_M: float = 4.5
     SPOTTER_CLOSING_SPEED_MS: float = 12.0  # m/s relativo para "viene rápido"
-    SPOTTER_MIN_SPEED_MS: float = 10.0
-    SPOTTER_RACE_START_DELAY_S: float = 20.0
+    SPOTTER_MIN_SPEED_MS: float = 5.0
+    SPOTTER_RACE_START_DELAY_S: float = 3.0
     SPOTTER_USE_3WIDE_LEFT_RIGHT: bool = True
-    SPOTTER_FCY_PAUSE_MIN_S: float = 10.0
-    SPOTTER_FCY_PAUSE_MAX_S: float = 30.0
+    SPOTTER_FCY_PAUSE_MIN_S: float = 1.0
+    SPOTTER_FCY_PAUSE_MAX_S: float = 3.0
     SPOTTER_CLEAR_TTL_MS: int = 2000
     PIT_MENU_DRY_RUN: bool = True
     PIT_MENU_CONFIRM_WRITES: bool = True
@@ -95,6 +95,12 @@ class Settings(BaseSettings):
     # Gemini TTS Settings
     GEMINI_API_KEY: str = ""
     GEMINI_TTS_VOICE: str = "Kore"
+
+    # ASR / Whisper (PTT local)
+    WHISPER_PRELOAD: str = "startup"  # startup | first_question (onboarding futuro)
+    WHISPER_MODEL: str = "small"
+    WHISPER_DEVICE: str = "cpu"
+    WHISPER_COMPUTE_TYPE: str = "int8"
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,

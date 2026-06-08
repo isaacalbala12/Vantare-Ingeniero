@@ -25,3 +25,10 @@ class AudioMock {
   play() { return Promise.resolve(); }
 }
 Object.defineProperty(globalThis, "Audio", { value: AudioMock, writable: true });
+
+class ResizeObserverMock {
+  observe() {}
+  disconnect() {}
+  unobserve() {}
+}
+Object.defineProperty(globalThis, "ResizeObserver", { value: ResizeObserverMock, writable: true });

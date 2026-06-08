@@ -17,6 +17,7 @@ def spotter(mock_broadcast):
         broadcast_callback=mock_broadcast,
         pit_limiter_grace_s=0.0,
         pit_limiter_exit_check_s=0.0,
+        enabled=True,
     )
 
 
@@ -81,6 +82,7 @@ class TestSpotterEvaluate:
             broadcast_callback=mock_broadcast,
             pit_limiter_grace_s=0.0,
             pit_limiter_exit_check_s=2.0,
+            enabled=True,
         )
         spotter.evaluate(_moving_tick(normal_tick, in_pits=True, limiter=True))
         exit_tick = _moving_tick(normal_tick, in_pits=False, limiter=True)
@@ -107,6 +109,7 @@ class TestSpotterEvaluate:
             pit_limiter_grace_s=0.0,
             pit_limiter_exit_check_s=0.0,
             spotter_off_qualifying=True,
+            enabled=True,
         )
         tick = _moving_tick(normal_tick, in_pits=True, limiter=False)
         tick["session_type"] = "qualifying"
@@ -130,6 +133,7 @@ class TestSpotterEvaluate:
             pit_limiter_grace_s=0.0,
             pit_limiter_exit_check_s=0.0,
             pit_limiter_entry_window_s=0.5,
+            enabled=True,
         )
         tick = _moving_tick(normal_tick, in_pits=True, limiter=False)
         spotter.evaluate(tick)
@@ -163,6 +167,7 @@ class TestSpotterEvaluate:
             broadcast_callback=mock_broadcast,
             pit_limiter_grace_s=0.0,
             pit_limiter_exit_check_s=0.0,
+            enabled=True,
         )
         spotter.evaluate(_moving_tick(normal_tick, in_pits=True, limiter=False))
         spotter.evaluate(_moving_tick(normal_tick, in_pits=True, limiter=True))
@@ -292,6 +297,7 @@ class TestSpotterEvaluate:
             broadcast_callback=mock_broadcast,
             spotter_off_qualifying=True,
             proximity_threshold_m=3.0,
+            enabled=True,
         )
         race_alerts = spotter.evaluate(frame_to_spotter_tick(make_side_by_side_race_frame()))
         assert any(a.category == "proximity" for a in race_alerts)

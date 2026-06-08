@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 from src.intelligence.personality_pack import PersonalityPack
-from src.intelligence.spotter_geometry import LateralProximity, build_proximity_message
+from src.intelligence.spotter_geometry import LateralProximity, build_proximity_message, SIDE_BY_SIDE_LONGITUDINAL_HALF_M
 class SideState(str, Enum):
     CLEAR = "clear"
     CAR_PRESENT = "car_present"
@@ -119,7 +119,7 @@ class SpotterStateMachine:
         if right_hit and not right_present and right_hit.lateral_m <= exit_threshold:
             right_present = self._right_state != SideState.CLEAR
         transitions: list[ProximityTransition] = []
-        if left_present and right_present and self._is_true_three_wide(hits):
+        if left_present and right_present and self._is_true_three_wide(left_hit, right_hit):
             if not self._three_wide_active:
                 bouncing = (
                     self._left_state == SideState.PENDING_CLEAR
@@ -239,18 +239,22 @@ class SpotterStateMachine:
         )
         return self._consolidate_clears(transitions)
 
-    def _is_true_three_wide(self, hits: list[LateralProximity]) -> bool:
+    def _is_true_three_wide(
+        self,
+        left_hit: Optional[LateralProximity],
+        right_hit: Optional[LateralProximity],
+    ) -> bool:
         if not self.use_3wide_left_right:
             return True
-        signed: list[float] = []
-        for hit in hits:
-            if hit.side == "derecha":
-                signed.append(hit.lateral_m)
-            elif hit.side == "izquierda":
-                signed.append(-hit.lateral_m)
-        if len(signed) < 2:
+        if left_hit is None or right_hit is None:
             return False
-        return (max(signed) - min(signed)) > self.car_width_m
+        if left_hit.driver_index == right_hit.driver_index:
+            return False
+        if abs(left_hit.longitudinal_m) > SIDE_BY_SIDE_LONGITUDINAL_HALF_M + 1.0:
+            return False
+        if abs(right_hit.longitudinal_m) > SIDE_BY_SIDE_LONGITUDINAL_HALF_M + 1.0:
+            return False
+        return (left_hit.lateral_m + right_hit.lateral_m) > self.car_width_m
 
     def _three_wide_transition(self) -> ProximityTransition:
         return ProximityTransition(
@@ -360,7 +364,10 @@ class SpotterStateMachine:
         side_hits = [h for h in hits if h.side == side]
         if not side_hits:
             return None
-        return min(side_hits, key=lambda h: (h.lateral_m, h.distance_m))
+        return min(
+            side_hits,
+            key=lambda h: (abs(h.longitudinal_m), h.lateral_m, h.distance_m),
+        )
     def _side_state(self, side: str) -> SideState:
         return self._left_state if side == "izquierda" else self._right_state
     def _set_side_state(self, side: str, state: SideState) -> None:

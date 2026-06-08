@@ -55,10 +55,15 @@ async def test_ptt_fuel_via_tool():
 
 
 @pytest.mark.asyncio
-async def test_ptt_open_question_falls_through_to_stream():
+async def test_ptt_open_question_skips_tool_turn():
     eng, sent, llm = _engine_with_mock_llm()
     llm.ask_with_tools = AsyncMock(return_value=AskWithToolsResult(content="", tool_calls=[]))
-    llm.ask_streaming = AsyncMock()
+
+    async def _fake_stream(_messages, tier="FAST"):
+        yield "Ritmo estable, aguanta el stint."
+
+    llm.ask_streaming_messages = _fake_stream
+    llm._complete_speech_messages = AsyncMock(return_value="")
 
     mock_svc = MagicMock()
     mock_svc.latest_frame = MagicMock(
@@ -66,15 +71,21 @@ async def test_ptt_open_question_falls_through_to_stream():
         model_dump=lambda: {"session_type": "RACE", "lap_number": 5},
     )
     mock_svc.latest_advice = MagicMock(model_dump=lambda: {"fuel": {"estimated_laps_remaining": 10.0}})
+    mock_svc.get_race_summary.return_value = {}
     eng._strategy_service = mock_svc
     eng.strategy_service = mock_svc
-    eng._llm_warmup_until = 0.0
 
-    with patch.object(eng, "_current_llm_task", None):
-        await eng.handle_pilot_question("¿cómo va mi ritmo en general?")
+    await eng.handle_pilot_question("¿cómo va mi ritmo en general?")
+    if eng._current_llm_task is not None:
+        await eng._current_llm_task
 
+    llm.ask_with_tools.assert_not_called()
     pending = [m for m in sent if isinstance(m, LLMPendingMessage)]
     assert pending, "pregunta abierta debe emitir llm_pending"
+    from src.models.messages import AdviceEndMessage
+
+    ends = [m for m in sent if isinstance(m, AdviceEndMessage)]
+    assert ends and ends[-1].full_text
 
 
 @pytest.mark.asyncio

@@ -57,3 +57,25 @@ def test_apply_runtime_config_speak_only_when_spoken_to():
     assert eng.verbosity.speak_only_when_spoken_to is True
     snap = eng.runtime_config_snapshot()
     assert snap["speakOnlyWhenSpokenTo"] is True
+
+
+def test_apply_runtime_config_power_toggles():
+    sent = []
+    eng = IntelligenceEngine(broadcast_callback=sent.append)
+    spotter = SpotterService(broadcast_callback=lambda m: None)
+    eng.set_spotter_service(spotter)
+    eng.apply_runtime_config({"engineerEnabled": False, "spotterEnabled": False})
+    assert eng.engineer_enabled is False
+    assert spotter.enabled is False
+    snap = eng.runtime_config_snapshot()
+    assert snap["engineerEnabled"] is False
+    assert snap["spotterEnabled"] is False
+
+
+def test_engineer_toggle_gates_crewchief_messages():
+    sent = []
+    eng = IntelligenceEngine(broadcast_callback=sent.append)
+    eng.engineer_enabled = False
+    from unittest.mock import MagicMock
+    eng.emit_crewchief_messages([MagicMock()])
+    assert not sent

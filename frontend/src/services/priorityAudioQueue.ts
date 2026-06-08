@@ -1,13 +1,15 @@
 /**
- * Cola de reproducción con prioridad IMMEDIATE (spotter) vs NORMAL (ingeniero).
+ * Cola de reproducción: ENGINEER (LLM/PTT) > IMMEDIATE (spotter) > NORMAL.
+ * El spotter no interrumpe voz del ingeniero; el ingeniero sí puede cortar spotter.
  */
 
-import { invoke } from "@tauri-apps/api/core";
+import { getPlatform } from "../core/platform";
 import { useAppStore } from "../store/config";
 import { ensureAudioUnlocked } from "./audioUnlock";
+import { volumePercentToAudioLevel } from "../hub/forms/volumeMigration";
 import type { TtsPriority } from "./spotterPhrases";
 
-type PlaybackCallback = (isPlaying: boolean) => void;
+type PlaybackCallback = (isPlaying: boolean, text?: string) => void;
 type IdleCallback = () => void;
 
 export interface AudioItem {
@@ -31,13 +33,14 @@ async function setLmuDuck(active: boolean): Promise<void> {
   if (active === lmuDuckEngaged) return;
   lmuDuckEngaged = active;
   try {
-    await invoke("duck_lmu", { active, level: DUCK_LEVEL });
+    await getPlatform().duckLmu(active, DUCK_LEVEL);
   } catch {
     lmuDuckEngaged = !active;
   }
 }
 
 class PriorityAudioQueue {
+  private engineerQueue: AudioItem[] = [];
   private immediateQueue: AudioItem[] = [];
   private normalQueue: AudioItem[] = [];
   private playing = false;
@@ -66,15 +69,30 @@ class PriorityAudioQueue {
   enqueue(item: AudioItem): void {
     if (item.priority === "IMMEDIATE") {
       this.immediateQueue.push(item);
+    } else if (item.priority === "ENGINEER") {
+      this.engineerQueue.push(item);
     } else {
       this.normalQueue.push(item);
     }
     this.schedulePlay();
   }
 
+  enqueueEngineer(item: AudioItem): void {
+    const engineerItem = { ...item, priority: "ENGINEER" as const, preemptible: false };
+    if (this.playing && this.currentItem?.preemptible !== false) {
+      this.interruptCurrent();
+    }
+    this.engineerQueue.push(engineerItem);
+    this.schedulePlay();
+  }
+
   enqueueImmediate(item: AudioItem): void {
-    const immediateItem = { ...item, priority: "IMMEDIATE" as const, preemptible: false };
-    if (this.playing && this.currentItem?.priority === "NORMAL") {
+    const immediateItem = {
+      ...item,
+      priority: "IMMEDIATE" as const,
+      preemptible: item.preemptible ?? true,
+    };
+    if (this.playing && this.currentItem?.preemptible !== false) {
       this.interruptCurrent();
     }
     this.immediateQueue.unshift(immediateItem);
@@ -82,10 +100,24 @@ class PriorityAudioQueue {
   }
 
   stopAll(): void {
+    this.engineerQueue = [];
     this.immediateQueue = [];
     this.normalQueue = [];
     this.interruptCurrent();
     this.notifyIdleIfIdle();
+  }
+
+  stopEngineer(): void {
+    this.engineerQueue = [];
+    this.normalQueue = [];
+    if (
+      this.playing &&
+      this.currentItem &&
+      (this.currentItem.priority === "ENGINEER" || this.currentItem.priority === "NORMAL")
+    ) {
+      this.interruptCurrent();
+      void this.playNext();
+    }
   }
 
   stopNormal(): void {
@@ -102,12 +134,14 @@ class PriorityAudioQueue {
       text,
       url,
       priority,
-      preemptible: priority === "NORMAL",
+      preemptible: priority !== "ENGINEER",
       source,
       expiresAt: undefined,
       playEvenWhenSilenced: priority === "IMMEDIATE",
     };
-    if (priority === "IMMEDIATE") {
+    if (priority === "ENGINEER") {
+      this.enqueueEngineer(item);
+    } else if (priority === "IMMEDIATE") {
       this.enqueueImmediate(item);
     } else {
       this.enqueue(item);
@@ -118,8 +152,9 @@ class PriorityAudioQueue {
     this.stopAll();
   }
 
-  debugSnapshot(): { immediate: number; normal: number; playing: boolean } {
+  debugSnapshot(): { engineer: number; immediate: number; normal: number; playing: boolean } {
     return {
+      engineer: this.engineerQueue.length,
       immediate: this.immediateQueue.length,
       normal: this.normalQueue.length,
       playing: this.playing,
@@ -157,34 +192,23 @@ class PriorityAudioQueue {
   private pickNext(): AudioItem | null {
     const defer: AudioItem[] = [];
 
-    while (this.immediateQueue.length > 0) {
-      const next = this.immediateQueue.shift()!;
-      if (this.isExpired(next)) {
-        URL.revokeObjectURL(next.url);
-        continue;
+    for (const queue of [this.engineerQueue, this.immediateQueue, this.normalQueue]) {
+      while (queue.length > 0) {
+        const next = queue.shift()!;
+        if (this.isExpired(next)) {
+          URL.revokeObjectURL(next.url);
+          continue;
+        }
+        if (this.isDelayed(next)) {
+          defer.push(next);
+          continue;
+        }
+        this.requeueDeferred(defer);
+        return next;
       }
-      if (this.isDelayed(next)) {
-        defer.push(next);
-        continue;
-      }
-      this.immediateQueue.unshift(...defer);
-      return next;
     }
-    while (this.normalQueue.length > 0) {
-      const next = this.normalQueue.shift()!;
-      if (this.isExpired(next)) {
-        URL.revokeObjectURL(next.url);
-        continue;
-      }
-      if (this.isDelayed(next)) {
-        defer.push(next);
-        continue;
-      }
-      this.normalQueue.unshift(...defer);
-      return next;
-    }
-    this.immediateQueue.unshift(...defer.filter((item) => item.priority === "IMMEDIATE"));
-    this.normalQueue.unshift(...defer.filter((item) => item.priority === "NORMAL"));
+
+    this.requeueDeferred(defer);
     if (defer.length > 0) {
       const waitMs = Math.min(
         ...defer.map((item) => Math.max(0, (item.delayedUntilMs ?? Date.now()) - Date.now())),
@@ -195,8 +219,21 @@ class PriorityAudioQueue {
     return null;
   }
 
+  private requeueDeferred(defer: AudioItem[]): void {
+    for (const item of defer) {
+      if (item.priority === "ENGINEER") this.engineerQueue.unshift(item);
+      else if (item.priority === "IMMEDIATE") this.immediateQueue.unshift(item);
+      else this.normalQueue.unshift(item);
+    }
+  }
+
   private notifyIdleIfIdle(): void {
-    if (!this.playing && this.immediateQueue.length === 0 && this.normalQueue.length === 0) {
+    if (
+      !this.playing &&
+      this.engineerQueue.length === 0 &&
+      this.immediateQueue.length === 0 &&
+      this.normalQueue.length === 0
+    ) {
       if (this.onIdle) this.onIdle();
     }
   }
@@ -213,11 +250,11 @@ class PriorityAudioQueue {
 
     this.playing = true;
     this.currentItem = task;
-    if (this.onPlaybackChange) this.onPlaybackChange(true);
+    if (this.onPlaybackChange) this.onPlaybackChange(true, task.text);
 
     const audio = new Audio(task.url);
-    const boost = useAppStore.getState().config.ttsVolumeBoost ?? 1.0;
-    audio.volume = Math.min(1, Math.max(0.1, boost));
+    const boost = useAppStore.getState().config.ttsVolumeBoost ?? 100;
+    audio.volume = volumePercentToAudioLevel(boost);
     audio.preload = "auto";
     this.currentAudio = audio;
 
@@ -278,18 +315,43 @@ class AudioQueueFacade {
       text,
       url,
       priority,
-      preemptible: priority === "NORMAL",
+      preemptible: priority !== "ENGINEER",
       source: "tts",
       expiresAt: options?.expiresAt,
       delayedUntilMs: options?.delayedUntilMs,
       validationKey: options?.validationKey,
       playEvenWhenSilenced: options?.playEvenWhenSilenced ?? priority === "IMMEDIATE",
     };
-    if (priority === "IMMEDIATE") {
+    if (priority === "ENGINEER") {
+      priorityAudioQueue.enqueueEngineer(item);
+    } else if (priority === "IMMEDIATE") {
       priorityAudioQueue.enqueueImmediate(item);
     } else {
       priorityAudioQueue.enqueue(item);
     }
+  }
+
+  enqueueEngineer(
+    text: string,
+    url: string,
+    source = "advice",
+    options?: {
+      expiresAt?: number;
+      delayedUntilMs?: number;
+      validationKey?: string;
+    },
+  ): void {
+    priorityAudioQueue.enqueueEngineer({
+      text,
+      url,
+      priority: "ENGINEER",
+      preemptible: false,
+      source,
+      expiresAt: options?.expiresAt,
+      delayedUntilMs: options?.delayedUntilMs,
+      validationKey: options?.validationKey,
+      playEvenWhenSilenced: false,
+    });
   }
 
   enqueueImmediate(
@@ -307,7 +369,7 @@ class AudioQueueFacade {
       text,
       url,
       priority: "IMMEDIATE",
-      preemptible: false,
+      preemptible: true,
       source,
       expiresAt: options?.expiresAt,
       delayedUntilMs: options?.delayedUntilMs,
@@ -318,6 +380,10 @@ class AudioQueueFacade {
 
   stop(): void {
     priorityAudioQueue.stopAll();
+  }
+
+  stopEngineer(): void {
+    priorityAudioQueue.stopEngineer();
   }
 
   stopNormal(): void {

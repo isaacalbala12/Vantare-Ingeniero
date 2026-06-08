@@ -15,6 +15,7 @@ class TestSpotterE2E:
             proximity_threshold_m=3.0,
             spotter_off_qualifying=False,
             invert_lateral=False,
+            enabled=True,
         )
         spotter.evaluate_tick(frame_to_spotter_tick(frame, advice=None))
         assert_alerts_over_sequence(broadcast_messages, min_proximity=1, max_proximity=2)
@@ -26,6 +27,7 @@ class TestSpotterE2E:
             proximity_threshold_m=3.0,
             spotter_off_qualifying=False,
             invert_lateral=False,
+            enabled=True,
         )
         for frame in ticks:
             spotter.evaluate_tick(frame_to_spotter_tick(frame, advice=None))
@@ -36,7 +38,7 @@ class TestSpotterE2E:
 
     def test_ws_contract_fields(self, mock_broadcast, broadcast_messages):
         frame = load_frame("side_by_side_gt3_hypercar")
-        spotter = SpotterService(broadcast_callback=mock_broadcast, proximity_threshold_m=3.0, invert_lateral=False)
+        spotter = SpotterService(broadcast_callback=mock_broadcast, proximity_threshold_m=3.0, invert_lateral=False, enabled=True)
         spotter.evaluate_tick(frame_to_spotter_tick(frame, advice=None))
         alert = next(m for m in broadcast_messages if m.category == "proximity")
         payload = alert.model_dump(mode="json")
@@ -48,15 +50,28 @@ class TestSpotterE2E:
 
     def test_pit_exclusion_no_proximity(self, mock_broadcast, broadcast_messages):
         frame = load_frame("pit_exclusion")
-        spotter = SpotterService(broadcast_callback=mock_broadcast, proximity_threshold_m=3.0, invert_lateral=False)
+        spotter = SpotterService(broadcast_callback=mock_broadcast, proximity_threshold_m=3.0, invert_lateral=False, enabled=True)
         spotter.evaluate_tick(frame_to_spotter_tick(frame, advice=None))
         assert not any(m.category == "proximity" for m in broadcast_messages)
 
     def test_three_wide_emits_single_high_alert(self, mock_broadcast, broadcast_messages):
         frame = load_frame("three_wide")
-        spotter = SpotterService(broadcast_callback=mock_broadcast, proximity_threshold_m=3.0, invert_lateral=False)
+        spotter = SpotterService(broadcast_callback=mock_broadcast, proximity_threshold_m=3.0, invert_lateral=False, enabled=True)
         spotter.evaluate_tick(frame_to_spotter_tick(frame, advice=None))
         prox = [m for m in broadcast_messages if m.category == "proximity"]
         assert len(prox) == 1
         assert prox[0].severity == "HIGH"
+        assert prox[0].payload.get("three_wide") is True
+
+    def test_three_wide_with_lmu_invert(self, mock_broadcast, broadcast_messages):
+        frame = load_frame("three_wide")
+        spotter = SpotterService(
+            broadcast_callback=mock_broadcast,
+            proximity_threshold_m=3.0,
+            invert_lateral=True,
+            enabled=True,
+        )
+        spotter.evaluate_tick(frame_to_spotter_tick(frame, advice=None))
+        prox = [m for m in broadcast_messages if m.category == "proximity"]
+        assert len(prox) == 1
         assert prox[0].payload.get("three_wide") is True

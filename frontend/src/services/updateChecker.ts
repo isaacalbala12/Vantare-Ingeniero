@@ -18,12 +18,9 @@ export async function fetchUpdateNotice(force = false): Promise<UpdateNotice | n
   return cachedNotice;
 }
 
+import { getPlatform } from "../core/platform";
+
 export async function openReleaseUrl(url: string): Promise<void> {
   if (!url) return;
-  try {
-    const { open } = await import("@tauri-apps/plugin-opener");
-    await open(url);
-  } catch {
-    window.open(url, "_blank", "noopener,noreferrer");
-  }
+  await getPlatform().openExternal(url);
 }

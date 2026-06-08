@@ -104,7 +104,7 @@ class TestVLLMClientAskStreamingAdvanced:
 
     @pytest.mark.asyncio
     async def test_ask_streaming_reasoning_content(self):
-        """ask_streaming debe procesar reasoning_content (modelos Qwen/vLLM)."""
+        """ask_streaming debe descartar reasoning_content (no emitir a radio)."""
         broadcast_messages = []
         def mock_broadcast(msg):
             broadcast_messages.append(msg)
@@ -128,8 +128,7 @@ class TestVLLMClientAskStreamingAdvanced:
                 await client.ask_streaming("prompt", "FAST", "advice-reason", None)
 
             token_msgs = [m for m in broadcast_messages if isinstance(m, AdviceTokenMessage)]
-            assert len(token_msgs) == 1
-            assert token_msgs[0].token == "Thinking step 1..."
+            assert len(token_msgs) == 0
 
     @pytest.mark.asyncio
     async def test_ask_streaming_empty_choices_skipped(self):
@@ -297,7 +296,7 @@ class TestVLLMClientAskStreamingText:
             async for token in client.ask_streaming_text("test prompt"):
                 tokens.append(token)
 
-        assert tokens == ["Hola ", "mundo"]
+        assert "".join(tokens) == "Hola mundo"
 
     @pytest.mark.asyncio
     async def test_ask_streaming_text_skips_reasoning(self):

@@ -1,11 +1,12 @@
 name: Build Release
 
+# DEPRECATED for desktop app: use release-desktop.yml (Electron NSIS + electron-updater).
+# This workflow still builds the legacy backend-only NSIS artifact.
+
 on:
   push:
     branches:
       - master
-    tags:
-      - 'v*'
   workflow_dispatch: {}
 
 env:

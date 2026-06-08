@@ -19,6 +19,7 @@ def spotter(mock_broadcast):
         broadcast_callback=mock_broadcast,
         proximity_threshold_m=3.0,
         invert_lateral=False,
+        enabled=True,
     )
 
 
@@ -81,6 +82,16 @@ class TestLateralProximity:
         )
         assert hits == []
 
+    def test_no_alert_when_car_is_astern_but_offset_laterally(self):
+        """Un coche detrás con ligero offset no debe contarse como 'a la izquierda/derecha'."""
+        hits = detect_lateral_proximity(
+            (0.0, 0.0, 0.0),
+            (0.0, 0.0, 30.0),
+            [{"driver_index": 4, "driver_class": "GT3", "pos_x": 2.0, "pos_y": 0.0, "pos_z": -10.0, "speed": 28.0}],
+            3.0,
+        )
+        assert hits == []
+
 
 class TestPathLateralProximity:
     def test_side_by_side_on_same_lap(self):
@@ -102,6 +113,25 @@ class TestPathLateralProximity:
         )
         assert len(hits) == 1
         assert hits[0].side == "derecha"
+
+    def test_no_alert_when_car_is_far_behind_on_track(self):
+        hits = detect_path_lateral_proximity(
+            3,
+            1200.0,
+            0.0,
+            [
+                {
+                    "driver_index": 11,
+                    "driver_class": "GT3",
+                    "driver_name": "Follower",
+                    "lap_number": 3,
+                    "lap_distance": 1188.0,
+                    "path_lateral": 2.0,
+                }
+            ],
+            4.0,
+        )
+        assert hits == []
 
     def test_spotter_path_proximity_alert(self, spotter, base_tick):
         tick = dict(base_tick)
@@ -143,6 +173,26 @@ class TestSpotterWave2:
         assert len(prox) == 1
         assert "derecha" in prox[0].message.lower()
 
+    def test_no_proximity_when_competitor_clearly_astern(self, spotter, base_tick):
+        tick = dict(base_tick)
+        tick["competitors"] = [
+            {
+                "driver_index": 12,
+                "driver_class": "GT3",
+                "driver_name": "Follower",
+                "lap_number": 3,
+                "lap_distance": 1185.0,
+                "path_lateral": 2.5,
+                "pos_x": 2.0,
+                "pos_y": 0.0,
+                "pos_z": -12.0,
+                "speed": 28.0,
+                "in_pits": False,
+            }
+        ]
+        alerts = spotter.evaluate(tick)
+        assert not any(a.category == "proximity" and not a.payload.get("clear") for a in alerts)
+
     def test_multiclass_hypercar_lapping(self, spotter, base_tick):
         tick = dict(base_tick)
         tick["competitors"] = [
@@ -182,6 +232,7 @@ class TestSpotterWave2:
         spotter = SpotterService(
             broadcast_callback=mock_broadcast,
             spotter_off_qualifying=False,
+            enabled=True,
         )
         tick = dict(base_tick)
         tick["session_type"] = "qualifying"

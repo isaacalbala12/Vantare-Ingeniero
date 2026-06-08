@@ -1,7 +1,7 @@
 import type { AppConfig } from "../store/config";
 
 export function buildConfigUpdatePayload(cfg: AppConfig): Record<string, unknown> {
-  return {
+  const payload: Record<string, unknown> = {
     swearyMessages: cfg.swearyMessages ?? false,
     spotterOffQualifying: cfg.spotterOffQualifying ?? true,
     spotterExcludeStopped: cfg.spotterExcludeStopped ?? true,
@@ -16,4 +16,11 @@ export function buildConfigUpdatePayload(cfg: AppConfig): Record<string, unknown
     spotterRaceStartDelayS: cfg.spotterRaceStartDelayS ?? 20.0,
     brakingZonesMute: cfg.brakingZonesMute ?? false,
   };
+  if (typeof cfg.spotterEnabled === "boolean") {
+    payload.spotterEnabled = cfg.spotterEnabled;
+  }
+  if (typeof cfg.engineerEnabled === "boolean") {
+    payload.engineerEnabled = cfg.engineerEnabled;
+  }
+  return payload;
 }

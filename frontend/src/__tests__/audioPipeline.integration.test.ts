@@ -130,15 +130,15 @@ describe("audioPipeline integration", () => {
 
 
 
-  it("flujo advice LLM: NORMAL no preemptible por otra NORMAL", async () => {
+  it("flujo advice LLM: ENGINEER no preemptible por spotter", async () => {
 
     const { playOrder, restore } = mockAudio();
 
 
 
-    audioQueue.enqueue("Consejo 1", "blob:1", "NORMAL");
+    audioQueue.enqueueEngineer("Consejo 1", "blob:1");
 
-    audioQueue.enqueue("Consejo 2", "blob:2", "NORMAL");
+    audioQueue.enqueueEngineer("Consejo 2", "blob:2");
 
     await new Promise((r) => setTimeout(r, 200));
 
@@ -150,7 +150,7 @@ describe("audioPipeline integration", () => {
 
 
 
-  it("IMMEDIATE interrumpe reproducción NORMAL en curso", async () => {
+  it("IMMEDIATE no interrumpe voz ENGINEER en curso", async () => {
 
     let resolveFirstPlay: () => void;
 
@@ -208,13 +208,91 @@ describe("audioPipeline integration", () => {
 
 
 
-    audioQueue.enqueue("Ingeniero hablando...", "blob:slow", "NORMAL");
+    audioQueue.enqueueEngineer("Ingeniero hablando...", "blob:slow");
 
     await firstPlayGate;
 
 
 
     audioQueue.enqueueImmediate("Coche a la izquierda", "blob:imm", "alert");
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(SlowThenEndAudio.count).toBe(1);
+
+
+
+    globalThis.Audio = original;
+
+  });
+
+
+
+  it("ENGINEER interrumpe spotter IMMEDIATE en curso", async () => {
+
+    let resolveFirstPlay: () => void;
+
+    const firstPlayGate = new Promise<void>((r) => {
+
+      resolveFirstPlay = r;
+
+    });
+
+
+
+    class SlowThenEndAudio {
+
+      static count = 0;
+
+      onended: (() => void) | null = null;
+
+      onerror: (() => void) | null = null;
+
+      volume = 1;
+
+      preload = "auto";
+
+      constructor(public src: string) {}
+
+      async play() {
+
+        SlowThenEndAudio.count += 1;
+
+        if (SlowThenEndAudio.count === 1) {
+
+          resolveFirstPlay!();
+
+          return;
+
+        }
+
+        queueMicrotask(() => this.onended?.());
+
+      }
+
+      pause() {}
+
+    }
+
+
+
+    const original = globalThis.Audio;
+
+    SlowThenEndAudio.count = 0;
+
+    // @ts-expect-error test mock
+
+    globalThis.Audio = SlowThenEndAudio;
+
+
+
+    audioQueue.enqueueImmediate("Coche a la izquierda", "blob:imm", "alert");
+
+    await firstPlayGate;
+
+
+
+    audioQueue.enqueueEngineer("Respuesta del ingeniero", "blob:eng");
 
     await new Promise((r) => setTimeout(r, 50));
 

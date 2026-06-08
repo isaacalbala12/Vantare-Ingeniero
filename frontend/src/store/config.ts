@@ -1,4 +1,7 @@
 import { create } from "zustand";
+import { migrateTtsVolumePercent } from "../hub/forms/volumeMigration";
+import { isInternalRadioText } from "../hub/forms/telemetryFilters";
+import { getPlatform } from "../core/platform";
 
 export type WebSocketStatus = "CONNECTING" | "CONNECTED" | "DISCONNECTED";
 export type RadioMode = "IDLE" | "LISTENING_PILOT" | "THINKING_LLM" | "SPEAKING_ENGINE";
@@ -16,15 +19,19 @@ export interface ConnectivityState {
 }
 
 // --- DOMINIO 2: RADIO E INGENIERO ---
+export type HistorySender = "pilot" | "engineer" | "spotter";
+
 export interface MessageRecord {
-  sender: "pilot" | "engineer";
+  sender: HistorySender;
   text: string;
   timestamp: number;
+  category?: string;
 }
 
 export interface RadioState {
   mode: RadioMode;
   currentTokens: string;
+  voicePlaybackText: string;
   messageHistory: MessageRecord[];
   latestAdvice: string;
   latestAlert: string;
@@ -84,6 +91,8 @@ export interface AppConfig {
   brakingZonesMute: boolean;
   speakOnlyWhenSpokenTo: boolean;
   ttsVolumeBoost: number;
+  spotterEnabled: boolean;
+  engineerEnabled: boolean;
 }
 
 // --- INTERFAZ GLOBAL DEL STORE ---
@@ -104,8 +113,10 @@ export interface GlobalStore {
   setRadioMode: (mode: RadioMode) => void;
   setCurrentTokens: (tokens: string) => void;
   addMessageToHistory: (sender: "pilot" | "engineer", text: string) => void;
+  addRadioAlertToHistory: (sender: "spotter" | "engineer", text: string, category?: string) => void;
   setLatestAdvice: (advice: string) => void;
   setLatestAlert: (alert: string) => void;
+  setVoicePlaybackText: (text: string) => void;
   setMicLevel: (level: number) => void;
   
   updateTelemetry: (data: Partial<TelemetryState>) => void;
@@ -116,6 +127,20 @@ export interface GlobalStore {
 
 // Cargar configuración de localStorage en el arranque si existe
 const DEFAULT_PTT_HOTKEY = "Ctrl+Shift+Space";
+const MESSAGE_HISTORY_MAX = 500;
+
+function appendHistoryMessage(
+  history: MessageRecord[],
+  entry: MessageRecord,
+): MessageRecord[] {
+  const last = history[history.length - 1];
+  if (last?.sender === entry.sender && last.text === entry.text) {
+    return history;
+  }
+  const next = [...history, entry];
+  if (next.length <= MESSAGE_HISTORY_MAX) return next;
+  return next.slice(next.length - MESSAGE_HISTORY_MAX);
+}
 
 /** Migra el atajo legacy "P" (conflictúa al escribir) al default con modificador. */
 function normalizePttHotkey(value: string | undefined): string {
@@ -159,7 +184,9 @@ const loadSavedConfig = (): AppConfig => {
         spotterRaceStartDelayS: parsed.spotterRaceStartDelayS ?? 20.0,
         brakingZonesMute: parsed.brakingZonesMute ?? false,
         speakOnlyWhenSpokenTo: parsed.speakOnlyWhenSpokenTo ?? false,
-        ttsVolumeBoost: parsed.ttsVolumeBoost ?? 1.0,
+        ttsVolumeBoost: migrateTtsVolumePercent(parsed.ttsVolumeBoost),
+        spotterEnabled: parsed.spotterEnabled ?? false,
+        engineerEnabled: parsed.engineerEnabled ?? false,
       };
     }
   } catch (e) {
@@ -195,7 +222,9 @@ const loadSavedConfig = (): AppConfig => {
     spotterRaceStartDelayS: 20.0,
     brakingZonesMute: false,
     speakOnlyWhenSpokenTo: false,
-    ttsVolumeBoost: 1.0,
+    ttsVolumeBoost: 100,
+    spotterEnabled: false,
+    engineerEnabled: false,
   };
 };
 
@@ -209,6 +238,7 @@ export const useAppStore = create<GlobalStore>((set) => ({
   radio: {
     mode: "IDLE",
     currentTokens: "",
+    voicePlaybackText: "",
     messageHistory: [],
     latestAdvice: "",
     latestAlert: "",
@@ -251,15 +281,36 @@ export const useAppStore = create<GlobalStore>((set) => ({
       radio: { ...state.radio, currentTokens: tokens },
     })),
   addMessageToHistory: (sender, text) =>
-    set((state) => ({
-      radio: {
-        ...state.radio,
-        messageHistory: [
-          ...state.radio.messageHistory,
-          { sender, text, timestamp: Date.now() },
-        ],
-      },
-    })),
+    set((state) => {
+      const trimmed = text.trim();
+      if (!trimmed || isInternalRadioText(trimmed)) return state;
+      return {
+        radio: {
+          ...state.radio,
+          messageHistory: appendHistoryMessage(state.radio.messageHistory, {
+            sender,
+            text: trimmed,
+            timestamp: Date.now(),
+          }),
+        },
+      };
+    }),
+  addRadioAlertToHistory: (sender, text, category) =>
+    set((state) => {
+      const trimmed = text.trim();
+      if (!trimmed || isInternalRadioText(trimmed)) return state;
+      return {
+        radio: {
+          ...state.radio,
+          messageHistory: appendHistoryMessage(state.radio.messageHistory, {
+            sender,
+            text: trimmed,
+            timestamp: Date.now(),
+            category,
+          }),
+        },
+      };
+    }),
   setLatestAdvice: (advice) =>
     set((state) => ({
       radio: { ...state.radio, latestAdvice: advice },
@@ -267,6 +318,10 @@ export const useAppStore = create<GlobalStore>((set) => ({
   setLatestAlert: (alert) =>
     set((state) => ({
       radio: { ...state.radio, latestAlert: alert },
+    })),
+  setVoicePlaybackText: (text) =>
+    set((state) => ({
+      radio: { ...state.radio, voicePlaybackText: text },
     })),
   setMicLevel: (level) =>
     set((state) => ({
@@ -285,16 +340,37 @@ export const useAppStore = create<GlobalStore>((set) => ({
       } catch (e) {
         console.error("Fallo al guardar en localStorage:", e);
       }
+      // Sincronizar hotkeys PTT con Electron si cambian
+      if ("pttHotkey" in newConfig || "pttStopHotkey" in newConfig) {
+        const platform = getPlatform();
+        if (platform.updatePttHotkeys) {
+          void platform.updatePttHotkeys({
+            start: updated.pttHotkey,
+            stop: updated.pttStopHotkey,
+          });
+        }
+      }
       return { config: updated };
     }),
   applyProfileConfig: (config) =>
     set(() => {
+      const normalized: AppConfig = {
+        ...config,
+        ttsVolumeBoost: migrateTtsVolumePercent(config.ttsVolumeBoost),
+      };
       try {
-        localStorage.setItem("vantare_config", JSON.stringify(config));
+        localStorage.setItem("vantare_config", JSON.stringify(normalized));
       } catch (e) {
         console.error("Fallo al guardar perfil en localStorage:", e);
       }
-      return { config };
+      const platform = getPlatform();
+      if (platform.updatePttHotkeys) {
+        void platform.updatePttHotkeys({
+          start: normalized.pttHotkey,
+          stop: normalized.pttStopHotkey,
+        });
+      }
+      return { config: normalized };
     }),
   setScreen: (screen) => set({ screen }),
 }));

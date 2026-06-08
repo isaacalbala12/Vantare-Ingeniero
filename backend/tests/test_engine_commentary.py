@@ -22,7 +22,9 @@ def test_apply_set_verbosity(engine):
 @pytest.mark.asyncio
 async def test_enqueue_commentary_delegates(engine):
     eng, sent = engine
-    ok = eng.enqueue_commentary("race_start", "¡Salida! ¡Vamos!")
+    eng.apply_engineer_toggle(True, emit_alert=False)
+    eng.verbosity.set_enable_commentary_batch(True)
+    ok = eng.enqueue_commentary("phase_changed", "Cambio de fase en pista.")
     assert ok is True
     msg = await eng.commentary.flush()
     assert msg is not None
