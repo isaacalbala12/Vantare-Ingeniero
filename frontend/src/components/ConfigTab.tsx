@@ -1,8 +1,32 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAppStore, AppConfig } from "../store/config";
 import { sendConfigUpdate } from "../services/configUpdateWs";
+import { validateSpotterFields } from "../hub/forms/configValidation";
+import { AudioTtsPanel } from "../hub/sections/AudioTtsPanel";
+import { UpdatesPanel } from "../hub/sections/UpdatesPanel";
+import { HotkeyCapture } from "../hub/components/HotkeyCapture";
+import { assertFullAppConfig } from "../hub/forms/appConfigKeys";
+import { migrateTtsVolumePercent } from "../hub/forms/volumeMigration";
+import {
+  deleteProfile,
+  getHealth,
+  listProfiles,
+  loadProfile,
+  saveProfile,
+} from "../services/api";
 
 type TabName = "conexion" | "audio" | "voz";
+
+export type ConfigHubSection =
+  | "audio"
+  | "ingeniero"
+  | "spotter"
+  | "perfiles"
+  | "avanzado";
+
+interface ConfigTabProps {
+  section?: ConfigHubSection;
+}
 
 /**
  * Panel de configuración unificado con 3 pestañas:
@@ -10,9 +34,13 @@ type TabName = "conexion" | "audio" | "voz";
  * - Audio: dispositivo de micrófono, sensibilidad, vúmetro
  * - Voz: hotkey PTT, palabra de activación
  */
-export const ConfigTab: React.FC = () => {
+export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
   const { config, connectivity, updateConfig, applyProfileConfig, setMicLevel } = useAppStore();
-  const [activeTab, setActiveTab] = useState<TabName>("conexion");
+  const sectionToTab = (s?: ConfigHubSection): TabName => {
+    if (s === "audio") return "audio";
+    return "voz";
+  };
+  const [activeTab, setActiveTab] = useState<TabName>(sectionToTab(section));
 
   const [profiles, setProfiles] = useState<string[]>([]);
   const [selectedProfile, setSelectedProfile] = useState("");
@@ -47,7 +75,7 @@ export const ConfigTab: React.FC = () => {
   const [spotterMinSpeedMs, setSpotterMinSpeedMs] = useState(config.spotterMinSpeedMs ?? 10.0);
   const [spotterRaceStartDelayS, setSpotterRaceStartDelayS] = useState(config.spotterRaceStartDelayS ?? 20.0);
   const [brakingZonesMute, setBrakingZonesMute] = useState(config.brakingZonesMute ?? false);
-  const [ttsVolumeBoost, setTtsVolumeBoost] = useState(config.ttsVolumeBoost ?? 1.0);
+  const [ttsVolumeBoost, setTtsVolumeBoost] = useState(config.ttsVolumeBoost ?? 100);
 
   // Estados de test y dispositivos
   const [testStatus, setTestStatus] = useState<string | null>(null);
@@ -109,10 +137,14 @@ export const ConfigTab: React.FC = () => {
   };
 
   useEffect(() => {
-    if (activeTab === "conexion") {
+    if (section) setActiveTab(sectionToTab(section));
+  }, [section]);
+
+  useEffect(() => {
+    if (section === "perfiles" || activeTab === "conexion") {
       refreshProfiles();
     }
-  }, [activeTab]);
+  }, [activeTab, section]);
 
   useEffect(() => {
     if (prevTabRef.current !== "voz" && activeTab === "voz") {
@@ -121,37 +153,44 @@ export const ConfigTab: React.FC = () => {
     prevTabRef.current = activeTab;
   }, [activeTab, config]);
 
-  const buildConfigPayload = (): AppConfig => ({
-    vllmIP: vllmIP.trim(),
-    serverPort: Number(serverPort),
-    micDevice,
-    speakerDevice: config.speakerDevice,
-    wakeWord: config.wakeWord,
-    sensitivity,
-    pttHotkey: pttHotkey.trim(),
-    pttStopHotkey: pttStopHotkey.trim(),
-    wakeWordEnabled: config.wakeWordEnabled,
-    swearyMessages,
-    spotterOffQualifying,
-    spotterExcludeStopped,
-    mqttEnabled,
-    mqttBroker: mqttBroker.trim(),
-    mqttPort: Number(mqttPort),
-    personalityProfileId,
-    verbosityLevel,
-    ttsVoiceEngineer: ttsVoiceEngineer.trim(),
-    ttsVoiceSpotter: ttsVoiceSpotter.trim(),
-    ttsBackend: config.ttsBackend ?? "edge",
-    spotterClearDelayS: Number(spotterClearDelayS),
-    spotterOverlapDelayS: config.spotterOverlapDelayS ?? 2.0,
-    spotterHoldRepeatS: Number(spotterHoldRepeatS),
-    spotterGapFrequencyS: Number(spotterGapFrequencyS),
-    spotterCarLengthM: Number(spotterCarLengthM),
-    spotterMinSpeedMs: Number(spotterMinSpeedMs),
-    spotterRaceStartDelayS: Number(spotterRaceStartDelayS),
-    brakingZonesMute,
-    ttsVolumeBoost: Number(ttsVolumeBoost),
-  });
+  const buildConfigPayload = (): AppConfig => {
+    const payload: AppConfig = {
+      vllmIP: vllmIP.trim(),
+      serverPort: Number(serverPort),
+      micDevice,
+      speakerDevice: config.speakerDevice,
+      wakeWord: config.wakeWord,
+      sensitivity,
+      pttHotkey: pttHotkey.trim(),
+      pttStopHotkey: pttStopHotkey.trim(),
+      wakeWordEnabled: config.wakeWordEnabled,
+      swearyMessages,
+      spotterOffQualifying,
+      spotterExcludeStopped,
+      mqttEnabled,
+      mqttBroker: mqttBroker.trim(),
+      mqttPort: Number(mqttPort),
+      personalityProfileId,
+      verbosityLevel,
+      ttsVoiceEngineer: ttsVoiceEngineer.trim(),
+      ttsVoiceSpotter: ttsVoiceSpotter.trim(),
+      ttsBackend: config.ttsBackend ?? "edge",
+      spotterClearDelayS: Number(spotterClearDelayS),
+      spotterOverlapDelayS: config.spotterOverlapDelayS ?? 2.0,
+      spotterHoldRepeatS: Number(spotterHoldRepeatS),
+      spotterGapFrequencyS: Number(spotterGapFrequencyS),
+      spotterCarLengthM: Number(spotterCarLengthM),
+      spotterMinSpeedMs: Number(spotterMinSpeedMs),
+      spotterRaceStartDelayS: Number(spotterRaceStartDelayS),
+      brakingZonesMute,
+      speakOnlyWhenSpokenTo: config.speakOnlyWhenSpokenTo,
+      ttsVolumeBoost: Number(ttsVolumeBoost),
+      spotterEnabled: config.spotterEnabled,
+      engineerEnabled: config.engineerEnabled,
+    };
+    assertFullAppConfig(payload);
+    return payload;
+  };
 
   const applyLoadedConfig = (loaded: Record<string, unknown>): AppConfig => {
     const merged: AppConfig = {
@@ -182,7 +221,7 @@ export const ConfigTab: React.FC = () => {
     setSpotterMinSpeedMs(merged.spotterMinSpeedMs ?? 10.0);
     setSpotterRaceStartDelayS(merged.spotterRaceStartDelayS ?? 20.0);
     setBrakingZonesMute(merged.brakingZonesMute ?? false);
-    setTtsVolumeBoost(merged.ttsVolumeBoost ?? 1.0);
+    setTtsVolumeBoost(migrateTtsVolumePercent(merged.ttsVolumeBoost));
     return merged;
   };
 
@@ -354,7 +393,10 @@ export const ConfigTab: React.FC = () => {
       return;
     }
     const isBareKey = (combo: string) => {
-      const parts = combo.trim().split("+");
+      const trimmed = combo.trim();
+      if (/^mouse/i.test(trimmed)) return false;
+      if (/^pad\d+:b\d+$/i.test(trimmed)) return false;
+      const parts = trimmed.split("+");
       if (parts.length > 1) return false;
       const key = parts[0].toLowerCase();
       return !/^f([1-9]|1[0-2])$/.test(key);
@@ -365,23 +407,17 @@ export const ConfigTab: React.FC = () => {
       return;
     }
 
-    const spotterClear = Number(spotterClearDelayS);
-    const spotterHoldRepeat = Number(spotterHoldRepeatS);
-    const spotterGap = Number(spotterGapFrequencyS);
-    const spotterLength = Number(spotterCarLengthM);
-    const spotterMinSpeed = Number(spotterMinSpeedMs);
-    const spotterRaceStart = Number(spotterRaceStartDelayS);
-    const volumeBoost = Number(ttsVolumeBoost);
-    if (
-      !Number.isFinite(spotterClear) || spotterClear < 0.1 || spotterClear > 10 ||
-      !Number.isFinite(spotterHoldRepeat) || spotterHoldRepeat < 0.5 || spotterHoldRepeat > 30 ||
-      !Number.isFinite(spotterGap) || spotterGap < 5 || spotterGap > 120 ||
-      !Number.isFinite(spotterLength) || spotterLength < 3 || spotterLength > 8 ||
-      !Number.isFinite(spotterMinSpeed) || spotterMinSpeed < 0 || spotterMinSpeed > 40 ||
-      !Number.isFinite(spotterRaceStart) || spotterRaceStart < 0 || spotterRaceStart > 120 ||
-      !Number.isFinite(volumeBoost) || volumeBoost < 0.5 || volumeBoost > 2
-    ) {
-      setSaveStatus("❌ Revisa valores spotter/TTS (clear ≥0.1s, hold ≥0.5s, gap 5–120s, longitud 3–8m, volumen 0.5–2)");
+    const spotterValidation = validateSpotterFields({
+      spotterClearDelayS: Number(spotterClearDelayS),
+      spotterHoldRepeatS: Number(spotterHoldRepeatS),
+      spotterGapFrequencyS: Number(spotterGapFrequencyS),
+      spotterCarLengthM: Number(spotterCarLengthM),
+      spotterMinSpeedMs: Number(spotterMinSpeedMs),
+      spotterRaceStartDelayS: Number(spotterRaceStartDelayS),
+      ttsVolumeBoost: Number(ttsVolumeBoost),
+    });
+    if (!spotterValidation.ok) {
+      setSaveStatus("❌ Revisa valores spotter/TTS (clear ≥0.1s, hold ≥0.5s, gap 5–120s, longitud 3–8m, volumen 0–100)");
       setTimeout(() => setSaveStatus(null), 4000);
       return;
     }
@@ -407,71 +443,90 @@ export const ConfigTab: React.FC = () => {
     </div>
   );
 
+  const showIngeniero = !section || section === "ingeniero" || section === "avanzado";
+  const showSpotter = !section || section === "spotter" || section === "avanzado";
+  const showPtt = !section || section === "audio";
+  const showAudioFields = !section || section === "audio";
+  const showMqtt = !section || section === "avanzado";
+  const showProfilesOnly = section === "perfiles";
+  const showVozSection =
+    (activeTab === "voz" && !section) ||
+    section === "ingeniero" ||
+    section === "spotter" ||
+    section === "avanzado";
+  const hubMode = Boolean(section);
+
   return (
-    <div className="w-full h-full flex flex-col text-white" style={{ fontFamily: "system-ui, sans-serif" }}>
+    <div className={`w-full h-full flex flex-col text-white ${hubMode ? "hub-root" : ""}`} style={{ fontFamily: "var(--font-a1-body, system-ui, sans-serif)" }}>
       {/* Tabs */}
-      <div className="flex border-b border-[#222]">
+      {!section && (
+      <div className="flex border-b border-hub-border">
         {(["conexion", "audio", "voz"] as TabName[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-2 text-[11px] font-bold uppercase tracking-wider transition-none ${
               activeTab === tab
-                ? "text-[#8a2be2] border-b-2 border-[#8a2be2]"
-                : "text-[#555] hover:text-[#888]"
+                ? "text-a1-accent border-b-2 border-a1-accent"
+                : "text-a1-text-muted hover:text-a1-text"
             }`}
           >
             {tab === "conexion" ? "Conexión" : tab === "audio" ? "Audio" : "Voz"}
           </button>
         ))}
       </div>
+      )}
 
       {/* Contenido de tabs */}
       <div className="flex-1 overflow-auto px-3 py-3">
         
-        {/* TAB: CONEXIÓN */}
-        {activeTab === "conexion" && (
+        {/* TAB: CONEXIÓN (oculta en hub mode) */}
+        {(!hubMode && activeTab === "conexion" || showProfilesOnly) && (
           <div className="flex flex-col gap-3">
+            {!showProfilesOnly && (
+              <>
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">IP del Servidor</label>
+              <label className="hub-label">IP del Servidor</label>
               <input
                 type="text"
                 value={vllmIP}
                 onChange={(e) => setVllmIP(e.target.value)}
-                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+                className="hub-input"
               />
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Puerto</label>
+              <label className="hub-label">Puerto</label>
               <input
                 type="number"
                 value={serverPort}
                 onChange={(e) => setServerPort(Number(e.target.value))}
-                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none w-24"
+                className="hub-input w-24"
               />
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={handleTestConnection}
-                className="bg-[#8a2be2] hover:bg-[#9d3ff3] text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-none"
+                className="hub-btn-primary"
               >
                 Probar conexión
               </button>
               {testStatus && (
-                <span className="text-[12px] text-[#aaa]">{testStatus}</span>
+                <span className="text-[12px] text-a1-text-muted">{testStatus}</span>
               )}
             </div>
-            {/* Estado del backend */}
             {connectivity.backendHealth && (
-              <div className="mt-2 p-2 bg-[#1a1a1a] border border-[#222] rounded text-[10px] flex flex-col gap-1">
-                <div className="text-[#666] uppercase tracking-wider mb-1">Estado del Backend:</div>
-                <div>Shared Memory: <span className={connectivity.backendHealth.shared_memory ? "text-[#4f4]" : "text-[#f44]"}>{connectivity.backendHealth.shared_memory ? "ON" : "OFF"}</span></div>
-                <div>LMU API: <span className={connectivity.backendHealth.lmu_api ? "text-[#4f4]" : "text-[#f44]"}>{connectivity.backendHealth.lmu_api ? "ON" : "OFF"}</span></div>
-                <div>LLM: <span className={connectivity.backendHealth.llm ? "text-[#4f4]" : "text-[#f44]"}>{connectivity.backendHealth.llm ? "ON" : "OFF"}</span></div>
-                <div>WebSocket: <span className={connectivity.backendHealth.websocket ? "text-[#4f4]" : "text-[#f44]"}>{connectivity.backendHealth.websocket ? "ON" : "OFF"}</span></div>
+              <div className="mt-2 p-2 bg-hub-card border border-hub-border rounded text-[10px] flex flex-col gap-1">
+                <div className="text-a1-text-muted uppercase tracking-wider mb-1">Estado del Backend:</div>
+                <div>Shared Memory: <span className={connectivity.backendHealth.shared_memory ? "text-emerald-400" : "text-red-400"}>{connectivity.backendHealth.shared_memory ? "ON" : "OFF"}</span></div>
+                <div>LMU API: <span className={connectivity.backendHealth.lmu_api ? "text-emerald-400" : "text-red-400"}>{connectivity.backendHealth.lmu_api ? "ON" : "OFF"}</span></div>
+                <div>LLM: <span className={connectivity.backendHealth.llm ? "text-emerald-400" : "text-red-400"}>{connectivity.backendHealth.llm ? "ON" : "OFF"}</span></div>
+                <div>WebSocket: <span className={connectivity.backendHealth.websocket ? "text-emerald-400" : "text-red-400"}>{connectivity.backendHealth.websocket ? "ON" : "OFF"}</span></div>
               </div>
             )}
-            <div className="mt-3 p-2 bg-[#1a1a1a] border border-[#222] rounded flex flex-col gap-2">
+              </>
+            )}
+            {(section === "perfiles" || (!section && activeTab === "conexion")) && (
+            <div className="mt-3 p-2 bg-hub-card border border-hub-border rounded flex flex-col gap-2">
               <div className="text-[10px] text-[#666] uppercase tracking-wider">Perfiles</div>
               <select
                 value={selectedProfile}
@@ -495,19 +550,22 @@ export const ConfigTab: React.FC = () => {
                 <button onClick={handleSaveProfile} className="text-[10px] bg-[#333] px-2 py-1 rounded uppercase">Guardar</button>
                 <button onClick={handleDeleteProfile} className="text-[10px] bg-[#442222] px-2 py-1 rounded uppercase">Eliminar</button>
               </div>
-              {profileStatus && <span className="text-[11px] text-[#aaa]">{profileStatus}</span>}
+              {profileStatus && <span className="text-[11px] text-a1-text-muted">{profileStatus}</span>}
             </div>
+            )}
+            {!showProfilesOnly && (
             <button
               onClick={handleSave}
-              className="mt-2 bg-[#333] hover:bg-[#444] text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-none"
+              className="mt-2 hub-btn-secondary w-fit"
             >
               {saveStatus || "Guardar"}
             </button>
+            )}
           </div>
         )}
 
         {/* TAB: AUDIO */}
-        {activeTab === "audio" && (
+        {(activeTab === "audio" || section === "audio") && section !== "perfiles" && showAudioFields && (
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
               <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Dispositivo de Micrófono</label>
@@ -538,53 +596,60 @@ export const ConfigTab: React.FC = () => {
             <div className="mt-2">
               <Vumeter level={localLevel} label="Nivel del micrófono" />
             </div>
+            <AudioTtsPanel
+              ttsVoiceEngineer={ttsVoiceEngineer}
+              ttsVoiceSpotter={ttsVoiceSpotter}
+              ttsVolumeBoost={ttsVolumeBoost}
+              onEngineerVoice={setTtsVoiceEngineer}
+              onSpotterVoice={setTtsVoiceSpotter}
+              onVolume={setTtsVolumeBoost}
+            />
+            {section === "audio" && showPtt && (
+              <>
+                <HotkeyCapture label="Tecla PTT (START)" value={pttHotkey} onChange={setPttHotkey} />
+                <HotkeyCapture label="Tecla PTT (STOP)" value={pttStopHotkey} onChange={setPttStopHotkey} />
+                <p className="text-[10px] text-a1-text-muted leading-relaxed">
+                  En pista: atajos globales de teclado. Si START y STOP son distintos, STOP solo con el hub
+                  enfocado. Botones del ratón solo con el hub enfocado.
+                </p>
+              </>
+            )}
             <button
               onClick={handleSave}
-              className="mt-2 bg-[#333] hover:bg-[#444] text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-none"
+              className="mt-2 hub-btn-secondary w-fit"
             >
               {saveStatus || "Guardar"}
             </button>
           </div>
         )}
 
-        {/* TAB: VOZ */}
-        {activeTab === "voz" && (
+        {/* TAB: VOZ / secciones hub */}
+        {showVozSection && (
           <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Tecla PTT</label>
-              <input
-                type="text"
-                value={pttHotkey}
-                onChange={(e) => setPttHotkey(e.target.value)}
-                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
-              />
-              <span className="text-[9px] text-[#555] mt-1">START: inicia escucha (recomendado: Ctrl+Shift+Space)</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Tecla PTT (STOP)</label>
-              <input
-                type="text"
-                value={pttStopHotkey}
-                onChange={(e) => setPttStopHotkey(e.target.value)}
-                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
-              />
-              <span className="text-[9px] text-[#555] mt-1">STOP: envía y recibe respuesta</span>
-            </div>
-            <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
+            {section === "avanzado" && <UpdatesPanel />}
+            {showPtt && (
+              <>
+            <HotkeyCapture label="Tecla PTT (START)" value={pttHotkey} onChange={setPttHotkey} />
+            <HotkeyCapture label="Tecla PTT (STOP)" value={pttStopHotkey} onChange={setPttStopHotkey} />
+              </>
+            )}
+            {showIngeniero && (
+              <>
+            <label className="flex items-center gap-2 text-[12px] text-a1-text cursor-pointer">
               <input
                 type="checkbox"
                 checked={swearyMessages}
                 onChange={(e) => setSwearyMessages(e.target.checked)}
-                className="accent-[#8a2be2]"
+                className="accent-a1-accent"
               />
               Lenguaje de paddock (juramentos opcionales)
             </label>
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Perfil de personalidad</label>
+              <label className="hub-label">Perfil de personalidad</label>
               <select
                 value={personalityProfileId}
                 onChange={(e) => setPersonalityProfileId(e.target.value as AppConfig["personalityProfileId"])}
-                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+                className="hub-input"
               >
                 <option value="formal">Formal</option>
                 <option value="standard">Estándar</option>
@@ -592,37 +657,30 @@ export const ConfigTab: React.FC = () => {
               </select>
             </div>
             <div className="flex flex-col gap-1">
-              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Verbosidad del ingeniero</label>
+              <label className="hub-label">Verbosidad del ingeniero</label>
               <select
                 value={verbosityLevel}
                 onChange={(e) => setVerbosityLevel(e.target.value as AppConfig["verbosityLevel"])}
-                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+                className="hub-input"
               >
                 <option value="silent">Silencioso (solo crítico + spotter)</option>
                 <option value="normal">Normal</option>
                 <option value="detailed">Detallado</option>
               </select>
             </div>
-            <div className="grid grid-cols-1 gap-2">
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Voz TTS ingeniero</label>
-                <input
-                  type="text"
-                  value={ttsVoiceEngineer}
-                  onChange={(e) => setTtsVoiceEngineer(e.target.value)}
-                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Voz TTS spotter</label>
-                <input
-                  type="text"
-                  value={ttsVoiceSpotter}
-                  onChange={(e) => setTtsVoiceSpotter(e.target.value)}
-                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
-                />
-              </div>
-            </div>
+            <label className="flex items-center gap-2 text-[12px] text-a1-text cursor-pointer">
+              <input
+                type="checkbox"
+                checked={brakingZonesMute}
+                onChange={(e) => setBrakingZonesMute(e.target.checked)}
+                className="accent-a1-accent"
+              />
+              Silenciar TTS del ingeniero al frenar (zonas de frenada)
+            </label>
+              </>
+            )}
+            {showSpotter && (
+              <>
             <div className="grid grid-cols-2 gap-2 mt-1">
               <div className="flex flex-col gap-1">
                 <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Clear delay (s)</label>
@@ -660,12 +718,6 @@ export const ConfigTab: React.FC = () => {
                   onChange={(e) => setSpotterRaceStartDelayS(Number(e.target.value))}
                   className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white" />
               </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">TTS volume boost</label>
-                <input type="number" step="0.1" min="0.5" max="1" value={ttsVolumeBoost}
-                  onChange={(e) => setTtsVolumeBoost(Number(e.target.value))}
-                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white" />
-              </div>
             </div>
             <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
               <input
@@ -676,30 +728,25 @@ export const ConfigTab: React.FC = () => {
               />
               Silenciar spotter en clasificación (SC y combustible siguen activos)
             </label>
-            <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
+            <label className="flex items-center gap-2 text-[12px] text-a1-text cursor-pointer">
               <input
                 type="checkbox"
                 checked={spotterExcludeStopped}
                 onChange={(e) => setSpotterExcludeStopped(e.target.checked)}
-                className="accent-[#8a2be2]"
+                className="accent-a1-accent"
               />
               Ignorar coches parados o en boxes
             </label>
-            <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
-              <input
-                type="checkbox"
-                checked={brakingZonesMute}
-                onChange={(e) => setBrakingZonesMute(e.target.checked)}
-                className="accent-[#8a2be2]"
-              />
-              Silenciar TTS del ingeniero al frenar (zonas de frenada)
-            </label>
-            <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
+              </>
+            )}
+            {showMqtt && (
+              <>
+            <label className="flex items-center gap-2 text-[12px] text-a1-text cursor-pointer">
               <input
                 type="checkbox"
                 checked={mqttEnabled}
                 onChange={(e) => setMqttEnabled(e.target.checked)}
-                className="accent-[#8a2be2]"
+                className="accent-a1-accent"
               />
               Publicar telemetría vía MQTT (broker local)
             </label>
@@ -710,48 +757,46 @@ export const ConfigTab: React.FC = () => {
                   value={mqttBroker}
                   onChange={(e) => setMqttBroker(e.target.value)}
                   placeholder="Broker"
-                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white"
+                  className="hub-input"
                 />
                 <input
                   type="number"
                   value={mqttPort}
                   onChange={(e) => setMqttPort(Number(e.target.value))}
                   placeholder="Puerto"
-                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white"
+                  className="hub-input"
                 />
               </div>
             )}
-            <div className="mt-2 p-2 bg-[#1a1a1a] border border-[#222] rounded text-[10px] flex flex-col gap-1.5">
-              <div className="text-[#666] uppercase tracking-wider mb-1">Configuración del Backend:</div>
-              <div className="flex justify-between">
-                <span className="text-[#888]">Motor LLM:</span>
-                <span className="text-[#aaa]">CrofAI</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#888]">Modelo:</span>
-                <span className={connectivity.backendHealth?.llm ? "text-[#4f4]" : "text-[#f44]"}>
-                  {connectivity.backendHealth?.llm ? "deepseek-v4-flash" : "No configurado"}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#888]">TTS:</span>
-                <span className="text-[#aaa]">Piper (lessac-medium)</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[#888]">Estado:</span>
-                <span className={connectivity.backendHealth?.llm ? "text-[#4f4]" : "text-[#f44]"}>
-                  {connectivity.backendHealth?.llm ? "Conectado" : "Desconectado"}
-                </span>
-              </div>
+            <div className="text-[11px] text-a1-text-muted">
+              Overlay resize: <span className="text-a1-accent">Ctrl+Shift+O</span>
             </div>
-            <div className="mt-2 p-2 bg-[#1a1a1a] border border-[#222] rounded text-[11px] text-[#666]">
+            <div className="flex flex-col gap-1">
+              <label className="hub-label">Variante overlay</label>
+              <select
+                defaultValue={localStorage.getItem("overlayVariant") ?? "a1"}
+                onChange={(e) => localStorage.setItem("overlayVariant", e.target.value)}
+                className="hub-input max-w-xs"
+              >
+                <option value="a1">A1 — Racing red</option>
+                <option value="a2">A2 — Terracota (preview)</option>
+                <option value="a3">A3 — Minimal (preview)</option>
+              </select>
+            </div>
+              </>
+            )}
+            {showPtt && (
+            <div className="mt-2 p-2 bg-hub-card border border-hub-border rounded text-[11px] text-a1-text-muted">
               {pttHotkey.trim().toLowerCase() === pttStopHotkey.trim().toLowerCase()
-                ? "Modo toggle: pulsa y suelta la tecla PTT para transmitir."
+                ? "Modo toggle: pulsa y suelta el botón PTT para transmitir."
                 : "Pulsa START para hablar, pulsa STOP para enviar y recibir respuesta."}
+              {" "}
+              Volante/mando: asigna con el hub abierto; en pista funciona aunque el simulador tenga el foco.
             </div>
+            )}
             <button
               onClick={handleSave}
-              className="mt-2 bg-[#333] hover:bg-[#444] text-white text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-none"
+              className="mt-2 hub-btn-secondary w-fit"
             >
               {saveStatus || "Guardar"}
             </button>

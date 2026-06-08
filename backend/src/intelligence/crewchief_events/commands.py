@@ -15,6 +15,39 @@ def _clean(text: str) -> str:
     return "".join(ch for ch in decomposed if not combining(ch)).strip()
 
 
+def count_fast_intent_groups(text: str) -> int:
+    """Cuenta grupos de intención distintos (0 = pregunta abierta, 2+ = mixta)."""
+    cleaned = _clean(text)
+    groups = 0
+    if match_spotter_fast_command(text) is not None:
+        groups += 1
+    intent_needles = (
+        ("combustible", "gasolina", "fuel"),
+        ("danos", "dano", "damage"),
+        ("gap", "distancia", "delante", "detras"),
+        (
+            "callate",
+            "cállate",
+            "calmate",
+            "cálmate",
+            "silencio",
+            "solo cuando te pregunte",
+            "no digas nada",
+            "no hables",
+            "para de hablar",
+            "basta de hablar",
+            "shhh",
+            "shh",
+            "calla",
+        ),
+        ("puedes hablar", "habla normal", "quita silencio", "vuelve a hablar"),
+    )
+    for needles in intent_needles:
+        if any(needle in cleaned for needle in needles):
+            groups += 1
+    return groups
+
+
 def match_fast_command(text: str) -> FastCommand | None:
     cleaned = _clean(text)
     spotter = match_spotter_fast_command(text)
@@ -47,6 +80,56 @@ def match_fast_command(text: str) -> FastCommand | None:
         if any(needle in cleaned for needle in needles):
             return FastCommand(intent=intent, phrase=text)
     return None
+
+
+def match_radio_check(text: str) -> bool:
+    """Check de radio puro: confirmar recepción sin volcar telemetría."""
+    cleaned = _clean(text)
+    cleaned = re.sub(r"[?.!,¿¡]+", " ", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    if not cleaned:
+        return False
+
+    other_topic_markers = (
+        "combustible",
+        "fuel",
+        "gasolina",
+        "ritmo",
+        "estrategia",
+        "neumatic",
+        "vuelta",
+        "gap",
+        "dano",
+        "damage",
+        "boxes",
+        "tiempo",
+        "posicion",
+        "como va",
+        "como esta",
+        "que tal",
+        "carrera",
+        "lluvia",
+        "clima",
+        "temperatura",
+        "desgaste",
+    )
+    if any(marker in cleaned for marker in other_topic_markers):
+        return False
+
+    radio_markers = (
+        "me escuchas",
+        "me oyes",
+        "me recibes",
+        "me ois",
+        "radio check",
+        "prueba de radio",
+        "estas ahi",
+        "esta ahi",
+        "me escuchas ingeniero",
+        "ingeniero me escuchas",
+        "me oyes ingeniero",
+    )
+    return any(marker in cleaned for marker in radio_markers)
 
 
 def match_spotter_fast_command(text: str) -> str | None:

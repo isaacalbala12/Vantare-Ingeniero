@@ -75,7 +75,11 @@ async def format_commentary_batch(
         raw = await asyncio.wait_for(llm_complete(prompt), timeout=timeout_s)
         parsed = parse_llm_commentary_response(raw)
         if parsed.speak and parsed.text:
-            text = parsed.text
+            from src.intelligence.llm_speech_sanitize import sanitize_llm_speech
+
+            text = sanitize_llm_speech(parsed.text)
+            if not text:
+                return fallback
             return text[:280] if len(text) <= 280 else text[:277] + "..."
     except Exception as exc:
         logger.warning("LLM commentary batch fallback: %s", exc)

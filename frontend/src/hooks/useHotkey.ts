@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useAppStore } from "../store/config";
+import { isGamepadHotkey, isMouseHotkey, mouseHotkeyToButton } from "../hub/forms/hotkeyFormat";
 
 interface UseHotkeyProps {
   onKeyDown: () => void; // Inicia PTT
@@ -78,6 +79,8 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
   const currentHotkey = config.pttHotkey || DEFAULT_PTT_HOTKEY;
   const stopHotkey = config.pttStopHotkey || DEFAULT_PTT_HOTKEY;
   const isToggleMode = currentHotkey.toLowerCase() === stopHotkey.toLowerCase();
+  const usesGamepad = isGamepadHotkey(currentHotkey) || isGamepadHotkey(stopHotkey);
+  const usesMouse = isMouseHotkey(currentHotkey) || isMouseHotkey(stopHotkey);
 
   // Ref para evitar recrear callbacks
   const onKeyDownRef = useRef(onKeyDown);
@@ -92,6 +95,7 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
   // Manejador local (keydown/keyup — siempre activo, incluso en Tauri)
   // ─────────────────────────────────────────────────────────────
   useEffect(() => {
+    if (usesGamepad) return;
 
     let active = false;
 
@@ -103,10 +107,10 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
         event.preventDefault();
         const mode = useAppStore.getState().radio.mode;
         console.log(`[useHotkey] Toggle keydown: ${currentHotkey} (mode=${mode})`);
-        if (mode === "IDLE") {
-          onKeyDownRef.current();
-        } else if (mode === "LISTENING_PILOT") {
+        if (mode === "LISTENING_PILOT") {
           onKeyUpRef.current();
+        } else {
+          onKeyDownRef.current();
         }
         return;
       }
@@ -155,7 +159,68 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [currentHotkey, stopHotkey, isToggleMode]);
+  }, [currentHotkey, stopHotkey, isToggleMode, usesGamepad]);
+
+  useEffect(() => {
+    if (!usesMouse || usesGamepad) return;
+
+    let active = false;
+
+    const matchesMouse = (button: number, combo: string) => {
+      const mapped = mouseHotkeyToButton(combo);
+      return mapped !== null && mapped === button;
+    };
+
+    const handleMouseDown = (event: MouseEvent) => {
+      if (isEditableTarget(event.target)) return;
+
+      if (isToggleMode && matchesMouse(event.button, currentHotkey)) {
+        event.preventDefault();
+        const mode = useAppStore.getState().radio.mode;
+        if (mode === "LISTENING_PILOT") onKeyUpRef.current();
+        else onKeyDownRef.current();
+        return;
+      }
+
+      if (!isToggleMode && matchesMouse(event.button, currentHotkey) && !active) {
+        active = true;
+        event.preventDefault();
+        onKeyDownRef.current();
+        return;
+      }
+
+      if (!isToggleMode && matchesMouse(event.button, stopHotkey) && !active) {
+        active = true;
+        event.preventDefault();
+        onKeyDownRef.current();
+      }
+    };
+
+    const handleMouseUp = (event: MouseEvent) => {
+      if (isEditableTarget(event.target)) return;
+      if (isToggleMode) return;
+
+      if (!isToggleMode && matchesMouse(event.button, stopHotkey) && active) {
+        active = false;
+        event.preventDefault();
+        onKeyUpRef.current();
+        return;
+      }
+
+      if (!isToggleMode && matchesMouse(event.button, currentHotkey) && active) {
+        active = false;
+        event.preventDefault();
+        onKeyUpRef.current();
+      }
+    };
+
+    window.addEventListener("mousedown", handleMouseDown, true);
+    window.addEventListener("mouseup", handleMouseUp, true);
+    return () => {
+      window.removeEventListener("mousedown", handleMouseDown, true);
+      window.removeEventListener("mouseup", handleMouseUp, true);
+    };
+  }, [currentHotkey, stopHotkey, isToggleMode, usesMouse, usesGamepad]);
 
   // ─────────────────────────────────────────────────────────────
   // Registro global de Tauri (atajos start / stop)
@@ -196,10 +261,10 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
           await register(currentHotkey, () => {
             const mode = useAppStore.getState().radio.mode;
             console.log(`[useHotkey] Global TOGGLE detectado: ${currentHotkey} (mode=${mode})`);
-            if (mode === "IDLE") {
-              onKeyDownRef.current();
-            } else if (mode === "LISTENING_PILOT") {
+            if (mode === "LISTENING_PILOT") {
               onKeyUpRef.current();
+            } else {
+              onKeyDownRef.current();
             }
           });
           cleanupFns.push(() => {
@@ -211,7 +276,7 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
             await register(currentHotkey, () => {
               const mode = useAppStore.getState().radio.mode;
               console.log(`[useHotkey] Global START detectado: ${currentHotkey} (mode=${mode})`);
-              if (mode === "IDLE") {
+              if (mode !== "LISTENING_PILOT") {
                 onKeyDownRef.current();
               }
             });

@@ -30,7 +30,7 @@ def test_spotter_proximity_alert_priority_from_service():
     def capture(msg):
         captured.append(msg)
 
-    spotter = SpotterService(broadcast_callback=capture, invert_lateral=False)
+    spotter = SpotterService(broadcast_callback=capture, invert_lateral=False, enabled=True)
     tick = frame_to_spotter_tick(make_side_by_side_race_frame(), advice=None)
     spotter.evaluate_tick(tick)
 

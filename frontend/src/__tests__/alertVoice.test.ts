@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { shouldVoiceAlert, shouldVoiceDuringSpeakOnly } from "../services/alertVoice";
+import {
+  shouldVoiceAlert,
+  shouldVoiceDuringSpeakOnly,
+  shouldVoiceForServiceToggle,
+} from "../services/alertVoice";
 
 describe("shouldVoiceDuringSpeakOnly", () => {
   it("bloquea alertas proactivas salvo voice_response", () => {
@@ -51,5 +55,25 @@ describe("shouldVoiceAlert", () => {
     ).toBe(false);
     expect(shouldVoiceAlert({ category: "pearl", severity: "INFO", audio_priority: "2" })).toBe(true);
     expect(shouldVoiceAlert({ category: "pearl", severity: "INFO", audio_priority: "1" })).toBe(false);
+  });
+});
+
+describe("shouldVoiceForServiceToggle", () => {
+  it("respeta toggles por payload.service y categoría spotter", () => {
+    expect(
+      shouldVoiceForServiceToggle("proximity", false, true, { service: "spotter" }),
+    ).toBe(false);
+    expect(
+      shouldVoiceForServiceToggle("proximity", true, false, { service: "spotter" }),
+    ).toBe(true);
+    expect(
+      shouldVoiceForServiceToggle("fuel", true, false),
+    ).toBe(true);
+    expect(
+      shouldVoiceForServiceToggle("advice", true, false, { service: "engineer" }),
+    ).toBe(false);
+    expect(
+      shouldVoiceForServiceToggle("voice_response", false, false),
+    ).toBe(true);
   });
 });

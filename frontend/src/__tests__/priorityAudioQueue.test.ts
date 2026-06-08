@@ -7,6 +7,50 @@ describe("priorityAudioQueue", () => {
     vi.restoreAllMocks();
   });
 
+  it("reproduce ENGINEER antes que IMMEDIATE en cola", async () => {
+    const playOrder: string[] = [];
+    const originalAudio = globalThis.Audio;
+
+    class MockAudio {
+      src = "";
+      volume = 1;
+      preload = "auto";
+      onended: (() => void) | null = null;
+      onerror: (() => void) | null = null;
+      constructor(public url: string) {
+        this.src = url;
+      }
+      async play() {
+        playOrder.push(this.url);
+        queueMicrotask(() => this.onended?.());
+      }
+      pause() {}
+    }
+
+    // @ts-expect-error test mock
+    globalThis.Audio = MockAudio;
+
+    priorityAudioQueue.enqueueImmediate({
+      text: "Coche a la derecha",
+      url: "blob:immediate",
+      priority: "IMMEDIATE",
+      preemptible: true,
+      source: "alert",
+    });
+    priorityAudioQueue.enqueueEngineer({
+      text: "Respuesta ingeniero",
+      url: "blob:engineer",
+      priority: "ENGINEER",
+      preemptible: false,
+      source: "advice",
+    });
+
+    await new Promise((r) => setTimeout(r, 80));
+    expect(playOrder[0]).toBe("blob:engineer");
+
+    globalThis.Audio = originalAudio;
+  });
+
   it("reproduce IMMEDIATE antes que NORMAL", async () => {
     const playOrder: string[] = [];
     const originalAudio = globalThis.Audio;

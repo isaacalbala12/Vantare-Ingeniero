@@ -13,8 +13,8 @@ def test_spotter_cc_default_settings():
     assert settings.SPOTTER_CAR_LENGTH_M == 4.5
     assert settings.SPOTTER_CLOSING_SPEED_MS == 12.0
     assert settings.SPOTTER_HOLD_REPEAT_S == 3.0
-    assert settings.SPOTTER_MIN_SPEED_MS == 10.0
-    assert settings.SPOTTER_RACE_START_DELAY_S == 20.0
+    assert settings.SPOTTER_MIN_SPEED_MS == 5.0
+    assert settings.SPOTTER_RACE_START_DELAY_S == 3.0
 
 
 def test_spotter_service_wires_hold_repeat_from_settings():
@@ -64,13 +64,13 @@ def _side_by_side_tick(*, in_pits: bool = False, speed_ms: float = 25.0) -> dict
 
 
 def test_proximity_silent_below_min_speed():
-    spotter = SpotterService(broadcast_callback=lambda m: None, proximity_threshold_m=3.0)
-    tick = _side_by_side_tick(speed_ms=5.0)
+    spotter = SpotterService(broadcast_callback=lambda m: None, proximity_threshold_m=3.0, enabled=True)
+    tick = _side_by_side_tick(speed_ms=3.0)
     assert not any(a.category == "proximity" for a in spotter.evaluate(tick))
 
 
 def test_proximity_silent_first_20s_after_race_start():
-    spotter = SpotterService(broadcast_callback=lambda m: None, proximity_threshold_m=3.0)
+    spotter = SpotterService(broadcast_callback=lambda m: None, proximity_threshold_m=3.0, enabled=True)
     spotter._race_start_at = time.monotonic()
     tick = _side_by_side_tick()
     tick["lap_number"] = 1
@@ -78,7 +78,7 @@ def test_proximity_silent_first_20s_after_race_start():
 
 
 def test_proximity_silent_when_player_in_pits():
-    spotter = SpotterService(broadcast_callback=lambda m: None, proximity_threshold_m=3.0)
+    spotter = SpotterService(broadcast_callback=lambda m: None, proximity_threshold_m=3.0, enabled=True)
     tick = _side_by_side_tick(in_pits=True)
     assert not any(a.category == "proximity" for a in spotter.evaluate(tick))
 

@@ -86,9 +86,36 @@ async def lifespan(app: FastAPI):
     app.state.strategy_service = strategy_service
     logger.info("StrategyService loop spawned")
 
+    # 3a. Precargar Whisper ASR en paralelo con el primer ciclo de estrategia
+    whisper_preload_task = None
+    if settings.WHISPER_PRELOAD.lower() == "startup":
+        from src.services.asr_service import preload_whisper
+
+        logger.info(
+            "Whisper ASR: precarga en arranque (model=%s, device=%s)",
+            settings.WHISPER_MODEL,
+            settings.WHISPER_DEVICE,
+        )
+        whisper_preload_task = asyncio.create_task(asyncio.to_thread(preload_whisper))
+    else:
+        logger.info(
+            "Whisper ASR: carga diferida (WHISPER_PRELOAD=%s)",
+            settings.WHISPER_PRELOAD,
+        )
+
     # 3b. Esperar a que el primer ciclo de estrategia se complete antes de arrancar el engine
     await strategy_service.wait_until_ready()
     logger.info("StrategyService primer ciclo completado")
+
+    if whisper_preload_task is not None:
+        whisper_ok = await whisper_preload_task
+        from src.services.asr_service import get_asr_status
+
+        if whisper_ok:
+            logger.info("Whisper ASR precargado y listo para PTT")
+        else:
+            status = get_asr_status()
+            logger.warning("Whisper ASR no disponible: %s", status.get("error") or "unknown")
     if native:
         logger.info("Native telemetry mode — reading LMU shared memory in-process.")
     else:

@@ -327,24 +327,39 @@ async def websocket_endpoint(websocket: WebSocket):
                         engine.broadcast_config_ack()
                 elif event == "spotter_command":
                     action = msg.get("data", {}).get("action", "")
+                    engine = getattr(app_state, "intelligence_engine", None)
                     spotter = getattr(app_state, "spotter_service", None)
-                    if spotter and action in ("enable", "disable"):
-                        spotter.enabled = action == "enable"
-                        from src.models.messages import AlertMessage
-                        import uuid as _uuid
-                        ack = AlertMessage(
-                            event="alert",
-                            alert_id=str(_uuid.uuid4()),
-                            category="spotter",
-                            message="Spotter activado." if spotter.enabled else "Spotter desactivado.",
-                            audio_priority="1",
-                            severity="INFO",
-                            ttl=3,
-                            dismissable=True,
-                            payload={"spotter_enabled": spotter.enabled},
-                        )
-                        await manager.broadcast(ack)
-                        logger.info("[WS] spotter enabled=%s", spotter.enabled)
+                    if action in ("enable", "disable"):
+                        enabled = action == "enable"
+                        if engine is not None:
+                            engine.apply_spotter_toggle(enabled)
+                        elif spotter is not None:
+                            spotter.enabled = enabled
+                            from src.models.messages import AlertMessage
+                            import uuid as _uuid
+                            ack = AlertMessage(
+                                event="alert",
+                                alert_id=str(_uuid.uuid4()),
+                                category="spotter",
+                                message="Spotter activado." if enabled else "Spotter desactivado.",
+                                audio_priority="1",
+                                severity="INFO",
+                                ttl=3,
+                                dismissable=True,
+                                payload={"spotter_enabled": enabled},
+                            )
+                            await manager.broadcast(ack)
+                        logger.info("[WS] spotter enabled=%s", enabled)
+                elif event == "engineer_command":
+                    action = msg.get("data", {}).get("action", "")
+                    engine = getattr(app_state, "intelligence_engine", None)
+                    if engine and action in ("enable", "disable"):
+                        engine.apply_engineer_toggle(action == "enable")
+                        logger.info("[WS] engineer enabled=%s", engine.engineer_enabled)
+                elif event == "pilot_ptt_barge_in":
+                    engine = getattr(app_state, "intelligence_engine", None)
+                    if engine:
+                        await engine.cancel_current_llm()
                 elif event == "pilot_question":
                     question = msg.get("data", {}).get("question", "")
                     if question:

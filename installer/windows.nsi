@@ -1,3 +1,4 @@
+; DEPRECATED: use frontend/electron-builder NSIS (npm run build:desktop)
 ; Vantare Ingeniero IA - NSIS Installer Script
 ; Genera vantare-engine-setup.exe
 

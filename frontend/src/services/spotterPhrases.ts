@@ -1,6 +1,7 @@
 /** Frases spotter / urgentes — prioridad IMMEDIATE y normalización para cache TTS. */
 
-export type TtsPriority = "IMMEDIATE" | "NORMAL";
+/** ENGINEER = LLM/PTT (no lo corta el spotter). IMMEDIATE = spotter urgente. NORMAL = baja. */
+export type TtsPriority = "ENGINEER" | "IMMEDIATE" | "NORMAL";
 
 const IMMEDIATE_PATTERNS: RegExp[] = [
   /^coche a la (izquierda|derecha)$/i,

@@ -97,6 +97,7 @@ class TestProximityPipelineNoLMU:
             proximity_threshold_m=3.0,
             spotter_off_qualifying=False,
             invert_lateral=False,
+            enabled=True,
         )
         frame = make_side_by_side_race_frame()
         tick = frame_to_spotter_tick(frame, advice=None)
@@ -116,6 +117,7 @@ class TestProximityPipelineNoLMU:
             broadcast_callback=mock_broadcast,
             proximity_threshold_m=3.0,
             invert_lateral=False,
+            enabled=True,
         )
         miss_tick = frame_to_spotter_tick(make_world_only_miss_frame(), advice=None)
         spotter.evaluate_tick(miss_tick)
@@ -150,6 +152,7 @@ class TestProximityPipelineNoLMU:
             broadcast_callback=mock_broadcast,
             proximity_threshold_m=3.0,
             invert_lateral=False,
+            enabled=True,
         )
         spotter.evaluate_tick(frame_to_spotter_tick(frame, advice=None))
         prox = [m for m in broadcast_messages if getattr(m, "category", None) == "proximity"]
@@ -157,7 +160,12 @@ class TestProximityPipelineNoLMU:
 
     def test_alert_serializes_for_frontend_voice(self, mock_broadcast, broadcast_messages):
         """Payload JSON tal como lo recibe useWebSocket → shouldVoiceAlert (priority >= 2)."""
-        spotter = SpotterService(broadcast_callback=mock_broadcast, proximity_threshold_m=3.0, invert_lateral=False)
+        spotter = SpotterService(
+            broadcast_callback=mock_broadcast,
+            proximity_threshold_m=3.0,
+            invert_lateral=False,
+            enabled=True,
+        )
         spotter.evaluate_tick(frame_to_spotter_tick(make_side_by_side_race_frame(), advice=None))
         alert = next(m for m in broadcast_messages if m.category == "proximity")
         payload = alert.model_dump(mode="json")
@@ -166,3 +174,20 @@ class TestProximityPipelineNoLMU:
         assert payload["category"] == "proximity"
         assert int(payload["audio_priority"]) >= 2
         assert payload["message"]
+
+    def test_integrated_pipeline_uses_path_over_velocity(self, mock_broadcast, broadcast_messages):
+        """path_lateral fiable debe ganar a proyección XZ cuando difieren."""
+        spotter = SpotterService(
+            broadcast_callback=mock_broadcast,
+            proximity_threshold_m=4.0,
+            invert_lateral=True,
+            enabled=True,
+        )
+        frame = make_side_by_side_race_frame()
+        # Mundo XZ sugiere izquierda; path_lateral +2.6 → derecha (pista)
+        frame["competitors"][0]["pos_x"] = 98.0
+        frame["competitors"][0]["pos_z"] = 205.0
+        spotter.evaluate_tick(frame_to_spotter_tick(frame, advice=None))
+        prox = [m for m in broadcast_messages if getattr(m, "category", None) == "proximity"]
+        assert len(prox) == 1
+        assert "derecha" in prox[0].message.lower()
