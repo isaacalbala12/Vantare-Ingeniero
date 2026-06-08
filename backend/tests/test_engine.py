@@ -49,6 +49,11 @@ def mock_llm_client():
 
     mock.ask_streaming_text = mock_stream_text
     mock.ask_streaming = mock_stream
+    mock.ask_with_tools = AsyncMock(
+        return_value=__import__(
+            "src.intelligence.llm_client", fromlist=["AskWithToolsResult"]
+        ).AskWithToolsResult(content="", tool_calls=[])
+    )
     mock.health_check = AsyncMock(return_value=True)
     return mock
 
@@ -125,6 +130,56 @@ class TestIntelligenceEngine:
         assert mock_broadcaster.send.called
 
     @pytest.mark.asyncio
+    async def test_pilot_question_fuel_emits_llm_pending(self, engine, mock_broadcaster, mock_strategy_service, mock_llm_client):
+        """PTT pregunta combustible sin tool → free-form llm_pending."""
+        from src.intelligence.llm_client import AskWithToolsResult
+        from src.models.messages import LLMPendingMessage
+
+        mock_strategy_service.latest_frame = MagicMock(session_type="RACE", model_dump=lambda: {"session_type": "RACE"})
+        mock_strategy_service.latest_advice = MagicMock(model_dump=lambda: {"fuel": {"estimated_laps_remaining": 8.0}})
+        mock_llm_client.ask_with_tools = AsyncMock(return_value=AskWithToolsResult(content="", tool_calls=[]))
+        engine._llm_warmup_until = 0.0
+
+        with patch.object(engine, "_current_llm_task", None):
+            await engine.handle_pilot_question("explicame la estrategia de combustible")
+
+        pending = [
+            c[0][0]
+            for c in mock_broadcaster.send.call_args_list
+            if isinstance(c[0][0], LLMPendingMessage)
+        ]
+        assert pending, "debe emitir llm_pending para PTT abierto"
+        assert pending[-1].trigger_name == "Pregunta directa del piloto"
+
+    @pytest.mark.asyncio
+    async def test_pilot_question_fuel_via_tool(self, engine, mock_broadcaster, mock_strategy_service, mock_llm_client):
+        """PTT combustible con tool → voice_response, sin llm_pending."""
+        from src.intelligence.llm_client import AskWithToolsResult, ParsedToolCall
+        from src.models.messages import AlertMessage, LLMPendingMessage
+
+        mock_strategy_service.latest_frame = MagicMock(
+            model_dump=lambda: {"fuel_laps_remaining": 8.0, "session_type": "RACE"}
+        )
+        mock_strategy_service.latest_advice = MagicMock()
+        mock_llm_client.ask_with_tools = AsyncMock(
+            return_value=AskWithToolsResult(
+                tool_calls=[ParsedToolCall(name="get_fuel_status", arguments={})],
+            )
+        )
+
+        await engine.handle_pilot_question("¿Cuánto combustible me queda?")
+
+        alerts = [
+            c[0][0]
+            for c in mock_broadcaster.send.call_args_list
+            if isinstance(c[0][0], AlertMessage) and c[0][0].category == "voice_response"
+        ]
+        assert alerts, "fuel vía tool debe emitir voice_response"
+        assert not any(
+            isinstance(c[0][0], LLMPendingMessage) for c in mock_broadcaster.send.call_args_list
+        )
+
+    @pytest.mark.asyncio
     async def test_cancel_current_llm_no_task(self, engine):
         """cancel_current_llm sin tarea activa no debe crashear."""
         await engine.cancel_current_llm()
@@ -176,21 +231,5 @@ class TestIntelligenceEngine:
         mock_broadcaster.send.assert_called_once()
         alert = mock_broadcaster.send.call_args[0][0]
         assert alert.category == "pearl"
-
-    @pytest.mark.asyncio
-    async def test_overtake_emits_pearl(self, engine, mock_broadcaster):
-        engine._last_standing_position = 5
-        with patch.object(engine, "_current_llm_task", None):
-            await engine.evaluate_cycle(
-                telemetry_state={"standing_position": 4, "lap_number": 1, "session_type": "RACE"},
-                strategy_state={},
-                session_state={"session_type": "RACE"},
-            )
-        pearl_calls = [
-            c for c in mock_broadcaster.send.call_args_list
-            if getattr(c[0][0], "category", None) == "pearl"
-        ]
-        assert len(pearl_calls) >= 1
-
 
 import asyncio

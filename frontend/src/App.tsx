@@ -8,9 +8,13 @@ import useAudioCapture from "./hooks/useAudioCapture";
 import useAudioContext from "./hooks/useAudioContext";
 import { getHealth } from "./services/api";
 import { audioQueue } from "./services/audioQueue";
-import { parseSpotterCommand } from "./services/spotterCommands";
+import { registerAudioUnlock } from "./services/audioUnlock";
 import { fetchUpdateNotice, openReleaseUrl } from "./services/updateChecker";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+
+async function getTauriWindow() {
+  const { getCurrentWindow } = await import("@tauri-apps/api/window");
+  return getCurrentWindow();
+}
 
 // Verificar disponibilidad de Web Speech API
 const isSpeechRecognitionAvailable = 
@@ -41,7 +45,7 @@ export const App: React.FC = () => {
   } | null>(null);
 
   // 1. Inicializar WebSocket (se conecta automáticamente en useEffect interno)
-  const { sendJson } = useWebSocket();
+  const { sendJson, clearPendingTts } = useWebSocket();
 
   // 2. Inicializar AudioContext global (compartido entre beeps y captura)
   const { audioCtx, ensureResumed, playBeep } = useAudioContext();
@@ -51,6 +55,9 @@ export const App: React.FC = () => {
 
   // Vincular cola TTS con el estado de radio
   useEffect(() => {
+    registerAudioUnlock(async () => {
+      await ensureResumed();
+    });
     audioQueue.setOnPlaybackChange((isPlaying) => {
       if (isPlaying) {
         setRadioMode("SPEAKING_ENGINE");
@@ -58,23 +65,9 @@ export const App: React.FC = () => {
         setRadioMode("IDLE");
       }
     });
-  }, [setRadioMode]);
+  }, [setRadioMode, ensureResumed]);
 
-  // 3a. Pre-calentar permiso de micrófono al montar la app para evitar que
-  //     WebView2 bloquee el message loop con el diálogo modal de permiso.
-  useEffect(() => {
-    const prewarmMic = setTimeout(async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        stream.getTracks().forEach((t) => t.stop());
-        console.log("[App] Permiso de micrófono pre-calentado");
-      } catch (e) {
-        // No crítico: si falla aquí, el permiso se pedirá cuando el usuario pulse PTT
-        console.warn("[App] Pre-warm de micrófono:", e);
-      }
-    }, 2000);
-    return () => clearTimeout(prewarmMic);
-  }, []);
+  // Micrófono: permiso lazy en el primer PTT (getUserMedia al arranque congela WebView2).
 
   // Referencias para el control asíncrono de la transcripción
   const recognitionRef = useRef<any>(null);
@@ -168,6 +161,7 @@ export const App: React.FC = () => {
 
     // Interrumpir reproducción de audio TTS en curso
     audioQueue.stop();
+    clearPendingTts();
 
     console.log("[App] PTT Iniciado — Abriendo micrófono...");
     setRadioMode("LISTENING_PILOT");
@@ -241,124 +235,24 @@ export const App: React.FC = () => {
       return;
     }
 
-    const spotterAction = parseSpotterCommand(questionText);
-    if (spotterAction) {
-      sendJson("spotter_command", { action: spotterAction });
-      addMessageToHistory("pilot", questionText);
-      setRadioMode("IDLE");
-      setCurrentTokens("");
-      return;
-    }
-
-    // Añadir mensaje del piloto al historial del chat
     addMessageToHistory("pilot", questionText);
-
-    // Enviar evento de texto por websocket
     sendJson("pilot_question", { question: questionText });
-
-
-    // La respuesta del LLM llega via WebSocket (advice_token/advice_end).
-    // El backend procesa pilot_question a traves del IntelligenceEngine
-    // y el TTS se solicita al endpoint /tts cuando llega advice_end.
   };
 
   // Handler para envío de texto directo (fallback cuando SpeechRecognition no disponible en Linux)
-  const handleTextSubmit = async (text: string) => {
+  const handleTextSubmit = (text: string) => {
     const trimmed = text.trim();
     if (!trimmed) return;
 
     console.log("[App] Texto enviado:", trimmed);
 
-    const spotterAction = parseSpotterCommand(trimmed);
-    if (spotterAction) {
-      sendJson("spotter_command", { action: spotterAction });
-      addMessageToHistory("pilot", trimmed);
-      setRadioMode("IDLE");
-      return;
-    }
-    
-    // Interrumpir reproducción de audio TTS en curso
     audioQueue.stop();
-    
-    // Añadir mensaje del piloto al historial
+    clearPendingTts();
     addMessageToHistory("pilot", trimmed);
-    
-    // Cambiar modo a pensando
     setRadioMode("THINKING_LLM");
     setCurrentTokens("");
 
-    try {
-      const config = useAppStore.getState().config;
-      const baseUrl = `http://${config.vllmIP}:${config.serverPort}`;
-      
-      // Paso 1: POST /ask → obtener texto de la respuesta del LLM
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-      let response: Response;
-      try {
-        response = await fetch(`${baseUrl}/ask`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: trimmed }),
-          signal: controller.signal,
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-      } catch (err: any) {
-        if (err.name === "AbortError") {
-          console.warn("[App] Timeout en /ask (15s)");
-          setRadioMode("IDLE");
-          return;
-        }
-        throw err;
-      } finally {
-        clearTimeout(timeoutId);
-      }
-
-      // Leer la respuesta como texto (Content-Type: text/plain)
-      const responseText = await response.text();
-      
-      if (!responseText || responseText.trim() === "") {
-        console.warn("[App] Respuesta vacía del LLM.");
-        setRadioMode("IDLE");
-        return;
-      }
-
-      // Añadir el texto al historial como mensaje del ingeniero
-      addMessageToHistory("engineer", responseText);
-
-      // Paso 2: GET /tts?text=... → obtener audio MP3/WAV
-      try {
-        const ttsResponse = await fetch(`${baseUrl}/tts?text=${encodeURIComponent(responseText)}`);
-        
-        if (ttsResponse.ok) {
-          const audioBlob = await ttsResponse.blob();
-          
-          if (audioBlob.size > 0) {
-            const url = URL.createObjectURL(audioBlob);
-            audioQueue.enqueue(responseText, url);
-            // El modo SPEAKING_ENGINE se activará automáticamente vía callback
-          } else {
-            console.warn("[App] Audio vacío recibido del TTS.");
-            setRadioMode("IDLE");
-          }
-        } else {
-          console.warn("[App] Error al obtener TTS:", ttsResponse.status);
-          setRadioMode("IDLE");
-        }
-      } catch (ttsError) {
-        console.warn("[App] Error en solicitud TTS:", ttsError);
-        // Mostrar el texto en el historial sin audio
-        setRadioMode("IDLE");
-      }
-    } catch (error) {
-      console.error("[App] Error al enviar pregunta:", error);
-      setRadioMode("IDLE");
-      setCurrentTokens("");
-    }
+    sendJson("pilot_question", { question: trimmed });
   };
 
   // 6. Registrar interceptación de Teclado (PTT local y global)
@@ -391,7 +285,7 @@ export const App: React.FC = () => {
 
 
 
-  // 9. Polling de salud periódica al backend REST API (cada 5s)
+  // 9. Polling de salud — diferido 2s para no bloquear el primer paint de WebView2
   useEffect(() => {
     const checkHealth = async () => {
       try {
@@ -408,14 +302,17 @@ export const App: React.FC = () => {
       }
     };
 
-    checkHealth();
-    const interval = setInterval(checkHealth, 5000);
-    return () => clearInterval(interval);
+    const bootDelay = setTimeout(checkHealth, 2000);
+    const interval = setInterval(checkHealth, 15000);
+    return () => {
+      clearTimeout(bootDelay);
+      clearInterval(interval);
+    };
   }, [setBackendHealth]);
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
+    const timer = setTimeout(async () => {
       const notice = await fetchUpdateNotice();
       if (!cancelled && notice?.update_available && notice.release_url) {
         setUpdateNotice({
@@ -424,9 +321,10 @@ export const App: React.FC = () => {
           release_name: notice.release_name,
         });
       }
-    })();
+    }, 8000);
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
   }, []);
 
@@ -438,13 +336,13 @@ export const App: React.FC = () => {
 
   const handleMinimize = async () => {
     try {
-      const win = getCurrentWindow();
+      const win = await getTauriWindow();
       await win.minimize();
     } catch (e) { console.warn("[App] minimize:", e); }
   };
   const handleMaximize = async () => {
     try {
-      const win = getCurrentWindow();
+      const win = await getTauriWindow();
       const isMaximized = await win.isMaximized();
       if (isMaximized) {
         await win.unmaximize();
@@ -455,7 +353,7 @@ export const App: React.FC = () => {
   };
   const handleClose = async () => {
     try {
-      const win = getCurrentWindow();
+      const win = await getTauriWindow();
       await win.close();
     } catch (e) { console.warn("[App] close:", e); }
   };

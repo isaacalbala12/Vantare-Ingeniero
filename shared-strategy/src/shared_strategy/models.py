@@ -56,14 +56,17 @@ class CompetitorTelemetry(BaseModel):
     pos_x: float = 0.0
     pos_y: float = 0.0
     pos_z: float = 0.0
+    path_lateral: float = 0.0
 
 class TelemetryFrame(BaseModel):
     # Sesión y Tiempos
     session_type: str  # "practice", "qualifying", "race"
+    session_type_int: int = 0  # mSession crudo LMU (0-13); fuente autoritativa para gating
     session_time_left: float  # segundos
     session_laps_left: float
     lap_number: int
     lap_distance: float  # metros acumulados en la vuelta actual
+    path_lateral: float = 0.0  # offset lateral respecto a la línea de racing (LMU mPathLateral)
     lap_time_best: float
     lap_time_previous: float
     is_invalid_lap: bool
@@ -73,6 +76,7 @@ class TelemetryFrame(BaseModel):
     
     # Banderas de la Sesión
     yellow_flag_active: bool
+    local_yellow_active: bool = False
     safety_car_active: bool
     full_course_yellow_active: bool
     blue_flag_active: bool = False
@@ -118,9 +122,40 @@ class TelemetryFrame(BaseModel):
     vel_x: float = 0.0
     vel_y: float = 0.0
     vel_z: float = 0.0
+    ori_fwd_x: float = 0.0
+    ori_fwd_z: float = 0.0
     player_class: str = ""
     vehicle_name: str = ""
     standing_position: int = 1
+    # Gaps nativos LMU (coche adelante/detrás en pista, todas las clases)
+    time_gap_car_ahead: float = 0.0
+    time_gap_car_behind: float = 0.0
+    time_gap_place_ahead: float = 0.0
+    time_gap_place_behind: float = 0.0
+
+    # Daños / impactos (LMU shared memory)
+    damage_aero: float = 0.0
+    suspension_damage: float = 0.0
+    dent_severity_avg: float = 0.0
+    dent_severity_max: int = 0
+    detached: bool = False
+    last_impact_et: float = 0.0
+    last_impact_magnitude: float = 0.0
+
+    # Wave 1 — telemetría LMU adicional
+    raining_intensity: float = 0.0
+    yellow_flag_state: int = 0
+    local_accel_x: float = 0.0
+    local_accel_y: float = 0.0
+    local_accel_z: float = 0.0
+    tyre_flat_fl: bool = False
+    tyre_flat_fr: bool = False
+    tyre_flat_rl: bool = False
+    tyre_flat_rr: bool = False
+    track_limits_steps: int = 0
+    current_sector: int = 0  # mSector LMU: 0=sector3, 1=sector1, 2=sector2
+    game_phase: int = 5
+    sector_flags: list[int] = Field(default_factory=list)
 
     # Competidores
     competitors: list[CompetitorTelemetry] = Field(default_factory=list)

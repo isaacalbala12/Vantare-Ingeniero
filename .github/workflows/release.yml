@@ -54,50 +54,10 @@ jobs:
           path: |
             backend/dist/
 
-  build-sidecar:
-    name: Build Sidecar (strategy-sidecar)
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-2022
-            artifact: strategy-sidecar-windows
-          - os: ubuntu-24.04
-            artifact: strategy-sidecar-linux
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install dependencies
-        run: |
-          pip install -e ./shared-telemetry -e ./shared-strategy
-          pip install pyinstaller
-
-      - name: Build sidecar
-        run: |
-          cd sidecar
-          python build.py --noconfirm
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.artifact }}
-          path: |
-            sidecar/dist/
-
   build-installers:
     name: Build Installers (NSIS + DEB)
     runs-on: ubuntu-24.04
-    needs: [build-backend, build-sidecar]
+    needs: [build-backend]
 
     steps:
       - name: Checkout
@@ -119,11 +79,9 @@ jobs:
         run: |
           mkdir -p installer-build/windows
           mkdir -p installer-build/windows/backend
-          mkdir -p installer-build/windows/sidecar
           
           # Copy artifacts
           cp -r artifacts/vantare-engine-windows/* installer-build/windows/backend/
-          cp -r artifacts/strategy-sidecar-windows/* installer-build/windows/sidecar/
           
           # Copy NSIS script
           cp installer/windows.nsi installer-build/windows/
@@ -142,11 +100,9 @@ jobs:
           cd installer-build/windows
           
           # Prepare directory structure for NSIS
-          # NSIS script expects: backend\dist\vantare-engine\ and sidecar\dist\strategy-sidecar\
+          # NSIS script expects: backend\dist\vantare-engine\
           mkdir -p backend/dist/vantare-engine
-          mkdir -p sidecar/dist/strategy-sidecar
           cp -r backend/* backend/dist/vantare-engine/ 2>/dev/null || true
-          cp -r sidecar/* sidecar/dist/strategy-sidecar/ 2>/dev/null || true
           
           ls -la
           
@@ -156,7 +112,7 @@ jobs:
           fi
           if ! ls *.exe &>/dev/null; then
             echo "Creating ZIP instead"
-            zip -r vantare-instalador-${{ env.VERSION }}.zip backend sidecar LICENSE.txt
+            zip -r vantare-instalador-${{ env.VERSION }}.zip backend LICENSE.txt
           fi
           
           echo "=== Generated files ==="
@@ -171,7 +127,6 @@ jobs:
           
           # Copy Linux artifacts
           cp -r artifacts/vantare-engine-linux/* installer-build/linux/usr/bin/ 2>/dev/null || true
-          cp -r artifacts/strategy-sidecar-linux/* installer-build/linux/usr/bin/ 2>/dev/null || true
           
           # Create DEBIAN/control
           echo "Package: vantare-engine" > installer-build/linux/DEBIAN/control
@@ -188,7 +143,6 @@ jobs:
           # Create postinst
           echo '#!/bin/bash' > installer-build/linux/DEBIAN/postinst
           echo 'chmod +x /usr/bin/vantare-engine 2>/dev/null || true' >> installer-build/linux/DEBIAN/postinst
-          echo 'chmod +x /usr/bin/vantare-sidecar 2>/dev/null || true' >> installer-build/linux/DEBIAN/postinst
           echo 'mkdir -p ~/.config/vantare' >> installer-build/linux/DEBIAN/postinst
           echo 'echo "Vantare Ingeniero IA installed!"' >> installer-build/linux/DEBIAN/postinst
           chmod 755 installer-build/linux/DEBIAN/postinst

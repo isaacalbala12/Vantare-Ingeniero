@@ -57,26 +57,15 @@ if [ "$BUILD_LINUX" = true ]; then
         echo "  - Backend copiado"
     fi
 
-    if [ -d "sidecar/dist/strategy-sidecar" ]; then
-        cp -r sidecar/dist/strategy-sidecar/* "$DEB_DIR/usr/bin/"
-        echo "  - Sidecar copiado"
-    fi
-
-    # Crear scripts de inicio
+    # Crear script de inicio
     cat > "$DEB_DIR/usr/bin/vantare-engine" << 'EOF'
 #!/bin/bash
 cd /usr/share/vantare-engine
+export VANTARE_NATIVE_TELEMETRY=1
 ./vantare-engine
 EOF
 
-    cat > "$DEB_DIR/usr/bin/vantare-sidecar" << 'EOF'
-#!/bin/bash
-cd /usr/share/vantare-engine
-./strategy-sidecar
-EOF
-
     chmod +x "$DEB_DIR/usr/bin/vantare-engine"
-    chmod +x "$DEB_DIR/usr/bin/vantare-sidecar"
 
     # Control file (DEBIAN/control)
     cat > "$DEB_DIR/DEBIAN/control" << EOF
@@ -120,7 +109,6 @@ fi
 
 # Permisos
 chmod +x /usr/bin/vantare-engine 2>/dev/null || true
-chmod +x /usr/bin/vantare-sidecar 2>/dev/null || true
 
 echo "Vantare Ingeniero IA instalado correctamente!"
 echo "Para ejecutar: vantare-engine"
@@ -131,7 +119,6 @@ EOF
 #!/bin/bash
 # Detener servicios si están corriendo
 pkill -f vantare-engine 2>/dev/null || true
-pkill -f strategy-sidecar 2>/dev/null || true
 EOF
 
     # Post-remove script
@@ -145,7 +132,6 @@ EOF
 
     chmod 755 "$DEB_DIR/DEBIAN/"*
     chmod 755 "$DEB_DIR/usr/bin/vantare-engine"
-    chmod 755 "$DEB_DIR/usr/bin/vantare-sidecar"
 
     # Copiar LICENSE y docs
     cp LICENSE "$DEB_DIR/usr/share/doc/vantare-engine/" 2>/dev/null || true
@@ -203,13 +189,8 @@ if [ "$BUILD_WINDOWS" = true ]; then
         
         # Si hay builds de backend y sidecar
         if [ -d "backend/dist/vantare-engine" ]; then
-            mkdir -p "$WIN_BUILD/backend"
-            cp -r backend/dist/vantare-engine "$WIN_BUILD/backend/vantare-engine"
-        fi
-        
-        if [ -d "sidecar/dist/strategy-sidecar" ]; then
-            mkdir -p "$WIN_BUILD/sidecar"
-            cp -r sidecar/dist/strategy-sidecar "$WIN_BUILD/sidecar/strategy-sidecar"
+            mkdir -p "$WIN_BUILD/backend/dist/vantare-engine"
+            cp -r backend/dist/vantare-engine/* "$WIN_BUILD/backend/dist/vantare-engine/"
         fi
         
         # Compilar NSIS

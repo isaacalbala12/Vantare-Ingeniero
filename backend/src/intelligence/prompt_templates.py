@@ -196,8 +196,305 @@ MONITOR_COMPETITOR_TOOL = {
 }
 
 
+SET_VERBOSITY_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "set_verbosity",
+        "description": "Cambia el nivel de verbosidad del ingeniero (comentarios proactivos).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "string",
+                    "enum": ["silent", "normal", "detailed"],
+                    "description": "silent=solo crítico+spotter; normal=medio+; detailed=todo.",
+                },
+            },
+            "required": ["level"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+SET_BRAKING_ZONES_MUTE_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "set_braking_zones_mute",
+        "description": (
+            "Activa o desactiva silenciar TTS del ingeniero mientras el piloto frena fuerte. "
+            "Usar cuando pide silencio en frenada o zonas de frenado."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "True para silenciar comentarios NORMAL al frenar.",
+                },
+            },
+            "required": ["enabled"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+SET_SPEAK_ONLY_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "set_speak_only",
+        "description": (
+            "Silencia o restaura comentarios proactivos del ingeniero. "
+            "Usar cuando el piloto pide silencio, 'cállate', 'shhh', 'solo cuando te pregunte', "
+            "o cuando quiere volver al modo normal."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "True = solo hablar cuando el piloto pregunte; False = modo normal.",
+                },
+            },
+            "required": ["enabled"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+GET_FUEL_STATUS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_fuel_status",
+        "description": (
+            "Consulta combustible restante (vueltas o litros). "
+            "Usar cuando el piloto pregunta por gasolina, fuel, autonomía o cuántas vueltas le quedan."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+GET_GAP_STATUS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_gap_status",
+        "description": (
+            "Consulta gap con el coche de delante y/o detrás en segundos. "
+            "Usar cuando pregunta por distancia, gap, quién va delante o detrás."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+GET_DAMAGE_REPORT_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_damage_report",
+        "description": (
+            "Informe de daños del coche (aero, pinchazos, piezas). "
+            "Usar cuando pregunta por daños, estado del coche tras golpe, '¿estoy bien?'."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+GET_TIRE_WEAR_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_tire_wear",
+        "description": (
+            "Desgaste de neumáticos por eje. "
+            "Usar cuando pregunta por neumáticos, gomas, desgaste, tyres."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+SET_PIT_FUEL_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "set_pit_fuel",
+        "description": (
+            "Configura litros de combustible en el menú de boxes (PitMenu LMU). "
+            "Usar cuando pide añadir combustible en parada, ej. 'add 10 litres', 'pon 50 litros'."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "litres": {
+                    "type": "integer",
+                    "description": "Litros mínimos deseados en la próxima parada.",
+                },
+            },
+            "required": ["litres"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+SPOTTER_TOGGLE_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "spotter_toggle",
+        "description": (
+            "Activa o desactiva el spotter de proximidad. "
+            "Usar para 'spot', 'espiar', 'don't spot', 'deja de espiar', silenciar spotter."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "True = activar spotter; False = desactivar.",
+                },
+            },
+            "required": ["enabled"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+GET_FLAG_STATUS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_flag_status",
+        "description": "Estado de banderas (amarilla, SC, FCY). Usar si pregunta por bandera o safety car.",
+        "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
+    },
+}
+
+
+GET_RACE_TIME_REMAINING_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_race_time_remaining",
+        "description": "Tiempo o vueltas restantes de sesión/carrera.",
+        "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
+    },
+}
+
+
+GET_PIT_WINDOW_STATUS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_pit_window_status",
+        "description": "Estado de ventana de boxes (abierta/cerrada/próxima parada).",
+        "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
+    },
+}
+
+
+WATCH_SNIP_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "watch_snip",
+        "description": "Marca rival para mensaje 'snip' / vigilancia activa (watch opponent).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": ["snip", "clear"],
+                    "description": "snip = vigilar rival activo; clear = quitar snip.",
+                },
+            },
+            "required": ["action"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+SET_PIT_TYRES_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "set_pit_tyres",
+        "description": "Configura compound de neumáticos en menú boxes LMU.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "compound": {"type": "string", "description": "Primary, Alternate, Wet, etc."},
+                "confirm": {
+                    "type": "boolean",
+                    "description": "True solo tras confirmación explícita del piloto.",
+                },
+            },
+            "required": ["compound"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+PILOT_PTT_TURN_TWO_PROMPT = (
+    "Resume en 1-2 frases estilo radio lo que acabas de hacer para el piloto. "
+    "Combina acción y datos si hubo varias tools. Sé breve."
+)
+
+
+PILOT_PTT_SYSTEM_PROMPT = """Eres el clasificador de radio del ingeniero de pista.
+
+El piloto habla por PTT; la transcripción puede ser imperfecta. Antes de responder en prosa:
+
+1. Si pide cambiar tu comportamiento (silencio, verbosidad, frenada, pit menu, monitor rival) → tool de acción.
+2. Si pide un dato concreto (fuel, gap, daños, neumáticos, rival) → tool de consulta. No inventes números.
+3. Solo si es consejo abierto o estrategia sin dato concreto → responde sin tool (1-3 frases radio).
+
+Para acciones y consultas de estado DEBES usar tools. No simules la acción solo con texto."""
+
+
+def get_pilot_ptt_tools(include_competitor_query: bool = True) -> List[Dict[str, Any]]:
+    """Tools disponibles en el turno PTT (Task 13A/B/C)."""
+    tools = [
+        SET_SPEAK_ONLY_TOOL,
+        SPOTTER_TOGGLE_TOOL,
+        GET_FUEL_STATUS_TOOL,
+        GET_GAP_STATUS_TOOL,
+        GET_DAMAGE_REPORT_TOOL,
+        GET_TIRE_WEAR_TOOL,
+        SET_VERBOSITY_TOOL,
+        SET_BRAKING_ZONES_MUTE_TOOL,
+        SET_PIT_FUEL_TOOL,
+        GET_FLAG_STATUS_TOOL,
+        GET_RACE_TIME_REMAINING_TOOL,
+        GET_PIT_WINDOW_STATUS_TOOL,
+        WATCH_SNIP_TOOL,
+        SET_PIT_TYRES_TOOL,
+    ]
+    if include_competitor_query:
+        tools.append(COMPETITOR_QUERY_TOOL)
+        tools.append(MONITOR_COMPETITOR_TOOL)
+    return tools
+
+
 def get_llm_tools(include_competitor_query: bool = True) -> List[Dict[str, Any]]:
     tools = list(UI_TOOLS)
+    tools.append(SET_VERBOSITY_TOOL)
+    tools.append(SET_BRAKING_ZONES_MUTE_TOOL)
     if include_competitor_query:
         tools.append(COMPETITOR_QUERY_TOOL)
         tools.append(MONITOR_COMPETITOR_TOOL)

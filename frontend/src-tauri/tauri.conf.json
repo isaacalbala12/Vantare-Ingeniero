@@ -46,8 +46,7 @@
     "active": true,
     "targets": "all",
     "resources": {
-      "binaries/backend": "backend",
-      "binaries/sidecar": "sidecar"
+      "binaries/backend": "backend"
     },
     "icon": [
       "icons/32x32.png",

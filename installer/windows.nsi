@@ -57,8 +57,6 @@ Section "Principal" SEC01
 
   ; Copiar archivos del build
   File /r "backend/dist/vantare-engine/*.*"
-  File /r "sidecar/dist/strategy-sidecar/*.*"
-
 
   ; Copiar archivos de configuración de ejemplo
   SetOutPath "$INSTDIR\config"

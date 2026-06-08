@@ -8,6 +8,35 @@ interface UseHotkeyProps {
 
 const isTauri = typeof window !== "undefined" && (window as any).__TAURI_INTERNALS__ !== undefined;
 
+const DEFAULT_PTT_HOTKEY = "Ctrl+Shift+Space";
+
+/** No activar PTT mientras el usuario escribe en un campo de texto. */
+function isEditableTarget(target: EventTarget | null): boolean {
+  if (!target || !(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return true;
+  return target.isContentEditable;
+}
+
+function hotkeyHasModifier(combo: string): boolean {
+  const parts = combo.toLowerCase().split("+");
+  return parts.some((p) =>
+    ["ctrl", "control", "shift", "alt", "meta", "super", "win", "cmd"].includes(p),
+  );
+}
+
+/** Teclas sueltas (P, A…) capturan globalmente todo el SO — solo permitir con modificador. */
+function canRegisterGlobalHotkey(combo: string): boolean {
+  if (hotkeyHasModifier(combo)) return true;
+  const key = combo.split("+").pop()?.toLowerCase() ?? "";
+  if (/^f([1-9]|1[0-2])$/.test(key)) return true;
+  const safeSingleKeys = new Set([
+    "capslock", "scrolllock", "pause", "numlock",
+    "insert", "home", "end", "pageup", "pagedown",
+  ]);
+  return safeSingleKeys.has(key);
+}
+
 /**
  * Helper para comparar un KeyboardEvent con una hotkey string tipo "Ctrl+Shift+P".
  */
@@ -46,8 +75,8 @@ const matchesKeyCombo = (e: KeyboardEvent, combo: string): boolean => {
  */
 export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
   const { config } = useAppStore();
-  const currentHotkey = config.pttHotkey || "P";
-  const stopHotkey = config.pttStopHotkey || "P";
+  const currentHotkey = config.pttHotkey || DEFAULT_PTT_HOTKEY;
+  const stopHotkey = config.pttStopHotkey || DEFAULT_PTT_HOTKEY;
   const isToggleMode = currentHotkey.toLowerCase() === stopHotkey.toLowerCase();
 
   // Ref para evitar recrear callbacks
@@ -67,6 +96,8 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
     let active = false;
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (isEditableTarget(event.target)) return;
+
       // Modo toggle: keydown alterna START/STOP según el modo actual
       if (isToggleMode && matchesKeyCombo(event, currentHotkey)) {
         event.preventDefault();
@@ -97,6 +128,7 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
     };
 
     const handleKeyUp = (event: KeyboardEvent) => {
+      if (isEditableTarget(event.target)) return;
       // Modo toggle: no requiere keyup (alternancia es solo keydown)
       if (isToggleMode) return;
       // Modo two-key: STOP keyup → desactivar
@@ -137,17 +169,29 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
       try {
         const { register, unregister, isRegistered } = await import("@tauri-apps/plugin-global-shortcut");
 
-        // Limpiar registros previos
-        const keysToClean = isToggleMode
+        const keysToRegister = isToggleMode
           ? [currentHotkey]
           : [currentHotkey, stopHotkey];
-        for (const key of keysToClean) {
+        const globalKeys = keysToRegister.filter(canRegisterGlobalHotkey);
+        if (globalKeys.length < keysToRegister.length) {
+          console.warn(
+            "[useHotkey] Atajo sin modificador (ej. P): PTT solo con ventana enfocada. " +
+              "Usa Ctrl+Shift+Space para PTT global en juego.",
+          );
+        }
+
+        // Limpiar registros previos
+        for (const key of keysToRegister) {
           if (await isRegistered(key)) {
             await unregister(key);
           }
         }
 
         if (isToggleMode) {
+          if (!canRegisterGlobalHotkey(currentHotkey)) {
+            console.log(`[useHotkey] Atajo local only: ${currentHotkey}`);
+            return;
+          }
           // Un solo atajo toggle: IDLE→LISTENING, LISTENING→THINKING
           await register(currentHotkey, () => {
             const mode = useAppStore.getState().radio.mode;
@@ -163,29 +207,31 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
           });
           console.log(`[useHotkey] Atajo global toggle registrado: ${currentHotkey}`);
         } else {
-          // Registrar atajo de START
-          await register(currentHotkey, () => {
-            const mode = useAppStore.getState().radio.mode;
-            console.log(`[useHotkey] Global START detectado: ${currentHotkey} (mode=${mode})`);
-            if (mode === "IDLE") {
-              onKeyDownRef.current();
-            }
-          });
-          cleanupFns.push(() => {
-            unregister(currentHotkey).catch(() => {});
-          });
+          if (canRegisterGlobalHotkey(currentHotkey)) {
+            await register(currentHotkey, () => {
+              const mode = useAppStore.getState().radio.mode;
+              console.log(`[useHotkey] Global START detectado: ${currentHotkey} (mode=${mode})`);
+              if (mode === "IDLE") {
+                onKeyDownRef.current();
+              }
+            });
+            cleanupFns.push(() => {
+              unregister(currentHotkey).catch(() => {});
+            });
+          }
 
-          // Registrar atajo de STOP
-          await register(stopHotkey, () => {
-            const mode = useAppStore.getState().radio.mode;
-            console.log(`[useHotkey] Global STOP detectado: ${stopHotkey} (mode=${mode})`);
-            if (mode === "LISTENING_PILOT") {
-              onKeyUpRef.current();
-            }
-          });
-          cleanupFns.push(() => {
-            unregister(stopHotkey).catch(() => {});
-          });
+          if (canRegisterGlobalHotkey(stopHotkey)) {
+            await register(stopHotkey, () => {
+              const mode = useAppStore.getState().radio.mode;
+              console.log(`[useHotkey] Global STOP detectado: ${stopHotkey} (mode=${mode})`);
+              if (mode === "LISTENING_PILOT") {
+                onKeyUpRef.current();
+              }
+            });
+            cleanupFns.push(() => {
+              unregister(stopHotkey).catch(() => {});
+            });
+          }
 
           console.log(`[useHotkey] Atajos globales registrados: START=${currentHotkey}  STOP=${stopHotkey}`);
         }
@@ -194,9 +240,13 @@ export function useHotkey({ onKeyDown, onKeyUp }: UseHotkeyProps) {
       }
     };
 
-    setupGlobalShortcuts();
+    // Diferir registro: global-shortcut al arranque congela WebView2 en Windows
+    const timer = window.setTimeout(() => {
+      void setupGlobalShortcuts();
+    }, 4000);
 
     return () => {
+      window.clearTimeout(timer);
       for (const cleanup of cleanupFns) {
         cleanup();
       }

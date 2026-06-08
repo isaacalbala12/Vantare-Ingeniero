@@ -22,18 +22,22 @@ def reset_caches():
         lmu_api._weather_cache = {}
         lmu_api._strategy_usage_cache = {}
         lmu_api._garage_wear_cache = {}
+        lmu_api._session_settings_cache = {}
         lmu_api._weather_updated = 0.0
         lmu_api._strategy_updated = 0.0
         lmu_api._garage_updated = 0.0
+        lmu_api._session_settings_updated = 0.0
     yield
     # Cleanup after test
     with lmu_api._cache_lock:
         lmu_api._weather_cache = {}
         lmu_api._strategy_usage_cache = {}
         lmu_api._garage_wear_cache = {}
+        lmu_api._session_settings_cache = {}
         lmu_api._weather_updated = 0.0
         lmu_api._strategy_updated = 0.0
         lmu_api._garage_updated = 0.0
+        lmu_api._session_settings_updated = 0.0
 
 
 class TestCacheGetters:
@@ -257,4 +261,26 @@ class TestPollAPICacheLogic:
         assert lmu_api.get_weather() == {"w": 1}  # No afectado
         assert lmu_api.get_garage_wear() == {}  # No afectado
 
+
+class TestWeatherNormalization:
+    """LMU REST devuelve campos anidados {currentValue, stringValue}."""
+
+    def test_lmu_weather_scalar_nested(self):
+        assert lmu_api.lmu_weather_scalar({"currentValue": 35, "stringValue": "35%"}) == 35.0
+
+    def test_lmu_weather_scalar_flat(self):
+        assert lmu_api.lmu_weather_scalar(12.5) == 12.5
+
+    def test_normalize_weather_cache(self):
+        raw = {
+            "RACE": {
+                "NODE_25": {
+                    "WNV_RAIN_CHANCE": {"currentValue": 35, "stringValue": "35%"},
+                    "WNV_TEMPERATURE": {"currentValue": 21, "stringValue": "21 C"},
+                }
+            }
+        }
+        normalized = lmu_api._normalize_weather_cache(raw)
+        assert normalized["RACE"]["NODE_25"]["WNV_RAIN_CHANCE"] == 35.0
+        assert normalized["RACE"]["NODE_25"]["WNV_TEMPERATURE"] == 21.0
 

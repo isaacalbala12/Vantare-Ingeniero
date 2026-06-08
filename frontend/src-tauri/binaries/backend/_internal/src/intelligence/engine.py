@@ -39,13 +39,7 @@ class IntelligenceEngine:
         broadcast_callback=None,
         history_store=None,
         event_store=None,
-        audio_queue=None,
-        use_legacy_triggers=False,
     ) -> None:
-        self.use_legacy_triggers = use_legacy_triggers
-        self.audio_queue = audio_queue
-        self.event_manager = None
-
         # Resolve live_context
         if live_context is None:
             from src.intelligence.live_context import LiveContextManager
@@ -207,13 +201,7 @@ class IntelligenceEngine:
             self._current_llm_task.add_done_callback(self._on_llm_task_done)
             return
 
-        # 3b. EventManager path (nuevo sistema de eventos CrewChief-style)
-        if not self.use_legacy_triggers and self.event_manager:
-            current_state = {**telemetry_dict, **strategy_dict, **session_dict}
-            self.event_manager.trigger_all(current_state)
-            return
-
-        # 3. Iterar sobre los 12 triggers estándar (legacy path)
+        # 3. Iterar sobre los 12 triggers estándar
         for trigger in self.triggers:
             # Si el piloto tiene una pregunta activa, solo triggers CRITICAL pueden interrumpir
             from src.intelligence.triggers import Priority
