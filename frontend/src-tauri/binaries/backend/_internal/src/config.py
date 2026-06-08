@@ -1,6 +1,5 @@
 import os
 import sys
-from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Determinar la ruta al .env según el modo de ejecución.
@@ -55,9 +54,6 @@ class Settings(BaseSettings):
     # Gemini TTS Settings
     GEMINI_API_KEY: str = ""
     GEMINI_TTS_VOICE: str = "Kore"
-
-    # Event system
-    use_legacy_triggers: bool = Field(default=False, description="Use legacy trigger system instead of EventManager")
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,

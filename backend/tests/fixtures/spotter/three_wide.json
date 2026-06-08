@@ -1,0 +1,45 @@
+{
+  "session_type": "race",
+  "in_pits": false,
+  "lap_number": 4,
+  "lap_distance": 1500.0,
+  "path_lateral": 0.0,
+  "pos_x": 200.0,
+  "pos_y": 0.0,
+  "pos_z": 300.0,
+  "vel_x": 0.0,
+  "vel_y": 0.0,
+  "vel_z": 32.0,
+  "ori_fwd_x": 0.0,
+  "ori_fwd_z": 1.0,
+  "player_class": "GT3",
+  "vehicle_name": "Porsche 911 GT3 R",
+  "competitors": [
+    {
+      "driver_index": 1,
+      "driver_class": "GT3",
+      "driver_name": "Left",
+      "lap_number": 4,
+      "lap_distance": 1501.0,
+      "path_lateral": 0.0,
+      "speed": 32.0,
+      "in_pits": false,
+      "pos_x": 197.5,
+      "pos_y": 0.0,
+      "pos_z": 301.0
+    },
+    {
+      "driver_index": 2,
+      "driver_class": "GT3",
+      "driver_name": "Right",
+      "lap_number": 4,
+      "lap_distance": 1501.0,
+      "path_lateral": 0.0,
+      "speed": 32.0,
+      "in_pits": false,
+      "pos_x": 202.5,
+      "pos_y": 0.0,
+      "pos_z": 301.0
+    }
+  ]
+}

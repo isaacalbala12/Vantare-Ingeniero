@@ -16,6 +16,7 @@ async def test_llm_task_preemption():
 
     # 2. Instanciar IntelligenceEngine con el callback de mock
     engine = IntelligenceEngine(broadcast_callback=mock_broadcast)
+    engine._llm_warmup_until = 0.0
 
     # 3. Crear Mocks de TelemetryFrame y StrategyAdvice para el primer trigger
     # Trigger 1: Neumáticos Calientes (HIGH priority, STD tier, llm_required)

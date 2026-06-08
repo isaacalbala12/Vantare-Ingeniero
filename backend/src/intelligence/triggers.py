@@ -4,6 +4,10 @@ from enum import Enum
 from typing import Any, Dict, Optional
 from abc import ABC, abstractmethod
 
+from src.services.lmu_api import lmu_weather_scalar
+from src.intelligence.fuel_safety import fuel_critical_from_strategy
+from shared_telemetry.session_kind import is_race_session
+
 logger = logging.getLogger("vantare.triggers")
 
 class TriggerAction(str, Enum):
@@ -24,6 +28,8 @@ class ContextTier(str, Enum):
 
 class BaseTrigger(ABC):
     """Clase base para todos los triggers de la capa de inteligencia."""
+
+    race_only: bool = False
 
     def __init__(
         self,
@@ -65,6 +71,12 @@ class BaseTrigger(ABC):
         """Evalúa las condiciones físicas en la telemetría viva."""
         pass
 
+    def applies(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        """True si el trigger debe evaluarse en esta sesión y se cumple condition()."""
+        if self.race_only and not is_race_session(telemetry, session):
+            return False
+        return self.condition(telemetry, strategy, session)
+
 
 # =====================================================================
 # IMPLEMENTACIÓN DE LOS 12 TRIGGERS CONSOLIDADOS
@@ -81,11 +93,27 @@ class FuelCriticalTrigger(BaseTrigger):
             description="Combustible críticamente bajo",
             alert_text="¡ATENCIÓN! Quedan menos de 3 vueltas de combustible. Planifica parada."
         )
+        self._fuel_critical_active = False
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
-        fuel = strategy.get("fuel") or {}
-        est_laps = fuel.get("estimated_laps_remaining", 99.0)
-        return est_laps < 3.0 and not telemetry.get("in_pits", False)
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_fuel_messages", True) and is_cc_owned_event("fuel_laps_remaining"):
+            self._fuel_critical_active = False
+            return False
+
+        if telemetry.get("in_pits", False):
+            self._fuel_critical_active = False
+            return False
+
+        if not fuel_critical_from_strategy(telemetry, strategy, threshold=3.0):
+            self._fuel_critical_active = False
+            return False
+        if self._fuel_critical_active:
+            return False
+        self._fuel_critical_active = True
+        return True
 
 
 class FlagsMonitorTrigger(BaseTrigger):
@@ -114,12 +142,22 @@ class FlagsMonitorTrigger(BaseTrigger):
         transitions = detect_flag_transitions(self._prev_snapshot, current)
         self._prev_snapshot = current
 
-        if current.safety_car or current.fcy:
-            self.alert_text = "¡SAFETY CAR o FCY ACTIVO! Reduce velocidad y prepárate."
-            return True
-
         event = pick_highest_priority_event(transitions)
         if event is not None:
+            from src.intelligence.crewchief_events.cc_gates import should_emit_flag_event
+            from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+            event_id = f"flags_{event.event_type.value}"
+            if (
+                should_emit_flag_event(
+                    event.event_type,
+                    telemetry=telemetry,
+                    session=session,
+                    in_pits=bool(telemetry.get("in_pits")),
+                )
+                and is_cc_owned_event(event_id)
+            ):
+                return False
             self.alert_text = event.message
             return True
         return False
@@ -154,6 +192,8 @@ def _class_rank(name: str) -> int:
 class MulticlassWarningTrigger(BaseTrigger):
     """Aviso cuando una clase más rápida se acerca o hay que doblar a una más lenta."""
 
+    race_only = True
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -164,14 +204,24 @@ class MulticlassWarningTrigger(BaseTrigger):
             alert_text="Atención multiclase en pista.",
         )
         self.name = "Multiclass Warning"
+        self._active_scenario: str = ""
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_multiclass_messages", True) and is_cc_owned_event("multiclass_faster_behind"):
+            self._active_scenario = ""
+            return False
+
         if telemetry.get("in_pits", False):
+            self._active_scenario = ""
             return False
 
         player_class = telemetry.get("player_class", "")
         player_rank = _class_rank(player_class)
         competitors = strategy.get("competitors") or telemetry.get("competitors") or []
+        matched_key = ""
 
         for comp in competitors:
             if not isinstance(comp, dict):
@@ -184,21 +234,29 @@ class MulticlassWarningTrigger(BaseTrigger):
             comp_rank = _class_rank(comp_class)
             label = _normalize_class(comp_class) or comp_class or "Rival"
 
-            # Clase más rápida detrás: gap negativo, dentro de 2s
             if comp_rank > player_rank and -2.0 <= gap < 0:
+                matched_key = f"faster_behind:{label}"
                 self.alert_text = f"{label} alcanzando — {abs(gap):.1f}s detrás."
-                return True
+                break
 
-            # Clase más lenta delante: gap positivo pequeño, dentro de 1s
             if comp_rank < player_rank and 0 < gap <= 1.0:
+                matched_key = f"slower_ahead:{label}"
                 self.alert_text = f"{label} delante, prepárate para doblar."
-                return True
+                break
 
-        return False
+        if not matched_key:
+            self._active_scenario = ""
+            return False
+        if matched_key == self._active_scenario:
+            return False
+        self._active_scenario = matched_key
+        return True
 
 
 class DriverSwapTrigger(BaseTrigger):
     """Detecta cambio de piloto al volante (endurance)."""
+
+    race_only = True
 
     def __init__(self) -> None:
         super().__init__(
@@ -213,6 +271,14 @@ class DriverSwapTrigger(BaseTrigger):
         self._last_driver: str = ""
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_driver_swap_messages", True) and is_cc_owned_event(
+            "driver_swap_detected"
+        ):
+            return False
+
         name = str(telemetry.get("driver_name", "") or "").strip()
         if not name:
             return False
@@ -227,7 +293,7 @@ class DriverSwapTrigger(BaseTrigger):
 
 
 class PenaltyMonitorTrigger(BaseTrigger):
-    """Monitor de penalizaciones pendientes y servidas."""
+    """Penalizaciones: Wave 1 las gestiona ProactiveMonitorSuite + PenaltyTracker."""
 
     def __init__(self) -> None:
         super().__init__(
@@ -239,29 +305,15 @@ class PenaltyMonitorTrigger(BaseTrigger):
             alert_text="Penalización detectada.",
         )
         self.name = "Penalty Monitor"
-        self._last_penalties: int | None = None
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
-        num = int(telemetry.get("num_penalties", 0) or 0)
-        if self._last_penalties is None:
-            self._last_penalties = num
-            return False
-        if num > self._last_penalties:
-            self.alert_text = (
-                f"Penalización asignada ({num} pendiente(s)). "
-                "Entra en boxes para servirla."
-            )
-            self._last_penalties = num
-            return True
-        if num < self._last_penalties:
-            self.alert_text = "Penalización servida. Buen trabajo."
-            self._last_penalties = num
-            return True
         return False
 
 
 class PushNowTrigger(BaseTrigger):
     """Modo ataque cuando hay ventana táctica o faltan pocas vueltas."""
+
+    race_only = True
 
     def __init__(self) -> None:
         super().__init__(
@@ -273,29 +325,44 @@ class PushNowTrigger(BaseTrigger):
             alert_text="Modo ataque activado, dale todo.",
         )
         self.name = "Push Now"
+        self._push_active = False
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
-        if telemetry.get("in_pits", False):
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_push_now_messages", True) and is_cc_owned_event("push_to_win"):
+            self._push_active = False
             return False
-        session_type = str(telemetry.get("session_type", "")).lower()
-        if session_type not in ("race", "r"):
+
+        if telemetry.get("in_pits", False):
+            self._push_active = False
             return False
 
         pit_window = strategy.get("pit_window") or {}
         gap_behind = float(telemetry.get("gap_behind", 99.0))
-        if pit_window.get("undercut_potential") and gap_behind < 2.0:
-            self.alert_text = "Modo ataque activado — ventana de undercut, dale todo."
-            return True
-
+        undercut = bool(pit_window.get("undercut_potential")) and gap_behind < 2.0
         laps_left = float(telemetry.get("session_laps_left", 999.0))
-        if 0 < laps_left <= 3:
+        final_stint = 0 < laps_left <= 3
+        push_now = undercut or final_stint
+
+        if not push_now:
+            self._push_active = False
+            return False
+        if self._push_active:
+            return False
+        self._push_active = True
+        if undercut:
+            self.alert_text = "Modo ataque activado — ventana de undercut, dale todo."
+        else:
             self.alert_text = "Modo ataque activado, dale todo — faltan pocas vueltas."
-            return True
-        return False
+        return True
 
 
 class SessionEndTrigger(BaseTrigger):
     """Mensaje de fin de sesión con resumen básico."""
+
+    race_only = True
 
     def __init__(self) -> None:
         super().__init__(
@@ -310,6 +377,13 @@ class SessionEndTrigger(BaseTrigger):
         self._fired = False
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_session_end_messages", True) and is_cc_owned_event("session_victory"):
+            self._fired = False
+            return False
+
         if self._fired:
             return False
 
@@ -346,13 +420,28 @@ class BrakeWearCriticalTrigger(BaseTrigger):
             description="Desgaste crítico de frenos",
             alert_text="¡AVISO DE FRENOS! Desgaste superior al 80% detectado."
         )
+        self._critical_active = False
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_brake_wear_messages", True) and is_cc_owned_event("brake_wear_high"):
+            self._critical_active = False
+            return False
+
         w_fl = telemetry.get("brake_wear_fl", 0.0)
         w_fr = telemetry.get("brake_wear_fr", 0.0)
         w_rl = telemetry.get("brake_wear_rl", 0.0)
         w_rr = telemetry.get("brake_wear_rr", 0.0)
-        return any(w > 80.0 for w in [w_fl, w_fr, w_rl, w_rr])
+        critical = any(w > 80.0 for w in [w_fl, w_fr, w_rl, w_rr])
+        if not critical:
+            self._critical_active = False
+            return False
+        if self._critical_active:
+            return False
+        self._critical_active = True
+        return True
 
 
 class TyreDegAccelTrigger(BaseTrigger):
@@ -366,14 +455,31 @@ class TyreDegAccelTrigger(BaseTrigger):
             description="Degradación de neumáticos acelerada",
             alert_text="Desgaste promedio de neumáticos elevado. Ritmo degradado."
         )
+        self._deg_active = False
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_tyre_wear_messages", True) and is_cc_owned_event("tyre_wear_high"):
+            self._deg_active = False
+            return False
+
+        if telemetry.get("in_pits", False):
+            self._deg_active = False
+            return False
         w_fl = telemetry.get("tyre_wear_fl", 0.0)
         w_fr = telemetry.get("tyre_wear_fr", 0.0)
         w_rl = telemetry.get("tyre_wear_rl", 0.0)
         w_rr = telemetry.get("tyre_wear_rr", 0.0)
         avg_wear = (w_fl + w_fr + w_rl + w_rr) / 4.0
-        return avg_wear > 25.0 and not telemetry.get("in_pits", False)
+        if avg_wear <= 25.0:
+            self._deg_active = False
+            return False
+        if self._deg_active:
+            return False
+        self._deg_active = True
+        return True
 
 
 class HybridDeployMapTrigger(BaseTrigger):
@@ -387,13 +493,28 @@ class HybridDeployMapTrigger(BaseTrigger):
             description="Estado SOC híbrido crítico",
             alert_text="Carga de batería híbrida baja. Optimiza mapeo para recarga."
         )
+        self._critical_active = False
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_battery_messages", True) and is_cc_owned_event("battery_low_soc"):
+            self._critical_active = False
+            return False
+
         charge = telemetry.get("battery_charge", 100.0)
         drain = telemetry.get("battery_drain", 0.0)
         regen = telemetry.get("battery_regen", 0.0)
         net_trend = regen - drain
-        return charge < 20.0 and net_trend < 0.0
+        critical = charge < 20.0 and net_trend < 0.0
+        if not critical:
+            self._critical_active = False
+            return False
+        if self._critical_active:
+            return False
+        self._critical_active = True
+        return True
 
 
 class WeatherChangeTrigger(BaseTrigger):
@@ -407,22 +528,36 @@ class WeatherChangeTrigger(BaseTrigger):
             description="Amenaza de lluvia inminente",
             alert_text="Probabilidad de lluvia superior al 30% en el forecast actual."
         )
+        self._rain_threat_active = False
 
-    def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+    @staticmethod
+    def _rain_threat(session: dict) -> bool:
         weather_list = session.get("weather_forecast", [])
         if not isinstance(weather_list, list) or not weather_list:
             return False
-        # Evaluar los primeros nodos de previsión (ej: NODE_25, NODE_50)
         for slot in weather_list[:2]:
             if isinstance(slot, dict):
-                rain_chance = float(slot.get("WNV_RAIN_CHANCE", 0.0))
+                rain_chance = lmu_weather_scalar(slot.get("WNV_RAIN_CHANCE", 0.0))
                 if rain_chance > 30.0:
                     return True
         return False
 
+    def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        threat = self._rain_threat(session)
+        if not threat:
+            self._rain_threat_active = False
+            return False
+        if self._rain_threat_active:
+            return False
+        self._rain_threat_active = True
+        return True
+
 
 class PitWindowOpenedTrigger(BaseTrigger):
     """Trigger 7: Ventana de paradas en boxes abierta."""
+
+    race_only = True
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -432,14 +567,32 @@ class PitWindowOpenedTrigger(BaseTrigger):
             description="Ventana de parada abierta",
             alert_text="Ventana de paradas activa. Analizando estrategia óptima."
         )
+        self._window_open_active = False
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_pit_stop_messages", True) and is_cc_owned_event("pit_window_open"):
+            self._window_open_active = False
+            return False
+
         pit_window = strategy.get("pit_window") or {}
-        return pit_window.get("pit_window_open", False) and not telemetry.get("in_pits", False)
+        window_open = bool(pit_window.get("pit_window_open", False)) and not telemetry.get("in_pits", False)
+        if not window_open:
+            self._window_open_active = False
+            return False
+        if self._window_open_active:
+            return False
+        self._window_open_active = True
+        return True
 
 
 class PitWindowClosingTrigger(BaseTrigger):
     """Trigger 8: Ventana de paradas cerrándose (quedan <= 2 vueltas de ventana abierta)."""
+
+    race_only = True
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -449,16 +602,36 @@ class PitWindowClosingTrigger(BaseTrigger):
             description="Ventana de parada cerrándose",
             alert_text="Ventana de boxes a punto de cerrar. Parada obligatoria inminente."
         )
+        self._closing_announced = False
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_pit_stop_messages", True) and is_cc_owned_event("pit_window_closing"):
+            self._closing_announced = False
+            return False
+
         pit_window = strategy.get("pit_window") or {}
-        window_open = pit_window.get("pit_window_open", False)
-        laps_remaining_in_window = pit_window.get("optimal_pit_lap", 0) - telemetry.get("lap_number", 0)
-        return window_open and 0 <= laps_remaining_in_window <= 2 and not telemetry.get("in_pits", False)
+        window_open = bool(pit_window.get("pit_window_open", False))
+        laps_remaining_in_window = int(pit_window.get("optimal_pit_lap", 0)) - int(telemetry.get("lap_number", 0))
+        in_pits = bool(telemetry.get("in_pits", False))
+        in_closing = window_open and 0 <= laps_remaining_in_window <= 2 and not in_pits
+
+        if not window_open or in_pits or not in_closing:
+            self._closing_announced = False
+            return False
+        if self._closing_announced:
+            return False
+        self._closing_announced = True
+        return True
 
 
 class CompetitorPittedTrigger(BaseTrigger):
     """Trigger 9: Un competidor directo (posición contigua) entra a boxes."""
+
+    race_only = True
+
     def __init__(self) -> None:
         super().__init__(
             Priority.MEDIUM,
@@ -468,23 +641,43 @@ class CompetitorPittedTrigger(BaseTrigger):
             description="Competidor directo en boxes",
             alert_text="Rival directo parado en boxes. Oportunidad de undercut/overcut."
         )
+        self._adjacent_pits: dict[int, bool] = {}
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
         competitors = telemetry.get("competitors", [])
-        my_pos = telemetry.get("standing_position", 1)
+        my_pos = int(telemetry.get("standing_position", 1))
         if not isinstance(competitors, list):
             return False
+
+        triggered = False
+        seen: set[int] = set()
         for c in competitors:
-            if isinstance(c, dict):
-                pos = c.get("standing_position", 99)
-                # Rival a +/- 1 posición que entra en pits
-                if abs(pos - my_pos) == 1 and c.get("in_pits", False):
-                    return True
-        return False
+            if not isinstance(c, dict):
+                continue
+            pos = int(c.get("standing_position", 99))
+            if abs(pos - my_pos) != 1:
+                continue
+            seen.add(pos)
+            in_pits = bool(c.get("in_pits", False))
+            if pos not in self._adjacent_pits:
+                self._adjacent_pits[pos] = in_pits
+                continue
+            if in_pits and not self._adjacent_pits[pos]:
+                triggered = True
+            self._adjacent_pits[pos] = in_pits
+
+        for pos in list(self._adjacent_pits):
+            if pos not in seen:
+                del self._adjacent_pits[pos]
+
+        return triggered
 
 
 class GapClosedTrigger(BaseTrigger):
     """Trigger 10: Brecha con el coche de delante o detrás inferior a 1.5s."""
+
+    race_only = True
+
     def __init__(self) -> None:
         super().__init__(
             Priority.MEDIUM,
@@ -494,11 +687,30 @@ class GapClosedTrigger(BaseTrigger):
             description="Brecha cerrada con rival",
             alert_text="Brecha menor a 1.5 segundos. Entrando en zona de batalla táctica."
         )
+        self._battle_active = False
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
-        gap_ahead = telemetry.get("gap_ahead", 99.0)
-        gap_behind = telemetry.get("gap_behind", 99.0)
-        return (gap_ahead < 1.5 or gap_behind < 1.5) and not telemetry.get("in_pits", False)
+        if telemetry.get("in_pits", False):
+            self._battle_active = False
+            return False
+
+        from src.intelligence.crewchief_events.cc_gates import should_emit_gap_message
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if should_emit_gap_message(telemetry, session) and is_cc_owned_event("gap_being_pressured"):
+            self._battle_active = False
+            return False
+
+        gap_ahead = float(telemetry.get("gap_ahead", 99.0))
+        gap_behind = float(telemetry.get("gap_behind", 99.0))
+        in_battle = gap_ahead < 1.5 or gap_behind < 1.5
+        if not in_battle:
+            self._battle_active = False
+            return False
+        if self._battle_active:
+            return False
+        self._battle_active = True
+        return True
 
 
 class PhaseChangedTrigger(BaseTrigger):
@@ -554,34 +766,34 @@ class TiresThermalOverheatingTrigger(BaseTrigger):
             alert_text="¡ATENCIÓN! Temperatura de neumáticos elevada."
         )
         self.name = "Tires Thermal Overheating"
+        self._overheating_active = False
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
+        from src.intelligence.crewchief_events.cc_gates import session_enable_flag
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if session_enable_flag(session, "enable_tyre_temp_messages", True) and is_cc_owned_event("tyre_hot"):
+            self._overheating_active = False
+            return False
+
         t_fl = telemetry.get("tyre_temp_fl", 0.0)
         t_fr = telemetry.get("tyre_temp_fr", 0.0)
         t_rl = telemetry.get("tyre_temp_rl", 0.0)
         t_rr = telemetry.get("tyre_temp_rr", 0.0)
-        return any(t > 105.0 for t in [t_fl, t_fr, t_rl, t_rr])
+        overheating = any(t > 105.0 for t in [t_fl, t_fr, t_rl, t_rr])
+        if not overheating:
+            self._overheating_active = False
+            return False
+        if self._overheating_active:
+            return False
+        self._overheating_active = True
+        return True
 
 
 def get_all_triggers() -> list[BaseTrigger]:
-    """Retorna triggers ordenados por prioridad descendente."""
+    """Post-cutover: solo triggers LLM no portados a CC."""
     return [
-        FuelCriticalTrigger(),
-        FlagsMonitorTrigger(),
-        BrakeWearCriticalTrigger(),
-        TiresThermalOverheatingTrigger(),
-        TyreDegAccelTrigger(),
-        HybridDeployMapTrigger(),
-        MulticlassWarningTrigger(),
-        DriverSwapTrigger(),
-        PenaltyMonitorTrigger(),
         WeatherChangeTrigger(),
-        PitWindowOpenedTrigger(),
-        PitWindowClosingTrigger(),
-        CompetitorPittedTrigger(),
-        GapClosedTrigger(),
-        PushNowTrigger(),
-        SessionEndTrigger(),
         PhaseChangedTrigger(),
         PilotQuestionTrigger(),
     ]

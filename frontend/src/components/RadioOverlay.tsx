@@ -29,6 +29,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onPTTStart, onPTTEnd, onTe
   const lap = useAppStore((s) => s.telemetry.lap ?? 1);
   const position = useAppStore((s) => s.telemetry.position ?? 1);
   const gapAhead = useAppStore((s) => s.telemetry.gaps?.ahead ?? 0.0);
+  const gapBehind = useAppStore((s) => s.telemetry.gaps?.behind ?? 0.0);
+  const spotterAlerts = useAppStore((s) => s.telemetry.alerts ?? []);
+  const latestAlert = useAppStore((s) => s.radio.latestAlert);
 
   // Mapear modo radio a texto y color
   let modeText = "IDLE";
@@ -50,7 +53,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onPTTStart, onPTTEnd, onTe
   }
 
   const gearText = gear === 0 ? "N" : gear === -1 ? "R" : gear;
-  const gapText = `+${gapAhead.toFixed(1)}s`;
+  const gapText = gapAhead > 0 ? `+${gapAhead.toFixed(1)}s` : gapAhead === 0 ? "—" : `${gapAhead.toFixed(1)}s`;
+  const gapBehindText = gapBehind > 0 ? `-${gapBehind.toFixed(1)}s` : "—";
+  const spotterLine = latestAlert || spotterAlerts[0] || "";
 
   // Mensaje activo: streaming tokens o último consejo
   const lastHistoryMsg = messageHistory.length > 0 
@@ -102,8 +107,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ onPTTStart, onPTTEnd, onTe
         <div>
           Vuelta: <span className="font-bold">{lap}</span>
           &nbsp;|&nbsp;Pos: <span className="font-bold">P{position}</span>
-          &nbsp;|&nbsp;Gap: <span className="font-bold">{gapText}</span>
+          &nbsp;|&nbsp;Gap adelante: <span className="font-bold">{gapText}</span>
+          &nbsp;|&nbsp;Detrás: <span className="font-bold">{gapBehindText}</span>
         </div>
+        {spotterLine ? (
+          <div className="text-[11px] text-[#ffcc00] truncate" title={spotterLine}>
+            Spotter: {spotterLine}
+          </div>
+        ) : null}
       </div>
 
       {/* Fila 4: Historial (últimos 3 mensajes) */}

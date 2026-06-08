@@ -9,6 +9,7 @@ La feature v1.1 (recopilación centralizada) exportará los datos antes de borra
 """
 
 import logging
+import threading
 import time
 from pathlib import Path
 from typing import Any, Optional
@@ -30,23 +31,31 @@ class _E5EmbeddingFunction(EmbeddingFunction):
     no bloquear el arranque del backend.
     """
 
+    _shared_model = None
+    _model_lock = threading.Lock()
+
     def __init__(self) -> None:
         self._model = None
 
     def _ensure_model(self) -> None:
         if self._model is not None:
             return
-        logger.info("Cargando modelo de embeddings multilingual-e5-large...")
-        start = time.monotonic()
-        from sentence_transformers import SentenceTransformer
-        self._model = SentenceTransformer(
-            "intfloat/multilingual-e5-large",
-            device="cpu",
-            # Deshabilitar warnings de torch
-            config_kwargs={"use_cache": False},
-        )
-        elapsed = time.monotonic() - start
-        logger.info("Modelo de embeddings cargado en %.1fs", elapsed)
+        with _E5EmbeddingFunction._model_lock:
+            if _E5EmbeddingFunction._shared_model is not None:
+                self._model = _E5EmbeddingFunction._shared_model
+                return
+            logger.info("Cargando modelo de embeddings multilingual-e5-large...")
+            start = time.monotonic()
+            from sentence_transformers import SentenceTransformer
+            model = SentenceTransformer(
+                "intfloat/multilingual-e5-large",
+                device="cpu",
+                config_kwargs={"use_cache": False},
+            )
+            elapsed = time.monotonic() - start
+            logger.info("Modelo de embeddings cargado en %.1fs", elapsed)
+            _E5EmbeddingFunction._shared_model = model
+            self._model = model
 
     def __call__(self, input: Documents) -> Embeddings:
         """Genera embeddings para una lista de textos."""

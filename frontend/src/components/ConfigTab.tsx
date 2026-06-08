@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAppStore, AppConfig } from "../store/config";
-import { getHealth, listProfiles, loadProfile, saveProfile, deleteProfile } from "../services/api";
+import { sendConfigUpdate } from "../services/configUpdateWs";
 
 type TabName = "conexion" | "audio" | "voz";
 
@@ -24,14 +24,30 @@ export const ConfigTab: React.FC = () => {
   const [serverPort, setServerPort] = useState(config.serverPort ?? 8008);
   const [micDevice, setMicDevice] = useState(config.micDevice);
   const [sensitivity, setSensitivity] = useState(config.sensitivity ?? 50);
-  const [pttHotkey, setPttHotkey] = useState(config.pttHotkey ?? "P");
-  const [pttStopHotkey, setPttStopHotkey] = useState(config.pttStopHotkey ?? "P");
+  const [pttHotkey, setPttHotkey] = useState(config.pttHotkey ?? "Ctrl+Shift+Space");
+  const [pttStopHotkey, setPttStopHotkey] = useState(config.pttStopHotkey ?? "Ctrl+Shift+Space");
   const [swearyMessages, setSwearyMessages] = useState(config.swearyMessages ?? false);
   const [spotterOffQualifying, setSpotterOffQualifying] = useState(config.spotterOffQualifying ?? true);
   const [spotterExcludeStopped, setSpotterExcludeStopped] = useState(config.spotterExcludeStopped ?? true);
   const [mqttEnabled, setMqttEnabled] = useState(config.mqttEnabled ?? false);
   const [mqttBroker, setMqttBroker] = useState(config.mqttBroker ?? "localhost");
   const [mqttPort, setMqttPort] = useState(config.mqttPort ?? 1883);
+  const [personalityProfileId, setPersonalityProfileId] = useState<AppConfig["personalityProfileId"]>(
+    config.personalityProfileId ?? "standard",
+  );
+  const [verbosityLevel, setVerbosityLevel] = useState<AppConfig["verbosityLevel"]>(
+    config.verbosityLevel ?? "normal",
+  );
+  const [ttsVoiceEngineer, setTtsVoiceEngineer] = useState(config.ttsVoiceEngineer ?? "es-ES-AlvaroNeural");
+  const [ttsVoiceSpotter, setTtsVoiceSpotter] = useState(config.ttsVoiceSpotter ?? "es-ES-ElviraNeural");
+  const [spotterClearDelayS, setSpotterClearDelayS] = useState(config.spotterClearDelayS ?? 0.15);
+  const [spotterHoldRepeatS, setSpotterHoldRepeatS] = useState(config.spotterHoldRepeatS ?? 3.0);
+  const [spotterGapFrequencyS, setSpotterGapFrequencyS] = useState(config.spotterGapFrequencyS ?? 30);
+  const [spotterCarLengthM, setSpotterCarLengthM] = useState(config.spotterCarLengthM ?? 4.5);
+  const [spotterMinSpeedMs, setSpotterMinSpeedMs] = useState(config.spotterMinSpeedMs ?? 10.0);
+  const [spotterRaceStartDelayS, setSpotterRaceStartDelayS] = useState(config.spotterRaceStartDelayS ?? 20.0);
+  const [brakingZonesMute, setBrakingZonesMute] = useState(config.brakingZonesMute ?? false);
+  const [ttsVolumeBoost, setTtsVolumeBoost] = useState(config.ttsVolumeBoost ?? 1.0);
 
   // Estados de test y dispositivos
   const [testStatus, setTestStatus] = useState<string | null>(null);
@@ -40,23 +56,52 @@ export const ConfigTab: React.FC = () => {
   const [localLevel, setLocalLevel] = useState(0);
   const streamRef = useRef<MediaStream | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const prevTabRef = useRef<TabName>(activeTab);
+
+  const hydrateRuntimeFieldsFromStore = () => {
+    setPersonalityProfileId(config.personalityProfileId ?? "standard");
+    setVerbosityLevel(config.verbosityLevel ?? "normal");
+    setBrakingZonesMute(config.brakingZonesMute ?? false);
+    setSwearyMessages(config.swearyMessages ?? false);
+    setSpotterClearDelayS(config.spotterClearDelayS ?? 0.15);
+    setSpotterHoldRepeatS(config.spotterHoldRepeatS ?? 3.0);
+    setSpotterGapFrequencyS(config.spotterGapFrequencyS ?? 30);
+    setSpotterCarLengthM(config.spotterCarLengthM ?? 4.5);
+    setSpotterMinSpeedMs(config.spotterMinSpeedMs ?? 10.0);
+    setSpotterRaceStartDelayS(config.spotterRaceStartDelayS ?? 20.0);
+    setSpotterOffQualifying(config.spotterOffQualifying ?? true);
+    setSpotterExcludeStopped(config.spotterExcludeStopped ?? true);
+  };
 
   // Leer micLevel del store
   useAppStore((state) => state.radio.micLevel);
 
-  // 1. Enumerar dispositivos de audio
+  // 1. Enumerar dispositivos (sin getUserMedia hasta pestaña Audio — evita modal WebView2)
   useEffect(() => {
-    const getDevices = async () => {
+    const listDevices = async () => {
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
         const devices = await navigator.mediaDevices.enumerateDevices();
         setMicDevices(devices.filter((d) => d.kind === "audioinput"));
       } catch (e) {
         console.warn("Fallo al enumerar dispositivos:", e);
       }
     };
-    getDevices();
+    void listDevices();
   }, []);
+
+  useEffect(() => {
+    if (activeTab !== "audio") return;
+    const refreshWithLabels = async () => {
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        setMicDevices(devices.filter((d) => d.kind === "audioinput"));
+      } catch (e) {
+        console.warn("Fallo al refrescar dispositivos de audio:", e);
+      }
+    };
+    void refreshWithLabels();
+  }, [activeTab]);
 
   const refreshProfiles = async () => {
     const names = await listProfiles();
@@ -68,6 +113,13 @@ export const ConfigTab: React.FC = () => {
       refreshProfiles();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    if (prevTabRef.current !== "voz" && activeTab === "voz") {
+      hydrateRuntimeFieldsFromStore();
+    }
+    prevTabRef.current = activeTab;
+  }, [activeTab, config]);
 
   const buildConfigPayload = (): AppConfig => ({
     vllmIP: vllmIP.trim(),
@@ -85,9 +137,23 @@ export const ConfigTab: React.FC = () => {
     mqttEnabled,
     mqttBroker: mqttBroker.trim(),
     mqttPort: Number(mqttPort),
+    personalityProfileId,
+    verbosityLevel,
+    ttsVoiceEngineer: ttsVoiceEngineer.trim(),
+    ttsVoiceSpotter: ttsVoiceSpotter.trim(),
+    ttsBackend: config.ttsBackend ?? "edge",
+    spotterClearDelayS: Number(spotterClearDelayS),
+    spotterOverlapDelayS: config.spotterOverlapDelayS ?? 2.0,
+    spotterHoldRepeatS: Number(spotterHoldRepeatS),
+    spotterGapFrequencyS: Number(spotterGapFrequencyS),
+    spotterCarLengthM: Number(spotterCarLengthM),
+    spotterMinSpeedMs: Number(spotterMinSpeedMs),
+    spotterRaceStartDelayS: Number(spotterRaceStartDelayS),
+    brakingZonesMute,
+    ttsVolumeBoost: Number(ttsVolumeBoost),
   });
 
-  const applyLoadedConfig = (loaded: Record<string, unknown>) => {
+  const applyLoadedConfig = (loaded: Record<string, unknown>): AppConfig => {
     const merged: AppConfig = {
       ...config,
       ...loaded,
@@ -105,6 +171,19 @@ export const ConfigTab: React.FC = () => {
     setMqttEnabled(merged.mqttEnabled ?? false);
     setMqttBroker(merged.mqttBroker ?? "localhost");
     setMqttPort(merged.mqttPort ?? 1883);
+    setPersonalityProfileId(merged.personalityProfileId ?? "standard");
+    setVerbosityLevel(merged.verbosityLevel ?? "normal");
+    setTtsVoiceEngineer(merged.ttsVoiceEngineer ?? "es-ES-AlvaroNeural");
+    setTtsVoiceSpotter(merged.ttsVoiceSpotter ?? "es-ES-ElviraNeural");
+    setSpotterClearDelayS(merged.spotterClearDelayS ?? 0.15);
+    setSpotterHoldRepeatS(merged.spotterHoldRepeatS ?? 3.0);
+    setSpotterGapFrequencyS(merged.spotterGapFrequencyS ?? 30);
+    setSpotterCarLengthM(merged.spotterCarLengthM ?? 4.5);
+    setSpotterMinSpeedMs(merged.spotterMinSpeedMs ?? 10.0);
+    setSpotterRaceStartDelayS(merged.spotterRaceStartDelayS ?? 20.0);
+    setBrakingZonesMute(merged.brakingZonesMute ?? false);
+    setTtsVolumeBoost(merged.ttsVolumeBoost ?? 1.0);
+    return merged;
   };
 
   const handleLoadProfile = async () => {
@@ -115,7 +194,8 @@ export const ConfigTab: React.FC = () => {
       setTimeout(() => setProfileStatus(null), 3000);
       return;
     }
-    applyLoadedConfig(loaded);
+    const merged = applyLoadedConfig(loaded);
+    sendConfigUpdate(merged);
     setProfileStatus(`✅ Perfil "${selectedProfile}" cargado`);
     setTimeout(() => setProfileStatus(null), 2500);
   };
@@ -273,8 +353,42 @@ export const ConfigTab: React.FC = () => {
       setTimeout(() => setSaveStatus(null), 3000);
       return;
     }
+    const isBareKey = (combo: string) => {
+      const parts = combo.trim().split("+");
+      if (parts.length > 1) return false;
+      const key = parts[0].toLowerCase();
+      return !/^f([1-9]|1[0-2])$/.test(key);
+    };
+    if (isBareKey(startLower) || isBareKey(stopLower)) {
+      setSaveStatus("❌ Usa modificador (ej. Ctrl+Shift+Space) — teclas sueltas interfieren al escribir.");
+      setTimeout(() => setSaveStatus(null), 4000);
+      return;
+    }
 
-    updateConfig(buildConfigPayload());
+    const spotterClear = Number(spotterClearDelayS);
+    const spotterHoldRepeat = Number(spotterHoldRepeatS);
+    const spotterGap = Number(spotterGapFrequencyS);
+    const spotterLength = Number(spotterCarLengthM);
+    const spotterMinSpeed = Number(spotterMinSpeedMs);
+    const spotterRaceStart = Number(spotterRaceStartDelayS);
+    const volumeBoost = Number(ttsVolumeBoost);
+    if (
+      !Number.isFinite(spotterClear) || spotterClear < 0.1 || spotterClear > 10 ||
+      !Number.isFinite(spotterHoldRepeat) || spotterHoldRepeat < 0.5 || spotterHoldRepeat > 30 ||
+      !Number.isFinite(spotterGap) || spotterGap < 5 || spotterGap > 120 ||
+      !Number.isFinite(spotterLength) || spotterLength < 3 || spotterLength > 8 ||
+      !Number.isFinite(spotterMinSpeed) || spotterMinSpeed < 0 || spotterMinSpeed > 40 ||
+      !Number.isFinite(spotterRaceStart) || spotterRaceStart < 0 || spotterRaceStart > 120 ||
+      !Number.isFinite(volumeBoost) || volumeBoost < 0.5 || volumeBoost > 2
+    ) {
+      setSaveStatus("❌ Revisa valores spotter/TTS (clear ≥0.1s, hold ≥0.5s, gap 5–120s, longitud 3–8m, volumen 0.5–2)");
+      setTimeout(() => setSaveStatus(null), 4000);
+      return;
+    }
+
+    const payload = buildConfigPayload();
+    updateConfig(payload);
+    sendConfigUpdate(payload);
     setSaveStatus("✅ Guardado");
     setTimeout(() => setSaveStatus(null), 2000);
   };
@@ -444,7 +558,7 @@ export const ConfigTab: React.FC = () => {
                 onChange={(e) => setPttHotkey(e.target.value)}
                 className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
               />
-              <span className="text-[9px] text-[#555] mt-1">START: inicia escucha</span>
+              <span className="text-[9px] text-[#555] mt-1">START: inicia escucha (recomendado: Ctrl+Shift+Space)</span>
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Tecla PTT (STOP)</label>
@@ -465,6 +579,94 @@ export const ConfigTab: React.FC = () => {
               />
               Lenguaje de paddock (juramentos opcionales)
             </label>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Perfil de personalidad</label>
+              <select
+                value={personalityProfileId}
+                onChange={(e) => setPersonalityProfileId(e.target.value as AppConfig["personalityProfileId"])}
+                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+              >
+                <option value="formal">Formal</option>
+                <option value="standard">Estándar</option>
+                <option value="aggressive">Agresivo</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Verbosidad del ingeniero</label>
+              <select
+                value={verbosityLevel}
+                onChange={(e) => setVerbosityLevel(e.target.value as AppConfig["verbosityLevel"])}
+                className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+              >
+                <option value="silent">Silencioso (solo crítico + spotter)</option>
+                <option value="normal">Normal</option>
+                <option value="detailed">Detallado</option>
+              </select>
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Voz TTS ingeniero</label>
+                <input
+                  type="text"
+                  value={ttsVoiceEngineer}
+                  onChange={(e) => setTtsVoiceEngineer(e.target.value)}
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Voz TTS spotter</label>
+                <input
+                  type="text"
+                  value={ttsVoiceSpotter}
+                  onChange={(e) => setTtsVoiceSpotter(e.target.value)}
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[13px] text-white focus:border-[#8a2be2] focus:outline-none"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Clear delay (s)</label>
+                <input type="number" step="0.05" min="0.1" max="5" value={spotterClearDelayS}
+                  onChange={(e) => setSpotterClearDelayS(Number(e.target.value))}
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Hold repeat (s)</label>
+                <input type="number" step="0.5" min="0.5" max="30" value={spotterHoldRepeatS}
+                  onChange={(e) => setSpotterHoldRepeatS(Number(e.target.value))}
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Gap frequency (s)</label>
+                <input type="number" step="1" min="10" max="120" value={spotterGapFrequencyS}
+                  onChange={(e) => setSpotterGapFrequencyS(Number(e.target.value))}
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Car length (m)</label>
+                <input type="number" step="0.1" min="3.5" max="6.5" value={spotterCarLengthM}
+                  onChange={(e) => setSpotterCarLengthM(Number(e.target.value))}
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Min speed (m/s)</label>
+                <input type="number" step="1" min="0" max="40" value={spotterMinSpeedMs}
+                  onChange={(e) => setSpotterMinSpeedMs(Number(e.target.value))}
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">Race start delay (s)</label>
+                <input type="number" step="1" min="0" max="120" value={spotterRaceStartDelayS}
+                  onChange={(e) => setSpotterRaceStartDelayS(Number(e.target.value))}
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] text-[#aaa] uppercase tracking-wider">TTS volume boost</label>
+                <input type="number" step="0.1" min="0.5" max="1" value={ttsVolumeBoost}
+                  onChange={(e) => setTtsVolumeBoost(Number(e.target.value))}
+                  className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1 text-[12px] text-white" />
+              </div>
+            </div>
             <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
               <input
                 type="checkbox"
@@ -482,6 +684,15 @@ export const ConfigTab: React.FC = () => {
                 className="accent-[#8a2be2]"
               />
               Ignorar coches parados o en boxes
+            </label>
+            <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={brakingZonesMute}
+                onChange={(e) => setBrakingZonesMute(e.target.checked)}
+                className="accent-[#8a2be2]"
+              />
+              Silenciar TTS del ingeniero al frenar (zonas de frenada)
             </label>
             <label className="flex items-center gap-2 text-[12px] text-[#ccc] cursor-pointer">
               <input

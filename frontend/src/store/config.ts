@@ -69,6 +69,21 @@ export interface AppConfig {
   mqttEnabled: boolean;
   mqttBroker: string;
   mqttPort: number;
+  personalityProfileId: "formal" | "standard" | "aggressive";
+  verbosityLevel: "silent" | "normal" | "detailed";
+  ttsVoiceEngineer: string;
+  ttsVoiceSpotter: string;
+  ttsBackend: string;
+  spotterClearDelayS: number;
+  spotterOverlapDelayS: number;
+  spotterHoldRepeatS: number;
+  spotterGapFrequencyS: number;
+  spotterCarLengthM: number;
+  spotterMinSpeedMs: number;
+  spotterRaceStartDelayS: number;
+  brakingZonesMute: boolean;
+  speakOnlyWhenSpokenTo: boolean;
+  ttsVolumeBoost: number;
 }
 
 // --- INTERFAZ GLOBAL DEL STORE ---
@@ -100,6 +115,15 @@ export interface GlobalStore {
 }
 
 // Cargar configuración de localStorage en el arranque si existe
+const DEFAULT_PTT_HOTKEY = "Ctrl+Shift+Space";
+
+/** Migra el atajo legacy "P" (conflictúa al escribir) al default con modificador. */
+function normalizePttHotkey(value: string | undefined): string {
+  const trimmed = (value ?? DEFAULT_PTT_HOTKEY).trim();
+  if (trimmed === "P") return DEFAULT_PTT_HOTKEY;
+  return trimmed || DEFAULT_PTT_HOTKEY;
+}
+
 const loadSavedConfig = (): AppConfig => {
   try {
     let saved = localStorage.getItem("vantare_config");
@@ -112,8 +136,8 @@ const loadSavedConfig = (): AppConfig => {
         speakerDevice: parsed.speakerDevice ?? "default",
         wakeWord: parsed.wakeWord ?? "ingeniero",
         sensitivity: parsed.sensitivity ?? 50,
-        pttHotkey: parsed.pttHotkey ?? "Ctrl+Shift+Space",
-        pttStopHotkey: parsed.pttStopHotkey ?? "Ctrl+Shift+Space",
+        pttHotkey: normalizePttHotkey(parsed.pttHotkey),
+        pttStopHotkey: normalizePttHotkey(parsed.pttStopHotkey),
         wakeWordEnabled: parsed.wakeWordEnabled ?? true,
         swearyMessages: parsed.swearyMessages ?? false,
         spotterOffQualifying: parsed.spotterOffQualifying ?? true,
@@ -121,6 +145,21 @@ const loadSavedConfig = (): AppConfig => {
         mqttEnabled: parsed.mqttEnabled ?? false,
         mqttBroker: parsed.mqttBroker ?? "localhost",
         mqttPort: parsed.mqttPort ?? 1883,
+        personalityProfileId: parsed.personalityProfileId ?? "standard",
+        verbosityLevel: parsed.verbosityLevel ?? "normal",
+        ttsVoiceEngineer: parsed.ttsVoiceEngineer ?? "es-ES-AlvaroNeural",
+        ttsVoiceSpotter: parsed.ttsVoiceSpotter ?? "es-ES-ElviraNeural",
+        ttsBackend: parsed.ttsBackend ?? "edge",
+        spotterClearDelayS: parsed.spotterClearDelayS ?? 0.15,
+        spotterOverlapDelayS: parsed.spotterOverlapDelayS ?? 2.0,
+        spotterHoldRepeatS: parsed.spotterHoldRepeatS ?? parsed.spotterOverlapDelayS ?? 3.0,
+        spotterGapFrequencyS: parsed.spotterGapFrequencyS ?? 30,
+        spotterCarLengthM: parsed.spotterCarLengthM ?? 4.5,
+        spotterMinSpeedMs: parsed.spotterMinSpeedMs ?? 10.0,
+        spotterRaceStartDelayS: parsed.spotterRaceStartDelayS ?? 20.0,
+        brakingZonesMute: parsed.brakingZonesMute ?? false,
+        speakOnlyWhenSpokenTo: parsed.speakOnlyWhenSpokenTo ?? false,
+        ttsVolumeBoost: parsed.ttsVolumeBoost ?? 1.0,
       };
     }
   } catch (e) {
@@ -133,8 +172,8 @@ const loadSavedConfig = (): AppConfig => {
     speakerDevice: "default",
     wakeWord: "ingeniero",
     sensitivity: 50,
-    pttHotkey: "Ctrl+Shift+Space",
-    pttStopHotkey: "Ctrl+Shift+Space",
+    pttHotkey: DEFAULT_PTT_HOTKEY,
+    pttStopHotkey: DEFAULT_PTT_HOTKEY,
     wakeWordEnabled: true,
     swearyMessages: false,
     spotterOffQualifying: true,
@@ -142,6 +181,21 @@ const loadSavedConfig = (): AppConfig => {
     mqttEnabled: false,
     mqttBroker: "localhost",
     mqttPort: 1883,
+    personalityProfileId: "standard",
+    verbosityLevel: "normal",
+    ttsVoiceEngineer: "es-ES-AlvaroNeural",
+    ttsVoiceSpotter: "es-ES-ElviraNeural",
+    ttsBackend: "edge",
+    spotterClearDelayS: 0.15,
+    spotterOverlapDelayS: 2.0,
+    spotterHoldRepeatS: 3.0,
+    spotterGapFrequencyS: 30,
+    spotterCarLengthM: 4.5,
+    spotterMinSpeedMs: 10.0,
+    spotterRaceStartDelayS: 20.0,
+    brakingZonesMute: false,
+    speakOnlyWhenSpokenTo: false,
+    ttsVolumeBoost: 1.0,
   };
 };
 

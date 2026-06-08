@@ -1,7 +1,8 @@
 # Análisis Comparativo: CrewChiefV4 vs Vantare-Ingeniero
 
 > **Fecha:** 6 Junio 2026
-> **Versión documento:** 2.0 (revisión exhaustiva)
+> **Versión documento:** 2.3 (Task 14 cerrada Jun 2026)  
+> **Estado alpha:** A0–A8 cerrados; **validación LMU completada** 2026-06-08 ([task-14-lmu-closure.md](.omo/evidence/task-14-lmu-closure.md)). Telemetría native sin sidecar. Beta: [ROADMAP-beta.md](ROADMAP-beta.md).
 > **Propósito:** Comparación feature-por-feature entre CrewChiefV4 (C#, .NET, Windows Forms, ~10 años) y Vantare-Ingeniero (Python, FastAPI, Tauri 2 + React 19, ~1 año)
 > **Metodología:** Exploración del árbol de GitLab vía API (`api/v4/projects/.../repository/tree`) con paginación, más documentación oficial, changelog completo y código fuente de Vantare.
 
@@ -23,11 +24,13 @@
 | **IA/LLM** | No (100% determinista) | Sí (LLM + RAG + ChromaDB) |
 | **Licencia** | MIT | Propietaria |
 | **Instalador** | WiX Toolset (MSI) | PyInstaller + Tauri bundle |
-| **Tests** | XUnit + UnitTest (~20 subdirectorios) | Pytest (31 tests) + Vitest (7 tests) |
+| **Tests** | XUnit + UnitTest (~20 subdirectorios) | Pytest (~110+) + Vitest (~60+) — `verify_audio_pipeline.py` |
 | **Reconocimiento de voz** | **Grammar-based** (Windows SAPI, 100+ comandos definidos) | **Free-form** (Web Speech API + Whisper) |
 | **Overlays in-game** | Sí (DirectX overlay + SteamVR) | No (ventana Tauri separada) |
 | **SDK público** | Sí (CrewChiefV4SDK) | No |
-| **Publicación MQTT** | Sí | No |
+| **Publicación MQTT** | Sí | Sí (opt-in, `mqtt_service.py`; validar con `scripts/verify_mqtt_e2e.py`) |
+| **Spotter lateral** | Sí | Sí (multiclase, hold/closing speed, perfiles TTS) |
+| **Comentarios proactivos** | 42 módulos deterministas | `ProactiveMonitorSuite` + `CommentaryOrchestrator` LLM batch + triggers |
 | **Auto-actualización** | Sí (AutoUpdater.NET) | No |
 | **Plugins DLL** | 10 juegos con plugins dedicados | Sidecar Python independiente |
 
@@ -553,12 +556,12 @@ Web Speech API / Whisper
 
 | Feature CC | Estado | Notas |
 |---|---|---|
-| Car-left/car-right por coordenadas XYZ (`NoisyCartesianCoordinateSpotter.cs`) | ❌ | Vantare no detecta proximidad lateral |
-| Desactivado en calificación (propiedad) | ❌ | CC tiene "Spotter off during qualifying" |
-| Spotter multiclase (coche doblando/doblado) | ❌ | No hay distinción de clases |
-| Exclusión de coches en boxes/rotos | ❌ | CC no reporta coches parados |
-| Basado en dimensiones reales del coche | ❌ | No disponible |
-| "Spot" / "Don't spot" por voz | ❌ | Sin comando de activación |
+| Car-left/car-right por coordenadas XYZ (`NoisyCartesianCoordinateSpotter.cs`) | ✅ | `cartesian_spotter` + `path_lateral` (LMU) |
+| Desactivado en calificación (propiedad) | ✅ | `SPOTTER_OFF_QUALIFYING` / `spotterOffQualifying` |
+| Spotter multiclase (coche doblando/doblado) | ✅ | Frases por clase en proximity + `MulticlassWarningTrigger` |
+| Exclusión de coches en boxes/rotos | ✅ | `spotterExcludeStopped`, rivals en pits ignorados |
+| Basado en dimensiones reales del coche | ⚠️ | `VehicleClassInfo` / lookup por clase, no por mesh |
+| "Spot" / "Don't spot" por voz | ⚠️ | `parseSpotterCommand` + WS (free-form, no grammar CC) |
 | Spotter para óvalos | N/A | No aplica a LMU |
 | Pit limiter entrada/salida | ✅ | En `spotter.py` |
 | Gap < 0.5s delante/detrás | ✅ | En `spotter.py` |
@@ -645,12 +648,12 @@ Web Speech API / Whisper
 | Paquetes de voz descargables | ❌ | Instalación 1 clic |
 | Soporte multi-idioma en voces | ❌ | Voice packs por idioma |
 | Pitidos de radio configurables | ✅ | Beeps en Vantare |
-| **Ducking de audio** (bajar volumen juego) | ❌🔍 | `ControlVolumeOfProcess.cs` |
+| **Ducking de audio** (bajar volumen juego) | ✅ | `audio_duck.rs` + `priorityAudioQueue` @ 65% |
 | Control de volumen por voz | ❌ | "Crew Chief quieter/louder" |
 | TTS para nombres faltantes | ✅ | Edge TTS |
 | Modo Trainee (Jerry aprendiz) | ❌ | Alternar voces |
 | Juramentos opcionales | ❌ | "Use sweary messages" |
-| Perlas de sabiduría | ❌🔍 | `PearlsOfWisdom.cs` |
+| Perlas de sabiduría | ⚠️ | `PearlsService` — max 2/carrera (normal), sin slider 0–10 CC |
 | Tiempo coloquial | ❌🔍 | `ColloquialTime.cs` |
 | Formato vuelta sin minutos | ❌🔍 | "26 point 5" vs "1:26.5" |
 
@@ -722,15 +725,15 @@ Web Speech API / Whisper
 
 | Feature CC | Estado | Relevancia LMU |
 |---|---|---|
-| **DriverSwaps** (cambios piloto endurance) | ❌🔍 | **MUY RELEVANTE** (24h Le Mans) |
-| **MulticlassWarnings** | ❌🔍 | **MUY RELEVANTE** (Hypercar + GT3) |
-| **OvertakingAidsMonitor** (DRS/KERS) | ❌🔍 | Relevante (LMU tiene DRS) |
-| **FlagsMonitor** (banderas) | ❌🔍 | Vantare solo SC/FCY |
-| **FrozenOrderMonitor** (bandera roja) | ❌🔍 | LMU tiene bandera roja |
-| **Penalties** (drive-through, stop-and-go) | ❌🔍 | LMU tiene penalizaciones |
-| **PushNow** (modo ataque) | ❌🔍 | |
-| **SessionEndMessages** | ❌🔍 | |
-| **ConditionsMonitor** (clima) | ❌🔍 | |
+| **DriverSwaps** (cambios piloto endurance) | ✅ | `DriverSwapTrigger` + commentary |
+| **MulticlassWarnings** | ✅ | `MulticlassWarningTrigger` + spotter proximity |
+| **OvertakingAidsMonitor** (DRS/KERS) | ⚠️ | `HybridDeployMapTrigger` (SOC); DRS parcial en monitors |
+| **FlagsMonitor** (banderas) | ✅ | `FlagsMonitorTrigger` + commentary transiciones |
+| **FrozenOrderMonitor** (bandera roja) | ✅ | `proactive_monitors` frozen_order |
+| **Penalties** (drive-through, stop-and-go) | ✅ | `PenaltyMonitorTrigger` |
+| **PushNow** (modo ataque) | ✅ | `PushNowTrigger` + commentary |
+| **SessionEndMessages** | ✅ | `SessionEndTrigger` |
+| **ConditionsMonitor** (clima) | ✅ | `WeatherChangeTrigger` |
 | **AlarmClock** | ❌🔍 | Baja prioridad |
 | CoDriver (rally) | N/A | No aplica |
 | iRacing ratings | N/A | No aplica |

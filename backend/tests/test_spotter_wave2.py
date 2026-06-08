@@ -5,13 +5,21 @@ import time
 import pytest
 
 from src.intelligence.spotter import SpotterService
-from src.intelligence.spotter_geometry import build_proximity_message, detect_lateral_proximity
+from src.intelligence.spotter_geometry import (
+    build_proximity_message,
+    detect_lateral_proximity,
+    detect_path_lateral_proximity,
+)
 from shared_strategy.vehicle_lookup import get_vehicle_width
 
 
 @pytest.fixture
 def spotter(mock_broadcast):
-    return SpotterService(broadcast_callback=mock_broadcast, proximity_threshold_m=3.0)
+    return SpotterService(
+        broadcast_callback=mock_broadcast,
+        proximity_threshold_m=3.0,
+        invert_lateral=False,
+    )
 
 
 @pytest.fixture
@@ -28,6 +36,9 @@ def base_tick():
         "session_laps_left": 10.0,
         "estimated_laps_remaining": 10.0,
         "session_type": "race",
+        "lap_number": 3,
+        "lap_distance": 1200.0,
+        "path_lateral": 0.0,
         "pos_x": 0.0,
         "pos_y": 0.0,
         "pos_z": 0.0,
@@ -69,6 +80,47 @@ class TestLateralProximity:
             3.0,
         )
         assert hits == []
+
+
+class TestPathLateralProximity:
+    def test_side_by_side_on_same_lap(self):
+        hits = detect_path_lateral_proximity(
+            3,
+            1200.0,
+            0.0,
+            [
+                {
+                    "driver_index": 9,
+                    "driver_class": "GT3",
+                    "driver_name": "Rival",
+                    "lap_number": 3,
+                    "lap_distance": 1203.0,
+                    "path_lateral": 2.5,
+                }
+            ],
+            4.0,
+        )
+        assert len(hits) == 1
+        assert hits[0].side == "derecha"
+
+    def test_spotter_path_proximity_alert(self, spotter, base_tick):
+        tick = dict(base_tick)
+        tick["competitors"] = [
+            {
+                "driver_index": 10,
+                "driver_class": "Hypercar",
+                "driver_name": "Fast",
+                "lap_number": 3,
+                "lap_distance": 1205.0,
+                "path_lateral": -2.2,
+                "speed": 30.0,
+                "in_pits": False,
+            }
+        ]
+        alerts = spotter.evaluate(tick)
+        prox = [a for a in alerts if a.category == "proximity"]
+        assert len(prox) == 1
+        assert "izquierda" in prox[0].message.lower()
 
 
 class TestSpotterWave2:

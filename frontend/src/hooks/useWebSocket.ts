@@ -2,6 +2,76 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useAppStore } from "../store/config";
 import { audioQueue } from "../services/audioQueue";
 import { encodeMsgpack, decodeMsgpack, computeDelta, SNAPSHOT_INTERVAL } from "../services/msgpack";
+import { shouldVoiceAlert, shouldVoiceDuringSpeakOnly } from "../services/alertVoice";
+import { classifyTtsPriority, type TtsPriority } from "../services/spotterPhrases";
+import { spotterPrefetchPhrases } from "../services/spotterPhraseResolver";
+import { buildConfigUpdatePayload } from "../services/configUpdatePayload";
+import { registerConfigWs } from "../services/configUpdateWs";
+import { buildVoiceHash, ttsCache } from "../services/ttsCache";
+import { gapsFromCompetitorPace, gapsFromNativeFrame, mapSidecarBinaryFrame } from "../services/telemetryFrame";
+import { expiresAtFromPayload, delayedUntilFromPayload, validationKeyFromPayload, isExpiredAt } from "../services/alertExpiry";
+
+function shouldDiscardTtsPlayback(mode: string): boolean {
+  // Solo descartar mientras el piloto tiene el PTT abierto — no durante THINKING
+  // (respuestas voice_response llegan en THINKING y deben reproducirse).
+  return mode === "LISTENING_PILOT";
+}
+
+function isInternalRadioText(text: string): boolean {
+  const trimmed = text.trim();
+  return (
+    trimmed.startsWith("---") ||
+    trimmed.startsWith("...") ||
+    trimmed.includes("Pérdida de comunicación")
+  );
+}
+
+function shouldSpeakAdvice(text: string): boolean {
+  return text.length > 0 && !isInternalRadioText(text);
+}
+
+const TTS_FETCH_TIMEOUT_MS = 20_000;
+const TTS_RECONNECT_GRACE_MS = 10_000;
+const TTS_SPOKEN_COOLDOWN_MS = 45_000;
+const TTS_QUEUE_MAX = 5;
+const TELEMETRY_UI_INTERVAL_MS = 200; // 5 Hz — evita re-render a 20 Hz
+
+function extractBrakePressure(frame: Record<string, unknown> | null | undefined): number {
+  if (!frame) return 0;
+  const player = frame.player as Record<string, unknown> | undefined;
+  const controls = frame.controls as Record<string, unknown> | undefined;
+  const raw = frame.brake ?? frame.brake_pressure ?? player?.brake ?? controls?.brake;
+  const value = Number(raw ?? 0);
+  return Number.isFinite(value) ? value : 0;
+}
+
+interface TtsQueueItem {
+  text: string;
+  priority: TtsPriority;
+  source: string;
+  voiceRole: "engineer" | "spotter";
+  expiresAt?: number;
+  delayedUntilMs?: number;
+  validationKey?: string;
+}
+
+function shouldDeferForBraking(priority: TtsPriority, cfg: ReturnType<typeof useAppStore.getState>["config"], frame: Record<string, unknown> | null | undefined): boolean {
+  return priority === "NORMAL" && Boolean(cfg.brakingZonesMute) && extractBrakePressure(frame) >= 0.15;
+}
+
+function resolveTtsVoice(role: "engineer" | "spotter", cfg: ReturnType<typeof useAppStore.getState>["config"]): string {
+  return role === "spotter"
+    ? (cfg.ttsVoiceSpotter || "es-ES-ElviraNeural")
+    : (cfg.ttsVoiceEngineer || "es-ES-AlvaroNeural");
+}
+
+function spotterVoiceRoleForAlert(payload?: Record<string, unknown>): "engineer" | "spotter" {
+  const category = String(payload?.category ?? "").toLowerCase();
+  if (category === "proximity" || category === "limiter" || category === "damage") {
+    return "spotter";
+  }
+  return "engineer";
+}
 
 /**
  * Hook para la conexión y parseo de mensajes en tiempo real vía WebSocket.
@@ -19,6 +89,7 @@ export function useWebSocket() {
     addMessageToHistory,
     setLatestAdvice,
     setLatestAlert,
+    updateConfig,
   } = useAppStore();
 
   const [lastTelemetry, setLastTelemetry] = useState<any>(null);
@@ -31,8 +102,18 @@ export function useWebSocket() {
   const reconnectTimeoutRef = useRef<number | null>(null);
   const reconnectDelayRef = useRef<number>(1000); // Backoff inicial a 1s
   const manuallyClosedRef = useRef<boolean>(false);
-  const ttsQueueRef = useRef<string[]>([]);
+  const ttsQueueRef = useRef<TtsQueueItem[]>([]);
   const isTtsProcessingRef = useRef<boolean>(false);
+  const ttsCurrentPriorityRef = useRef<TtsPriority>("NORMAL");
+  const ttsAbortRef = useRef<AbortController | null>(null);
+  const ttsAbortIntentionalRef = useRef<boolean>(false);
+  const ttsReconnectGraceUntilRef = useRef<number>(0);
+  const spokenTtsAtRef = useRef<Map<string, number>>(new Map());
+  const latestTelemetryRef = useRef<any>(null);
+  const lastTelemetryUiUpdateRef = useRef<number>(0);
+  const serverTelemetryActiveRef = useRef<boolean>(false);
+  const pendingAdviceTokensRef = useRef<string>("");
+  const lastAdviceTokenUiRef = useRef<number>(0);
   const previousFrameRef = useRef<Record<string, unknown> | null>(null);
   const frameCountRef = useRef<number>(0);
 
@@ -46,41 +127,264 @@ export function useWebSocket() {
     return unsub;
   }, []);
 
-  // Función para procesar la cola de solicitudes TTS
+  const clearPendingTts = useCallback(() => {
+    ttsAbortIntentionalRef.current = true;
+    ttsQueueRef.current = [];
+    isTtsProcessingRef.current = false;
+    ttsAbortRef.current?.abort();
+    ttsAbortRef.current = null;
+    ttsAbortIntentionalRef.current = false;
+    audioQueue.stop();
+  }, []);
+
+  const clearPendingNormalTts = useCallback(() => {
+    ttsQueueRef.current = ttsQueueRef.current.filter((item) => item.priority === "IMMEDIATE");
+    if (ttsCurrentPriorityRef.current === "NORMAL" && isTtsProcessingRef.current) {
+      ttsAbortIntentionalRef.current = true;
+      ttsAbortRef.current?.abort();
+      ttsAbortRef.current = null;
+      isTtsProcessingRef.current = false;
+      ttsAbortIntentionalRef.current = false;
+    }
+    audioQueue.stopNormal();
+  }, []);
+
+  const prefetchSpotterTts = useCallback(async () => {
+    const configState = useAppStore.getState().config;
+    const baseUrl = `http://${configState.vllmIP || "localhost"}:${configState.serverPort || 8008}`;
+    const spotterVoice = resolveTtsVoice("spotter", configState);
+    const voiceHash = buildVoiceHash({
+      ttsBackend: configState.ttsBackend,
+      ttsVoice: spotterVoice,
+      role: "spotter",
+      profileId: configState.personalityProfileId,
+    });
+    await ttsCache.prefetch(spotterPrefetchPhrases(configState.personalityProfileId), voiceHash, async (text) => {
+      try {
+        const res = await fetch(
+          `${baseUrl}/tts?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(spotterVoice)}`,
+        );
+        if (!res.ok) return null;
+        return await res.blob();
+      } catch {
+        return null;
+      }
+    });
+  }, []);
+
+  const enqueueTtsText = useCallback((
+    text: string,
+    source = "unknown",
+    priority: TtsPriority = "NORMAL",
+    payload?: Record<string, unknown>,
+    voiceRole: "engineer" | "spotter" = "engineer",
+  ): boolean => {
+    const trimmed = text.trim();
+    if (!trimmed || !shouldSpeakAdvice(trimmed)) {
+      return false;
+    }
+
+    const resolvedPriority = payload ? classifyTtsPriority(trimmed, payload) : priority;
+
+    const cfg = useAppStore.getState().config;
+    let delayedUntilMs = delayedUntilFromPayload(payload);
+    if (shouldDeferForBraking(resolvedPriority, cfg, latestTelemetryRef.current)) {
+      delayedUntilMs = performance.now() + 300;
+    }
+
+    const now = performance.now();
+    const lastSpoken = spokenTtsAtRef.current.get(trimmed);
+    if (lastSpoken !== undefined && now - lastSpoken < TTS_SPOKEN_COOLDOWN_MS) {
+      return false;
+    }
+    if (ttsQueueRef.current.some((item) => item.text === trimmed)) {
+      return false;
+    }
+    if (ttsQueueRef.current.length >= TTS_QUEUE_MAX) {
+      if (resolvedPriority === "IMMEDIATE") {
+        const dropIdx = ttsQueueRef.current.findIndex((item) => item.priority === "NORMAL");
+        if (dropIdx >= 0) {
+          ttsQueueRef.current.splice(dropIdx, 1);
+        } else {
+          console.warn("[WS] Cola TTS llena — no se pudo encolar alerta IMMEDIATE");
+          return false;
+        }
+      } else {
+        console.warn("[WS] Cola TTS llena — descartando mensaje");
+        return false;
+      }
+    }
+
+    spokenTtsAtRef.current.set(trimmed, now);
+    const resolvedVoiceRole = source === "alert" ? spotterVoiceRoleForAlert(payload) : voiceRole;
+    ttsQueueRef.current.push({
+      text: trimmed,
+      priority: resolvedPriority,
+      source,
+      voiceRole: resolvedVoiceRole,
+      expiresAt: expiresAtFromPayload(payload),
+      delayedUntilMs,
+      validationKey: validationKeyFromPayload(payload),
+    });
+    ttsQueueRef.current.sort((a, b) => (a.priority === b.priority ? 0 : a.priority === "IMMEDIATE" ? -1 : 1));
+
+    if (resolvedPriority === "IMMEDIATE" && isTtsProcessingRef.current && ttsCurrentPriorityRef.current === "NORMAL") {
+      ttsAbortIntentionalRef.current = true;
+      ttsAbortRef.current?.abort();
+      ttsAbortRef.current = null;
+      isTtsProcessingRef.current = false;
+      ttsAbortIntentionalRef.current = false;
+    }
+
+    return true;
+  }, []);
+
+  const finishTtsItem = useCallback(() => {
+    isTtsProcessingRef.current = false;
+    if (ttsQueueRef.current.length > 0) {
+      processTtsQueueRef.current();
+      return;
+    }
+    const mode = useAppStore.getState().radio.mode;
+    if (mode === "SPEAKING_ENGINE" || mode === "THINKING_LLM") {
+      setRadioMode("IDLE");
+    }
+  }, [setRadioMode]);
+
+  const processTtsQueueRef = useRef<() => void>(() => {});
+
+  // Función para procesar la cola de solicitudes TTS (una síntesis HTTP a la vez)
   const processTtsQueue = useCallback(async () => {
     if (isTtsProcessingRef.current || ttsQueueRef.current.length === 0) return;
 
     isTtsProcessingRef.current = true;
-    const fullText = ttsQueueRef.current.shift()!;
+    ttsQueueRef.current.sort((a, b) => (a.priority === b.priority ? 0 : a.priority === "IMMEDIATE" ? -1 : 1));
+    while (ttsQueueRef.current.length > 0 && isExpiredAt(ttsQueueRef.current[0].expiresAt)) {
+      ttsQueueRef.current.shift();
+    }
+    if (ttsQueueRef.current.length === 0) {
+      isTtsProcessingRef.current = false;
+      return;
+    }
+
+    const head = ttsQueueRef.current[0];
+    const cfg = useAppStore.getState().config;
+    const brakeDeferred =
+      shouldDeferForBraking(head.priority, cfg, latestTelemetryRef.current) ||
+      (typeof head.delayedUntilMs === "number" && head.delayedUntilMs > performance.now());
+    if (brakeDeferred) {
+      head.delayedUntilMs = performance.now() + 300;
+      isTtsProcessingRef.current = false;
+      window.setTimeout(() => processTtsQueueRef.current(), 300);
+      return;
+    }
+
+    const queueItem = ttsQueueRef.current.shift()!;
+    const fullText = queueItem.text;
+    ttsCurrentPriorityRef.current = queueItem.priority;
 
     const configState = useAppStore.getState().config;
     const baseUrl = `http://${configState.vllmIP || "localhost"}:${configState.serverPort || 8008}`;
     const ttsText = fullText.length > 2000 ? fullText.slice(0, 1997) + "..." : fullText;
+    const ttsVoice = resolveTtsVoice(queueItem.voiceRole, configState);
+    const voiceHash = buildVoiceHash({
+      ttsBackend: configState.ttsBackend,
+      ttsVoice: ttsVoice,
+      role: queueItem.voiceRole,
+      profileId: configState.personalityProfileId,
+    });
+
+    const cachedUrl = ttsCache.get(ttsText, voiceHash);
+    if (cachedUrl) {
+      if (isExpiredAt(queueItem.expiresAt)) {
+        finishTtsItem();
+        return;
+      }
+      const currentMode = useAppStore.getState().radio.mode;
+      if (shouldDiscardTtsPlayback(currentMode)) {
+        finishTtsItem();
+        return;
+      }
+      setRadioMode("SPEAKING_ENGINE");
+      const audioOpts = {
+        expiresAt: queueItem.expiresAt,
+        delayedUntilMs: queueItem.delayedUntilMs,
+        validationKey: queueItem.validationKey,
+      };
+      if (queueItem.priority === "IMMEDIATE") {
+        audioQueue.enqueueImmediate(fullText, cachedUrl, queueItem.source, audioOpts);
+      } else {
+        audioQueue.enqueue(fullText, cachedUrl, "NORMAL", audioOpts);
+      }
+      return;
+    }
+
+    const controller = new AbortController();
+    ttsAbortRef.current = controller;
+    const timeoutId = window.setTimeout(() => controller.abort(), TTS_FETCH_TIMEOUT_MS);
 
     try {
-      const res = await fetch(`${baseUrl}/tts?text=${encodeURIComponent(ttsText)}`);
+      const res = await fetch(
+        `${baseUrl}/tts?text=${encodeURIComponent(ttsText)}&voice=${encodeURIComponent(ttsVoice)}`,
+        { signal: controller.signal },
+      );
       if (!res.ok) throw new Error(`TTS returned ${res.status}`);
       const audioBlob = await res.blob();
       if (!audioBlob || audioBlob.size === 0) throw new Error("TTS returned empty audio blob");
 
-      const url = URL.createObjectURL(audioBlob);
-      const currentMode = useAppStore.getState().radio.mode;
-      if (currentMode !== "IDLE") {
-        console.log("[WS] TTS listo pero usuario activo — descartando reproducción");
-        URL.revokeObjectURL(url);
-        isTtsProcessingRef.current = false;
-        processTtsQueue();
+      const url = ttsCache.set(ttsText, voiceHash, audioBlob);
+      if (isExpiredAt(queueItem.expiresAt)) {
+        finishTtsItem();
         return;
       }
+      const currentMode = useAppStore.getState().radio.mode;
+      if (shouldDiscardTtsPlayback(currentMode)) {
+        console.log("[WS] TTS listo pero piloto activo — descartando reproducción");
+        finishTtsItem();
+        return;
+      }
+
       setRadioMode("SPEAKING_ENGINE");
-      audioQueue.enqueue(fullText, url);
+      const audioOpts = {
+        expiresAt: queueItem.expiresAt,
+        delayedUntilMs: queueItem.delayedUntilMs,
+        validationKey: queueItem.validationKey,
+      };
+      if (queueItem.priority === "IMMEDIATE") {
+        audioQueue.enqueueImmediate(fullText, url, queueItem.source, audioOpts);
+      } else {
+        audioQueue.enqueue(fullText, url, "NORMAL", audioOpts);
+      }
+      // Mantener isTtsProcessingRef=true hasta que audioQueue quede idle
     } catch (err) {
-      console.warn("[WS] TTS no disponible:", err);
+      if (controller.signal.aborted && !ttsAbortIntentionalRef.current) {
+        ttsQueueRef.current.unshift(queueItem);
+      }
+      if (controller.signal.aborted) {
+        console.warn("[WS] TTS timeout o cancelado");
+      } else {
+        console.warn("[WS] TTS no disponible:", err);
+      }
+      finishTtsItem();
     } finally {
-      isTtsProcessingRef.current = false;
-      processTtsQueue();
+      clearTimeout(timeoutId);
+      if (ttsAbortRef.current === controller) {
+        ttsAbortRef.current = null;
+      }
     }
-  }, [setRadioMode]);
+  }, [finishTtsItem, setRadioMode]);
+
+  processTtsQueueRef.current = () => {
+    void processTtsQueue();
+  };
+
+  useEffect(() => {
+    audioQueue.setOnIdle(() => {
+      if (isTtsProcessingRef.current) {
+        finishTtsItem();
+      }
+    });
+  }, [finishTtsItem]);
 
   const connect = useCallback(() => {
     if (socketRef.current && (socketRef.current.readyState === WebSocket.CONNECTING || socketRef.current.readyState === WebSocket.OPEN)) {
@@ -105,18 +409,20 @@ export function useWebSocket() {
         console.log("[useWebSocket] Conectado exitosamente.");
         setWsStatus("CONNECTED");
         reconnectDelayRef.current = 1000; // Resetear backoff
+        ttsReconnectGraceUntilRef.current = performance.now() + TTS_RECONNECT_GRACE_MS;
+        clearPendingTts();
+        spokenTtsAtRef.current.clear();
+        void prefetchSpotterTts();
+        serverTelemetryActiveRef.current = false;
         if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);
           reconnectTimeoutRef.current = null;
         }
         const cfg = useAppStore.getState().config;
+        registerConfigWs(ws);
         ws.send(JSON.stringify({
           event: "config_update",
-          data: {
-            swearyMessages: cfg.swearyMessages ?? false,
-            spotterOffQualifying: cfg.spotterOffQualifying ?? true,
-            spotterExcludeStopped: cfg.spotterExcludeStopped ?? true,
-          },
+          data: buildConfigUpdatePayload(cfg),
         }));
         // Reset delta tracking on reconnect
         previousFrameRef.current = null;
@@ -126,54 +432,24 @@ export function useWebSocket() {
       ws.onmessage = (event) => {
         // Handle binary (MessagePack telemetry)
         if (event.data instanceof ArrayBuffer) {
+          serverTelemetryActiveRef.current = true;
           try {
             const decoded: any = decodeMsgpack(new Uint8Array(event.data as ArrayBuffer));
-            const player: any = decoded.player || {};
-            const engine: any = decoded.engine || {};
-            const tyres: any = decoded.tyres || {};
+            latestTelemetryRef.current = decoded;
 
-            // 1. Detección robusta de velocidad en km/h
-            let speed = 0;
-            if (typeof decoded.speed === "number") {
-              speed = decoded.speed;
-            } else if (typeof player.speed === "number") {
-              speed = player.speed;
-            } else if (typeof engine.rpm === "number" && engine.rpm > 500) {
-              if (player.in_pits === true || (engine.gear <= 0 && engine.rpm < 3000)) {
-                speed = 0;
-              } else {
-                const rpmVal = engine.rpm;
-                const gearVal = typeof engine.gear === "number" ? engine.gear : 1;
-                const gearFactor = gearVal <= 0 ? 1 : gearVal;
-                speed = Math.round(rpmVal * 0.03 * gearFactor);
-              }
+            const now = performance.now();
+            if (now - lastTelemetryUiUpdateRef.current < TELEMETRY_UI_INTERVAL_MS) {
+              return;
             }
 
-            // 2. Mapeo de desgaste de neumáticos (0.0 nuevo, 1.0 gastado)
-            let fl = 100, fr = 100, rl = 100, rr = 100;
-            if (Array.isArray(tyres.wear) && tyres.wear.length === 4) {
-              fl = Math.round((1.0 - tyres.wear[0]) * 100);
-              fr = Math.round((1.0 - tyres.wear[1]) * 100);
-              rl = Math.round((1.0 - tyres.wear[2]) * 100);
-              rr = Math.round((1.0 - tyres.wear[3]) * 100);
-            } else if (tyres.wear && typeof tyres.wear === "object") {
-              fl = Math.round((1.0 - (tyres.wear.fl ?? 0)) * 100);
-              fr = Math.round((1.0 - (tyres.wear.fr ?? 0)) * 100);
-              rl = Math.round((1.0 - (tyres.wear.rl ?? 0)) * 100);
-              rr = Math.round((1.0 - (tyres.wear.rr ?? 0)) * 100);
-            }
+            const mapped = mapSidecarBinaryFrame(decoded);
+            const nativeGaps = gapsFromNativeFrame(decoded);
+            lastTelemetryUiUpdateRef.current = now;
 
             setLastTelemetry(decoded);
             updateTelemetry({
-              speed: Math.round(speed),
-              rpm: Math.round(engine.rpm ?? 0),
-              gear: engine.gear ?? 0,
-              fuel: Number((player.fuel ?? decoded.fuel ?? 0).toFixed(1)),
-              lap: player.current_lap ?? player.lap ?? 1,
-              position: player.place ?? player.position ?? 1,
-              gaps: decoded.gaps ?? { ahead: 0.0, behind: 0.0 },
-              tyreWear: { fl, fr, rl, rr },
-              alerts: decoded.alerts ?? [],
+              ...mapped,
+              ...(nativeGaps ? { gaps: nativeGaps } : {}),
             });
             return;
           } catch (e) {
@@ -205,6 +481,7 @@ export function useWebSocket() {
         // Procesar según el tipo de evento
         switch (eventType) {
           case "telemetry": {
+            latestTelemetryRef.current = payload;
             setLastTelemetry(payload);
             const player = payload.player || {};
             const engine = payload.engine || {};
@@ -252,19 +529,21 @@ export function useWebSocket() {
               position: player.place ?? player.position ?? 1,
               gaps: payload.gaps ?? { ahead: 0.0, behind: 0.0 },
               tyreWear: { fl, fr, rl, rr },
-              alerts: payload.alerts ?? [],
             });
             break;
           }
 
           case "strategy": {
             setLastStrategy(payload);
-            // El payload tiene fuel: { estimated_laps_remaining, fuel_needed_to_finish }
-            // e información de neumáticos si se calculó en el optimizador
             if (payload.fuel) {
               updateTelemetry({
                 fuel: Number(payload.fuel.fuel_in_tank ?? 0),
               });
+            }
+            if (Array.isArray(payload.competitors) && payload.competitors.length > 0) {
+              const native = gapsFromNativeFrame(payload);
+              const gaps = native ?? gapsFromCompetitorPace(payload.competitors);
+              updateTelemetry({ gaps });
             }
             if (payload.advice) {
               setLatestAdvice(payload.advice);
@@ -279,6 +558,7 @@ export function useWebSocket() {
           }
 
           case "advice_start": {
+            clearPendingNormalTts();
             setLastAdvice(payload);
             setRadioMode("SPEAKING_ENGINE");
             setCurrentTokens("");
@@ -286,29 +566,119 @@ export function useWebSocket() {
           }
 
           case "advice_token": {
-            // El backend envía tokens de streaming individuales
             setRadioMode("SPEAKING_ENGINE");
             const token = payload.token || "";
-            // El estado de tokens se actualiza acumulativamente
-            setCurrentTokens(currentTokensRef.current + token);
+            pendingAdviceTokensRef.current += token;
+            const now = performance.now();
+            if (now - lastAdviceTokenUiRef.current >= 100) {
+              lastAdviceTokenUiRef.current = now;
+              setCurrentTokens(currentTokensRef.current + pendingAdviceTokensRef.current);
+              pendingAdviceTokensRef.current = "";
+            }
             break;
           }
 
           case "advice_end": {
+            if (pendingAdviceTokensRef.current) {
+              setCurrentTokens(currentTokensRef.current + pendingAdviceTokensRef.current);
+              pendingAdviceTokensRef.current = "";
+            }
             setRadioMode("IDLE");
             const fullText = payload.full_text || "";
-            if (fullText && !fullText.startsWith("---")) {
-                setLatestAdvice(fullText);
-            }
-            if (fullText && !fullText.startsWith("---")) {
-                addMessageToHistory("engineer", fullText);
+            const showInUi = fullText && !isInternalRadioText(fullText);
+            if (showInUi) {
+              setLatestAdvice(fullText);
+              addMessageToHistory("engineer", fullText);
             }
             setCurrentTokens("");
 
-            // Añadir a la cola TTS para procesar secuencialmente
-            if (fullText && !fullText.startsWith("---")) {
-              ttsQueueRef.current.push(fullText);
-              processTtsQueue();
+            const inReconnectGrace = performance.now() < ttsReconnectGraceUntilRef.current;
+            const speakOnly = useAppStore.getState().config.speakOnlyWhenSpokenTo;
+            if (
+              showInUi &&
+              shouldSpeakAdvice(fullText) &&
+              !inReconnectGrace &&
+              shouldVoiceDuringSpeakOnly(speakOnly, "advice", "advice")
+            ) {
+              if (enqueueTtsText(fullText, "advice", "NORMAL", undefined, "engineer")) {
+                processTtsQueueRef.current();
+              }
+            }
+            break;
+          }
+
+          case "commentary_end": {
+            setRadioMode("IDLE");
+            const commentaryText = payload.full_text || "";
+            const showInUi = commentaryText && !isInternalRadioText(commentaryText);
+            if (showInUi) {
+              setLatestAdvice(commentaryText);
+              addMessageToHistory("engineer", commentaryText);
+            }
+            const inReconnectGrace = performance.now() < ttsReconnectGraceUntilRef.current;
+            const speakOnlyCommentary = useAppStore.getState().config.speakOnlyWhenSpokenTo;
+            if (
+              showInUi &&
+              shouldSpeakAdvice(commentaryText) &&
+              !inReconnectGrace &&
+              shouldVoiceDuringSpeakOnly(speakOnlyCommentary, "commentary", "commentary")
+            ) {
+              if (enqueueTtsText(commentaryText, "commentary", "NORMAL", payload, "engineer")) {
+                processTtsQueueRef.current();
+              }
+            }
+            break;
+          }
+
+          case "config_ack": {
+            const ackCfg = payload.config ?? payload;
+            if (ackCfg && typeof ackCfg === "object") {
+              const patch: Record<string, unknown> = {};
+              if (typeof ackCfg.personalityProfileId === "string") {
+                patch.personalityProfileId = ackCfg.personalityProfileId;
+              }
+              if (typeof ackCfg.verbosityLevel === "string") {
+                patch.verbosityLevel = ackCfg.verbosityLevel;
+              }
+              if (typeof ackCfg.brakingZonesMute === "boolean") {
+                patch.brakingZonesMute = ackCfg.brakingZonesMute;
+              }
+              if (typeof ackCfg.swearyMessages === "boolean") {
+                patch.swearyMessages = ackCfg.swearyMessages;
+              }
+              if (typeof ackCfg.speakOnlyWhenSpokenTo === "boolean") {
+                patch.speakOnlyWhenSpokenTo = ackCfg.speakOnlyWhenSpokenTo;
+              }
+              if (typeof ackCfg.spotterClearDelayS === "number") {
+                patch.spotterClearDelayS = ackCfg.spotterClearDelayS;
+              }
+              if (typeof ackCfg.spotterOverlapDelayS === "number") {
+                patch.spotterOverlapDelayS = ackCfg.spotterOverlapDelayS;
+              }
+              if (typeof ackCfg.spotterHoldRepeatS === "number") {
+                patch.spotterHoldRepeatS = ackCfg.spotterHoldRepeatS;
+              }
+              if (typeof ackCfg.spotterGapFrequencyS === "number") {
+                patch.spotterGapFrequencyS = ackCfg.spotterGapFrequencyS;
+              }
+              if (typeof ackCfg.spotterCarLengthM === "number") {
+                patch.spotterCarLengthM = ackCfg.spotterCarLengthM;
+              }
+              if (typeof ackCfg.spotterMinSpeedMs === "number") {
+                patch.spotterMinSpeedMs = ackCfg.spotterMinSpeedMs;
+              }
+              if (typeof ackCfg.spotterRaceStartDelayS === "number") {
+                patch.spotterRaceStartDelayS = ackCfg.spotterRaceStartDelayS;
+              }
+              if (typeof ackCfg.spotterOffQualifying === "boolean") {
+                patch.spotterOffQualifying = ackCfg.spotterOffQualifying;
+              }
+              if (typeof ackCfg.spotterExcludeStopped === "boolean") {
+                patch.spotterExcludeStopped = ackCfg.spotterExcludeStopped;
+              }
+              if (Object.keys(patch).length > 0) {
+                updateConfig(patch);
+              }
             }
             break;
           }
@@ -317,16 +687,33 @@ export function useWebSocket() {
             setLastAlert(payload);
             const alertMsg = payload.message || "";
             setLatestAlert(alertMsg);
-            
-            // Añadir a las alertas visuales del Spotter
+
+            const prevAlerts = useAppStore.getState().telemetry.alerts ?? [];
             updateTelemetry({
-              alerts: [alertMsg]
+              alerts: [alertMsg, ...prevAlerts.filter((a) => a !== alertMsg)].slice(0, 5),
             });
+
+            const category = String(payload.category || "").toLowerCase();
+            const isPttResponse =
+              category === "voice_response" || payload.fast_command === true;
+
+            if (isPttResponse && alertMsg && !isInternalRadioText(alertMsg)) {
+              setLatestAdvice(alertMsg);
+              addMessageToHistory("engineer", alertMsg);
+            }
             
-            // Encolar en TTS para que se hable la alerta
-            if (alertMsg) {
-              ttsQueueRef.current.push(alertMsg);
-              processTtsQueue();
+            const voiceOk =
+              shouldVoiceAlert(payload) &&
+              shouldVoiceDuringSpeakOnly(
+                useAppStore.getState().config.speakOnlyWhenSpokenTo,
+                category,
+                "alert",
+              );
+            if (alertMsg && voiceOk && enqueueTtsText(alertMsg, "alert", "IMMEDIATE", payload)) {
+              setRadioMode("SPEAKING_ENGINE");
+              processTtsQueueRef.current();
+            } else if (isPttResponse) {
+              setRadioMode("IDLE");
             }
             break;
           }
@@ -337,6 +724,8 @@ export function useWebSocket() {
       };
 
       ws.onclose = (event) => {
+        serverTelemetryActiveRef.current = false;
+        registerConfigWs(null);
         console.warn(`[useWebSocket] Conexión cerrada. Código: ${event.code}.`);
         setWsStatus("DISCONNECTED");
         socketRef.current = null;
@@ -368,7 +757,8 @@ export function useWebSocket() {
     addMessageToHistory,
     setLatestAdvice,
     setLatestAlert,
-    processTtsQueue,
+    clearPendingTts,
+    prefetchSpotterTts,
   ]);
 
   const scheduleReconnect = useCallback(() => {
@@ -432,30 +822,31 @@ export function useWebSocket() {
     return false;
   }, []);
 
-  // Enviar telemetría al backend a 20Hz (50ms) usando MessagePack + delta encoding
+  // Solo reenviar telemetría si el backend no nos la está empujando (modo sin sidecar)
   useEffect(() => {
-    if (!lastTelemetry) return;
-
     const interval = setInterval(() => {
-      if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) return;
-      
+      if (serverTelemetryActiveRef.current) return;
+      const frame = latestTelemetryRef.current;
+      if (!frame || !socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) return;
+
       const isFull = frameCountRef.current % SNAPSHOT_INTERVAL === 0;
-      const delta = computeDelta(lastTelemetry, previousFrameRef.current, isFull);
+      const delta = computeDelta(frame, previousFrameRef.current, isFull);
       const binary = encodeMsgpack(delta);
       socketRef.current.send(binary.buffer);
-      
-      previousFrameRef.current = lastTelemetry;
+
+      previousFrameRef.current = frame;
       frameCountRef.current++;
     }, 50);
 
     return () => clearInterval(interval);
-  }, [lastTelemetry, sendJson]);
+  }, [sendJson]);
 
   return {
     connect,
     disconnect,
     sendBinary,
     sendJson,
+    clearPendingTts,
     lastTelemetry,
     lastAdvice,
     lastAlert,
