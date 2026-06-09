@@ -3,7 +3,9 @@ REST endpoint para el historial de consumo de combustible.
 
 GET /history → List[{"lap": int, "consumption": float, "fuelRemaining": float, "lapTime": float}]
 """
+
 import logging
+
 from fastapi import APIRouter, Request
 
 logger = logging.getLogger("vantare.history_router")

@@ -1,13 +1,13 @@
 import asyncio
 import logging
-import uuid
-import sys
 import os
+import sys
+import uuid
 
 # PyInstaller --onedir: _MEIPASS = _internal/ dir (e.g. dist/backend/_internal)
 # PyInstaller --onefile: _MEIPASS = temp extraction dir
 # Dev: _MEIPASS not set, use __file__ (backend/src/main.py)
-if hasattr(sys, '_MEIPASS'):
+if hasattr(sys, "_MEIPASS"):
     # Bundled mode: sys._MEIPASS = _internal/ dir
     # src/ lives at _MEIPASS/src/, shared_* at _MEIPASS/
     # We use _MEIPASS directly as the root for local modules
@@ -22,39 +22,38 @@ if _backend_root not in sys.path:
     sys.path.insert(0, _backend_root)
 
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from shared_telemetry import TelemetryReader
 from src.config import settings
-from src.services.lmu_api import poll_api
-from src.services.strategy_service import StrategyService
-from src.services.tts_service import TTSService
-from src.services.edge_tts_service import EdgeTTSService
-from src.services.elevenlabs_tts_service import ElevenLabsTTSService
-from src.services.gemini_tts_service import GeminiTTSService
+from src.intelligence.engine import IntelligenceEngine
+from src.intelligence.spotter import SpotterService
 from src.persistence.history_store import HistoryStore
 from src.persistence.profile_store import ProfileStore
 from src.persistence.trace_store import TraceStore
-from shared_telemetry import TelemetryReader
-
 from src.routers.health import router as health_router
-from src.routers.websocket import router as ws_router, broadcast_sync
-from src.routers.llm import router as llm_router
-from src.routers.tts import router as tts_router
 from src.routers.history import router as history_router
-from src.routers.transcribe import router as transcribe_router
+from src.routers.llm import router as llm_router
 from src.routers.profiles import router as profiles_router
-from src.routers.version import router as version_router
 from src.routers.traces import router as traces_router
+from src.routers.transcribe import router as transcribe_router
+from src.routers.tts import router as tts_router
+from src.routers.version import router as version_router
+from src.routers.websocket import broadcast_sync
+from src.routers.websocket import router as ws_router
+from src.services.edge_tts_service import EdgeTTSService
+from src.services.elevenlabs_tts_service import ElevenLabsTTSService
+from src.services.gemini_tts_service import GeminiTTSService
+from src.services.lmu_api import poll_api
+from src.services.strategy_service import StrategyService
+from src.services.tts_service import TTSService
 from src.version import APP_VERSION
-
-from src.intelligence.spotter import SpotterService
-from src.intelligence.engine import IntelligenceEngine
 
 # Configuración básica de logging
 logging.basicConfig(
     level=logging.INFO if not settings.DEBUG else logging.DEBUG,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 logger = logging.getLogger("vantare.main")
 
@@ -89,7 +88,9 @@ async def lifespan(app: FastAPI):
     # 3b. Esperar a que el primer ciclo de estrategia se complete antes de arrancar el engine
     await strategy_service.wait_until_ready()
     logger.info("StrategyService primer ciclo completado")
-    logger.info("Esperando strategy_frame del sidecar Windows en /ws/sidecar. Usando StrategyService offline como fallback.")
+    logger.info(
+        "Esperando strategy_frame del sidecar Windows en /ws/sidecar. Usando StrategyService offline como fallback."
+    )
 
     # 4. Instanciar e inicializar SpotterService (20Hz)
     spotter_service = SpotterService(broadcast_callback=broadcast_sync)
@@ -113,8 +114,8 @@ async def lifespan(app: FastAPI):
     logger.info("TraceStore initialized")
 
     # 5b. Inicializar EventStore (ChromaDB para RAG)
-    import uuid
     from src.persistence.event_store import EventStore
+
     event_store = EventStore()
     event_store.initialize(race_id=str(uuid.uuid4()))
     app.state.event_store = event_store
@@ -160,10 +161,7 @@ async def lifespan(app: FastAPI):
         app.state.piper_tts_service = piper_tts_service
         logger.info("Piper TTSService initialized")
     except FileNotFoundError as e:
-        logger.warning(
-            "Piper TTSService no disponible: modelo no encontrado en %s. %s",
-            settings.TTS_MODEL_PATH, e
-        )
+        logger.warning("Piper TTSService no disponible: modelo no encontrado en %s. %s", settings.TTS_MODEL_PATH, e)
         app.state.piper_tts_service = None
     except ImportError as e:
         logger.warning("Piper TTSService no disponible: falta dependencia. %s", e)
@@ -195,6 +193,7 @@ async def lifespan(app: FastAPI):
     if settings.GEMINI_API_KEY:
         try:
             import google.genai
+
             gemini_tts_service = GeminiTTSService(
                 api_key=settings.GEMINI_API_KEY,
                 voice_name=settings.GEMINI_TTS_VOICE,
@@ -221,6 +220,7 @@ async def lifespan(app: FastAPI):
     )
 
     from src.services.mqtt_service import get_mqtt_service
+
     app.state.mqtt_service = get_mqtt_service()
     if settings.MQTT_ENABLED:
         logger.info("MQTT habilitado → %s:%s/%s", settings.MQTT_BROKER, settings.MQTT_PORT, settings.MQTT_TOPIC)
@@ -269,7 +269,7 @@ async def lifespan(app: FastAPI):
     # 5. Detener el lector físico de shared memory
     if reader:
         reader.stop()
-        
+
     logger.info("Backend services stopped successfully.")
 
 
@@ -278,7 +278,7 @@ app = FastAPI(
     title="Vantare Ingeniero de IA Backend",
     description="Motor de estrategia y copiloto asíncrono para Le Mans Ultimate",
     version=APP_VERSION,
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Configurar middleware de CORS para Tauri y desarrollo local
@@ -312,11 +312,12 @@ app.include_router(traces_router)
 
 if __name__ == "__main__":
     import uvicorn
+
     logger.info(f"Starting server on {settings.HOST}:{settings.PORT}...")
     uvicorn.run(
         "src.main:app",
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.DEBUG,
-        log_config=None  # PyInstaller: evita crash por sys.stderr=None en --noconsole
+        log_config=None,  # PyInstaller: evita crash por sys.stderr=None en --noconsole
     )

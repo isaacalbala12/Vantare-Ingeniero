@@ -9,10 +9,10 @@ Formato de cada registro:
 
 Thread-safe mediante threading.Lock.
 """
+
 import json
 import os
 import threading
-from typing import List
 
 # Ruta base para datos persistentes (relativa a backend/)
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data")
@@ -24,7 +24,7 @@ class HistoryStore:
 
     def __init__(self, auto_load: bool = True) -> None:
         self._lock = threading.Lock()
-        self._history: List[dict] = []
+        self._history: list[dict] = []
         if auto_load:
             self.load()
 
@@ -56,7 +56,7 @@ class HistoryStore:
                 self._history.append(record)
         self.save()
 
-    def get_history(self) -> List[dict]:
+    def get_history(self) -> list[dict]:
         """Devuelve una copia del historial completo ordenado por vuelta."""
         with self._lock:
             return sorted(self._history, key=lambda r: r["lap"])
@@ -83,7 +83,7 @@ class HistoryStore:
             self._history = []
             return
         try:
-            with open(SESSION_FILE, "r", encoding="utf-8") as f:
+            with open(SESSION_FILE, encoding="utf-8") as f:
                 data = json.load(f)
             if isinstance(data, list):
                 self._history = data

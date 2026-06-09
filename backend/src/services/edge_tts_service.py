@@ -51,6 +51,6 @@ class EdgeTTSService:
                 self._voice,
             )
             return audio_bytes
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.error("Edge TTS timeout tras 30s (%d chars)", len(text))
             raise

@@ -2,8 +2,7 @@
 
 import logging
 
-from fastapi import APIRouter, Request
-
+from fastapi import APIRouter
 from src.services.update_service import check_for_update
 from src.version import APP_VERSION, GITHUB_REPO
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from src.config import settings
 
@@ -18,8 +18,8 @@ class MqttService:
     def __init__(self) -> None:
         self._client: Any = None
         self._connected = False
-        self._pending_frame: Optional[dict] = None
-        self._worker_task: Optional[asyncio.Task] = None
+        self._pending_frame: dict | None = None
+        self._worker_task: asyncio.Task | None = None
         self._wake = asyncio.Event()
 
     def enqueue_telemetry(self, frame: dict) -> None:
@@ -129,7 +129,7 @@ class MqttService:
             self._connected = False
 
 
-_mqtt_service: Optional[MqttService] = None
+_mqtt_service: MqttService | None = None
 
 
 def get_mqtt_service() -> MqttService:

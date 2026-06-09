@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from shared_strategy.calculation import delta_telemetry
-
 from src.intelligence.corner_names import distance_to_corner_name
 
 

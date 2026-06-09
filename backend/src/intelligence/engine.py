@@ -1,27 +1,23 @@
 import asyncio
 import logging
-import uuid
 import sys
-from typing import Any, Dict, List, Optional
+import uuid
+from typing import Any
 
 logger = logging.getLogger("vantare.engine")
-from src.models.messages import (
-    BaseMessage,
-    LLMPendingMessage,
-    AlertMessage,
-    AdviceEndMessage
-)
-from src.intelligence.triggers import get_all_triggers, PilotQuestionTrigger, TriggerAction
+from src.intelligence.triggers import PilotQuestionTrigger, TriggerAction, get_all_triggers
+from src.models.messages import AdviceEndMessage, AlertMessage, BaseMessage, LLMPendingMessage
 
 
 class StrategyUpdateMessage(BaseMessage):
     """Mensaje que envía la actualización de estrategia determinista calculada."""
+
     advice: Any
 
 
 class IntelligenceEngine:
     """Orquestador central de la Capa de Inteligencia del Ingeniero de IA.
-    
+
     Evalúa triggers a 0.5Hz, gestiona el ciclo de vida de las llamadas vLLM
     en streaming y aplica preempción inmediata de tareas si ocurre un evento
     de mayor prioridad en pista.
@@ -43,6 +39,7 @@ class IntelligenceEngine:
         # Resolve live_context
         if live_context is None:
             from src.intelligence.live_context import LiveContextManager
+
             self.live_context = LiveContextManager(history_store=history_store)
         else:
             self.live_context = live_context
@@ -50,6 +47,7 @@ class IntelligenceEngine:
         # Resolve context_builder
         if context_builder is None:
             from src.intelligence import context_builder as context_builder_mod
+
             self.context_builder = context_builder_mod
         else:
             self.context_builder = context_builder
@@ -57,6 +55,7 @@ class IntelligenceEngine:
         # Resolve prompt_templates
         if prompt_templates is None:
             from src.intelligence import prompt_templates as prompt_templates_mod
+
             self.prompt_templates = prompt_templates_mod
         else:
             self.prompt_templates = prompt_templates
@@ -64,21 +63,26 @@ class IntelligenceEngine:
         # Resolve llm_client
         if llm_client is None:
             from src.intelligence.llm_client import VLLMClient
+
             self.llm_client = VLLMClient()
         else:
             self.llm_client = llm_client
 
         # Resolve broadcaster
         if broadcaster is None:
+
             class BroadcasterWrapper:
                 def __init__(self, callback):
                     self.callback = callback
+
                 def send(self, message):
                     if self.callback:
                         self.callback(message)
                     else:
                         from src.transport.broadcaster import send
+
                         send(message)
+
             self.broadcaster = BroadcasterWrapper(broadcast_callback)
         else:
             self.broadcaster = broadcaster
@@ -89,23 +93,25 @@ class IntelligenceEngine:
         # Resolve lmu_api
         if lmu_api is None:
             from src.services import lmu_api as lmu_api_module
+
             self.lmu_api = lmu_api_module
         else:
             self.lmu_api = lmu_api
 
-        self._current_llm_task: Optional[asyncio.Task] = None
-        self._current_response: Optional[Any] = None
-        self._current_advice_id: Optional[str] = None
+        self._current_llm_task: asyncio.Task | None = None
+        self._current_response: Any | None = None
+        self._current_advice_id: str | None = None
         self._active_trigger_priority: str = "LOW"
         self._active_trigger_name: str = ""
         self._last_lap_number: int = 0
         self.sweary_messages: bool = False
-        self._last_standing_position: Optional[int] = None
+        self._last_standing_position: int | None = None
         self._last_driver_name: str = ""
-        
+
         from src.intelligence.pearls_of_wisdom import PearlsService
+
         self.pearls = PearlsService()
-        
+
         self.triggers = get_all_triggers()
         self._event_store = event_store
 
@@ -144,7 +150,6 @@ class IntelligenceEngine:
         return "Acción de monitor no válida."
 
     def _emit_pearl(self, pearl_type) -> None:
-        from src.intelligence.pearls_of_wisdom import PearlType
         message = self.pearls.on_event(pearl_type, sweary=self.sweary_messages)
         if not message:
             return
@@ -163,6 +168,7 @@ class IntelligenceEngine:
 
     def _maybe_emit_pearls(self, telemetry_dict: dict) -> None:
         from src.intelligence.pearls_of_wisdom import PearlType
+
         pos = telemetry_dict.get("standing_position")
         if pos is not None and self._last_standing_position is not None:
             if int(pos) < int(self._last_standing_position):
@@ -172,12 +178,15 @@ class IntelligenceEngine:
 
     def _check_fast_lap_pearl(self, telemetry_dict: dict) -> None:
         from src.intelligence.pearls_of_wisdom import PearlType
+
         prev = float(telemetry_dict.get("lap_time_previous") or 0)
         best = float(telemetry_dict.get("lap_time_best") or 0)
         if prev > 0 and best > 0 and abs(prev - best) < 0.05:
             self._emit_pearl(PearlType.FAST_LAP)
 
-    async def evaluate_cycle(self, telemetry_state, strategy_state, session_state=None, pilot_question: Optional[str] = None) -> None:
+    async def evaluate_cycle(
+        self, telemetry_state, strategy_state, session_state=None, pilot_question: str | None = None
+    ) -> None:
         """Ciclo principal invocado periódicamente para evaluar los triggers de carrera."""
         telemetry_dict = self._to_dict(telemetry_state)
         strategy_dict = self._to_dict(strategy_state)
@@ -191,7 +200,7 @@ class IntelligenceEngine:
                     weather_data = self.lmu_api.get_weather()
             except Exception:
                 pass
-            
+
             phase = telemetry_dict.get("session_type", "RACE").upper()
             forecast = []
             if weather_data and phase in weather_data:
@@ -199,12 +208,8 @@ class IntelligenceEngine:
                 for key in ["START", "NODE_25", "NODE_50", "NODE_75", "FINISH"]:
                     if key in session_weather:
                         forecast.append(session_weather[key])
-            
-            session_dict = {
-                "phase": phase,
-                "finish_criteria": "TIME_LIMIT",
-                "weather_forecast": forecast
-            }
+
+            session_dict = {"phase": phase, "finish_criteria": "TIME_LIMIT", "weather_forecast": forecast}
 
         # 1. Actualizar datos en tiempo real (entre vueltas) y detectar cruce de meta
         self.live_context.update_realtime(telemetry_dict, strategy_dict)
@@ -230,6 +235,7 @@ class IntelligenceEngine:
             current_prio_val = 0
             if self._current_llm_task and not self._current_llm_task.done():
                 from src.intelligence.triggers import Priority
+
                 try:
                     current_prio_val = Priority[self._active_trigger_priority].value
                 except Exception:
@@ -248,7 +254,7 @@ class IntelligenceEngine:
                 event="llm_pending",
                 advice_id=advice_id,
                 trigger_name=getattr(trigger, "name", trigger.description),
-                priority=trigger.priority.name
+                priority=trigger.priority.name,
             )
             self.broadcaster.send(pending_msg)
 
@@ -257,9 +263,9 @@ class IntelligenceEngine:
 
             # Construye prompt (con ticker y datos frescos)
             event_store = self._get_event_store()
-            rag_context = await self.context_builder.prefetch_rag_context(
-                snapshot, event_store
-            ) if event_store else None
+            rag_context = (
+                await self.context_builder.prefetch_rag_context(snapshot, event_store) if event_store else None
+            )
 
             prompt = self.context_builder.build_prompt(
                 snapshot,
@@ -276,9 +282,7 @@ class IntelligenceEngine:
             )
 
             # Lanza ask_streaming
-            self._current_llm_task = asyncio.create_task(
-                self._run_llm_stream(prompt, trigger.tier.name, advice_id)
-            )
+            self._current_llm_task = asyncio.create_task(self._run_llm_stream(prompt, trigger.tier.name, advice_id))
             self._current_llm_task.add_done_callback(self._on_llm_task_done)
             return
 
@@ -286,6 +290,7 @@ class IntelligenceEngine:
         for trigger in self.triggers:
             # Si el piloto tiene una pregunta activa, solo triggers CRITICAL pueden interrumpir
             from src.intelligence.triggers import Priority
+
             if self._active_trigger_name == "Pregunta directa del piloto" and trigger.priority != Priority.CRITICAL:
                 continue
 
@@ -295,6 +300,7 @@ class IntelligenceEngine:
                 current_prio_val = 0
                 if self._current_llm_task and not self._current_llm_task.done():
                     from src.intelligence.triggers import Priority
+
                     try:
                         current_prio_val = Priority[self._active_trigger_priority].value
                     except Exception:
@@ -314,7 +320,7 @@ class IntelligenceEngine:
                             event="llm_pending",
                             advice_id=advice_id,
                             trigger_name=getattr(trigger, "name", trigger.description),
-                            priority=trigger.priority.name
+                            priority=trigger.priority.name,
                         )
                         self.broadcaster.send(pending_msg)
 
@@ -323,9 +329,11 @@ class IntelligenceEngine:
 
                         # Construye prompt (con ticker y datos frescos)
                         event_store = self._get_event_store()
-                        rag_context = await self.context_builder.prefetch_rag_context(
-                            snapshot, event_store
-                        ) if event_store else None
+                        rag_context = (
+                            await self.context_builder.prefetch_rag_context(snapshot, event_store)
+                            if event_store
+                            else None
+                        )
 
                         prompt = self.context_builder.build_prompt(
                             snapshot,
@@ -353,10 +361,7 @@ class IntelligenceEngine:
                     strat_service = self._get_strategy_service()
                     if strat_service:
                         advice = strat_service.get_latest_advice()
-                        msg = StrategyUpdateMessage(
-                            event="strategy_update",
-                            advice=advice
-                        )
+                        msg = StrategyUpdateMessage(event="strategy_update", advice=advice)
                         self.broadcaster.send(msg)
                     break
 
@@ -367,11 +372,7 @@ class IntelligenceEngine:
                         category="strategy",
                         message=trigger.alert_text,
                         audio_priority=trigger.priority.name,
-                        payload={
-                            "severity": trigger.priority.name,
-                            "ttl": 10,
-                            "dismissable": True
-                        }
+                        payload={"severity": trigger.priority.name, "ttl": 10, "dismissable": True},
                     )
                     self.broadcaster.send(alert_msg)
                     break
@@ -383,15 +384,17 @@ class IntelligenceEngine:
             res = self.llm_client.ask_streaming(prompt, tier, advice_id, self)
         except TypeError:
             res = self.llm_client.ask_streaming(prompt, tier, advice_id)
-        
+
         # Check if it's an async generator
         import inspect
+
         if inspect.isasyncgen(res):
             # It's an async generator (like the mock in the test)
-            from src.models.messages import AdviceStartMessage, AdviceTokenMessage, AdviceEndMessage
+            from src.models.messages import AdviceEndMessage, AdviceStartMessage, AdviceTokenMessage
+
             start_msg = AdviceStartMessage(advice_id=advice_id, tier=tier, event="advice_start")
             self.broadcaster.send(start_msg)
-            
+
             full_text = ""
             try:
                 async for chunk in res:
@@ -404,9 +407,11 @@ class IntelligenceEngine:
             except asyncio.CancelledError:
                 # Cancelled, send interruption and re-raise
                 interruption_msg = "--- Transmisión de radio interrumpida por evento de mayor prioridad ---"
-                end_msg = AdviceEndMessage(advice_id=advice_id, full_text=interruption_msg, actions=[], event="advice_end")
+                end_msg = AdviceEndMessage(
+                    advice_id=advice_id, full_text=interruption_msg, actions=[], event="advice_end"
+                )
                 self.broadcaster.send(end_msg)
-                
+
                 # Send AlertMessage to satisfy test expectations
                 alert_msg = AlertMessage(
                     event="alert",
@@ -414,11 +419,11 @@ class IntelligenceEngine:
                     category="system",
                     message="Transmisión de radio interrumpida por evento de mayor prioridad",
                     audio_priority="CRITICAL",
-                    payload={"severity": "CRITICAL"}
+                    payload={"severity": "CRITICAL"},
                 )
                 self.broadcaster.send(alert_msg)
                 raise
-            
+
             end_msg = AdviceEndMessage(advice_id=advice_id, full_text=full_text, actions=[], event="advice_end")
             self.broadcaster.send(end_msg)
         else:
@@ -427,26 +432,26 @@ class IntelligenceEngine:
 
     async def ask_async(self, pilot_question: str, chat_history: list = None):
         """Procesa pregunta del piloto de forma asíncrona (para endpoint HTTP /ask).
-        
+
         A diferencia de evaluate_cycle(), este método:
         - No usa el sistema de triggers/prioridad
         - No emite mensajes WebSocket
         - Devuelve el texto directamente como generator
-        
+
         Args:
             pilot_question: Pregunta del piloto
             chat_history: Historial de conversación opcional [{"role": "user"/"assistant", "content": "..."}]
-        
+
         Yields:
             Chunks de texto de la respuesta del LLM
         """
-        
+
         # 1. Obtener contexto desde strategy_service y live_context
         strategy_service = self._get_strategy_service()
-        
+
         # 2. Obtener snapshot del tier FAST (mínimo para preguntas)
         snapshot = self.live_context.snapshot(tier="FAST")
-        
+
         # 3. Enriquecer con datos de race_summary si disponibles
         if strategy_service:
             race_summary = strategy_service.get_race_summary()
@@ -455,12 +460,10 @@ class IntelligenceEngine:
                 for key, value in race_summary.items():
                     if key not in snapshot:
                         snapshot[key] = value
-        
+
         # 4. Construir prompt usando context_builder
         event_store = self._get_event_store()
-        rag_context = await self.context_builder.prefetch_rag_context(
-            snapshot, event_store
-        ) if event_store else None
+        rag_context = await self.context_builder.prefetch_rag_context(snapshot, event_store) if event_store else None
 
         prompt = self.context_builder.build_prompt_for_question(
             snapshot=snapshot,
@@ -471,7 +474,7 @@ class IntelligenceEngine:
             sweary=self.sweary_messages,
             rag_context=rag_context,
         )
-        
+
         # 5. Ejecutar streaming del LLM usando ask_streaming_text
         full_text = ""
         try:
@@ -480,7 +483,7 @@ class IntelligenceEngine:
         except Exception as e:
             logger.error(f"Error en ask_async LLM stream: {e}", exc_info=True)
             full_text = "Error de comunicación con el muro de boxes."
-        
+
         yield full_text
 
     def _on_llm_task_done(self, task: asyncio.Task) -> None:
@@ -488,18 +491,16 @@ class IntelligenceEngine:
         try:
             exc = task.exception()
             if exc:
-                logger.error(
-                    "LLM task '%s' failed: %s", self._current_advice_id, exc,
-                    exc_info=exc
-                )
+                logger.error("LLM task '%s' failed: %s", self._current_advice_id, exc, exc_info=exc)
                 # Si la tarea falló y todavía hay un advice_id activo, enviar mensaje de error al frontend
                 if self._current_advice_id is not None:
                     from src.transport.broadcaster import send
+
                     err_msg = AdviceEndMessage(
                         advice_id=self._current_advice_id,
                         full_text="... Pérdida de comunicación de radio con el muro de boxes ...",
                         actions=[],
-                        event="advice_end"
+                        event="advice_end",
                     )
                     send(err_msg)
                     self._current_advice_id = None
@@ -531,7 +532,7 @@ class IntelligenceEngine:
                 event="advice_end",
                 advice_id=self._current_advice_id,
                 full_text="--- Transmisión de radio interrumpida por evento de mayor prioridad ---",
-                actions=[]
+                actions=[],
             )
             self.broadcaster.send(interruption_msg)
 
@@ -542,7 +543,7 @@ class IntelligenceEngine:
                 category="system",
                 message="Transmisión de radio interrumpida por evento de mayor prioridad",
                 audio_priority="CRITICAL",
-                payload={"severity": "CRITICAL"}
+                payload={"severity": "CRITICAL"},
             )
             self.broadcaster.send(alert_msg)
 
@@ -584,6 +585,6 @@ class IntelligenceEngine:
     def _to_dict(self, obj) -> dict:
         """Helper para convertir cualquier objeto de estado (Pydantic, dataclass) a diccionario."""
         from src.intelligence.state_coercion import coerce_state_dict
-        import sys
+
         allow_mock = "pytest" in sys.modules
         return coerce_state_dict(obj, allow_mock=allow_mock)

@@ -1,5 +1,6 @@
 import logging
-from fastapi import APIRouter, UploadFile, File
+
+from fastapi import APIRouter, File, UploadFile
 
 logger = logging.getLogger("vantare.transcribe")
 
@@ -15,8 +16,8 @@ async def transcribe_audio(audio: UploadFile = File(...)):
     - Cloud API (Deepgram, Azure Speech)
     """
     logger.info("Received audio for transcription: %s (%s)", audio.filename, audio.content_type)
-    
+
     # Read the audio (placeholder — no transcription yet)
     _ = await audio.read()
-    
+
     return {"text": ""}

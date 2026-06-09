@@ -11,7 +11,7 @@ Límite de tokens: System prompt (~200) + ticker (~400) + RAG (~100) ≈ 700 tok
 """
 
 import json
-from typing import Any, Dict, List
+from typing import Any
 
 SYSTEM_PROMPT_BASIC = (
     "Eres un ingeniero de carrera. Para preguntas técnicas de carrera, sé técnico y conciso. "
@@ -106,13 +106,9 @@ Ejemplo: VST|HY|+2.1|V22 · ALO|HY|-1.2|V22
 
 Máximo 2-3 frases. Estilo radio. Técnico y conciso."""
 
-SWEARY_STYLE_HINT = (
-    "\n\nESTILO: Puedes usar lenguaje colorido y directo de paddock cuando encaje con la situación."
-)
+SWEARY_STYLE_HINT = "\n\nESTILO: Puedes usar lenguaje colorido y directo de paddock cuando encaje con la situación."
 
-CLEAN_STYLE_HINT = (
-    "\n\nESTILO: Mantén un tono profesional y limpio, sin palabrotas ni vulgaridades."
-)
+CLEAN_STYLE_HINT = "\n\nESTILO: Mantén un tono profesional y limpio, sin palabrotas ni vulgaridades."
 
 UI_TOOLS = [
     {
@@ -126,22 +122,19 @@ UI_TOOLS = [
                     "target": {
                         "type": "string",
                         "enum": ["pit_button", "fuel_warning", "hybrid_map"],
-                        "description": "El control visual o advertencia objetivo en el panel."
+                        "description": "El control visual o advertencia objetivo en el panel.",
                     },
                     "action": {
                         "type": "string",
                         "enum": ["blink_red", "show", "switch_to_regen_2"],
-                        "description": "La acción visual o cambio de modo a ejecutar."
+                        "description": "La acción visual o cambio de modo a ejecutar.",
                     },
-                    "duration_ms": {
-                        "type": "integer",
-                        "description": "Duración de la alerta en milisegundos."
-                    }
+                    "duration_ms": {"type": "integer", "description": "Duración de la alerta en milisegundos."},
                 },
                 "required": ["target", "action", "duration_ms"],
-                "additionalProperties": False
-            }
-        }
+                "additionalProperties": False,
+            },
+        },
     }
 ]
 
@@ -196,7 +189,7 @@ MONITOR_COMPETITOR_TOOL = {
 }
 
 
-def get_llm_tools(include_competitor_query: bool = True) -> List[Dict[str, Any]]:
+def get_llm_tools(include_competitor_query: bool = True) -> list[dict[str, Any]]:
     tools = list(UI_TOOLS)
     if include_competitor_query:
         tools.append(COMPETITOR_QUERY_TOOL)

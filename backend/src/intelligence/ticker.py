@@ -7,8 +7,6 @@ que reemplaza el JSON verboso en los prompts.
 Formato completo documentado en LMU/rag-dictionary.md
 """
 
-from typing import Any, Optional
-
 
 # ============================================================================
 # Mapeos de abreviaturas
@@ -45,6 +43,7 @@ GRIP_ABBREV = {
 # ============================================================================
 # Funciones principales
 # ============================================================================
+
 
 def abbreviate_name(name: str) -> str:
     """Abrevia nombre de piloto a 3 caracteres.
@@ -100,6 +99,7 @@ def _format_time(seconds: float) -> str:
 def _format_laptime(seconds: float) -> str:
     """Formatea tiempo de vuelta para ticker/TTS (coloquial si < 60s)."""
     from src.intelligence.time_format import format_laptime
+
     return format_laptime(seconds, colloquial=True)
 
 
@@ -251,8 +251,8 @@ def _format_riv(data: dict) -> str:
     # Clasificar competidores
     cls1 = []  # gap < 5s
     cls2 = []  # gap 5-30s
-    far = []   # gap > 30s
-    lap = []   # laps_behind >= 1
+    far = []  # gap > 30s
+    lap = []  # laps_behind >= 1
 
     max_far_gap = 0
 

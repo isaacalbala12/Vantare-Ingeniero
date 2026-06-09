@@ -2,7 +2,6 @@
 
 import asyncio
 import logging
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query, Request
 from pydantic import BaseModel, Field
@@ -13,7 +12,7 @@ router = APIRouter(prefix="/traces", tags=["traces"])
 
 
 class StartRecordingPayload(BaseModel):
-    trace_id: Optional[str] = Field(default=None, max_length=80)
+    trace_id: str | None = Field(default=None, max_length=80)
 
 
 @router.get("")

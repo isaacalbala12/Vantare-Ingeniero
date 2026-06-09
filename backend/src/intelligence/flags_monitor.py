@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
 
 
 class FlagEventType(str, Enum):
@@ -46,7 +45,7 @@ def snapshot_from_telemetry(telemetry: dict) -> FlagSnapshot:
 
 
 def detect_flag_transitions(
-    previous: Optional[FlagSnapshot],
+    previous: FlagSnapshot | None,
     current: FlagSnapshot,
 ) -> list[FlagEvent]:
     """Detecta cambios de bandera entre dos snapshots consecutivos."""
@@ -123,7 +122,7 @@ def detect_flag_transitions(
     return events
 
 
-def pick_highest_priority_event(events: list[FlagEvent]) -> Optional[FlagEvent]:
+def pick_highest_priority_event(events: list[FlagEvent]) -> FlagEvent | None:
     if not events:
         return None
     return max(events, key=lambda e: e.priority)

@@ -1,7 +1,7 @@
 import logging
-from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import Response
 
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import Response
 from src.config import settings
 
 logger = logging.getLogger("vantare.tts_router")

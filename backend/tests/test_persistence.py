@@ -119,8 +119,10 @@ class TestHistoryStorePersistence:
         assert isinstance(record["fuelRemaining"], float)
         assert isinstance(record["lapTime"], float)
 
-    def test_load_from_nonexistent_file(self):
+    def test_load_from_nonexistent_file(self, temp_history_file):
         """load() desde archivo inexistente debe dar historial vacío."""
+        if os.path.exists(temp_history_file):
+            os.unlink(temp_history_file)
         store = HistoryStore(auto_load=False)
         store.load()  # No hay archivo
         assert store.get_history() == []
