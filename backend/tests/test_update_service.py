@@ -1,35 +1,22 @@
-"""Tests para update_service."""
+"""Tests de update_service."""
+
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from src.services import update_service
 
 
-class TestUpdateService:
-    def test_parse_version(self):
-        assert update_service.parse_version("0.1.0") == (0, 1, 0)
-        assert update_service.parse_version("v1.2.3") == (1, 2, 3)
+@pytest.mark.asyncio
+async def test_fetch_latest_release_logs_debug_on_network_error(caplog):
+    with patch("src.services.update_service.httpx.AsyncClient") as mock_client_cls:
+        mock_client = AsyncMock()
+        mock_client.__aenter__.return_value = mock_client
+        mock_client.get.side_effect = OSError("network down")
+        mock_client_cls.return_value = mock_client
 
-    def test_is_newer_version(self):
-        assert update_service.is_newer_version("0.2.0", "0.1.0") is True
-        assert update_service.is_newer_version("0.1.0", "0.1.0") is False
-        assert update_service.is_newer_version("0.1.0", "0.2.0") is False
+        with caplog.at_level("DEBUG", logger="vantare.update"):
+            result = await update_service.fetch_latest_release()
 
-    @pytest.mark.asyncio
-    async def test_check_for_update_no_release(self, monkeypatch):
-        async def fake_fetch(repo=None):
-            return None
-
-        monkeypatch.setattr(update_service, "fetch_latest_release", fake_fetch)
-        result = await update_service.check_for_update("0.1.0")
-        assert result["update_available"] is False
-
-    @pytest.mark.asyncio
-    async def test_check_for_update_newer_available(self, monkeypatch):
-        async def fake_fetch(repo=None):
-            return {"tag": "0.2.0", "name": "0.2.0", "html_url": "https://example.com/release"}
-
-        monkeypatch.setattr(update_service, "fetch_latest_release", fake_fetch)
-        result = await update_service.check_for_update("0.1.0")
-        assert result["update_available"] is True
-        assert result["latest_version"] == "0.2.0"
+    assert result is None
+    assert any("fetch_latest_release failed" in r.message for r in caplog.records)

@@ -26,6 +26,11 @@ def is_newer_version(latest: str, current: str) -> bool:
     return parse_version(latest) > parse_version(current)
 
 
+import logging
+
+logger = logging.getLogger("vantare.update")
+
+
 async def fetch_latest_release(repo: str = GITHUB_REPO) -> Optional[dict]:
     url = f"https://api.github.com/repos/{repo}/releases/latest"
     try:
@@ -41,7 +46,8 @@ async def fetch_latest_release(repo: str = GITHUB_REPO) -> Optional[dict]:
                 "html_url": data.get("html_url", ""),
                 "published_at": data.get("published_at", ""),
             }
-    except Exception:
+    except Exception as exc:
+        logger.debug("fetch_latest_release failed: %s", exc)
         return None
 
 
