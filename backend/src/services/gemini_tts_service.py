@@ -1,9 +1,10 @@
+import asyncio
+import io
 import logging
 import wave
-import io
 
+import google.genai
 from google.genai import types
-from google.genai.types import SpeechConfig, PrebuiltVoiceConfig
 
 logger = logging.getLogger("vantare.gemini_tts")
 
@@ -32,18 +33,8 @@ class GeminiTTSService:
             self._client = google.genai.Client(api_key=self.api_key)
         return self._client
 
-    async def synthesize(self, text: str) -> bytes:
-        """Sintetiza texto a audio WAV.
-
-        Args:
-            text: Texto a sintetizar (máx 2000 caracteres).
-
-        Returns:
-            Bytes del audio WAV (24000 Hz, mono, 16-bit PCM).
-        """
-        if not text or not text.strip():
-            raise ValueError("Texto vacío")
-
+    def _synthesize_sync(self, text: str) -> bytes:
+        """Síncrono: realiza la llamada real a Google AI Studio."""
         if len(text) > 2000:
             logger.warning("Texto Gemini truncado de %d a 2000 caracteres", len(text))
             text = text[:1997] + "..."
@@ -85,3 +76,16 @@ class GeminiTTSService:
             wav_file.writeframes(pcm_data)
 
         return wav_buffer.getvalue()
+
+    async def synthesize(self, text: str) -> bytes:
+        """Sintetiza texto a audio WAV asíncronamente sin bloquear el event loop.
+
+        Args:
+            text: Texto a sintetizar.
+
+        Returns:
+            Bytes del audio WAV (o vacíos si text está en blanco).
+        """
+        if not text or not text.strip():
+            return b""
+        return await asyncio.to_thread(self._synthesize_sync, text.strip())
