@@ -7,9 +7,9 @@ Si hay un EventStore configurado, inyecta los top-5 eventos históricos más
 similares a la telemetría actual como contexto RAG.
 """
 
-import logging
 import asyncio
-from typing import Any, Optional
+import logging
+from typing import Any
 
 from src.intelligence.ticker import generate_ticker
 
@@ -18,9 +18,9 @@ logger = logging.getLogger("vantare.context_builder")
 
 def _build_ticker_data(
     snapshot: dict,
-    telemetry_frame: Optional[dict] = None,
-    strategy_advice: Optional[dict] = None,
-    lmu_api: Optional[Any] = None,
+    telemetry_frame: dict | None = None,
+    strategy_advice: dict | None = None,
+    lmu_api: Any | None = None,
 ) -> dict:
     """Construye el diccionario de datos para generate_ticker desde snapshot y fuentes adicionales.
 
@@ -69,8 +69,16 @@ def _build_ticker_data(
     data["brake_wear"] = brake_wear
 
     # Gaps (de telemetry_frame o snapshot)
-    ahead_gap = telemetry_frame.get("time_gap_place_ahead", snapshot.get("gap_ahead", 0)) if telemetry_frame else snapshot.get("gap_ahead", 0)
-    behind_gap = telemetry_frame.get("time_gap_place_behind", snapshot.get("gap_behind", 0)) if telemetry_frame else snapshot.get("gap_behind", 0)
+    ahead_gap = (
+        telemetry_frame.get("time_gap_place_ahead", snapshot.get("gap_ahead", 0))
+        if telemetry_frame
+        else snapshot.get("gap_ahead", 0)
+    )
+    behind_gap = (
+        telemetry_frame.get("time_gap_place_behind", snapshot.get("gap_behind", 0))
+        if telemetry_frame
+        else snapshot.get("gap_behind", 0)
+    )
     data["ahead_gap"] = ahead_gap
     data["behind_gap"] = behind_gap
 
@@ -96,7 +104,11 @@ def _build_ticker_data(
 
     # Sesión
     data["session_class"] = telemetry_frame.get("session_class", "GT3") if telemetry_frame else "GT3"
-    data["session_type"] = telemetry_frame.get("session_type", snapshot.get("phase", "RACE")) if telemetry_frame else snapshot.get("phase", "RACE")
+    data["session_type"] = (
+        telemetry_frame.get("session_type", snapshot.get("phase", "RACE"))
+        if telemetry_frame
+        else snapshot.get("phase", "RACE")
+    )
     data["total_laps"] = telemetry_frame.get("session_laps_left", 0) if telemetry_frame else 0
     data["time_left"] = telemetry_frame.get("session_time_left", 0) if telemetry_frame else 0
 
@@ -123,8 +135,8 @@ def _build_ticker_data(
 
 def _resolve_competitor_context(
     pilot_question: str,
-    strategy_advice: Optional[dict],
-) -> Optional[str]:
+    strategy_advice: dict | None,
+) -> str | None:
     """Pre-resuelve consultas de rivales por nombre en la pregunta del piloto."""
     if not pilot_question or not strategy_advice:
         return None
@@ -132,9 +144,10 @@ def _resolve_competitor_context(
     if not competitors:
         return None
 
+    import re
+
     from src.intelligence.competitor_queries import CompetitorQuery, CompetitorQueryType, resolve_query
     from src.intelligence.driver_names import get_driver_by_partial
-    import re
 
     match_driver = get_driver_by_partial(pilot_question, competitors)
     if not match_driver:
@@ -153,7 +166,7 @@ def _resolve_competitor_context(
     return None
 
 
-def _build_sector_context(strategy_service: Optional[Any] = None) -> Optional[str]:
+def _build_sector_context(strategy_service: Any | None = None) -> str | None:
     if strategy_service is None:
         return None
     try:
@@ -176,15 +189,15 @@ def _build_sector_context(strategy_service: Optional[Any] = None) -> Optional[st
 def build_prompt(
     snapshot: dict,
     trigger_reason: str,
-    pilot_question: Optional[str],
+    pilot_question: str | None,
     templates: Any,
-    event_store: Optional[Any] = None,
-    telemetry_frame: Optional[dict] = None,
-    strategy_advice: Optional[dict] = None,
-    lmu_api: Optional[Any] = None,
+    event_store: Any | None = None,
+    telemetry_frame: dict | None = None,
+    strategy_advice: dict | None = None,
+    lmu_api: Any | None = None,
     sweary: bool = False,
-    strategy_service: Optional[Any] = None,
-    rag_context: Optional[str] = None,
+    strategy_service: Any | None = None,
+    rag_context: str | None = None,
 ) -> str:
     """Construye el prompt completo para el LLM.
 
@@ -243,15 +256,15 @@ def build_prompt(
 def build_prompt_for_question(
     snapshot: dict,
     pilot_question: str,
-    chat_history: Optional[list] = None,
-    templates: Optional[Any] = None,
-    event_store: Optional[Any] = None,
-    telemetry_frame: Optional[dict] = None,
-    strategy_advice: Optional[dict] = None,
-    lmu_api: Optional[Any] = None,
+    chat_history: list | None = None,
+    templates: Any | None = None,
+    event_store: Any | None = None,
+    telemetry_frame: dict | None = None,
+    strategy_advice: dict | None = None,
+    lmu_api: Any | None = None,
     sweary: bool = False,
-    strategy_service: Optional[Any] = None,
-    rag_context: Optional[str] = None,
+    strategy_service: Any | None = None,
+    rag_context: str | None = None,
 ) -> str:
     """Construye prompt para pregunta directa del piloto con RAG y ticker."""
     context_dict: dict = {
@@ -296,9 +309,9 @@ def build_prompt_for_question(
 
 async def prefetch_rag_context(
     snapshot: dict,
-    event_store: Optional[Any] = None,
+    event_store: Any | None = None,
     top_k: int = 5,
-) -> Optional[str]:
+) -> str | None:
     """Consulta RAG en un hilo de background para no bloquear asyncio."""
     if event_store is None:
         return None
@@ -307,9 +320,9 @@ async def prefetch_rag_context(
 
 def _build_rag_context(
     snapshot: dict,
-    event_store: Optional[Any] = None,
+    event_store: Any | None = None,
     top_k: int = 5,
-) -> Optional[str]:
+) -> str | None:
     """Consulta el EventStore y devuelve un string formateado con los top-k eventos.
 
     Si no hay EventStore o la consulta no devuelve resultados, retorna None.
@@ -337,7 +350,7 @@ def _build_rag_context(
     return "\n".join(lines)
 
 
-def _snapshot_to_frame(snapshot: dict) -> Optional[dict]:
+def _snapshot_to_frame(snapshot: dict) -> dict | None:
     """Convierte un snapshot de LiveContextManager a formato frame para EventStore query."""
     if not snapshot:
         return None

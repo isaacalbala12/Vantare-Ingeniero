@@ -1,21 +1,22 @@
 import copy
-from typing import Any, Dict, List, Optional
+from typing import Any
+
 
 class LiveContextManager:
     """Administrador de contexto incremental vuelta a vuelta en tres tiers de snapshots."""
 
-    def __init__(self, history_store: Optional[Any] = None) -> None:
-        self._fast: Dict[str, Any] = {}
-        self._standard: Dict[str, Any] = {}
-        self._deep: Dict[str, Any] = {}
+    def __init__(self, history_store: Any | None = None) -> None:
+        self._fast: dict[str, Any] = {}
+        self._standard: dict[str, Any] = {}
+        self._deep: dict[str, Any] = {}
 
         # HistoryStore opcional para persistencia de consumo
         self._history_store = history_store
 
         # Históricos en memoria para cálculos de tendencias
-        self._fuel_history: List[float] = []      # Últimas 10 vueltas de consumo
-        self._tyre_deg_history: List[float] = []  # Historial de desgaste promedio
-        self._battery_history: List[float] = []   # Historial de SOC
+        self._fuel_history: list[float] = []  # Últimas 10 vueltas de consumo
+        self._tyre_deg_history: list[float] = []  # Historial de desgaste promedio
+        self._battery_history: list[float] = []  # Historial de SOC
 
     def on_lap_completed(self, telemetry: dict, strategy: dict, session: dict) -> None:
         """Actualiza los 3 snapshots internos al completar una vuelta válida."""
@@ -24,16 +25,16 @@ class LiveContextManager:
         lap = telemetry.get("lap_number", 0)
         fuel_in_tank = telemetry.get("fuel_in_tank", 0.0)
         fuel_capacity = telemetry.get("fuel_capacity", 100.0)
-        
+
         fuel_info = strategy.get("fuel", {})
         estimated_laps_remaining = fuel_info.get("estimated_laps_remaining", 0.0)
-        
+
         pit_window = strategy.get("pit_window", {})
         pit_window_open = pit_window.get("pit_window_open", False)
-        
+
         gap_ahead = telemetry.get("gap_ahead", 99.0)
         gap_behind = telemetry.get("gap_behind", 99.0)
-        
+
         # Evaluar si las temperaturas de gomas están en rango seguro (ej: 70°C a 105°C)
         fl_temp = telemetry.get("tyre_temp_fl", 90.0)
         fr_temp = telemetry.get("tyre_temp_fr", 90.0)
@@ -67,8 +68,10 @@ class LiveContextManager:
 
         # 3. Construir snapshot STANDARD
         # Historial y tendencias de consumo
-        fuel_rate_trend = round(sum(self._fuel_history[-3:]) / max(1, len(self._fuel_history[-3:])), 3) if self._fuel_history else 0.0
-        
+        fuel_rate_trend = (
+            round(sum(self._fuel_history[-3:]) / max(1, len(self._fuel_history[-3:])), 3) if self._fuel_history else 0.0
+        )
+
         tyre_compound = telemetry.get("tyre_compound", "Medium")
         wear_fl = telemetry.get("tyre_wear_fl", 0.0)
         wear_fr = telemetry.get("tyre_wear_fr", 0.0)
@@ -83,7 +86,9 @@ class LiveContextManager:
 
         # Tendencia de degradación en las últimas 3 vueltas
         if len(self._tyre_deg_history) >= 2:
-            tyre_deg_trend = round(self._tyre_deg_history[-1] - self._tyre_deg_history[-max(2, len(self._tyre_deg_history[-3:]))], 2)
+            tyre_deg_trend = round(
+                self._tyre_deg_history[-1] - self._tyre_deg_history[-max(2, len(self._tyre_deg_history[-3:]))], 2
+            )
         else:
             tyre_deg_trend = 0.0
 
@@ -92,7 +97,7 @@ class LiveContextManager:
 
         pit_window_optimal_lap = pit_window.get("optimal_pit_lap", 0)
         pit_loss_time = strategy.get("pit_loss_time", 25.0)
-        
+
         # Undercut / overcut potencial
         undercut_available = gap_behind < 2.0 and pit_window_open
         overcut_available = gap_ahead < 2.0 and pit_window_open
@@ -100,11 +105,17 @@ class LiveContextManager:
         # Competidores alrededor
         competitors = telemetry.get("competitors", [])
         my_position = telemetry.get("standing_position", 1)
-        
-        sorted_comps = sorted(competitors, key=lambda c: c.get("standing_position", 99)) if isinstance(competitors, list) else []
-        
-        comps_ahead = [c.get("driver_name", "Driver") for c in sorted_comps if c.get("standing_position", 99) < my_position]
-        comps_behind = [c.get("driver_name", "Driver") for c in sorted_comps if c.get("standing_position", 99) > my_position]
+
+        sorted_comps = (
+            sorted(competitors, key=lambda c: c.get("standing_position", 99)) if isinstance(competitors, list) else []
+        )
+
+        comps_ahead = [
+            c.get("driver_name", "Driver") for c in sorted_comps if c.get("standing_position", 99) < my_position
+        ]
+        comps_behind = [
+            c.get("driver_name", "Driver") for c in sorted_comps if c.get("standing_position", 99) > my_position
+        ]
 
         competitors_ahead = comps_ahead[-3:] if comps_ahead else []
         competitors_behind = comps_behind[:3] if comps_behind else []
@@ -113,37 +124,43 @@ class LiveContextManager:
         self._battery_history.append(battery_charge)
         if len(self._battery_history) > 10:
             self._battery_history.pop(0)
-            
+
         if len(self._battery_history) >= 2:
-            battery_net_trend = round(self._battery_history[-1] - self._battery_history[-max(2, len(self._battery_history[-3:]))], 2)
+            battery_net_trend = round(
+                self._battery_history[-1] - self._battery_history[-max(2, len(self._battery_history[-3:]))], 2
+            )
         else:
             battery_net_trend = 0.0
 
         self._standard = copy.deepcopy(self._fast)
-        self._standard.update({
-            "fuel_rate_trend": fuel_rate_trend,
-            "tyre_compound": tyre_compound,
-            "tyre_wear_current": tyre_wear_current,
-            "tyre_deg_trend": tyre_deg_trend,
-            "tyre_lifespan_laps": tyre_lifespan_laps,
-            "pit_window_optimal_lap": pit_window_optimal_lap,
-            "pit_loss_time": round(pit_loss_time, 2),
-            "undercut_available": undercut_available,
-            "overcut_available": overcut_available,
-            "competitors_ahead": competitors_ahead,
-            "competitors_behind": competitors_behind,
-            "battery_charge": round(battery_charge, 2),
-            "battery_net_trend": battery_net_trend
-        })
+        self._standard.update(
+            {
+                "fuel_rate_trend": fuel_rate_trend,
+                "tyre_compound": tyre_compound,
+                "tyre_wear_current": tyre_wear_current,
+                "tyre_deg_trend": tyre_deg_trend,
+                "tyre_lifespan_laps": tyre_lifespan_laps,
+                "pit_window_optimal_lap": pit_window_optimal_lap,
+                "pit_loss_time": round(pit_loss_time, 2),
+                "undercut_available": undercut_available,
+                "overcut_available": overcut_available,
+                "competitors_ahead": competitors_ahead,
+                "competitors_behind": competitors_behind,
+                "battery_charge": round(battery_charge, 2),
+                "battery_net_trend": battery_net_trend,
+            }
+        )
 
         # 4. Construir snapshot DEEP
         finish_criteria = session.get("finish_criteria", "TIME_LIMIT")
-        
+
         weather_list = session.get("weather_forecast", [])
         weather_forecast = weather_list[:3] if isinstance(weather_list, list) else []
-        
+
         # Lluvia prevista si la probabilidad en alguno de los primeros slots es > 20%
-        rain_expected = any(float(slot.get("WNV_RAIN_CHANCE", 0.0)) > 20.0 for slot in weather_forecast if isinstance(slot, dict))
+        rain_expected = any(
+            float(slot.get("WNV_RAIN_CHANCE", 0.0)) > 20.0 for slot in weather_forecast if isinstance(slot, dict)
+        )
 
         damage = {
             "aero": telemetry.get("damage_aero", 0.0),
@@ -157,23 +174,22 @@ class LiveContextManager:
                 / 4.0,
                 2,
             ),
-            "suspension": telemetry.get("suspension_damage", 0.0)
-        }
-        
-        setup = {
-            "rear_wing": telemetry.get("rear_wing", 2),
-            "brake_bias": round(telemetry.get("brake_bias", 55.0), 2)
+            "suspension": telemetry.get("suspension_damage", 0.0),
         }
 
+        setup = {"rear_wing": telemetry.get("rear_wing", 2), "brake_bias": round(telemetry.get("brake_bias", 55.0), 2)}
+
         self._deep = copy.deepcopy(self._standard)
-        self._deep.update({
-            "finish_criteria": finish_criteria,
-            "weather_forecast": weather_forecast,
-            "rain_expected": rain_expected,
-            "damage": damage,
-            "setup": setup,
-            "historical_consumption": [round(f, 3) for f in self._fuel_history]
-        })
+        self._deep.update(
+            {
+                "finish_criteria": finish_criteria,
+                "weather_forecast": weather_forecast,
+                "rain_expected": rain_expected,
+                "damage": damage,
+                "setup": setup,
+                "historical_consumption": [round(f, 3) for f in self._fuel_history],
+            }
+        )
 
         # Registrar consumo en HistoryStore persistente si está disponible
         if self._history_store is not None and last_lap_consumption > 0:

@@ -2,13 +2,11 @@ import asyncio
 import logging
 import math
 import time
-from typing import Optional
 
-from shared_telemetry import TelemetryReader, RaceState
-from shared_telemetry.sync import TelemetrySync
-from shared_strategy import compute_strategy, TelemetryFrame, StrategyState, TrackConfig, StrategyAdvice
+from shared_strategy import StrategyAdvice, StrategyState, TelemetryFrame, TrackConfig, compute_strategy
 from shared_strategy.models import CompetitorTelemetry
-
+from shared_telemetry import TelemetryReader
+from shared_telemetry.sync import TelemetrySync
 from src.config import settings
 from src.services.lmu_api import get_additional_data
 
@@ -45,20 +43,20 @@ class StrategyService:
     def __init__(self, reader: TelemetryReader) -> None:
         self.reader = reader
         self.sync = TelemetrySync()
-        
+
         # Estado persistente del motor de estrategia
         self.state = StrategyState()
-        
+
         # Configuración por defecto del circuito (se autocalibrará en tiempo real)
         self.track = TrackConfig(track_length=7004.0)  # Valor inicial por defecto (Spa)
-        
+
         # Último consejo estratégico calculado
-        self.latest_advice: Optional[StrategyAdvice] = None
-        self.latest_frame: Optional[TelemetryFrame] = None
-        
+        self.latest_advice: StrategyAdvice | None = None
+        self.latest_frame: TelemetryFrame | None = None
+
         # Tarea asíncrona del bucle en background
-        self._loop_task: Optional[asyncio.Task] = None
-        
+        self._loop_task: asyncio.Task | None = None
+
         # Estados auxiliares para acumuladores de vuelta
         self._simulated_fuel = 100.0
         self._last_lap = 0
@@ -85,7 +83,7 @@ class StrategyService:
             self._loop_task = None
             logger.info("StrategyService loop stopped")
 
-    def get_latest_advice(self) -> Optional[StrategyAdvice]:
+    def get_latest_advice(self) -> StrategyAdvice | None:
         """Obtiene el último consejo estratégico calculado."""
         return self.latest_advice
 
@@ -109,7 +107,7 @@ class StrategyService:
         try:
             await asyncio.wait_for(strategy_ready.wait(), timeout=timeout)
             return True
-        except asyncio.TimeoutError:
+        except TimeoutError:
             logger.warning("StrategyService no estuvo listo en %fs", timeout)
             return False
 
@@ -131,15 +129,21 @@ class StrategyService:
         wear_rr = (1.0 - tyres.wear[3]) * 100.0 if self.reader.offline else tyres.wear[3] * 100.0
 
         summary = {
-            "session_type": "practice" if session.session_type in (0, 1) else "qualifying" if session.session_type == 2 else "race",
+            "session_type": "practice"
+            if session.session_type in (0, 1)
+            else "qualifying"
+            if session.session_type == 2
+            else "race",
             "lap_number": player.current_lap,
             "position": player.place,
             "fuel_in_tank": frame.fuel_in_tank if frame else 0.0,
             "fuel_needed_to_finish": advice.fuel.fuel_needed_to_finish if advice and advice.fuel else 0.0,
             "laps_remaining_estimate": advice.fuel.estimated_laps_remaining if advice and advice.fuel else 0.0,
             "pit_windows": {
-                "pit_strategy": f"Optimal stop on lap {advice.pit_window.optimal_pit_lap}" if advice and advice.pit_window else "unknown",
-                "recommended_pit_lap": advice.pit_window.optimal_pit_lap if advice and advice.pit_window else 0
+                "pit_strategy": f"Optimal stop on lap {advice.pit_window.optimal_pit_lap}"
+                if advice and advice.pit_window
+                else "unknown",
+                "recommended_pit_lap": advice.pit_window.optimal_pit_lap if advice and advice.pit_window else 0,
             },
             "tyres": {
                 "wear_fl": round(wear_fl, 1),
@@ -154,8 +158,8 @@ class StrategyService:
             "flags": {
                 "safety_car": frame.safety_car_active if frame else False,
                 "yellow_flag": frame.yellow_flag_active if frame else False,
-                "full_course_yellow": frame.full_course_yellow_active if frame else False
-            }
+                "full_course_yellow": frame.full_course_yellow_active if frame else False,
+            },
         }
         return summary
 
@@ -184,7 +188,7 @@ class StrategyService:
 
         player = race_state.player
         session = race_state.session
-        
+
         # 1. Determinar tipo de sesión en string
         session_type_int = session.session_type
         if session_type_int in (0, 1):
@@ -216,7 +220,7 @@ class StrategyService:
         if not self.reader.offline and self.reader.shmm and self.reader.shmm.data:
             data = self.reader.shmm.data
             scor_idx, tele_idx, player_scor, player_tele = self.sync.sync_player_data(data)
-            
+
             # Autocalibrar longitud de pista real
             scoring_info = data.scoring.scoringInfo
             if scoring_info.mLapDist > 10.0:
@@ -229,16 +233,16 @@ class StrategyService:
 
             # Banderas de la sesión
             game_phase = int(scoring_info.mGamePhase)
-            safety_car_active = (game_phase == 6)
-            full_course_yellow_active = (game_phase == 6)
-            session_stopped = (game_phase == 7)
-            session_over = (game_phase == 8)
+            safety_car_active = game_phase == 6
+            full_course_yellow_active = game_phase == 6
+            session_stopped = game_phase == 7
+            session_over = game_phase == 8
             has_sector_yellow = any(scoring_info.mSectorFlag[i] != 0 for i in range(3))
-            yellow_flag_active = (game_phase == 6 or has_sector_yellow)
+            yellow_flag_active = game_phase == 6 or has_sector_yellow
 
             if player_scor is not None:
                 num_penalties = max(0, int(player_scor.mNumPenalties))
-                blue_flag_active = (int(player_scor.mFlag) == 6)
+                blue_flag_active = int(player_scor.mFlag) == 6
 
             if player_tele is not None:
                 fuel_in_tank = safe_float(player_tele.mFuel)
@@ -248,10 +252,10 @@ class StrategyService:
                 vel_x = safe_float(player_tele.mLocalVel.x)
                 vel_y = safe_float(player_tele.mLocalVel.y)
                 vel_z = safe_float(player_tele.mLocalVel.z)
-                
+
                 # Velocidad real en m/s desde vector de velocidad local
-                speed = math.sqrt(vel_x ** 2 + vel_y ** 2 + vel_z ** 2)
-                
+                speed = math.sqrt(vel_x**2 + vel_y**2 + vel_z**2)
+
                 # Mapear boost motor state
                 # LMU: 0=unavailable, 1=inactive, 2=propulsion (drain), 3=regeneration (regen)
                 # shared-strategy: 1=Idle, 2=Drain, 3=Regen
@@ -262,7 +266,7 @@ class StrategyService:
                     motor_state = 3
                 else:
                     motor_state = 1
-                
+
                 battery_charge = safe_float(player_tele.mStateOfCharge)
             else:
                 # Fallback seguro si no hay telemetría del jugador
@@ -280,7 +284,7 @@ class StrategyService:
             # Laps left
             if session.time_remaining > 0:
                 session_laps_left = -1.0  # Sesión por tiempo
-            
+
             # Decremento de combustible simulado
             current_lap = player.current_lap
             if self._last_lap == 0:
@@ -353,7 +357,7 @@ class StrategyService:
                     fr_data = brakes_api.get("fr", {})
                     rl_data = brakes_api.get("rl", {})
                     rr_data = brakes_api.get("rr", {})
-                    
+
                     def _extract_wear(data):
                         w = data.get("wear", 0.0) if isinstance(data, dict) else float(data)
                         # Si está en fracción 0.0-1.0 lo multiplicamos por 100
@@ -366,8 +370,10 @@ class StrategyService:
                 elif "wear" in brakes_api:
                     wear_list = brakes_api["wear"]
                     if isinstance(wear_list, list) and len(wear_list) >= 4:
+
                         def _scale(w):
                             return w * 100.0 if w <= 1.0 else w
+
                         brake_wear_fl = _scale(wear_list[0])
                         brake_wear_fr = _scale(wear_list[1])
                         brake_wear_rl = _scale(wear_list[2])
@@ -391,13 +397,13 @@ class StrategyService:
                     if opp_tele_idx != -1 and opp_tele_idx < len(data.telemetry.telemInfo):
                         opp_tele = data.telemetry.telemInfo[opp_tele_idx]
                         opp_speed = math.sqrt(
-                            safe_float(opp_tele.mLocalVel.x) ** 2 +
-                            safe_float(opp_tele.mLocalVel.y) ** 2 +
-                            safe_float(opp_tele.mLocalVel.z) ** 2
+                            safe_float(opp_tele.mLocalVel.x) ** 2
+                            + safe_float(opp_tele.mLocalVel.y) ** 2
+                            + safe_float(opp_tele.mLocalVel.z) ** 2
                         )
-                    
+
                     fuel_fraction = veh_info.mFuelFraction / 255.0
-                    pit_requested = (veh_info.mPitState == 1)
+                    pit_requested = veh_info.mPitState == 1
 
                     comp = CompetitorTelemetry(
                         driver_index=int(veh_info.mID),
@@ -456,7 +462,6 @@ class StrategyService:
             in_garage=bool(race_state.player.in_pits and race_state.inputs.throttle < 0.01),  # Inferencia simple
             in_pits=player.in_pits,
             pit_limiter_active=pit_limiter_active,
-            
             yellow_flag_active=yellow_flag_active,
             safety_car_active=safety_car_active,
             full_course_yellow_active=full_course_yellow_active,
@@ -465,7 +470,6 @@ class StrategyService:
             session_over=session_over,
             driver_name=driver_name,
             num_penalties=num_penalties,
-
             fuel_in_tank=fuel_in_tank,
             fuel_capacity=fuel_capacity,
             fuel_used_lap_raw=fuel_used_lap_raw,
@@ -473,7 +477,6 @@ class StrategyService:
             battery_drain=self._lap_battery_drain,
             battery_regen=self._lap_battery_regen,
             motor_state=motor_state,
-
             tyre_wear_fl=tyre_wear_fl,
             tyre_wear_fr=tyre_wear_fr,
             tyre_wear_rl=tyre_wear_rl,
@@ -482,12 +485,10 @@ class StrategyService:
             tyre_temp_fr=tyre_temp_fr,
             tyre_temp_rl=tyre_temp_rl,
             tyre_temp_rr=tyre_temp_rr,
-
             brake_wear_fl=brake_wear_fl,
             brake_wear_fr=brake_wear_fr,
             brake_wear_rl=brake_wear_rl,
             brake_wear_rr=brake_wear_rr,
-
             speed=speed,
             throttle=race_state.inputs.throttle,
             brake=race_state.inputs.brake,
@@ -500,12 +501,12 @@ class StrategyService:
             player_class=player.class_name,
             vehicle_name=player.vehicle_name,
             standing_position=int(player.place),
-            competitors=competitors_list
+            competitors=competitors_list,
         )
 
         # 8. Computar estrategia mediante shared-strategy
         advice, new_state = compute_strategy(frame, self.state, self.track)
-        
+
         # 9. Guardar estado, consejo y frame para consulta asíncrona
         self.state = new_state
         self.latest_advice = advice
@@ -515,4 +516,6 @@ class StrategyService:
         if not strategy_ready.is_set():
             strategy_ready.set()
 
-        logger.debug(f"Strategy compute successful: laps left={session_laps_left}, fuel needed={advice.fuel.fuel_needed_to_finish:.2f}L")
+        logger.debug(
+            f"Strategy compute successful: laps left={session_laps_left}, fuel needed={advice.fuel.fuel_needed_to_finish:.2f}L"
+        )

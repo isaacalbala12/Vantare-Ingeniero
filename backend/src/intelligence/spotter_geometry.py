@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -63,7 +62,7 @@ def detect_lateral_proximity(
     competitors: list[dict],
     threshold_m: float,
     *,
-    exclude_indices: Optional[set[int]] = None,
+    exclude_indices: set[int] | None = None,
 ) -> list[LateralProximity]:
     """Detecta rivales dentro del umbral lateral respecto al vector de marcha."""
     px, _, pz = player_pos

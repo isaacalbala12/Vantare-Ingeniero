@@ -1,12 +1,13 @@
 import asyncio
 import json
 import logging
-from typing import Set
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from src.intelligence.spotter_adapter import frame_to_spotter_tick
 from src.models.messages import BaseMessage
-from src.intelligence.spotter_adapter import frame_to_spotter_tick, resolve_spotter_input
-from src.services.msgpack_codec import encode as mp_encode, decode as mp_decode, apply_delta, is_full_frame
+from src.services.msgpack_codec import apply_delta, is_full_frame
+from src.services.msgpack_codec import decode as mp_decode
+from src.services.msgpack_codec import encode as mp_encode
 
 logger = logging.getLogger("vantare.websocket")
 
@@ -64,7 +65,7 @@ class ConnectionManager:
     """Administrador de conexiones WebSocket para múltiples clientes Tauri."""
 
     def __init__(self) -> None:
-        self.active_connections: Set[WebSocket] = set()
+        self.active_connections: set[WebSocket] = set()
 
     async def connect(self, websocket: WebSocket) -> None:
         await websocket.accept()
@@ -83,7 +84,7 @@ class ConnectionManager:
         # Emitir en paralelo a todos los clientes
         await asyncio.gather(
             *(conn.send_json({"event": message.event, "data": payload}) for conn in self.active_connections),
-            return_exceptions=True
+            return_exceptions=True,
         )
 
 
@@ -148,7 +149,7 @@ async def telemetry_sender_loop(websocket: WebSocket, app_state) -> None:
             break
 
 
-async def strategy_sender_loop(websocket: WebSocket, app_state, active_subtasks: Set[asyncio.Task] = None) -> None:
+async def strategy_sender_loop(websocket: WebSocket, app_state, active_subtasks: set[asyncio.Task] = None) -> None:
     """Emite consejos de estrategia a 0.5Hz (cada 2s) y evalúa los triggers de la capa de inteligencia."""
     strategy_service = getattr(app_state, "strategy_service", None)
     if not strategy_service:
@@ -202,10 +203,7 @@ async def strategy_sender_loop(websocket: WebSocket, app_state, active_subtasks:
 
                 # Emitir solo si ha cambiado el contenido estratégico para reducir ancho de banda
                 if advice_dict != last_advice_dict:
-                    await websocket.send_json({
-                        "event": "strategy",
-                        "data": advice_dict
-                    })
+                    await websocket.send_json({"event": "strategy", "data": advice_dict})
                     last_advice_dict = advice_dict
 
             await asyncio.sleep(compute_loop_sleep(STRATEGY_INTERVAL_S, loop_started_at))
@@ -235,7 +233,7 @@ async def _index_events_async(event_store, frame: dict, events: list[dict]) -> N
 @router.websocket("/ws/sidecar")
 async def sidecar_endpoint(websocket: WebSocket):
     """Endpoint dedicado para el sidecar StrategyService en Windows.
-    
+
     Solo recibe strategy_frame, sin loops de telemetría ni estrategia fantasma.
     """
     await websocket.accept()
@@ -256,9 +254,7 @@ async def sidecar_endpoint(websocket: WebSocket):
                     if events and getattr(app_state, "event_store", None) is not None:
                         frame = frame_data.get("frame", {})
                         event_store = app_state.event_store
-                        asyncio.ensure_future(
-                            _index_events_async(event_store, frame, events)
-                        )
+                        asyncio.ensure_future(_index_events_async(event_store, frame, events))
             elif event == "ping":
                 await websocket.send_json({"event": "pong", "data": {}})
     except WebSocketDisconnect:
@@ -271,10 +267,10 @@ async def sidecar_endpoint(websocket: WebSocket):
 async def websocket_endpoint(websocket: WebSocket):
     """Ruta WebSocket para la telemetría en tiempo real y la estrategia."""
     await manager.connect(websocket)
-    
+
     # Crear tareas Concurrentes para este socket
     app_state = websocket.app.state
-    active_subtasks: Set[asyncio.Task] = set()
+    active_subtasks: set[asyncio.Task] = set()
     telemetry_task = asyncio.create_task(telemetry_sender_loop(websocket, app_state))
     strategy_task = asyncio.create_task(strategy_sender_loop(websocket, app_state, active_subtasks))
 
@@ -290,14 +286,14 @@ async def websocket_endpoint(websocket: WebSocket):
                     # Mensaje binario (MessagePack telemetry del frontend)
                     try:
                         frame = mp_decode(raw["bytes"])
-                        
+
                         # Detectar gap de timestamps para diagnóstico
                         frame_ts = frame.get("_t", 0)
                         last_ts = getattr(app_state, "_last_telemetry_t", 0)
                         if last_ts > 0 and frame_ts - last_ts > 0.5:
                             logger.warning(f"Telemetry gap detected: {frame_ts - last_ts:.2f}s since last frame")
                         app_state._last_telemetry_t = frame_ts
-                        
+
                         # Aplicar delta o snapshot completo
                         if is_full_frame(frame):
                             app_state.latest_client_frame = frame
@@ -321,12 +317,12 @@ async def websocket_endpoint(websocket: WebSocket):
                     continue
             else:
                 continue
-            
+
             # Procesar mensajes JSON del cliente
             try:
                 msg = json.loads(data)
                 event = msg.get("event", "")
-                
+
                 if event == "telemetry":
                     # Almacenar la telemetría entrante del frontend para que strategy_sender_loop la use
                     telemetry_data = msg.get("data", {})
@@ -354,8 +350,10 @@ async def websocket_endpoint(websocket: WebSocket):
                     spotter = getattr(app_state, "spotter_service", None)
                     if spotter and action in ("enable", "disable"):
                         spotter.enabled = action == "enable"
-                        from src.models.messages import AlertMessage
                         import uuid as _uuid
+
+                        from src.models.messages import AlertMessage
+
                         ack = AlertMessage(
                             event="alert",
                             alert_id=str(_uuid.uuid4()),
@@ -398,10 +396,9 @@ async def websocket_endpoint(websocket: WebSocket):
         # Detener las tareas emisoras
         telemetry_task.cancel()
         strategy_task.cancel()
-        
+
         # Esperar a que terminen de forma limpia
         await asyncio.gather(telemetry_task, strategy_task, return_exceptions=True)
-        
+
         # Desconectar el cliente de la lista activa
         manager.disconnect(websocket)
-

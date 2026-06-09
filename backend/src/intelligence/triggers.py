@@ -1,15 +1,16 @@
 import logging
 import time
-from enum import Enum
-from typing import Any, Dict, Optional
 from abc import ABC, abstractmethod
+from enum import Enum
 
 logger = logging.getLogger("vantare.triggers")
+
 
 class TriggerAction(str, Enum):
     LLM_REQUIRED = "LLM_REQUIRED"
     DETERMINISTIC_ONLY = "DETERMINISTIC_ONLY"
     ALERT_ONLY = "ALERT_ONLY"
+
 
 class Priority(int, Enum):
     CRITICAL = 4
@@ -17,10 +18,12 @@ class Priority(int, Enum):
     MEDIUM = 2
     LOW = 1
 
+
 class ContextTier(str, Enum):
     FAST = "FAST"
     STANDARD = "STANDARD"
     DEEP = "DEEP"
+
 
 class BaseTrigger(ABC):
     """Clase base para todos los triggers de la capa de inteligencia."""
@@ -32,7 +35,7 @@ class BaseTrigger(ABC):
         action: TriggerAction,
         min_interval: float,
         description: str,
-        alert_text: str
+        alert_text: str,
     ) -> None:
         self.priority = priority
         self.tier = tier
@@ -43,7 +46,7 @@ class BaseTrigger(ABC):
         self.last_triggered: float = 0.0
         self.name = description
 
-    def should_evaluate(self, current_time: Optional[float] = None) -> bool:
+    def should_evaluate(self, current_time: float | None = None) -> bool:
         """Controla el cooldown con detección de time jumps (hibernación/suspensión)."""
         now = current_time if current_time is not None else time.monotonic()
         elapsed = now - self.last_triggered
@@ -56,7 +59,7 @@ class BaseTrigger(ABC):
 
         return elapsed >= self.min_interval
 
-    def mark_triggered(self, current_time: Optional[float] = None) -> None:
+    def mark_triggered(self, current_time: float | None = None) -> None:
         """Marca el timestamp de activación."""
         self.last_triggered = current_time if current_time is not None else time.monotonic()
 
@@ -70,8 +73,10 @@ class BaseTrigger(ABC):
 # IMPLEMENTACIÓN DE LOS 12 TRIGGERS CONSOLIDADOS
 # =====================================================================
 
+
 class FuelCriticalTrigger(BaseTrigger):
     """Trigger 1: Combustible críticamente bajo (< 3 vueltas de autonomía)."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.CRITICAL,
@@ -79,7 +84,7 @@ class FuelCriticalTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=15.0,
             description="Combustible críticamente bajo",
-            alert_text="¡ATENCIÓN! Quedan menos de 3 vueltas de combustible. Planifica parada."
+            alert_text="¡ATENCIÓN! Quedan menos de 3 vueltas de combustible. Planifica parada.",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -247,10 +252,7 @@ class PenaltyMonitorTrigger(BaseTrigger):
             self._last_penalties = num
             return False
         if num > self._last_penalties:
-            self.alert_text = (
-                f"Penalización asignada ({num} pendiente(s)). "
-                "Entra en boxes para servirla."
-            )
+            self.alert_text = f"Penalización asignada ({num} pendiente(s)). Entra en boxes para servirla."
             self._last_penalties = num
             return True
         if num < self._last_penalties:
@@ -328,15 +330,14 @@ class SessionEndTrigger(BaseTrigger):
         pos = int(telemetry.get("standing_position", 0) or 0)
         best = float(telemetry.get("lap_time_best", 0.0) or 0.0)
         best_txt = f"{best:.3f}s" if best > 0 else "N/A"
-        self.alert_text = (
-            f"Final de sesión — P{pos}, mejor vuelta {best_txt}. Resumen en camino."
-        )
+        self.alert_text = f"Final de sesión — P{pos}, mejor vuelta {best_txt}. Resumen en camino."
         self._fired = True
         return True
 
 
 class BrakeWearCriticalTrigger(BaseTrigger):
     """Trigger 3: Desgaste crítico de frenos (> 80% en alguna rueda)."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.CRITICAL,
@@ -344,7 +345,7 @@ class BrakeWearCriticalTrigger(BaseTrigger):
             TriggerAction.ALERT_ONLY,
             min_interval=20.0,
             description="Desgaste crítico de frenos",
-            alert_text="¡AVISO DE FRENOS! Desgaste superior al 80% detectado."
+            alert_text="¡AVISO DE FRENOS! Desgaste superior al 80% detectado.",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -357,6 +358,7 @@ class BrakeWearCriticalTrigger(BaseTrigger):
 
 class TyreDegAccelTrigger(BaseTrigger):
     """Trigger 4: Degradación acelerada en neumáticos (> 25% de desgaste promedio)."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -364,7 +366,7 @@ class TyreDegAccelTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=30.0,
             description="Degradación de neumáticos acelerada",
-            alert_text="Desgaste promedio de neumáticos elevado. Ritmo degradado."
+            alert_text="Desgaste promedio de neumáticos elevado. Ritmo degradado.",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -378,6 +380,7 @@ class TyreDegAccelTrigger(BaseTrigger):
 
 class HybridDeployMapTrigger(BaseTrigger):
     """Trigger 5: Batería baja (< 20%) y tendencia de descarga neta negativa."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -385,7 +388,7 @@ class HybridDeployMapTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=30.0,
             description="Estado SOC híbrido crítico",
-            alert_text="Carga de batería híbrida baja. Optimiza mapeo para recarga."
+            alert_text="Carga de batería híbrida baja. Optimiza mapeo para recarga.",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -398,6 +401,7 @@ class HybridDeployMapTrigger(BaseTrigger):
 
 class WeatherChangeTrigger(BaseTrigger):
     """Trigger 6: Cambio climático inminente (Probabilidad de lluvia > 30% en los próximos 30 minutos)."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -405,7 +409,7 @@ class WeatherChangeTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=120.0,
             description="Amenaza de lluvia inminente",
-            alert_text="Probabilidad de lluvia superior al 30% en el forecast actual."
+            alert_text="Probabilidad de lluvia superior al 30% en el forecast actual.",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -423,6 +427,7 @@ class WeatherChangeTrigger(BaseTrigger):
 
 class PitWindowOpenedTrigger(BaseTrigger):
     """Trigger 7: Ventana de paradas en boxes abierta."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -430,7 +435,7 @@ class PitWindowOpenedTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=30.0,
             description="Ventana de parada abierta",
-            alert_text="Ventana de paradas activa. Analizando estrategia óptima."
+            alert_text="Ventana de paradas activa. Analizando estrategia óptima.",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -440,6 +445,7 @@ class PitWindowOpenedTrigger(BaseTrigger):
 
 class PitWindowClosingTrigger(BaseTrigger):
     """Trigger 8: Ventana de paradas cerrándose (quedan <= 2 vueltas de ventana abierta)."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -447,7 +453,7 @@ class PitWindowClosingTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=15.0,
             description="Ventana de parada cerrándose",
-            alert_text="Ventana de boxes a punto de cerrar. Parada obligatoria inminente."
+            alert_text="Ventana de boxes a punto de cerrar. Parada obligatoria inminente.",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -459,6 +465,7 @@ class PitWindowClosingTrigger(BaseTrigger):
 
 class CompetitorPittedTrigger(BaseTrigger):
     """Trigger 9: Un competidor directo (posición contigua) entra a boxes."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.MEDIUM,
@@ -466,7 +473,7 @@ class CompetitorPittedTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=15.0,
             description="Competidor directo en boxes",
-            alert_text="Rival directo parado en boxes. Oportunidad de undercut/overcut."
+            alert_text="Rival directo parado en boxes. Oportunidad de undercut/overcut.",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -485,6 +492,7 @@ class CompetitorPittedTrigger(BaseTrigger):
 
 class GapClosedTrigger(BaseTrigger):
     """Trigger 10: Brecha con el coche de delante o detrás inferior a 1.5s."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.MEDIUM,
@@ -492,7 +500,7 @@ class GapClosedTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=10.0,
             description="Brecha cerrada con rival",
-            alert_text="Brecha menor a 1.5 segundos. Entrando en zona de batalla táctica."
+            alert_text="Brecha menor a 1.5 segundos. Entrando en zona de batalla táctica.",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -503,6 +511,7 @@ class GapClosedTrigger(BaseTrigger):
 
 class PhaseChangedTrigger(BaseTrigger):
     """Trigger 11: Cambio en la fase de carrera (ej: paso de clasificación a carrera, o bandera roja)."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -510,7 +519,7 @@ class PhaseChangedTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=5.0,
             description="Cambio de fase de carrera",
-            alert_text="Fase de carrera actualizada. Re-evaluando estrategia."
+            alert_text="Fase de carrera actualizada. Re-evaluando estrategia.",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -527,6 +536,7 @@ class PhaseChangedTrigger(BaseTrigger):
 
 class PilotQuestionTrigger(BaseTrigger):
     """Trigger 12: Pregunta explícita formulada por el piloto."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -534,7 +544,7 @@ class PilotQuestionTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=0.0,  # Sin cooldown para interacción interactiva por voz
             description="Pregunta directa del piloto",
-            alert_text="Procesando consulta directa por radio..."
+            alert_text="Procesando consulta directa por radio...",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -544,6 +554,7 @@ class PilotQuestionTrigger(BaseTrigger):
 
 class TiresThermalOverheatingTrigger(BaseTrigger):
     """Trigger de temperatura excesiva de neumáticos para compatibilidad con test_preemption."""
+
     def __init__(self) -> None:
         super().__init__(
             Priority.HIGH,
@@ -551,7 +562,7 @@ class TiresThermalOverheatingTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=30.0,
             description="Temperatura excesiva de neumáticos",
-            alert_text="¡ATENCIÓN! Temperatura de neumáticos elevada."
+            alert_text="¡ATENCIÓN! Temperatura de neumáticos elevada.",
         )
         self.name = "Tires Thermal Overheating"
 

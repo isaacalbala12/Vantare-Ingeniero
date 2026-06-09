@@ -8,7 +8,8 @@ import os
 import threading
 import time
 import uuid
-from typing import Any, Awaitable, Callable, Optional
+from collections.abc import Awaitable, Callable
+from typing import Any
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data")
 TRACES_DIR = os.path.join(DATA_DIR, "traces")
@@ -22,8 +23,8 @@ class TraceStore:
     def __init__(self) -> None:
         self._lock = threading.Lock()
         self._recording = False
-        self._current_trace_id: Optional[str] = None
-        self._current_path: Optional[str] = None
+        self._current_trace_id: str | None = None
+        self._current_path: str | None = None
         self._started_at: float = 0.0
         self._record_origin: float = 0.0
         os.makedirs(TRACES_DIR, exist_ok=True)
@@ -34,11 +35,11 @@ class TraceStore:
             return self._recording
 
     @property
-    def current_trace_id(self) -> Optional[str]:
+    def current_trace_id(self) -> str | None:
         with self._lock:
             return self._current_trace_id
 
-    def start_recording(self, trace_id: Optional[str] = None) -> str:
+    def start_recording(self, trace_id: str | None = None) -> str:
         with self._lock:
             if self._recording:
                 raise RuntimeError("Ya hay una grabación en curso")
@@ -53,7 +54,7 @@ class TraceStore:
                 f.write("")
             return tid
 
-    def stop_recording(self) -> Optional[str]:
+    def stop_recording(self) -> str | None:
         with self._lock:
             if not self._recording:
                 return None
@@ -91,7 +92,7 @@ class TraceStore:
         duration = 0.0
         last_t = 0.0
         try:
-            with open(path, "r", encoding="utf-8") as f:
+            with open(path, encoding="utf-8") as f:
                 for line in f:
                     line = line.strip()
                     if not line:
@@ -117,7 +118,7 @@ class TraceStore:
         if not os.path.exists(path):
             raise FileNotFoundError(f"Trace no encontrado: {trace_id}")
         entries: list[dict[str, Any]] = []
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if not line:

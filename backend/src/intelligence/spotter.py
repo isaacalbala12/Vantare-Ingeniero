@@ -1,12 +1,12 @@
 import time
 import uuid
-from typing import Any, Dict, List, Optional
+from typing import Any
 
+from shared_strategy.models import VehicleClassInfo
 from src.config import settings
-from src.models.messages import AlertMessage
 from src.intelligence.spotter_adapter import resolve_spotter_input
 from src.intelligence.spotter_geometry import build_proximity_message, detect_lateral_proximity
-from shared_strategy.models import VehicleClassInfo
+from src.models.messages import AlertMessage
 
 
 class SpotterService:
@@ -18,10 +18,10 @@ class SpotterService:
     def __init__(
         self,
         broadcast_callback=None,
-        vehicle_class_info: Optional[VehicleClassInfo] = None,
-        proximity_threshold_m: Optional[float] = None,
-        spotter_off_qualifying: Optional[bool] = None,
-        spotter_exclude_stopped: Optional[bool] = None,
+        vehicle_class_info: VehicleClassInfo | None = None,
+        proximity_threshold_m: float | None = None,
+        spotter_off_qualifying: bool | None = None,
+        spotter_exclude_stopped: bool | None = None,
     ) -> None:
         self.broadcast_callback = broadcast_callback
         self.vehicle_class_info = vehicle_class_info or VehicleClassInfo()
@@ -91,10 +91,10 @@ class SpotterService:
                 self._stopped_since.pop(idx, None)
         return excluded
 
-    def evaluate(self, tick: dict) -> List[AlertMessage]:
+    def evaluate(self, tick: dict) -> list[AlertMessage]:
         if not self.enabled:
             return []
-        alerts: List[AlertMessage] = []
+        alerts: list[AlertMessage] = []
         qualifying_silent = self._qualifying_silent(tick)
 
         if not qualifying_silent:
@@ -108,81 +108,88 @@ class SpotterService:
         alerts.extend(self._eval_fuel_critical(tick))
         return alerts
 
-    def _eval_pit_limiters(self, tick: dict) -> List[AlertMessage]:
-        alerts: List[AlertMessage] = []
+    def _eval_pit_limiters(self, tick: dict) -> list[AlertMessage]:
+        alerts: list[AlertMessage] = []
         if tick.get("in_pits", False) and not tick.get("pit_limiter_active", False):
-            alerts.append(self._create_alert(
-                message="Pit limiter no activado al entrar en boxes.",
-                severity="CRITICAL",
-                audio_priority=4,
-                ttl=5,
-                dismissable=True,
-                category="limiter",
-                payload={"in_pits": True, "pit_limiter_active": False},
-            ))
+            alerts.append(
+                self._create_alert(
+                    message="Pit limiter no activado al entrar en boxes.",
+                    severity="CRITICAL",
+                    audio_priority=4,
+                    ttl=5,
+                    dismissable=True,
+                    category="limiter",
+                    payload={"in_pits": True, "pit_limiter_active": False},
+                )
+            )
         if not tick.get("in_pits", False) and tick.get("pit_limiter_active", False):
-            alerts.append(self._create_alert(
-                message="Pit limiter no desactivado al salir de boxes.",
-                severity="WARNING",
-                audio_priority=3,
-                ttl=5,
-                dismissable=True,
-                category="limiter",
-                payload={"in_pits": False, "pit_limiter_active": True},
-            ))
+            alerts.append(
+                self._create_alert(
+                    message="Pit limiter no desactivado al salir de boxes.",
+                    severity="WARNING",
+                    audio_priority=3,
+                    ttl=5,
+                    dismissable=True,
+                    category="limiter",
+                    payload={"in_pits": False, "pit_limiter_active": True},
+                )
+            )
         return alerts
 
-    def _eval_gaps(self, tick: dict) -> List[AlertMessage]:
-        alerts: List[AlertMessage] = []
+    def _eval_gaps(self, tick: dict) -> list[AlertMessage]:
+        alerts: list[AlertMessage] = []
         gap_ahead = tick.get("gap_ahead", 99.0)
         if gap_ahead < 0.5:
-            alerts.append(self._create_alert(
-                message=f"Gap con coche de delante estrecho: {gap_ahead:.2f}s",
-                severity="INFO",
-                audio_priority=1,
-                ttl=3,
-                dismissable=True,
-                category="gaps",
-                payload={"gap_ahead": gap_ahead},
-            ))
+            alerts.append(
+                self._create_alert(
+                    message=f"Gap con coche de delante estrecho: {gap_ahead:.2f}s",
+                    severity="INFO",
+                    audio_priority=1,
+                    ttl=3,
+                    dismissable=True,
+                    category="gaps",
+                    payload={"gap_ahead": gap_ahead},
+                )
+            )
         gap_behind = tick.get("gap_behind", 99.0)
         if gap_behind < 0.5:
-            alerts.append(self._create_alert(
-                message=f"Gap con coche de detrás estrecho: {gap_behind:.2f}s",
-                severity="INFO",
-                audio_priority=1,
-                ttl=3,
-                dismissable=True,
-                category="gaps",
-                payload={"gap_behind": gap_behind},
-            ))
+            alerts.append(
+                self._create_alert(
+                    message=f"Gap con coche de detrás estrecho: {gap_behind:.2f}s",
+                    severity="INFO",
+                    audio_priority=1,
+                    ttl=3,
+                    dismissable=True,
+                    category="gaps",
+                    payload={"gap_behind": gap_behind},
+                )
+            )
         return alerts
 
-    def _eval_damage(self, tick: dict) -> List[AlertMessage]:
+    def _eval_damage(self, tick: dict) -> list[AlertMessage]:
         has_damage = (
             tick.get("damage_aero", 0.0) > 0.0
             or tick.get("suspension_damage", 0.0) > 0.0
-            or (
-                isinstance(tick.get("damage"), dict)
-                and any(v > 0.0 for v in tick.get("damage").values())
-            )
+            or (isinstance(tick.get("damage"), dict) and any(v > 0.0 for v in tick.get("damage").values()))
         )
         if not has_damage:
             return []
-        return [self._create_alert(
-            message="Daños detectados en el monoplaza.",
-            severity="WARNING",
-            audio_priority=3,
-            ttl=10,
-            dismissable=True,
-            category="damage",
-            payload={
-                "damage_aero": tick.get("damage_aero", 0.0),
-                "suspension_damage": tick.get("suspension_damage", 0.0),
-            },
-        )]
+        return [
+            self._create_alert(
+                message="Daños detectados en el monoplaza.",
+                severity="WARNING",
+                audio_priority=3,
+                ttl=10,
+                dismissable=True,
+                category="damage",
+                payload={
+                    "damage_aero": tick.get("damage_aero", 0.0),
+                    "suspension_damage": tick.get("suspension_damage", 0.0),
+                },
+            )
+        ]
 
-    def _eval_proximity(self, tick: dict) -> List[AlertMessage]:
+    def _eval_proximity(self, tick: dict) -> list[AlertMessage]:
         competitors = tick.get("competitors") or []
         if not competitors:
             return []
@@ -211,62 +218,70 @@ class SpotterService:
             hit.driver_name,
             hit.side,
         )
-        return [self._create_alert(
-            message=message,
-            severity="INFO",
-            audio_priority=2,
-            ttl=2,
-            dismissable=True,
-            category="proximity",
-            payload={
-                "side": hit.side,
-                "distance_m": round(hit.distance_m, 2),
-                "lateral_m": round(hit.lateral_m, 2),
-                "driver_index": hit.driver_index,
-            },
-        )]
+        return [
+            self._create_alert(
+                message=message,
+                severity="INFO",
+                audio_priority=2,
+                ttl=2,
+                dismissable=True,
+                category="proximity",
+                payload={
+                    "side": hit.side,
+                    "distance_m": round(hit.distance_m, 2),
+                    "lateral_m": round(hit.lateral_m, 2),
+                    "driver_index": hit.driver_index,
+                },
+            )
+        ]
 
-    def _eval_safety_car(self, tick: dict) -> List[AlertMessage]:
+    def _eval_safety_car(self, tick: dict) -> list[AlertMessage]:
         sc_active = tick.get("safety_car_active", False) or tick.get("full_course_yellow_active", False)
         if not sc_active:
             return []
-        return [self._create_alert(
-            message="Safety car desplegado / FCY activo en pista.",
-            severity="CRITICAL",
-            audio_priority=4,
-            ttl=15,
-            dismissable=False,
-            category="safety_car",
-            payload={"safety_car_active": True},
-        )]
+        return [
+            self._create_alert(
+                message="Safety car desplegado / FCY activo en pista.",
+                severity="CRITICAL",
+                audio_priority=4,
+                ttl=15,
+                dismissable=False,
+                category="safety_car",
+                payload={"safety_car_active": True},
+            )
+        ]
 
-    def _eval_last_lap(self, tick: dict) -> List[AlertMessage]:
+    def _eval_last_lap(self, tick: dict) -> list[AlertMessage]:
         is_last_lap = tick.get("session_laps_left") == 1.0 or tick.get("is_last_lap", False)
         if not is_last_lap:
             return []
-        return [self._create_alert(
-            message="¡Última vuelta de la carrera!",
-            severity="HIGH",
-            audio_priority=2,
-            ttl=10,
-            dismissable=True,
-            category="session",
-            payload={"session_laps_left": 1.0},
-        )]
+        return [
+            self._create_alert(
+                message="¡Última vuelta de la carrera!",
+                severity="HIGH",
+                audio_priority=2,
+                ttl=10,
+                dismissable=True,
+                category="session",
+                payload={"session_laps_left": 1.0},
+            )
+        ]
 
-    def _eval_fuel_critical(self, tick: dict) -> List[AlertMessage]:
+    def _eval_fuel_critical(self, tick: dict) -> list[AlertMessage]:
         fuel_laps = tick.get("fuel_laps_remaining", tick.get("estimated_laps_remaining", 99.0))
         if fuel_laps >= 1.0:
             return []
-        return [self._create_alert(
-            message=f"¡Combustible crítico! Menos de 1 vuelta restante ({fuel_laps:.2f} laps).",
-            severity="CRITICAL",
-            audio_priority=4,
-            ttl=10,
-            dismissable=False,
-            category="fuel",
-            payload={"fuel_laps_remaining": fuel_laps},
-        )]
+        return [
+            self._create_alert(
+                message=f"¡Combustible crítico! Menos de 1 vuelta restante ({fuel_laps:.2f} laps).",
+                severity="CRITICAL",
+                audio_priority=4,
+                ttl=10,
+                dismissable=False,
+                category="fuel",
+                payload={"fuel_laps_remaining": fuel_laps},
+            )
+        ]
 
     def _create_alert(
         self,
@@ -276,7 +291,7 @@ class SpotterService:
         ttl: int,
         dismissable: bool,
         category: str,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
     ) -> AlertMessage:
         return AlertMessage(
             event="alert",

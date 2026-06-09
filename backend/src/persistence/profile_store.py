@@ -47,9 +47,8 @@ class ProfileStore:
         path = _profile_path(profile_name)
         if not os.path.exists(path):
             raise FileNotFoundError(f"Perfil no encontrado: {profile_name}")
-        with self._lock:
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+        with self._lock, open(path, encoding="utf-8") as f:
+            data = json.load(f)
         if not isinstance(data, dict) or "config" not in data:
             raise ValueError("Perfil corrupto")
         return data["config"]

@@ -3,10 +3,8 @@
 from __future__ import annotations
 
 import re
-from typing import Optional
 
 import httpx
-
 from src.version import APP_VERSION, GITHUB_REPO
 
 
@@ -31,7 +29,7 @@ import logging
 logger = logging.getLogger("vantare.update")
 
 
-async def fetch_latest_release(repo: str = GITHUB_REPO) -> Optional[dict]:
+async def fetch_latest_release(repo: str = GITHUB_REPO) -> dict | None:
     url = f"https://api.github.com/repos/{repo}/releases/latest"
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:

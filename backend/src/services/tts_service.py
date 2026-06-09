@@ -28,7 +28,7 @@ class TTSService:
             raise FileNotFoundError(f"Config TTS no encontrado: {config_path}")
 
         # Cargar config con encoding UTF-8 explícito
-        with open(str(config_path), "r", encoding="utf-8") as f:
+        with open(str(config_path), encoding="utf-8") as f:
             self._config: dict = json.load(f)
 
         self.sample_rate: int = self._config["audio"]["sample_rate"]
@@ -86,9 +86,9 @@ class TTSService:
     def _synthesize_sync(self, text: str) -> bytes:
         """Síncrono: fonemiza -> ONNX inference -> empaqueta WAV."""
         # Import perezoso de phonemizer (solo se importa cuando se usa TTS)
-        from phonemizer.backend.espeak.wrapper import EspeakWrapper
-        from phonemizer import phonemize
         import espeakng_loader
+        from phonemizer import phonemize
+        from phonemizer.backend.espeak.wrapper import EspeakWrapper
 
         EspeakWrapper.set_library(espeakng_loader.get_library_path())
         EspeakWrapper.set_data_path(espeakng_loader.get_data_path())

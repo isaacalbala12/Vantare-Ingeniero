@@ -5,8 +5,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
-
+from pydantic import BaseModel
 from src.intelligence.driver_names import get_driver_by_partial
 from src.intelligence.time_format import format_laptime
 
@@ -110,6 +109,7 @@ def query_class(driver_class: str, competitors: list[Any]) -> CompetitorResponse
     paces = competitors
     try:
         from shared_strategy.models import CompetitorPace
+
         paces = [CompetitorPace(**_pace_to_dict(c)) if isinstance(c, dict) else c for c in competitors]
     except Exception:
         pass

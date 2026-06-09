@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
 
 
 class PearlType(str, Enum):
@@ -67,7 +66,7 @@ class PearlsService:
         self._count = 0
         self._index = {t: 0 for t in PearlType}
 
-    def on_event(self, event_type: PearlType, sweary: bool = False) -> Optional[str]:
+    def on_event(self, event_type: PearlType, sweary: bool = False) -> str | None:
         if self._count >= self.MAX_PER_RACE:
             return None
         pool = _PEARLS_SWEARY if sweary else _PEARLS_CLEAN
