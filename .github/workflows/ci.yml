@@ -34,6 +34,12 @@ jobs:
           pip install -e ./shared-strategy
           pip install -e ./backend[dev]
 
+      - name: Ruff lint
+        run: |
+          cd backend
+          python -m ruff check src/
+          python -m ruff format src/ --check
+
       - name: Run backend tests with coverage
         run: |
           cd backend
