@@ -235,5 +235,11 @@ describe("AppStore", () => {
       useAppStore.getState().addMessageToHistory("pilot", "Mensaje 2");
       expect(useAppStore.getState().radio.messageHistory.length).toBe(3);
     });
+
+    it("no duplica mensajes consecutivos idénticos", () => {
+      useAppStore.getState().addMessageToHistory("pilot", "Mensaje 1");
+      useAppStore.getState().addMessageToHistory("pilot", "Mensaje 1");
+      expect(useAppStore.getState().radio.messageHistory).toHaveLength(1);
+    });
   });
 });

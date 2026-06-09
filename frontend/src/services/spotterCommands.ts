@@ -1,4 +1,4 @@
-/** Comandos de voz directos al spotter (sin pasar por el LLM). */
+/** Comandos de voz directos al spotter — legacy frontend; producción usa PTT backend (spotter_toggle). */
 
 export type SpotterCommandAction = "enable" | "disable";
 

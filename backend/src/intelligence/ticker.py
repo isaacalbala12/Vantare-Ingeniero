@@ -275,7 +275,10 @@ def _format_riv(data: dict) -> str:
 
     # Construir líneas
     if cls1:
-        lines.append(f"CLS1({len(cls1)}):" + "·".join(cls1))
+        max_cls = int(data.get("max_cls_rivals", 0) or 0)
+        cls1_display = cls1[:max_cls] if max_cls > 0 else cls1
+        suffix = "·…" if max_cls > 0 and len(cls1) > max_cls else ""
+        lines.append(f"CLS1({len(cls1)}):" + "·".join(cls1_display) + suffix)
     else:
         lines.append("CLS1(0):—")
 

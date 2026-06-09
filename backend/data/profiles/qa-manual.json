@@ -1,0 +1,7 @@
+{
+  "name": "qa-manual",
+  "config": {
+    "vllmIP": "localhost",
+    "serverPort": 8008
+  }
+}

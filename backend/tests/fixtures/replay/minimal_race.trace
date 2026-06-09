@@ -1,0 +1,3 @@
+{"t": 0.0, "frame": {"session_type_int": 10, "session_type": "race", "lap_number": 1, "standing_position": 8, "session_joined_at": 0.0, "enable_position_messages": true}}
+{"t": 0.05, "frame": {"session_type_int": 10, "session_type": "race", "lap_number": 1, "standing_position": 8, "session_joined_at": 0.0}}
+{"t": 7.0, "frame": {"session_type_int": 10, "session_type": "race", "lap_number": 2, "standing_position": 6, "lap_time_previous": 91.5, "session_joined_at": 0.0, "enable_position_messages": true}}

@@ -2,28 +2,26 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, crewchief-parity]
   pull_request:
-    branches: [master]
+    branches: [master, crewchief-parity]
   workflow_dispatch: {}
 
 env:
-  PYTHON_VERSION: '3.12'
+  PYTHON_VERSION: "3.12"
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
-  # ───────────────────────────────────────────
-  # Backend tests + coverage (Windows — shared-telemetry needs Windows APIs)
-  # ───────────────────────────────────────────
   test-backend:
     name: Backend Tests + Coverage
     runs-on: windows-2022
     timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
 
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -45,52 +43,59 @@ jobs:
           cd backend
           python -m pytest tests/ -v --cov=src/ --cov-report=term --cov-fail-under=70
 
-  # ───────────────────────────────────────────
-  # Frontend unit tests (Vitest)
-  # ───────────────────────────────────────────
   test-frontend:
     name: Frontend Unit Tests
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: "20"
-          cache: "npm"
+          node-version: "22"
+          cache: npm
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install frontend dependencies
-        run: |
-          cd frontend
-          npm ci
+        run: npm ci
+        working-directory: frontend
 
       - name: Run Vitest
-        run: |
-          cd frontend
-          npm test
+        run: npm test
+        working-directory: frontend
 
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
-        if: always()
+  build-frontend:
+    name: Frontend Typecheck + Production Build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
         with:
-          name: backend-coverage
-          path: backend/htmlcov/
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
 
-  # ───────────────────────────────────────────
-  # Smoke tests — fast sanity checks
-  # ───────────────────────────────────────────
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Typecheck and Vite build
+        run: npm run build
+        working-directory: frontend
+
+      - name: Compile Electron main/preload
+        run: npm run build:electron
+        working-directory: frontend
+
   smoke-backend:
     name: Smoke Test — Backend Import
     runs-on: ubuntu-24.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
 
-      - name: Set up Python ${{ env.PYTHON_VERSION }}
-        uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
@@ -110,4 +115,3 @@ jobs:
         run: |
           cd backend
           python -m compileall src/ -q
-          echo "Python syntax OK"

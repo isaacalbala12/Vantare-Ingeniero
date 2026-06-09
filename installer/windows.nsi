@@ -1,3 +1,4 @@
+; DEPRECATED: use frontend/electron-builder NSIS (npm run build:desktop)
 ; Vantare Ingeniero IA - NSIS Installer Script
 ; Genera vantare-engine-setup.exe
 
@@ -57,8 +58,6 @@ Section "Principal" SEC01
 
   ; Copiar archivos del build
   File /r "backend/dist/vantare-engine/*.*"
-  File /r "sidecar/dist/strategy-sidecar/*.*"
-
 
   ; Copiar archivos de configuración de ejemplo
   SetOutPath "$INSTDIR\config"

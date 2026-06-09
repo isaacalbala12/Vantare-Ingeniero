@@ -1,4 +1,7 @@
 import { create } from "zustand";
+import { migrateTtsVolumePercent } from "../hub/forms/volumeMigration";
+import { isInternalRadioText } from "../hub/forms/telemetryFilters";
+import { getPlatform } from "../core/platform";
 
 export type WebSocketStatus = "CONNECTING" | "CONNECTED" | "DISCONNECTED";
 export type RadioMode = "IDLE" | "LISTENING_PILOT" | "THINKING_LLM" | "SPEAKING_ENGINE";
@@ -16,15 +19,19 @@ export interface ConnectivityState {
 }
 
 // --- DOMINIO 2: RADIO E INGENIERO ---
+export type HistorySender = "pilot" | "engineer" | "spotter";
+
 export interface MessageRecord {
-  sender: "pilot" | "engineer";
+  sender: HistorySender;
   text: string;
   timestamp: number;
+  category?: string;
 }
 
 export interface RadioState {
   mode: RadioMode;
   currentTokens: string;
+  voicePlaybackText: string;
   messageHistory: MessageRecord[];
   latestAdvice: string;
   latestAlert: string;
@@ -69,6 +76,23 @@ export interface AppConfig {
   mqttEnabled: boolean;
   mqttBroker: string;
   mqttPort: number;
+  personalityProfileId: "formal" | "standard" | "aggressive";
+  verbosityLevel: "silent" | "normal" | "detailed";
+  ttsVoiceEngineer: string;
+  ttsVoiceSpotter: string;
+  ttsBackend: string;
+  spotterClearDelayS: number;
+  spotterOverlapDelayS: number;
+  spotterHoldRepeatS: number;
+  spotterGapFrequencyS: number;
+  spotterCarLengthM: number;
+  spotterMinSpeedMs: number;
+  spotterRaceStartDelayS: number;
+  brakingZonesMute: boolean;
+  speakOnlyWhenSpokenTo: boolean;
+  ttsVolumeBoost: number;
+  spotterEnabled: boolean;
+  engineerEnabled: boolean;
 }
 
 // --- INTERFAZ GLOBAL DEL STORE ---
@@ -89,8 +113,10 @@ export interface GlobalStore {
   setRadioMode: (mode: RadioMode) => void;
   setCurrentTokens: (tokens: string) => void;
   addMessageToHistory: (sender: "pilot" | "engineer", text: string) => void;
+  addRadioAlertToHistory: (sender: "spotter" | "engineer", text: string, category?: string) => void;
   setLatestAdvice: (advice: string) => void;
   setLatestAlert: (alert: string) => void;
+  setVoicePlaybackText: (text: string) => void;
   setMicLevel: (level: number) => void;
   
   updateTelemetry: (data: Partial<TelemetryState>) => void;
@@ -100,6 +126,29 @@ export interface GlobalStore {
 }
 
 // Cargar configuración de localStorage en el arranque si existe
+const DEFAULT_PTT_HOTKEY = "Ctrl+Shift+Space";
+const MESSAGE_HISTORY_MAX = 500;
+
+function appendHistoryMessage(
+  history: MessageRecord[],
+  entry: MessageRecord,
+): MessageRecord[] {
+  const last = history[history.length - 1];
+  if (last?.sender === entry.sender && last.text === entry.text) {
+    return history;
+  }
+  const next = [...history, entry];
+  if (next.length <= MESSAGE_HISTORY_MAX) return next;
+  return next.slice(next.length - MESSAGE_HISTORY_MAX);
+}
+
+/** Migra el atajo legacy "P" (conflictúa al escribir) al default con modificador. */
+function normalizePttHotkey(value: string | undefined): string {
+  const trimmed = (value ?? DEFAULT_PTT_HOTKEY).trim();
+  if (trimmed === "P") return DEFAULT_PTT_HOTKEY;
+  return trimmed || DEFAULT_PTT_HOTKEY;
+}
+
 const loadSavedConfig = (): AppConfig => {
   try {
     let saved = localStorage.getItem("vantare_config");
@@ -112,8 +161,8 @@ const loadSavedConfig = (): AppConfig => {
         speakerDevice: parsed.speakerDevice ?? "default",
         wakeWord: parsed.wakeWord ?? "ingeniero",
         sensitivity: parsed.sensitivity ?? 50,
-        pttHotkey: parsed.pttHotkey ?? "Ctrl+Shift+Space",
-        pttStopHotkey: parsed.pttStopHotkey ?? "Ctrl+Shift+Space",
+        pttHotkey: normalizePttHotkey(parsed.pttHotkey),
+        pttStopHotkey: normalizePttHotkey(parsed.pttStopHotkey),
         wakeWordEnabled: parsed.wakeWordEnabled ?? true,
         swearyMessages: parsed.swearyMessages ?? false,
         spotterOffQualifying: parsed.spotterOffQualifying ?? true,
@@ -121,6 +170,23 @@ const loadSavedConfig = (): AppConfig => {
         mqttEnabled: parsed.mqttEnabled ?? false,
         mqttBroker: parsed.mqttBroker ?? "localhost",
         mqttPort: parsed.mqttPort ?? 1883,
+        personalityProfileId: parsed.personalityProfileId ?? "standard",
+        verbosityLevel: parsed.verbosityLevel ?? "normal",
+        ttsVoiceEngineer: parsed.ttsVoiceEngineer ?? "es-ES-AlvaroNeural",
+        ttsVoiceSpotter: parsed.ttsVoiceSpotter ?? "es-ES-ElviraNeural",
+        ttsBackend: parsed.ttsBackend ?? "edge",
+        spotterClearDelayS: parsed.spotterClearDelayS ?? 0.15,
+        spotterOverlapDelayS: parsed.spotterOverlapDelayS ?? 2.0,
+        spotterHoldRepeatS: parsed.spotterHoldRepeatS ?? parsed.spotterOverlapDelayS ?? 3.0,
+        spotterGapFrequencyS: parsed.spotterGapFrequencyS ?? 30,
+        spotterCarLengthM: parsed.spotterCarLengthM ?? 4.5,
+        spotterMinSpeedMs: parsed.spotterMinSpeedMs ?? 10.0,
+        spotterRaceStartDelayS: parsed.spotterRaceStartDelayS ?? 20.0,
+        brakingZonesMute: parsed.brakingZonesMute ?? false,
+        speakOnlyWhenSpokenTo: parsed.speakOnlyWhenSpokenTo ?? false,
+        ttsVolumeBoost: migrateTtsVolumePercent(parsed.ttsVolumeBoost),
+        spotterEnabled: parsed.spotterEnabled ?? false,
+        engineerEnabled: parsed.engineerEnabled ?? false,
       };
     }
   } catch (e) {
@@ -133,8 +199,8 @@ const loadSavedConfig = (): AppConfig => {
     speakerDevice: "default",
     wakeWord: "ingeniero",
     sensitivity: 50,
-    pttHotkey: "Ctrl+Shift+Space",
-    pttStopHotkey: "Ctrl+Shift+Space",
+    pttHotkey: DEFAULT_PTT_HOTKEY,
+    pttStopHotkey: DEFAULT_PTT_HOTKEY,
     wakeWordEnabled: true,
     swearyMessages: false,
     spotterOffQualifying: true,
@@ -142,6 +208,23 @@ const loadSavedConfig = (): AppConfig => {
     mqttEnabled: false,
     mqttBroker: "localhost",
     mqttPort: 1883,
+    personalityProfileId: "standard",
+    verbosityLevel: "normal",
+    ttsVoiceEngineer: "es-ES-AlvaroNeural",
+    ttsVoiceSpotter: "es-ES-ElviraNeural",
+    ttsBackend: "edge",
+    spotterClearDelayS: 0.15,
+    spotterOverlapDelayS: 2.0,
+    spotterHoldRepeatS: 3.0,
+    spotterGapFrequencyS: 30,
+    spotterCarLengthM: 4.5,
+    spotterMinSpeedMs: 10.0,
+    spotterRaceStartDelayS: 20.0,
+    brakingZonesMute: false,
+    speakOnlyWhenSpokenTo: false,
+    ttsVolumeBoost: 100,
+    spotterEnabled: false,
+    engineerEnabled: false,
   };
 };
 
@@ -155,6 +238,7 @@ export const useAppStore = create<GlobalStore>((set) => ({
   radio: {
     mode: "IDLE",
     currentTokens: "",
+    voicePlaybackText: "",
     messageHistory: [],
     latestAdvice: "",
     latestAlert: "",
@@ -197,15 +281,36 @@ export const useAppStore = create<GlobalStore>((set) => ({
       radio: { ...state.radio, currentTokens: tokens },
     })),
   addMessageToHistory: (sender, text) =>
-    set((state) => ({
-      radio: {
-        ...state.radio,
-        messageHistory: [
-          ...state.radio.messageHistory,
-          { sender, text, timestamp: Date.now() },
-        ],
-      },
-    })),
+    set((state) => {
+      const trimmed = text.trim();
+      if (!trimmed || isInternalRadioText(trimmed)) return state;
+      return {
+        radio: {
+          ...state.radio,
+          messageHistory: appendHistoryMessage(state.radio.messageHistory, {
+            sender,
+            text: trimmed,
+            timestamp: Date.now(),
+          }),
+        },
+      };
+    }),
+  addRadioAlertToHistory: (sender, text, category) =>
+    set((state) => {
+      const trimmed = text.trim();
+      if (!trimmed || isInternalRadioText(trimmed)) return state;
+      return {
+        radio: {
+          ...state.radio,
+          messageHistory: appendHistoryMessage(state.radio.messageHistory, {
+            sender,
+            text: trimmed,
+            timestamp: Date.now(),
+            category,
+          }),
+        },
+      };
+    }),
   setLatestAdvice: (advice) =>
     set((state) => ({
       radio: { ...state.radio, latestAdvice: advice },
@@ -213,6 +318,10 @@ export const useAppStore = create<GlobalStore>((set) => ({
   setLatestAlert: (alert) =>
     set((state) => ({
       radio: { ...state.radio, latestAlert: alert },
+    })),
+  setVoicePlaybackText: (text) =>
+    set((state) => ({
+      radio: { ...state.radio, voicePlaybackText: text },
     })),
   setMicLevel: (level) =>
     set((state) => ({
@@ -231,16 +340,37 @@ export const useAppStore = create<GlobalStore>((set) => ({
       } catch (e) {
         console.error("Fallo al guardar en localStorage:", e);
       }
+      // Sincronizar hotkeys PTT con Electron si cambian
+      if ("pttHotkey" in newConfig || "pttStopHotkey" in newConfig) {
+        const platform = getPlatform();
+        if (platform.updatePttHotkeys) {
+          void platform.updatePttHotkeys({
+            start: updated.pttHotkey,
+            stop: updated.pttStopHotkey,
+          });
+        }
+      }
       return { config: updated };
     }),
   applyProfileConfig: (config) =>
     set(() => {
+      const normalized: AppConfig = {
+        ...config,
+        ttsVolumeBoost: migrateTtsVolumePercent(config.ttsVolumeBoost),
+      };
       try {
-        localStorage.setItem("vantare_config", JSON.stringify(config));
+        localStorage.setItem("vantare_config", JSON.stringify(normalized));
       } catch (e) {
         console.error("Fallo al guardar perfil en localStorage:", e);
       }
-      return { config };
+      const platform = getPlatform();
+      if (platform.updatePttHotkeys) {
+        void platform.updatePttHotkeys({
+          start: normalized.pttHotkey,
+          stop: normalized.pttStopHotkey,
+        });
+      }
+      return { config: normalized };
     }),
   setScreen: (screen) => set({ screen }),
 }));

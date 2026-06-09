@@ -104,34 +104,14 @@ async def lifespan(app: FastAPI):
     app.state.event_store = event_store
     logger.info("EventStore initialized (ChromaDB RAG)")
 
-    # 5c. Inicializar AudioQueueManager (sistema de colas CrewChief-style)
-    from src.services.audio_queue import AudioQueueManager
-    audio_queue = AudioQueueManager(broadcast_callback=broadcast_sync)
-    app.state.audio_queue = audio_queue
-    logger.info("AudioQueueManager initialized")
-
-    # 5d. Inicializar IntelligenceEngine (0.5Hz / Triggers / Preempción)
+    # 6. Instanciar e inicializar IntelligenceEngine (0.5Hz / Triggers / Preempción)
     intelligence_engine = IntelligenceEngine(
         broadcast_callback=broadcast_sync,
         history_store=history_store,
         event_store=event_store,
-        audio_queue=audio_queue,
-        use_legacy_triggers=settings.use_legacy_triggers,
     )
     app.state.intelligence_engine = intelligence_engine
-    logger.info("IntelligenceEngine initialized (legacy=%s)", settings.use_legacy_triggers)
-
-    # Si NO es legacy, crear EventManager y arrancar cola
-    if not settings.use_legacy_triggers:
-        from src.intelligence.event_manager import EventManager
-        event_manager = EventManager(audio_queue)
-        intelligence_engine.event_manager = event_manager
-        audio_queue_task = asyncio.create_task(audio_queue.start())
-        app.state.audio_queue_task = audio_queue_task
-        logger.info("EventManager + AudioQueue consumer task started")
-
-    # Pasar audio_queue al SpotterService para el express path
-    spotter_service.audio_queue = audio_queue
+    logger.info("IntelligenceEngine initialized and hooked to WS broadcaster")
 
     if not settings.LLM_API_KEY:
         logger.error(
@@ -259,17 +239,7 @@ async def lifespan(app: FastAPI):
         app.state.event_store.clear()
         logger.info("EventStore cleaned up (ChromaDB RAG)")
 
-    # 5. Detener AudioQueueManager y su tarea consumer
-    if hasattr(app.state, "audio_queue"):
-        await app.state.audio_queue.stop()
-    if hasattr(app.state, "audio_queue_task"):
-        app.state.audio_queue_task.cancel()
-        try:
-            await app.state.audio_queue_task
-        except asyncio.CancelledError:
-            pass
-
-    # 6. Detener el lector físico de shared memory
+    # 5. Detener el lector físico de shared memory
     if reader:
         reader.stop()
         

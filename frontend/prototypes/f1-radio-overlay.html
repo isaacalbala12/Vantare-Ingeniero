@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vantare — F1 Radio Overlay Prototype</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700;900&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #0a0a0a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      font-family: 'Titillium Web', 'Segoe UI', sans-serif;
+      padding: 40px;
+    }
+
+    /* =========================================================
+       VARIANTE A: PÚRPURA VANTARE (identidad del proyecto)
+       ========================================================= */
+    .radio-card.vantare {
+      --accent: #8a2be2;
+      --accent-bright: #b06aff;
+      --accent-dark: #5a1a99;
+      --bg-card: rgba(20, 20, 25, 0.92);
+    }
+
+    /* =========================================================
+       VARIANTE B: VERDE ASTON MARTIN (como el meme)
+       ========================================================= */
+    .radio-card.aston {
+      --accent: #00665e;
+      --accent-bright: #00d2be;
+      --accent-dark: #003d38;
+      --bg-card: rgba(10, 18, 18, 0.95);
+    }
+
+    /* =========================================================
+       VARIANTE C: NARANJA MCLAREN
+       ========================================================= */
+    .radio-card.mclaren {
+      --accent: #ff8000;
+      --accent-bright: #ffaa44;
+      --accent-dark: #cc5500;
+      --bg-card: rgba(25, 15, 5, 0.95);
+    }
+
+    .radio-card {
+      position: relative;
+      width: 100%;
+      max-width: 520px;
+      padding: 22px 28px 18px;
+      border-radius: 4px;
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border-left: 4px solid var(--accent-bright);
+      overflow: hidden;
+      box-shadow:
+        0 8px 32px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.04),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    /* Subtle top gradient line */
+    .radio-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-dark), var(--accent-bright), var(--accent));
+      opacity: 0.8;
+    }
+
+    /* Background glow */
+    .radio-card::after {
+      content: '';
+      position: absolute;
+      top: -50%; right: -20%;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+      opacity: 0.06;
+      pointer-events: none;
+    }
+
+    /* Header: name + radio label */
+    .radio-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .radio-name {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      line-height: 1;
+      background: linear-gradient(180deg, #fff 0%, #aaa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .radio-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+      opacity: 0.9;
+    }
+
+    /* Waveform visualizer */
+    .waveform {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 28px;
+      margin-bottom: 14px;
+      padding: 4px 0;
+    }
+
+    .waveform .bar {
+      width: 4px;
+      background: linear-gradient(180deg, var(--accent-bright), var(--accent));
+      border-radius: 2px;
+      animation: wave 0.8s ease-in-out infinite;
+      opacity: 0.7;
+    }
+
+    .waveform .bar:nth-child(1) { height: 30%; animation-delay: 0.00s; }
+    .waveform .bar:nth-child(2) { height: 60%; animation-delay: 0.05s; }
+    .waveform .bar:nth-child(3) { height: 40%; animation-delay: 0.10s; }
+    .waveform .bar:nth-child(4) { height: 80%; animation-delay: 0.15s; }
+    .waveform .bar:nth-child(5) { height: 50%; animation-delay: 0.20s; }
+    .waveform .bar:nth-child(6) { height: 70%; animation-delay: 0.25s; }
+    .waveform .bar:nth-child(7) { height: 35%; animation-delay: 0.30s; }
+    .waveform .bar:nth-child(8) { height: 90%; animation-delay: 0.35s; }
+    .waveform .bar:nth-child(9) { height: 45%; animation-delay: 0.40s; }
+    .waveform .bar:nth-child(10) { height: 65%; animation-delay: 0.45s; }
+    .waveform .bar:nth-child(11) { height: 55%; animation-delay: 0.50s; }
+    .waveform .bar:nth-child(12) { height: 75%; animation-delay: 0.55s; }
+    .waveform .bar:nth-child(13) { height: 40%; animation-delay: 0.60s; }
+    .waveform .bar:nth-child(14) { height: 85%; animation-delay: 0.65s; }
+    .waveform .bar:nth-child(15) { height: 50%; animation-delay: 0.70s; }
+    .waveform .bar:nth-child(16) { height: 60%; animation-delay: 0.75s; }
+
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.6); opacity: 0.4; }
+      50% { transform: scaleY(1.0); opacity: 1.0; }
+    }
+
+    /* Speaking state: bars more intense */
+    .radio-card.speaking .waveform .bar {
+      animation-duration: 0.4s;
+      opacity: 1;
+    }
+
+    /* Message text */
+    .radio-message {
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.45;
+      color: #fff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      min-height: 48px;
+    }
+
+    .radio-message.placeholder {
+      color: rgba(255,255,255,0.25);
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    /* Footer: source tag */
+    .radio-footer {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .radio-source {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+
+    .radio-live-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+    }
+
+    .radio-live-indicator::before {
+      content: '';
+      width: 7px; height: 7px;
+      background: var(--accent-bright);
+      border-radius: 50%;
+      animation: pulse-live 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-live {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* Demo controls */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      max-width: 520px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #ccc;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .btn:hover { border-color: #555; color: #fff; }
+    .btn.active { border-color: var(--c, #8a2be2); color: var(--c, #8a2be2); }
+
+    h2.demo-title {
+      color: #555;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <h2 class="demo-title">Variante A — Identidad Vantare (púrpura)</h2>
+  <div class="radio-card vantare" id="card-vantare">
+    <div class="radio-header">
+      <div class="radio-name">Ingeniero</div>
+      <div class="radio-label">Radio</div>
+    </div>
+    <div class="waveform" id="wave-vantare">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+    <div class="radio-message" id="msg-vantare">
+      BOX BOX BOX. Tenemos diez segundos de margen. Entra esta vuelta.
+    </div>
+    <div class="radio-footer">
+      <div class="radio-source">Vantare IA</div>
+      <div class="radio-live-indicator" id="live-vantare">Live</div>
+    </div>
+  </div>
+
+  <h2 class="demo-title">Variante B — Aston Martin (verde meme)</h2>
+  <div class="radio-card aston speaking" id="card-aston">
+    <div class="radio-header">
+      <div class="radio-name">Ingeniero</div>
+      <div class="radio-label">Radio</div>
+    </div>
+    <div class="waveform" id="wave-aston">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+    <div class="radio-message" id="msg-aston">
+      Coche rápido a la derecha. Mantén la línea defensiva por el interno.
+    </div>
+    <div class="radio-footer">
+      <div class="radio-source">Vantare IA</div>
+      <div class="radio-live-indicator" id="live-aston">Live</div>
+    </div>
+  </div>
+
+  <h2 class="demo-title">Variante C — McLaren (naranja)</h2>
+  <div class="radio-card mclaren" id="card-mclaren">
+    <div class="radio-header">
+      <div class="radio-name">Ingeniero</div>
+      <div class="radio-label">Radio</div>
+    </div>
+    <div class="waveform" id="wave-mclaren">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+    <div class="radio-message placeholder" id="msg-mclaren">
+      Radio silenciosa. Presiona PTT para transmitir.
+    </div>
+    <div class="radio-footer">
+      <div class="radio-source">Vantare IA</div>
+      <div class="radio-live-indicator" id="live-mclaren" style="display:none">Live</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn active" style="--c:#8a2be2" onclick="setMsg(0)">Mensaje: BOX BOX</button>
+    <button class="btn" style="--c:#8a2be2" onclick="setMsg(1)">Mensaje: Defensa</button>
+    <button class="btn" style="--c:#8a2be2" onclick="setMsg(2)">Mensaje: Neumáticos</button>
+    <button class="btn" style="--c:#8a2be2" onclick="setMsg(3)">Mensaje: Streaming</button>
+    <button class="btn" style="--c:#8a2be2" onclick="toggleSpeaking()">Toggle Speaking</button>
+    <button class="btn" style="--c:#8a2be2" onclick="clearMsg()">Clear</button>
+  </div>
+
+  <script>
+    const messages = [
+      "BOX BOX BOX. Tenemos diez segundos de margen. Entra esta vuelta.",
+      "Coche rápido a la derecha. Mantén la línea defensiva por el interno.",
+      "El de atrás se está acercando dos décimas por sector. Cuidado con el desgaste delantero.",
+      "Estoy analizando la estrategia..."
+    ];
+    let msgIdx = 0;
+
+    function setMsg(i) {
+      msgIdx = i;
+      document.querySelectorAll('.radio-message').forEach(el => {
+        el.textContent = messages[i];
+        el.classList.remove('placeholder');
+      });
+      document.querySelectorAll('.radio-card').forEach(c => c.classList.add('speaking'));
+      document.querySelectorAll('.radio-live-indicator').forEach(l => l.style.display = 'flex');
+    }
+
+    function clearMsg() {
+      document.querySelectorAll('.radio-message').forEach(el => {
+        el.textContent = 'Radio silenciosa. Presiona PTT para transmitir.';
+        el.classList.add('placeholder');
+      });
+      document.querySelectorAll('.radio-card').forEach(c => c.classList.remove('speaking'));
+      document.querySelectorAll('.radio-live-indicator').forEach(l => l.style.display = 'none');
+    }
+
+    let speaking = true;
+    function toggleSpeaking() {
+      speaking = !speaking;
+      document.querySelectorAll('.radio-card').forEach(c => {
+        c.classList.toggle('speaking', speaking);
+      });
+    }
+
+    // Simulación de streaming tipo LLM
+    let streamInterval;
+    function startStream() {
+      const target = "Delta P1.0, neumático medio, vuelta 23. Manten ritmo.";
+      let pos = 0;
+      clearInterval(streamInterval);
+      document.querySelectorAll('.radio-message').forEach(el => {
+        el.classList.remove('placeholder');
+        el.textContent = '';
+      });
+      streamInterval = setInterval(() => {
+        pos += 3;
+        const txt = target.slice(0, pos);
+        document.querySelectorAll('.radio-message').forEach(el => el.textContent = txt);
+        if (pos >= target.length) clearInterval(streamInterval);
+      }, 60);
+      document.querySelectorAll('.radio-card').forEach(c => c.classList.add('speaking'));
+      document.querySelectorAll('.radio-live-indicator').forEach(l => l.style.display = 'flex');
+    }
+  </script>
+</body>
+</html>

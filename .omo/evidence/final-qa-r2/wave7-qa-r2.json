@@ -1,0 +1,70 @@
+{
+  "timestamp": "2026-06-06T23:31:45.343045+00:00",
+  "release": "R2",
+  "wave": 7,
+  "scenarios": [
+    {
+      "name": "task-15-query-by-name",
+      "pass": true
+    },
+    {
+      "name": "task-15-query-by-position",
+      "pass": true
+    },
+    {
+      "name": "task-15-tool-call-defined",
+      "pass": true
+    },
+    {
+      "name": "task-16-monitor-lifecycle",
+      "pass": true
+    },
+    {
+      "name": "task-16-monitor-events",
+      "pass": true
+    },
+    {
+      "name": "task-17-filter-gt3",
+      "pass": true
+    },
+    {
+      "name": "task-18-track-vs-classification",
+      "pass": true
+    },
+    {
+      "name": "task-19-spa-blanchimont",
+      "pass": true
+    },
+    {
+      "name": "task-20-sector-analysis",
+      "pass": true
+    },
+    {
+      "name": "task-21-corner-name",
+      "pass": true
+    },
+    {
+      "name": "task-22-mqtt-config",
+      "pass": true
+    },
+    {
+      "name": "task-23-engine-competitors",
+      "pass": true
+    },
+    {
+      "name": "integration-r1-spotter",
+      "pass": true
+    },
+    {
+      "name": "integration-r1-pearls",
+      "pass": true
+    }
+  ],
+  "scenarios_pass": "14/14",
+  "pytest_r2": {
+    "pass": true,
+    "summary": "19 passed in 0.44s",
+    "returncode": 0
+  },
+  "verdict": "APPROVE"
+}
