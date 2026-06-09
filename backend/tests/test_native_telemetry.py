@@ -1,7 +1,7 @@
 import sys
 from unittest.mock import MagicMock, patch
 
-from src.platform.runtime import is_windows, native_telemetry_enabled
+from src.app_runtime.runtime import is_windows, native_telemetry_enabled
 
 
 def test_is_windows_on_win32():

@@ -6,7 +6,7 @@ from typing import Set
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from src.models.messages import BaseMessage
-from src.platform.runtime import native_telemetry_enabled
+from src.app_runtime.runtime import native_telemetry_enabled
 from src.intelligence.spotter_adapter import frame_to_spotter_tick
 from src.services.msgpack_codec import encode as mp_encode, decode as mp_decode, apply_delta, is_full_frame
 
