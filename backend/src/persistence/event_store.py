@@ -118,8 +118,8 @@ class EventStore:
                 try:
                     self._client.delete_collection(self._collection_name)
                     logger.info("Colección ChromaDB eliminada")
-                except (ValueError, chromadb.errors.NotFoundError, chromadb.errors.InternalError):
-                    pass
+                except (ValueError, chromadb.errors.NotFoundError, chromadb.errors.InternalError) as exc:
+                    logger.debug("ChromaDB collection already absent during clear: %s", exc)
         except Exception as e:
             logger.warning("Error al limpiar ChromaDB: %s", e)
         self._collection = None
