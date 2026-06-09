@@ -47,7 +47,7 @@ $ git ls-files '*.env'
 backend/.env   # ← TRACKEADO
 ```
 
-El archivo `.env` contiene la configuración del entorno incluyendo `LLM_API_KEY`, `LLM_BASE_URL`, y otros valores. Aunque la API key actual (`REDACTED`) es un identificador local (no es una clave real de un servicio cloud), la práctica de trackear `.env` en git es un anti-patrón de seguridad porque:
+El archivo `.env` contiene la configuración del entorno incluyendo `LLM_API_KEY`, `LLM_BASE_URL`, y otros valores. Trackear `.env` en git es un anti-patrón de seguridad porque:
 
 1. Si en el futuro se añade una API key real (ElevenLabs, Groq, OpenAI), quedaría expuesta en el historial de git
 2. Dificulta rotar claves sin exponer las anteriores
@@ -186,7 +186,7 @@ allow_headers=["Content-Type", "Authorization"],
 
 ### Surface: API Key Exposure
 
-La `LLM_API_KEY` viaja en el header `Authorization: Bearer REDACTED` hacia el LLM a través de Cloudflare Tunnel. Como es una API key local/identificador, el riesgo es nulo. Pero:
+La `LLM_API_KEY` viaja en el header `Authorization: Bearer <token>` hacia el LLM a través de Cloudflare Tunnel. Pero:
 
 - Si se usara una API key real de Groq/OpenAI, el tráfico viajaría por Cloudflare Tunnel sin cifrado adicional extremo-a-extremo
 - **Recomendación:** Si se usan API keys cloud, implementar un proxy inverso con TLS propio

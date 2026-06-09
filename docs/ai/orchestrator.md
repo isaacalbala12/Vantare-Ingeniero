@@ -37,7 +37,7 @@
 |---------|-------|----------|
 | `"No connected db."` | 2 instancias LiteLLM peleando puerto 4000 | Matar todas, reiniciar con `--config` |
 | `"LLM Provider NOT provided"` | Faltaba prefijo `openai/` en modelo | `model: openai/qwen3.5-4b.mq4` |
-| `"Missing credentials"` | Provider openai requiere api_key | `api_key: REDACTED` en config |
+| `"Missing credentials"` | Provider openai requiere api_key | `api_key: your-local-api-key` en config |
 | `"Connection error"` | api_base apuntaba a puerto 8000 (Hipfire usa 11435) | `http://localhost:11435/v1` |
 | Hipfire no arranca con `nohup` | nohup rompe procesos con TTY | Usar `&` directamente |
 | LiteLLM `Exit 127` | litellm no está en PATH global | Activar virtualenv primero |
@@ -190,7 +190,7 @@ model_list:
     litellm_params:
       model: openai/qwen3.5-4b.mq4
       api_base: http://localhost:11435/v1
-      api_key: REDACTED
+      api_key: your-local-api-key
 EOF
 
 litellm --config ~/litellm_config.yaml --port 4000 > /tmp/litellm.log 2>&1 &

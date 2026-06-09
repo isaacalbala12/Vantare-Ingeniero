@@ -155,6 +155,7 @@ activemq-data/
 !.env.example
 **/.env
 !**/.env.example
+frontend/src-tauri/binaries/**/.env
 .envrc
 .venv
 env/

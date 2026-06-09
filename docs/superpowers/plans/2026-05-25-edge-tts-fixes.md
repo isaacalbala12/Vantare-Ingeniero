@@ -33,7 +33,7 @@ Cambio en `backend/.env`:
 
 -# Gemini TTS (opcional, descomentar y añadir clave para activar)
 -# TTS_BACKEND=gemini
--# GEMINI_API_KEY="REDACTED"
+-# GEMINI_API_KEY="your-gemini-api-key"
 -# GEMINI_TTS_VOICE="Kore"
 ```
 
@@ -95,13 +95,13 @@ Esperado: `7.2.8` (o cualquier versión >= 7.0.0)
 **Files:**
 - Modify: `backend/src/config.py:44`
 
-**Análisis:** `GEMINI_API_KEY` tiene un valor por defecto hardcodeado (`REDACTED`) en `config.py`. Esto es un riesgo de seguridad: la clave está expuesta en el repositorio y cualquier persona con acceso al código puede usarla.
+**Análisis:** `GEMINI_API_KEY` tenía un valor por defecto hardcodeado en `config.py`. Esto es un riesgo de seguridad: la clave no debe exponerse en el repositorio.
 
 - [ ] **Step 1: Cambiar el default de GEMINI_API_KEY a string vacío**
 
 En `backend/src/config.py`, línea 44:
 ```diff
--    GEMINI_API_KEY: str = "REDACTED"
+-    GEMINI_API_KEY: str = "your-gemini-api-key"
 +    GEMINI_API_KEY: str = ""
 ```
 

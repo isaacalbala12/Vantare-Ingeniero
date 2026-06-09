@@ -11,8 +11,8 @@ Realizada auditoría completa el 27-mayo-2026 mediante 6 subagentes paralelos cu
 ### CRITICAL: API Key en git
 - **Archivo:** `backend/.env` trackeado en git
 - **Evidencia:** `git ls-files backend/.env` → existe
-- **Riesgo:** `LLM_API_KEY=REDACTED` expuesta
-- **Nota:** El `.gitignore` raíz dice `# .env (subido intencionadamente - repo privado)`
+- **Riesgo:** `LLM_API_KEY` expuesta en historial git (resuelto: `.env` fuera del repo)
+- **Nota:** Rotar credenciales si el repo fue público en algún momento
 
 ### HIGH: CORS sobrepermisivo
 - **Archivo:** `backend/src/main.py:260-271`
