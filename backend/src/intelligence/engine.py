@@ -261,17 +261,23 @@ class IntelligenceEngine:
             snapshot = self.live_context.snapshot(trigger.tier.name)
 
             # Construye prompt (con ticker y datos frescos)
+            event_store = self._get_event_store()
+            rag_context = await self.context_builder.prefetch_rag_context(
+                snapshot, event_store
+            ) if event_store else None
+
             prompt = self.context_builder.build_prompt(
                 snapshot,
                 trigger.description,
                 pilot_question,
                 self.prompt_templates,
-                event_store=self._get_event_store(),
+                event_store=event_store,
                 telemetry_frame=telemetry_dict,
                 strategy_advice=strategy_dict,
                 lmu_api=self.lmu_api,
                 sweary=self.sweary_messages,
                 strategy_service=self._get_strategy_service(),
+                rag_context=rag_context,
             )
 
             # Lanza ask_streaming
@@ -321,17 +327,23 @@ class IntelligenceEngine:
                         snapshot = self.live_context.snapshot(trigger.tier.name)
 
                         # Construye prompt (con ticker y datos frescos)
+                        event_store = self._get_event_store()
+                        rag_context = await self.context_builder.prefetch_rag_context(
+                            snapshot, event_store
+                        ) if event_store else None
+
                         prompt = self.context_builder.build_prompt(
                             snapshot,
                             trigger.description,
                             None,
                             self.prompt_templates,
-                            event_store=self._get_event_store(),
+                            event_store=event_store,
                             telemetry_frame=telemetry_dict,
                             strategy_advice=strategy_dict,
                             lmu_api=self.lmu_api,
                             sweary=self.sweary_messages,
                             strategy_service=self._get_strategy_service(),
+                            rag_context=rag_context,
                         )
 
                         # Lanza ask_streaming
@@ -450,13 +462,19 @@ class IntelligenceEngine:
                         snapshot[key] = value
         
         # 4. Construir prompt usando context_builder
+        event_store = self._get_event_store()
+        rag_context = await self.context_builder.prefetch_rag_context(
+            snapshot, event_store
+        ) if event_store else None
+
         prompt = self.context_builder.build_prompt_for_question(
             snapshot=snapshot,
             pilot_question=pilot_question,
             chat_history=chat_history,
             templates=self.prompt_templates,
-            event_store=self._get_event_store(),
+            event_store=event_store,
             sweary=self.sweary_messages,
+            rag_context=rag_context,
         )
         
         # 5. Ejecutar streaming del LLM usando ask_streaming_text

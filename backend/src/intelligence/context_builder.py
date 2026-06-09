@@ -8,6 +8,7 @@ similares a la telemetría actual como contexto RAG.
 """
 
 import logging
+import asyncio
 from typing import Any, Optional
 
 from src.intelligence.ticker import generate_ticker
@@ -183,6 +184,7 @@ def build_prompt(
     lmu_api: Optional[Any] = None,
     sweary: bool = False,
     strategy_service: Optional[Any] = None,
+    rag_context: Optional[str] = None,
 ) -> str:
     """Construye el prompt completo para el LLM.
 
@@ -222,9 +224,11 @@ def build_prompt(
         context_dict.pop("snapshot", None)
     else:
         # Inyectar RAG: top-5 eventos históricos con telemetría similar
-        rag_context = _build_rag_context(snapshot, event_store)
-        if rag_context:
-            context_dict["rag_context"] = rag_context
+        resolved_rag = rag_context
+        if resolved_rag is None and event_store is not None:
+            resolved_rag = _build_rag_context(snapshot, event_store)
+        if resolved_rag:
+            context_dict["rag_context"] = resolved_rag
 
     # Determinar tier para template
     tier = "FAST"
@@ -247,6 +251,7 @@ def build_prompt_for_question(
     lmu_api: Optional[Any] = None,
     sweary: bool = False,
     strategy_service: Optional[Any] = None,
+    rag_context: Optional[str] = None,
 ) -> str:
     """Construye prompt para pregunta directa del piloto con RAG y ticker."""
     context_dict: dict = {
@@ -272,9 +277,11 @@ def build_prompt_for_question(
         context_dict.pop("snapshot", None)
     else:
         # RAG
-        rag_context = _build_rag_context(snapshot, event_store)
-        if rag_context:
-            context_dict["rag_context"] = rag_context
+        resolved_rag = rag_context
+        if resolved_rag is None and event_store is not None:
+            resolved_rag = _build_rag_context(snapshot, event_store)
+        if resolved_rag:
+            context_dict["rag_context"] = resolved_rag
 
     tier = "FAST"
     if snapshot.get("lap_number", 0) > 0 and (snapshot.get("speed") or snapshot.get("fuel")):
@@ -285,6 +292,17 @@ def build_prompt_for_question(
     if templates is None:
         from src.intelligence import prompt_templates as templates
     return templates.render(context_dict, tier)
+
+
+async def prefetch_rag_context(
+    snapshot: dict,
+    event_store: Optional[Any] = None,
+    top_k: int = 5,
+) -> Optional[str]:
+    """Consulta RAG en un hilo de background para no bloquear asyncio."""
+    if event_store is None:
+        return None
+    return await asyncio.to_thread(_build_rag_context, snapshot, event_store, top_k)
 
 
 def _build_rag_context(
