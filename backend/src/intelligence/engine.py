@@ -110,12 +110,7 @@ class IntelligenceEngine:
         self._event_store = event_store
 
     def _get_strategy_service(self):
-        if self.strategy_service is not None:
-            return self.strategy_service
-        main_mod = sys.modules.get("src.main")
-        if main_mod and hasattr(main_mod, "app"):
-            return getattr(main_mod.app.state, "strategy_service", None)
-        return None
+        return self.strategy_service
 
     def _get_event_store(self):
         """Obtiene el EventStore (ChromaDB RAG) si está disponible."""
