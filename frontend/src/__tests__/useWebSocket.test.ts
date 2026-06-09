@@ -52,6 +52,17 @@ vi.mock("../services/msgpack", () => ({
   SNAPSHOT_INTERVAL: 100,
 }));
 
+// Mock health gate — tests no esperan arranque real del backend empaquetado
+vi.mock("../services/api", () => ({
+  getHealth: vi.fn(async () => ({
+    status: "ok",
+    shared_memory: { status: "connected", offline_mode: true, last_lap: 0 },
+    lmu_api: { status: "idle", cache: {} },
+    llm: { configured: true, model: "test" },
+    websocket: false,
+  })),
+}));
+
 // Mock de useAppStore - debe tener .subscribe y .getState como propiedades del store
 vi.mock("../store/config", () => {
   const mockStoreState = {

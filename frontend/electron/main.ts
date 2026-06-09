@@ -1,4 +1,5 @@
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
+import { appendFileSync, existsSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { app, BrowserWindow, ipcMain, Menu, Tray } from "electron";
@@ -69,24 +70,93 @@ async function duckLmu(active: boolean, level: number): Promise<void> {
   }).unref();
 }
 
+function appendBackendLog(line: string): void {
+  try {
+    const logPath = path.join(app.getPath("userData"), "backend.log");
+    appendFileSync(logPath, `[${new Date().toISOString()}] ${line}\n`, "utf8");
+  } catch {
+    // ignore logging failures
+  }
+}
+
+const BACKEND_HEALTH_URL = "http://127.0.0.1:8008/health";
+
+async function waitForBackendReady(maxWaitMs = 120_000): Promise<boolean> {
+  const deadline = Date.now() + maxWaitMs;
+  while (Date.now() < deadline) {
+    if (backendChild?.exitCode !== null && backendChild?.exitCode !== undefined) {
+      appendBackendLog(`Backend exited during startup wait (code=${backendChild.exitCode})`);
+      return false;
+    }
+    try {
+      const res = await fetch(BACKEND_HEALTH_URL, { signal: AbortSignal.timeout(2_000) });
+      if (res.ok) {
+        const body = (await res.json()) as { status?: string };
+        if (body.status === "ok") {
+          appendBackendLog("Backend health OK");
+          return true;
+        }
+      }
+    } catch {
+      // backend still starting
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1_000));
+  }
+  appendBackendLog("Backend health timeout");
+  return false;
+}
+
 function spawnBackendIfRelease(): void {
   if (isDev) {
     console.log("[electron] dev mode: backend not auto-spawned");
     return;
   }
 
-  const backendPath = path.join(process.resourcesPath, "backend", "backend.exe");
+  const backendDir = path.join(process.resourcesPath, "backend");
+  const backendPath = path.join(backendDir, "backend.exe");
+
+  if (!existsSync(backendPath)) {
+    const msg = `Backend no encontrado: ${backendPath}`;
+    console.error("[electron]", msg);
+    appendBackendLog(`ERROR ${msg}`);
+    return;
+  }
+
+  appendBackendLog(`Spawning ${backendPath}`);
+
   backendChild = spawn(backendPath, [], {
-    env: { ...process.env, PORT: "8008", VANTARE_NATIVE_TELEMETRY: "1" },
+    cwd: backendDir,
+    env: {
+      ...process.env,
+      HOST: "127.0.0.1",
+      PORT: "8008",
+      VANTARE_NATIVE_TELEMETRY: "1",
+    },
     stdio: "pipe",
     windowsHide: true,
   });
 
+  backendChild.on("error", (err) => {
+    const msg = `Backend spawn error: ${err.message}`;
+    console.error("[electron]", msg);
+    appendBackendLog(`ERROR ${msg}`);
+  });
+
+  backendChild.on("exit", (code, signal) => {
+    const msg = `Backend exited code=${code ?? "null"} signal=${signal ?? "null"}`;
+    console.error("[electron]", msg);
+    appendBackendLog(msg);
+  });
+
   backendChild.stdout?.on("data", (chunk: Buffer) => {
-    console.log("[backend]", chunk.toString().trim());
+    const line = chunk.toString().trim();
+    console.log("[backend]", line);
+    appendBackendLog(`stdout ${line}`);
   });
   backendChild.stderr?.on("data", (chunk: Buffer) => {
-    console.error("[backend]", chunk.toString().trim());
+    const line = chunk.toString().trim();
+    console.error("[backend]", line);
+    appendBackendLog(`stderr ${line}`);
   });
 }
 
@@ -174,6 +244,12 @@ app.whenReady().then(async () => {
   registerIpc();
   initDesktopUpdater(() => hubWindow);
   spawnBackendIfRelease();
+  if (!isDev) {
+    const ready = await waitForBackendReady();
+    if (!ready) {
+      console.error("[electron] Backend no respondió a /health — revisa backend.log en userData");
+    }
+  }
   hubWindow = createHubWindow(isDev);
   createTray();
   await registerPttShortcuts(hubWindow);

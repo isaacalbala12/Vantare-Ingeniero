@@ -74,7 +74,9 @@ export function InicioPage() {
         </div>
 
         {!wsConnected ? (
-          <p className="mt-3 text-xs text-a1-text-muted">Conectando al backend…</p>
+          <p className="mt-3 text-xs text-a1-text-muted">
+            Conectando al backend… (el arranque puede tardar hasta 30 s la primera vez)
+          </p>
         ) : null}
         {syncError ? (
           <p className="mt-3 text-xs text-a1-accent-bright">{syncError}</p>

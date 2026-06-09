@@ -54,13 +54,13 @@ class CommentaryEndMessage(BaseMessage):
     full_text: str
     category: str = "commentary"
     audio_priority: str = "NORMAL"
-    source_events: List[str] = Field(default_factory=list)
+    source_events: list[str] = Field(default_factory=list)
     profile_id: str = "standard"
 
 
 class ConfigAckMessage(BaseMessage):
     """Confirmación de config runtime aplicada en backend (eco bidireccional)."""
-    config: Dict[str, Any] = Field(default_factory=dict)
+    config: dict[str, Any] = Field(default_factory=dict)
 
 
 class AlertMessage(BaseMessage):

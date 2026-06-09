@@ -155,7 +155,7 @@ const loadSavedConfig = (): AppConfig => {
     if (saved) {
       const parsed = JSON.parse(saved);
       return {
-        vllmIP: parsed.vllmIP ?? "localhost",
+        vllmIP: parsed.vllmIP ?? "127.0.0.1",
         serverPort: parsed.serverPort ?? 8008,
         micDevice: parsed.micDevice ?? "default",
         speakerDevice: parsed.speakerDevice ?? "default",
@@ -193,7 +193,7 @@ const loadSavedConfig = (): AppConfig => {
     console.warn("Fallo al leer localStorage para la configuración:", e);
   }
   return {
-    vllmIP: "localhost",
+    vllmIP: "127.0.0.1",
     serverPort: 8008,
     micDevice: "default",
     speakerDevice: "default",

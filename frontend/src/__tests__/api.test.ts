@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 vi.mock("../store/config", () => ({
   useAppStore: {
     getState: vi.fn(() => ({
-      config: { vllmIP: "localhost", serverPort: 8008 },
+      config: { vllmIP: "", serverPort: 8008 },
       connectivity: { wsStatus: "DISCONNECTED" },
     })),
   },
@@ -39,7 +39,30 @@ describe("API Service", () => {
       expect(result.llm.configured).toBe(true);
     });
 
-    it("debe devolver status error con error HTTP", async () => {
+    it("debe devolver null con error HTTP", async () => {
+      const mockResponse = {
+        ok: false,
+        status: 503,
+        json: async () => ({}),
+      };
+      vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse));
+
+      const { getHealth } = await import("../services/api");
+      const result = await getHealth();
+
+      expect(result).toBeNull();
+    });
+
+    it("debe devolver null si el backend no responde", async () => {
+      vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("network error")));
+
+      const { getHealth } = await import("../services/api");
+      const result = await getHealth();
+
+      expect(result).toBeNull();
+    });
+
+    it("debe devolver null si status no es ok", async () => {
       const mockResponse = {
         ok: true,
         json: async () => ({
@@ -54,8 +77,7 @@ describe("API Service", () => {
       const { getHealth } = await import("../services/api");
       const result = await getHealth();
 
-      expect(result.status).toBe("error");
-      expect(result.websocket).toBe(false);
+      expect(result).toBeNull();
     });
 
     it("debe manejar respuesta sin campos opcionales", async () => {
@@ -136,7 +158,7 @@ describe("API Service", () => {
   });
 
   describe("URL construction", () => {
-    it("debe usar localhost y puerto 8008 por defecto", async () => {
+    it("debe usar 127.0.0.1 y puerto 8008 por defecto", async () => {
       const mockResponse = {
         ok: true,
         json: async () => ({ status: "ok" }),
@@ -148,7 +170,7 @@ describe("API Service", () => {
       await getHealth();
 
       expect(fetchMock).toHaveBeenCalledWith(
-        expect.stringContaining("localhost"),
+        expect.stringContaining("127.0.0.1"),
         expect.any(Object)
       );
       expect(fetchMock).toHaveBeenCalledWith(
