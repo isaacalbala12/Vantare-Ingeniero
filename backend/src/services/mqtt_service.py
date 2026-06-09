@@ -18,6 +18,46 @@ class MqttService:
     def __init__(self) -> None:
         self._client: Any = None
         self._connected = False
+        self._pending_frame: Optional[dict] = None
+        self._worker_task: Optional[asyncio.Task] = None
+        self._wake = asyncio.Event()
+
+    def enqueue_telemetry(self, frame: dict) -> None:
+        """Encola el frame más reciente; descarta frames anteriores no publicados."""
+        if not self.enabled:
+            return
+        self._pending_frame = frame
+        self._ensure_worker()
+        self._wake.set()
+
+    def _ensure_worker(self) -> None:
+        if self._worker_task is None or self._worker_task.done():
+            self._wake = asyncio.Event()
+            self._worker_task = asyncio.create_task(self._worker_loop())
+
+    async def _worker_loop(self) -> None:
+        while True:
+            await self._wake.wait()
+            self._wake.clear()
+            frame = self._pending_frame
+            self._pending_frame = None
+            if frame is None:
+                continue
+            try:
+                await self.publish_telemetry(frame)
+            except Exception as e:
+                logger.warning("MQTT publish failed: %s", e)
+            if self._pending_frame is not None:
+                self._wake.set()
+
+    async def shutdown_worker(self) -> None:
+        if self._worker_task is not None:
+            self._worker_task.cancel()
+            try:
+                await self._worker_task
+            except asyncio.CancelledError:
+                pass
+            self._worker_task = None
 
     @property
     def enabled(self) -> bool:
@@ -76,6 +116,9 @@ class MqttService:
         await asyncio.to_thread(_publish)
 
     def shutdown(self) -> None:
+        if self._worker_task is not None:
+            self._worker_task.cancel()
+            self._worker_task = None
         if self._client is not None:
             try:
                 self._client.loop_stop()

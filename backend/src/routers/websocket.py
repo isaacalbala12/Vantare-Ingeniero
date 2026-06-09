@@ -284,7 +284,7 @@ async def websocket_endpoint(websocket: WebSocket):
                             trace_store.append_frame(app_state.latest_client_frame)
                         mqtt_svc = getattr(app_state, "mqtt_service", None)
                         if mqtt_svc and app_state.latest_client_frame:
-                            asyncio.create_task(mqtt_svc.publish_telemetry(app_state.latest_client_frame))
+                            mqtt_svc.enqueue_telemetry(app_state.latest_client_frame)
                     except Exception as e:
                         logger.warning(f"Error decoding MessagePack telemetry: {e}")
                     continue
