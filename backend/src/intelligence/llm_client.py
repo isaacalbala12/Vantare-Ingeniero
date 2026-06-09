@@ -297,7 +297,7 @@ class VLLMClient:
                             # Solo procesar el contenido real (respuesta final)
                             token = delta.get("content", "")
                             if not token:
-                                token = delta.get("reasoning_content", "")
+                                continue
 
                             # Limpiar etiquetas de control residuales
                             if token.strip() in ("", "<|im_end|>", "<|im_start|>", "<!--", "-->", "<think>"):
