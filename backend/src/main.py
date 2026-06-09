@@ -21,7 +21,7 @@ else:
 if _backend_root not in sys.path:
     sys.path.insert(0, _backend_root)
 
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -192,7 +192,10 @@ async def lifespan(app: FastAPI):
     # 10. Instanciar Gemini TTSService (cloud, Google AI Studio)
     if settings.GEMINI_API_KEY:
         try:
-            import google.genai
+            import importlib.util
+
+            if importlib.util.find_spec("google.genai") is None:
+                raise ImportError("google-genai no instalado")
 
             gemini_tts_service = GeminiTTSService(
                 api_key=settings.GEMINI_API_KEY,
@@ -237,20 +240,16 @@ async def lifespan(app: FastAPI):
     # 2. Cancelar el poller REST de LMU
     if api_poller_task:
         api_poller_task.cancel()
-        try:
+        with suppress(asyncio.CancelledError):
             await api_poller_task
-        except asyncio.CancelledError:
-            pass
 
     # 3. Cancelar tareas LLM pendientes en curso en el IntelligenceEngine
     if hasattr(app.state, "intelligence_engine"):
         engine = app.state.intelligence_engine
         if engine._current_llm_task and not engine._current_llm_task.done():
             engine._current_llm_task.cancel()
-            try:
+            with suppress(asyncio.CancelledError):
                 await engine._current_llm_task
-            except asyncio.CancelledError:
-                pass
             logger.info("Active LLM streaming task cancelled safely during shutdown.")
 
     # 4. Guardar historial de consumo a disco
@@ -264,6 +263,7 @@ async def lifespan(app: FastAPI):
         logger.info("EventStore cleaned up (ChromaDB RAG)")
 
     if hasattr(app.state, "mqtt_service"):
+        await app.state.mqtt_service.shutdown_worker()
         app.state.mqtt_service.shutdown()
 
     # 5. Detener el lector físico de shared memory

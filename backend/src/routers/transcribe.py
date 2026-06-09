@@ -1,4 +1,5 @@
 import logging
+from typing import Annotated
 
 from fastapi import APIRouter, File, UploadFile
 
@@ -8,7 +9,7 @@ router = APIRouter()
 
 
 @router.post("/transcribe")
-async def transcribe_audio(audio: UploadFile = File(...)):
+async def transcribe_audio(audio: Annotated[UploadFile, File()]):
     """Endpoint placeholder for ASR transcription of WAV audio.
 
     Currently returns empty text. Future integration:

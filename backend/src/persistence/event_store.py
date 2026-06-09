@@ -8,6 +8,7 @@ Al cerrar sesión, la colección se borra (no hay persistencia entre sesiones).
 La feature v1.1 (recopilación centralizada) exportará los datos antes de borrar.
 """
 
+import contextlib
 import logging
 import time
 from pathlib import Path
@@ -91,10 +92,8 @@ class EventStore:
         self._client = chromadb.PersistentClient(path=self._persist_path)
 
         # Eliminar colección anterior si existe (limpieza)
-        try:
+        with contextlib.suppress(ValueError, chromadb.errors.NotFoundError):
             self._client.delete_collection(self._collection_name)
-        except (ValueError, chromadb.errors.NotFoundError):
-            pass  # No existía
 
         self._collection = self._client.create_collection(
             name=self._collection_name,

@@ -136,7 +136,7 @@ async def poll_api() -> None:
                     new_strategy = None
                     new_garage = None
 
-                    for key, result in zip(task_keys, results):
+                    for key, result in zip(task_keys, results, strict=False):
                         if isinstance(result, Exception):
                             logger.debug(f"Fetch for {key} failed: {result}")
                             continue

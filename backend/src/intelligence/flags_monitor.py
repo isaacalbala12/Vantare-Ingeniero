@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 
-class FlagEventType(str, Enum):
+class FlagEventType(StrEnum):
     GREEN = "green"
     YELLOW = "yellow"
     RED = "red"

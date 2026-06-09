@@ -115,7 +115,6 @@ class VLLMClient:
 
             tool_call_name: str | None = None
             tool_call_arguments: dict[str, Any] = {}
-            competitor_query_args: dict[str, Any] | None = None
 
             async for chunk in stream:
                 if not chunk.choices:
@@ -151,7 +150,6 @@ class VLLMClient:
                         from src.intelligence.competitor_queries import resolve_from_tool_args
 
                         result = resolve_from_tool_args(args, competitors)
-                        competitor_query_args = args
                         if result.summary:
                             summary_token = f"\n[RIVAL] {result.summary}"
                             full_text += summary_token
@@ -272,10 +270,7 @@ class VLLMClient:
                         continue
 
                     # Formato SSE: "data: {...}"
-                    if line.startswith("data: "):
-                        data_str = line[6:].strip()
-                    else:
-                        data_str = line
+                    data_str = line[6:].strip() if line.startswith("data: ") else line
 
                     if data_str == "[DONE]":
                         break

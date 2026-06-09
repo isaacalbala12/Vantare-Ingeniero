@@ -71,11 +71,13 @@ class HistoryStore:
     # ------------------------------------------------------------------
 
     def save(self) -> None:
-        """Persiste el historial actual a disco como JSON."""
+        """Persiste el historial actual a disco como JSON (write atómico)."""
         with self._lock:
             os.makedirs(DATA_DIR, exist_ok=True)
-            with open(SESSION_FILE, "w", encoding="utf-8") as f:
+            tmp_path = f"{SESSION_FILE}.tmp"
+            with open(tmp_path, "w", encoding="utf-8") as f:
                 json.dump(self._history, f, indent=2, ensure_ascii=False)
+            os.replace(tmp_path, SESSION_FILE)
 
     def load(self) -> None:
         """Carga el historial desde disco (si existe)."""

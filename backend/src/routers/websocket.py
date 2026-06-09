@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import time
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from src.intelligence.spotter_adapter import frame_to_spotter_tick
@@ -14,8 +15,6 @@ logger = logging.getLogger("vantare.websocket")
 router = APIRouter()
 
 MAX_PILOT_QUESTION_LEN = 512
-
-import time
 
 TELEMETRY_INTERVAL_S = 0.05
 STRATEGY_INTERVAL_S = 2.0

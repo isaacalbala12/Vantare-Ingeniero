@@ -32,7 +32,7 @@ async def start_recording(request: Request, payload: StartRecordingPayload | Non
     try:
         tid = store.start_recording(trace_id)
     except RuntimeError as e:
-        raise HTTPException(status_code=409, detail=str(e))
+        raise HTTPException(status_code=409, detail=str(e)) from e
     request.app.state.trace_playback_active = False
     logger.info("Trace recording started: %s", tid)
     return {"trace_id": tid, "recording": True}

@@ -30,10 +30,10 @@ async def get_profile(name: str, request: Request):
         raise HTTPException(status_code=503, detail="ProfileStore no disponible")
     try:
         config = store.load_profile(name)
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="Perfil no encontrado")
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Perfil no encontrado") from exc
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
     return {"name": name, "config": config}
 
 
@@ -45,7 +45,7 @@ async def save_profile(name: str, payload: ProfilePayload, request: Request):
     try:
         store.save_profile(name, payload.config)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
     logger.info("Perfil guardado: %s", name)
     return {"name": name, "saved": True}
 
@@ -57,9 +57,9 @@ async def delete_profile(name: str, request: Request):
         raise HTTPException(status_code=503, detail="ProfileStore no disponible")
     try:
         store.delete_profile(name)
-    except FileNotFoundError:
-        raise HTTPException(status_code=404, detail="Perfil no encontrado")
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Perfil no encontrado") from exc
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail=str(e)) from e
     logger.info("Perfil eliminado: %s", name)
     return {"name": name, "deleted": True}

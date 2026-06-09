@@ -60,11 +60,7 @@ def abbreviate_name(name: str) -> str:
 
     # Tomar primeras letras de cada palabra
     parts = name.strip().split()
-    if len(parts) >= 2:
-        # Primera letra del nombre + primera del apellido (máx 3 chars)
-        result = "".join(p[0].upper() for p in parts[:2] if p)
-    else:
-        result = name.strip()[:3]
+    result = "".join(p[0].upper() for p in parts[:2] if p) if len(parts) >= 2 else name.strip()[:3]
 
     # Padding si es muy corto
     result = result.upper()

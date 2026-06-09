@@ -1,12 +1,14 @@
 import asyncio
+import contextlib
 import logging
 import sys
 import uuid
 from typing import Any
 
-logger = logging.getLogger("vantare.engine")
 from src.intelligence.triggers import PilotQuestionTrigger, TriggerAction, get_all_triggers
 from src.models.messages import AdviceEndMessage, AlertMessage, BaseMessage, LLMPendingMessage
+
+logger = logging.getLogger("vantare.engine")
 
 
 class StrategyUpdateMessage(BaseMessage):
@@ -122,6 +124,13 @@ class IntelligenceEngine:
         """Obtiene el EventStore (ChromaDB RAG) si está disponible."""
         return getattr(self, "_event_store", None)
 
+    async def _prefetch_rag_context(self, snapshot: dict, *, use_ticker: bool) -> str | None:
+        """Prefetch RAG solo cuando el prompt usará rag_context (sin ticker)."""
+        event_store = self._get_event_store()
+        if event_store is None or use_ticker:
+            return None
+        return await self.context_builder.prefetch_rag_context(snapshot, event_store)
+
     def get_competitors_list(self) -> list:
         """Lista de CompetitorPace del sidecar para consultas de rivales."""
         svc = self._get_strategy_service()
@@ -170,9 +179,12 @@ class IntelligenceEngine:
         from src.intelligence.pearls_of_wisdom import PearlType
 
         pos = telemetry_dict.get("standing_position")
-        if pos is not None and self._last_standing_position is not None:
-            if int(pos) < int(self._last_standing_position):
-                self._emit_pearl(PearlType.OVERTAKE)
+        if (
+            pos is not None
+            and self._last_standing_position is not None
+            and int(pos) < int(self._last_standing_position)
+        ):
+            self._emit_pearl(PearlType.OVERTAKE)
         if pos is not None:
             self._last_standing_position = int(pos)
 
@@ -236,10 +248,8 @@ class IntelligenceEngine:
             if self._current_llm_task and not self._current_llm_task.done():
                 from src.intelligence.triggers import Priority
 
-                try:
+                with contextlib.suppress(Exception):
                     current_prio_val = Priority[self._active_trigger_priority].value
-                except Exception:
-                    pass
 
             if int(trigger.priority) > current_prio_val:
                 await self.cancel_current_llm()
@@ -263,9 +273,7 @@ class IntelligenceEngine:
 
             # Construye prompt (con ticker y datos frescos)
             event_store = self._get_event_store()
-            rag_context = (
-                await self.context_builder.prefetch_rag_context(snapshot, event_store) if event_store else None
-            )
+            rag_context = await self._prefetch_rag_context(snapshot, use_ticker=True)
 
             prompt = self.context_builder.build_prompt(
                 snapshot,
@@ -301,10 +309,8 @@ class IntelligenceEngine:
                 if self._current_llm_task and not self._current_llm_task.done():
                     from src.intelligence.triggers import Priority
 
-                    try:
+                    with contextlib.suppress(Exception):
                         current_prio_val = Priority[self._active_trigger_priority].value
-                    except Exception:
-                        pass
 
                 if trigger.action == TriggerAction.LLM_REQUIRED:
                     if int(trigger.priority) > current_prio_val:
@@ -329,11 +335,7 @@ class IntelligenceEngine:
 
                         # Construye prompt (con ticker y datos frescos)
                         event_store = self._get_event_store()
-                        rag_context = (
-                            await self.context_builder.prefetch_rag_context(snapshot, event_store)
-                            if event_store
-                            else None
-                        )
+                        rag_context = await self._prefetch_rag_context(snapshot, use_ticker=True)
 
                         prompt = self.context_builder.build_prompt(
                             snapshot,
@@ -398,12 +400,11 @@ class IntelligenceEngine:
             full_text = ""
             try:
                 async for chunk in res:
-                    if isinstance(chunk, dict):
-                        if chunk.get("type") == "token":
-                            token = chunk.get("content", "")
-                            full_text += token
-                            token_msg = AdviceTokenMessage(advice_id=advice_id, token=token, event="advice_token")
-                            self.broadcaster.send(token_msg)
+                    if isinstance(chunk, dict) and chunk.get("type") == "token":
+                        token = chunk.get("content", "")
+                        full_text += token
+                        token_msg = AdviceTokenMessage(advice_id=advice_id, token=token, event="advice_token")
+                        self.broadcaster.send(token_msg)
             except asyncio.CancelledError:
                 # Cancelled, send interruption and re-raise
                 interruption_msg = "--- Transmisión de radio interrumpida por evento de mayor prioridad ---"
@@ -463,7 +464,7 @@ class IntelligenceEngine:
 
         # 4. Construir prompt usando context_builder
         event_store = self._get_event_store()
-        rag_context = await self.context_builder.prefetch_rag_context(snapshot, event_store) if event_store else None
+        rag_context = await self._prefetch_rag_context(snapshot, use_ticker=False)
 
         prompt = self.context_builder.build_prompt_for_question(
             snapshot=snapshot,
@@ -514,17 +515,13 @@ class IntelligenceEngine:
         """Cancela la tarea del LLM en curso y libera los sockets de conexión HTTP."""
         if self._current_llm_task and not self._current_llm_task.done():
             self._current_llm_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._current_llm_task
-            except asyncio.CancelledError:
-                pass
             self._current_llm_task = None
 
         if self._current_response:
-            try:
+            with contextlib.suppress(Exception):
                 await self._current_response.release()
-            except Exception:
-                pass
             self._current_response = None
 
         if self._current_advice_id:
