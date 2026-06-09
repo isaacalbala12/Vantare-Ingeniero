@@ -1,5 +1,6 @@
 import path from "node:path";
 import { BrowserWindow, screen } from "electron";
+import { preloadScriptPath, rendererHtml } from "../paths";
 
 export type OverlayPresentation = "hidden" | "listening" | "speaking";
 
@@ -68,7 +69,7 @@ export function createOverlayWindow(isDev: boolean): BrowserWindow {
     show: false,
     backgroundColor: "#00000000",
     webPreferences: {
-      preload: path.join(__dirname, "../preload.js"),
+      preload: preloadScriptPath(),
       contextIsolation: true,
       nodeIntegration: false,
     },
@@ -77,7 +78,7 @@ export function createOverlayWindow(isDev: boolean): BrowserWindow {
   if (isDev) {
     void overlayWindow.loadURL("http://127.0.0.1:1420/overlay.html");
   } else {
-    void overlayWindow.loadFile(path.join(__dirname, "../dist/overlay.html"));
+    void overlayWindow.loadFile(rendererHtml("overlay.html"));
   }
 
   overlayWindow.setAlwaysOnTop(true, "screen-saver");
