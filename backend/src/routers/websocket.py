@@ -14,6 +14,17 @@ router = APIRouter()
 
 MAX_PILOT_QUESTION_LEN = 512
 
+import time
+
+TELEMETRY_INTERVAL_S = 0.05
+STRATEGY_INTERVAL_S = 2.0
+
+
+def compute_loop_sleep(interval_s: float, loop_started_at: float) -> float:
+    """Segundos restantes para mantener la frecuencia objetivo del bucle."""
+    elapsed = time.monotonic() - loop_started_at
+    return max(0.0, interval_s - elapsed)
+
 
 def _normalize_pilot_question(question: str) -> str | None:
     cleaned = (question or "").strip()
@@ -98,6 +109,7 @@ async def telemetry_sender_loop(websocket: WebSocket, app_state) -> None:
         return
 
     while True:
+        loop_started_at = time.monotonic()
         try:
             # 1. Preferir telemetry del sidecar si está disponible
             sidecar_frame = getattr(app_state, "latest_strategy_frame", None)
@@ -111,7 +123,7 @@ async def telemetry_sender_loop(websocket: WebSocket, app_state) -> None:
                 if state is not None:
                     state_dict = state.model_dump(mode="json")
                 else:
-                    await asyncio.sleep(0.05)
+                    await asyncio.sleep(TELEMETRY_INTERVAL_S)
                     continue
                 logger.debug("Usando TelemetryReader (offline)")
 
@@ -128,11 +140,11 @@ async def telemetry_sender_loop(websocket: WebSocket, app_state) -> None:
             raw = mp_encode(state_dict)
             await websocket.send_bytes(raw)
 
-            await asyncio.sleep(0.05)  # 20Hz (50ms)
+            await asyncio.sleep(compute_loop_sleep(TELEMETRY_INTERVAL_S, loop_started_at))
         except asyncio.CancelledError:
             break
         except Exception as e:
-            logger.debug(f"Error sending telemetry: {e}")
+            logger.debug("Error sending telemetry: %s", e)
             break
 
 
@@ -146,10 +158,11 @@ async def strategy_sender_loop(websocket: WebSocket, app_state, active_subtasks:
     last_advice_dict = None
 
     while True:
+        loop_started_at = time.monotonic()
         try:
             # No ejecutar triggers si no hay clientes conectados
             if not manager.active_connections:
-                await asyncio.sleep(2.0)
+                await asyncio.sleep(STRATEGY_INTERVAL_S)
                 continue
 
             # 1. Intentar usar strategy_frame del sidecar Windows
@@ -195,11 +208,11 @@ async def strategy_sender_loop(websocket: WebSocket, app_state, active_subtasks:
                     })
                     last_advice_dict = advice_dict
 
-            await asyncio.sleep(2.0)  # 0.5Hz (2s)
+            await asyncio.sleep(compute_loop_sleep(STRATEGY_INTERVAL_S, loop_started_at))
         except asyncio.CancelledError:
             break
         except Exception as e:
-            logger.debug(f"Error sending strategy advice: {e}")
+            logger.debug("Error sending strategy advice: %s", e)
             break
 
 
