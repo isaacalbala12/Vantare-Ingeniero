@@ -9,7 +9,7 @@ import { getHealth } from "../services/api";
 import { audioQueue } from "../services/audioQueue";
 import { registerAudioUnlock } from "../services/audioUnlock";
 import { fetchUpdateNotice, openReleaseUrl } from "../services/updateChecker";
-import { isDesktopUpdaterAvailable } from "../services/desktopUpdate";
+import { isDesktopUpdaterAvailable, useDesktopUpdate } from "../services/desktopUpdate";
 import { useSessionHistoryPersistence } from "../core/history/useSessionHistoryPersistence";
 import { useOverlayStatePublish } from "../core/sync/useOverlayStatePublish";
 import { useOverlayVisibility } from "./hooks/useOverlayVisibility";
@@ -41,6 +41,10 @@ export function HubRoot() {
     release_name?: string;
   } | null>(null);
 
+  const desktopUpdate = useDesktopUpdate({
+    autoCheckOnMount: true,
+    autoInstallWhenAvailable: true,
+  });
   const { sendJson, clearPendingTts } = useWebSocket();
   const { audioCtx, ensureResumed, playBeep } = useAudioContext();
   const { startCapture, stopCapture } = useAudioCapture(audioCtx);
@@ -222,21 +226,21 @@ export function HubRoot() {
 
   useEffect(() => {
     const checkHealth = async () => {
-      try {
-        const health = await getHealth();
-        setBackendHealth({
-          shared_memory:
-            health.shared_memory.status === "connected" || health.shared_memory.status === "simulated",
-          lmu_api:
-            health.lmu_api.status === "online" ||
-            health.lmu_api.status === "active" ||
-            health.lmu_api.status === "ok",
-          llm: health.llm.configured,
-          websocket: useAppStore.getState().connectivity.wsStatus === "CONNECTED",
-        });
-      } catch {
+      const health = await getHealth();
+      if (!health) {
         setBackendHealth(null);
+        return;
       }
+      setBackendHealth({
+        shared_memory:
+          health.shared_memory.status === "connected" || health.shared_memory.status === "simulated",
+        lmu_api:
+          health.lmu_api.status === "online" ||
+          health.lmu_api.status === "active" ||
+          health.lmu_api.status === "ok",
+        llm: health.llm.configured,
+        websocket: useAppStore.getState().connectivity.wsStatus === "CONNECTED",
+      });
     };
     const bootDelay = setTimeout(checkHealth, 2000);
     const interval = setInterval(checkHealth, 15000);
@@ -267,15 +271,53 @@ export function HubRoot() {
     };
   }, []);
 
-  const isBackendOnline =
-    connectivity.wsStatus === "CONNECTED" || connectivity.backendHealth !== null;
+  const isBackendOnline = connectivity.wsStatus === "CONNECTED";
   const isLmuOnline = !!(
     connectivity.backendHealth?.shared_memory || connectivity.backendHealth?.lmu_api
   );
   const isLlmOnline = !!connectivity.backendHealth?.llm;
 
+  const showDesktopUpdateBanner =
+    isDesktopUpdaterAvailable() &&
+    (desktopUpdate.status.phase === "checking" ||
+      desktopUpdate.status.phase === "available" ||
+      desktopUpdate.status.phase === "downloading" ||
+      desktopUpdate.status.phase === "downloaded");
+
+  const desktopUpdateBannerText = (() => {
+    const { phase, latestVersion, percent } = desktopUpdate.status;
+    if (phase === "checking") return "Buscando actualizaciones…";
+    if (phase === "available") return "Preparando instalación…";
+    if (phase === "downloading") {
+      const pct = percent != null ? ` ${Math.round(percent)}%` : "";
+      return latestVersion
+        ? `Instalando v${latestVersion}…${pct}`
+        : `Descargando actualización…${pct}`;
+    }
+    if (phase === "downloaded") return "Reiniciando con la nueva versión…";
+    return "";
+  })();
+
   return (
     <>
+      {showDesktopUpdateBanner && (
+        <div className="fixed top-0 inset-x-0 z-50 px-4 py-2 bg-[#2a1018] border-b border-a1-accent/30 text-xs">
+          <div className="flex flex-col gap-1 max-w-6xl mx-auto">
+            <span>{desktopUpdateBannerText}</span>
+            {desktopUpdate.status.phase === "downloading" &&
+              typeof desktopUpdate.status.percent === "number" && (
+                <div className="h-1 bg-[#222] rounded overflow-hidden w-full max-w-xs">
+                  <div
+                    className="h-full bg-a1-accent"
+                    style={{
+                      width: `${Math.min(100, Math.max(0, desktopUpdate.status.percent))}%`,
+                    }}
+                  />
+                </div>
+              )}
+          </div>
+        </div>
+      )}
       {updateNotice && (
         <div className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-4 py-2 bg-[#2a1018] border-b border-a1-accent/30 text-xs">
           <span>Nueva versión disponible: v{updateNotice.latest_version}</span>

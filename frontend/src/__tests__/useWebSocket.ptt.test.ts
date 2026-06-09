@@ -26,6 +26,16 @@ class MockWebSocket {
 
 vi.stubGlobal("WebSocket", MockWebSocket);
 
+vi.mock("../services/api", () => ({
+  getHealth: vi.fn(async () => ({
+    status: "ok",
+    shared_memory: { status: "connected", offline_mode: true, last_lap: 0 },
+    lmu_api: { status: "idle", cache: {} },
+    llm: { configured: true, model: "test" },
+    websocket: false,
+  })),
+}));
+
 const mockStoreState = {
   config: {
     vllmIP: "localhost",

@@ -1,6 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getPlatform } from "../core/platform";
-import type { DesktopUpdateStatus } from "../core/platform/types";
+import type { DesktopUpdatePhase, DesktopUpdateStatus } from "../core/platform/types";
+
+/** Retraso antes del primer check silencioso al abrir la app (ms). */
+export const DESKTOP_UPDATE_STARTUP_DELAY_MS = 8_000;
 
 export interface DesktopUpdateDeps {
   getStatus: () => Promise<DesktopUpdateStatus>;
@@ -16,7 +19,7 @@ export const RELEASE_PAGE_URL =
 export function labelForStatus(status: DesktopUpdateStatus): string {
   switch (status.phase) {
     case "idle":
-      return "Comprueba si hay una versión nueva.";
+      return "Se buscarán actualizaciones al abrir la app.";
     case "checking":
       return "Buscando actualizaciones…";
     case "available":
@@ -47,13 +50,84 @@ export function createDesktopUpdateController(deps: DesktopUpdateDeps) {
   };
 }
 
+export function waitForDesktopUpdatePhase(
+  subscribe: DesktopUpdateDeps["subscribe"],
+  target: DesktopUpdatePhase | DesktopUpdatePhase[],
+  timeoutMs = 600_000,
+): Promise<DesktopUpdateStatus> {
+  const targets = new Set(Array.isArray(target) ? target : [target]);
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const finish = (fn: () => void) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      unsub();
+      fn();
+    };
+
+    const timer = window.setTimeout(() => {
+      finish(() => reject(new Error("Tiempo de espera agotado al descargar la actualización")));
+    }, timeoutMs);
+
+    const unsub = subscribe((status) => {
+      if (status.phase === "error") {
+        finish(() => reject(new Error(status.message ?? "Error de actualización")));
+        return;
+      }
+      if (targets.has(status.phase)) {
+        finish(() => resolve(status));
+      }
+    });
+  });
+}
+
+/** Check → descarga → reinicia e instala (un solo flujo para el usuario). */
+export async function runDesktopUpdateNow(deps: DesktopUpdateDeps): Promise<DesktopUpdateStatus> {
+  let status = await deps.check();
+
+  if (status.phase === "not-available" || status.phase === "error") {
+    return status;
+  }
+
+  if (status.phase === "downloaded") {
+    await deps.quitAndInstall();
+    return status;
+  }
+
+  if (status.phase === "available") {
+    await deps.download();
+    status = await waitForDesktopUpdatePhase(deps.subscribe, "downloaded");
+    await deps.quitAndInstall();
+    return status;
+  }
+
+  return status;
+}
+
 export function isDesktopUpdaterAvailable(): boolean {
   return typeof getPlatform().checkDesktopUpdates === "function";
 }
 
-export function useDesktopUpdate() {
+export interface UseDesktopUpdateOptions {
+  /** Comprueba updates automáticamente al montar (solo app empaquetada). */
+  autoCheckOnMount?: boolean;
+  /** Tras detectar update, descarga e instala sin interacción del usuario. */
+  autoInstallWhenAvailable?: boolean;
+  startupDelayMs?: number;
+}
+
+export function useDesktopUpdate(options: UseDesktopUpdateOptions = {}) {
+  const {
+    autoCheckOnMount = false,
+    autoInstallWhenAvailable = false,
+    startupDelayMs = DESKTOP_UPDATE_STARTUP_DELAY_MS,
+  } = options;
   const platform = getPlatform();
   const desktopAvailable = isDesktopUpdaterAvailable();
+  const startupCheckedRef = useRef(false);
+  const autoInstallStartedRef = useRef(false);
   const [status, setStatus] = useState<DesktopUpdateStatus>({
     phase: "idle",
     currentVersion: "0.0.0",
@@ -67,14 +141,36 @@ export function useDesktopUpdate() {
     return platform.subscribeDesktopUpdate(setStatus);
   }, [desktopAvailable, platform]);
 
+  const deps = useCallback(
+    (): DesktopUpdateDeps | null => {
+      if (
+        !platform.checkDesktopUpdates ||
+        !platform.downloadDesktopUpdate ||
+        !platform.quitAndInstallDesktopUpdate ||
+        !platform.subscribeDesktopUpdate
+      ) {
+        return null;
+      }
+      return {
+        getStatus: platform.getDesktopUpdateStatus!,
+        check: platform.checkDesktopUpdates,
+        download: platform.downloadDesktopUpdate,
+        quitAndInstall: platform.quitAndInstallDesktopUpdate,
+        subscribe: platform.subscribeDesktopUpdate,
+      };
+    },
+    [platform],
+  );
+
   const check = useCallback(async () => {
-    if (!platform.checkDesktopUpdates) {
+    const d = deps();
+    if (!d) {
       return status;
     }
-    const next = await platform.checkDesktopUpdates();
+    const next = await d.check();
     setStatus(next);
     return next;
-  }, [platform, status]);
+  }, [deps, status]);
 
   const download = useCallback(async () => {
     await platform.downloadDesktopUpdate?.();
@@ -84,12 +180,56 @@ export function useDesktopUpdate() {
     await platform.quitAndInstallDesktopUpdate?.();
   }, [platform]);
 
+  const updateNow = useCallback(async () => {
+    const d = deps();
+    if (!d) {
+      return status;
+    }
+    try {
+      const next = await runDesktopUpdateNow(d);
+      setStatus(next);
+      return next;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Error de actualización";
+      const failed: DesktopUpdateStatus = {
+        phase: "error",
+        currentVersion: status.currentVersion,
+        message,
+      };
+      setStatus(failed);
+      return failed;
+    }
+  }, [deps, status]);
+
+  useEffect(() => {
+    if (!autoCheckOnMount || !desktopAvailable || startupCheckedRef.current) {
+      return;
+    }
+    startupCheckedRef.current = true;
+    const timer = window.setTimeout(() => {
+      void check();
+    }, startupDelayMs);
+    return () => clearTimeout(timer);
+  }, [autoCheckOnMount, desktopAvailable, check, startupDelayMs]);
+
+  useEffect(() => {
+    if (!autoInstallWhenAvailable || !desktopAvailable) {
+      return;
+    }
+    if (status.phase !== "available" || autoInstallStartedRef.current) {
+      return;
+    }
+    autoInstallStartedRef.current = true;
+    void updateNow();
+  }, [autoInstallWhenAvailable, desktopAvailable, status.phase, updateNow]);
+
   return {
     status,
     desktopAvailable,
     check,
     download,
     quitAndInstall,
+    updateNow,
     labelFor: labelForStatus,
   };
 }

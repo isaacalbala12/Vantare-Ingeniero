@@ -1,14 +1,22 @@
 import { useState } from "react";
 import { CollapsibleSection } from "../components/CollapsibleSection";
-import { getPlatform } from "../../core/platform";
-import {
-  RELEASE_PAGE_URL,
-  useDesktopUpdate,
-} from "../../services/desktopUpdate";
-import { openReleaseUrl } from "../../services/updateChecker";
+import { useDesktopUpdate } from "../../services/desktopUpdate";
+
+function primaryButtonLabel(
+  busy: boolean,
+  phase: string,
+  percent?: number,
+): string {
+  if (busy || phase === "checking") return "Comprobando…";
+  if (phase === "downloading") {
+    return percent != null ? `Descargando… ${Math.round(percent)}%` : "Descargando…";
+  }
+  if (phase === "downloaded") return "Reiniciar para actualizar";
+  return "Comprobar ahora";
+}
 
 export function UpdatesPanel() {
-  const { status, desktopAvailable, check, download, quitAndInstall, labelFor } =
+  const { status, desktopAvailable, updateNow, quitAndInstall, labelFor } =
     useDesktopUpdate();
   const [busy, setBusy] = useState(false);
 
@@ -16,50 +24,40 @@ export function UpdatesPanel() {
     return (
       <CollapsibleSection title="Actualizaciones" defaultOpen>
         <p className="text-[12px] text-a1-text-muted leading-relaxed">
-          Las actualizaciones automáticas están disponibles en la app de escritorio
-          instalada. Descarga la última versión desde GitHub Releases.
+          Las actualizaciones automáticas solo están disponibles en la app de
+          escritorio instalada (no en modo desarrollo).
         </p>
-        <button
-          type="button"
-          className="hub-btn-secondary w-fit mt-2"
-          onClick={() => openReleaseUrl(RELEASE_PAGE_URL)}
-        >
-          Abrir releases
-        </button>
       </CollapsibleSection>
     );
   }
 
-  const handleCheck = async () => {
+  const handlePrimary = async () => {
+    if (status.phase === "downloaded") {
+      await quitAndInstall();
+      return;
+    }
     setBusy(true);
     try {
-      await check();
+      await updateNow();
     } finally {
       setBusy(false);
     }
-  };
-
-  const handleDownload = async () => {
-    setBusy(true);
-    try {
-      await download();
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const handleInstall = async () => {
-    await quitAndInstall();
   };
 
   const showProgress =
     status.phase === "downloading" && typeof status.percent === "number";
+  const primaryDisabled =
+    busy || status.phase === "checking" || status.phase === "downloading";
 
   return (
     <CollapsibleSection title="Actualizaciones" defaultOpen>
       <div className="flex flex-col gap-3">
         <p className="text-[12px] text-a1-text-muted">
           Versión instalada: <span className="text-a1-text">v{status.currentVersion}</span>
+        </p>
+        <p className="text-[12px] text-a1-text-muted leading-relaxed">
+          Al abrir la app se busca una versión nueva y, si existe, se descarga e
+          instala sola. Reinicia al terminar.
         </p>
         <p className="text-[12px] text-a1-text">{labelFor(status)}</p>
 
@@ -73,43 +71,13 @@ export function UpdatesPanel() {
         )}
 
         <div className="flex flex-wrap gap-2">
-          {(status.phase === "idle" ||
-            status.phase === "not-available" ||
-            status.phase === "error" ||
-            status.phase === "checking") && (
-            <button
-              type="button"
-              className="hub-btn-primary"
-              disabled={busy || status.phase === "checking"}
-              onClick={() => void handleCheck()}
-            >
-              {status.phase === "checking" || busy ? "Comprobando…" : "Buscar actualizaciones"}
-            </button>
-          )}
-
-          {status.phase === "available" && (
-            <button
-              type="button"
-              className="hub-btn-primary"
-              disabled={busy}
-              onClick={() => void handleDownload()}
-            >
-              Descargar
-            </button>
-          )}
-
-          {status.phase === "downloaded" && (
-            <button type="button" className="hub-btn-primary" onClick={() => void handleInstall()}>
-              Reiniciar para actualizar
-            </button>
-          )}
-
           <button
             type="button"
             className="hub-btn-secondary"
-            onClick={() => getPlatform().openExternal(RELEASE_PAGE_URL)}
+            disabled={primaryDisabled}
+            onClick={() => void handlePrimary()}
           >
-            Abrir página de release
+            {primaryButtonLabel(busy, status.phase, status.percent)}
           </button>
         </div>
       </div>

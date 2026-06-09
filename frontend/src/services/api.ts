@@ -27,7 +27,7 @@ export interface ConsumptionRecord {
 
 const getBaseUrl = () => {
   const { config } = useAppStore.getState();
-  const vllmIP = config.vllmIP || "localhost";
+  const vllmIP = config.vllmIP || "127.0.0.1";
   const serverPort = config.serverPort || 8008;
   return `http://${vllmIP}:${serverPort}`;
 };
@@ -35,16 +35,24 @@ const getBaseUrl = () => {
 /**
  * Consulta el estado de salud del backend asíncrono
  */
-export async function getHealth(): Promise<HealthResponse> {
+/** null = backend inalcanzable (no confundir con «ok»). */
+export async function getHealth(): Promise<HealthResponse | null> {
   const url = `${getBaseUrl()}/health`;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
     const res = await fetch(url, { signal: controller.signal });
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    if (!res.ok) {
+      console.warn("[api] Health HTTP", res.status);
+      return null;
+    }
     const data = await res.json();
+    if (data.status !== "ok") {
+      console.warn("[api] Health status not ok:", data.status);
+      return null;
+    }
     return {
-      status: data.status || "ok",
+      status: "ok",
       shared_memory: {
         status: data.shared_memory?.status || "offline",
         offline_mode: data.shared_memory?.offline_mode ?? true,
@@ -61,14 +69,8 @@ export async function getHealth(): Promise<HealthResponse> {
       websocket: useAppStore.getState().connectivity.wsStatus === "CONNECTED",
     };
   } catch (err) {
-    console.error("[api] Error fetching health:", err);
-    return {
-      status: "error",
-      shared_memory: { status: "offline", offline_mode: true, last_lap: 0 },
-      lmu_api: { status: "idle", cache: {} },
-      llm: { configured: false, model: "" },
-      websocket: false,
-    };
+    console.warn("[api] Backend unreachable:", err);
+    return null;
   } finally {
     clearTimeout(timeoutId);
   }

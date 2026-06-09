@@ -8,6 +8,7 @@ import { spotterPrefetchPhrases } from "../services/spotterPhraseResolver";
 import { buildConfigUpdatePayload } from "../services/configUpdatePayload";
 import { registerConfigWs } from "../services/configUpdateWs";
 import { registerWsCommands } from "../services/wsCommands";
+import { getHealth } from "../services/api";
 import { buildVoiceHash, ttsCache } from "../services/ttsCache";
 import { gapsFromCompetitorPace, gapsFromNativeFrame, mapSidecarBinaryFrame } from "../services/telemetryFrame";
 import { expiresAtFromPayload, delayedUntilFromPayload, validationKeyFromPayload, isExpiredAt } from "../services/alertExpiry";
@@ -155,7 +156,7 @@ export function useWebSocket() {
 
   const prefetchSpotterTts = useCallback(async () => {
     const configState = useAppStore.getState().config;
-    const baseUrl = `http://${configState.vllmIP || "localhost"}:${configState.serverPort || 8008}`;
+    const baseUrl = `http://${configState.vllmIP || "127.0.0.1"}:${configState.serverPort || 8008}`;
     const spotterVoice = resolveTtsVoice("spotter", configState);
     const voiceHash = buildVoiceHash({
       ttsBackend: configState.ttsBackend,
@@ -305,7 +306,7 @@ export function useWebSocket() {
     ttsCurrentPriorityRef.current = queueItem.priority;
 
     const configState = useAppStore.getState().config;
-    const baseUrl = `http://${configState.vllmIP || "localhost"}:${configState.serverPort || 8008}`;
+    const baseUrl = `http://${configState.vllmIP || "127.0.0.1"}:${configState.serverPort || 8008}`;
     const ttsText = fullText.length > 2000 ? fullText.slice(0, 1997) + "..." : fullText;
     const ttsVoice = resolveTtsVoice(queueItem.voiceRole, configState);
     const voiceHash = buildVoiceHash({
@@ -418,7 +419,7 @@ export function useWebSocket() {
     setWsStatus("CONNECTING");
 
     // Construir la URL con el IP y puerto del store
-    const vllmIP = config.vllmIP || "localhost";
+    const vllmIP = config.vllmIP || "127.0.0.1";
     const serverPort = config.serverPort || 8008;
     const wsUrl = `ws://${vllmIP}:${serverPort}/ws`;
 
@@ -839,12 +840,33 @@ export function useWebSocket() {
     console.log("[useWebSocket] Desconectado manualmente.");
   }, [setWsStatus]);
 
-  // Manejar conexión automática al montar
+  // Esperar a que el backend responda /health antes del primer WebSocket (arranque empaquetado ~20s)
   useEffect(() => {
-    connect();
+    let cancelled = false;
+    let waitTimer: number | null = null;
+
+    const waitThenConnect = async () => {
+      while (!cancelled) {
+        const health = await getHealth();
+        if (cancelled) return;
+        if (health?.status === "ok") {
+          connect();
+          return;
+        }
+        await new Promise<void>((resolve) => {
+          waitTimer = window.setTimeout(resolve, 1500);
+        });
+      }
+    };
+
+    void waitThenConnect();
+
     return () => {
-      // No desconectar al desmontar si queremos mantener la persistencia durante hot-reload en dev
-      // pero sí limpiar temporizadores de reconexión.
+      cancelled = true;
+      if (waitTimer !== null) {
+        clearTimeout(waitTimer);
+        waitTimer = null;
+      }
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
         reconnectTimeoutRef.current = null;

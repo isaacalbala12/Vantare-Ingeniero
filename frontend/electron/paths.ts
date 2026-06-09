@@ -6,7 +6,7 @@ export function rendererHtml(name: string): string {
   return path.join(app.getAppPath(), "dist", name);
 }
 
-/** Preload script next to electron-dist root (works from windows/ subfolder). */
+/** Preload compilado junto a `electron-dist/paths.js`. */
 export function preloadScriptPath(): string {
-  return path.join(__dirname, "../preload.js");
+  return path.join(__dirname, "preload.js");
 }

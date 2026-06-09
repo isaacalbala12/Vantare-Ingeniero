@@ -104,10 +104,18 @@ def build():
         "espeakng_loader",
         "edge_tts",
         "openai",
+        "chromadb",
+        "chromadb.api.rust",
+        "chromadb.config",
         "chromadb.telemetry.product.posthog",
+        "chromadb_rust_bindings",
     ]
     for imp in HIDDEN_IMPORTS:
         cmd.append(f"--hidden-import={imp}")
+
+    # ChromaDB usa extensiones Rust (.pyd) que PyInstaller no detecta solo
+    cmd.append("--collect-submodules=chromadb")
+    cmd.append("--collect-all=chromadb_rust_bindings")
     
     cmd.append(src_main)
     

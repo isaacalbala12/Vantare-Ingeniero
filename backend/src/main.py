@@ -113,13 +113,20 @@ async def lifespan(app: FastAPI):
     app.state.trace_playback_active = False
     logger.info("TraceStore initialized")
 
-    # 5b. Inicializar EventStore (ChromaDB para RAG)
-    from src.persistence.event_store import EventStore
+    # 5b. Inicializar EventStore (ChromaDB para RAG) — opcional si falla el bundle nativo
+    event_store = None
+    try:
+        from src.persistence.event_store import EventStore
 
-    event_store = EventStore()
-    event_store.initialize(race_id=str(uuid.uuid4()))
+        event_store = EventStore()
+        event_store.initialize(race_id=str(uuid.uuid4()))
+        logger.info("EventStore initialized (ChromaDB RAG)")
+    except Exception as exc:
+        logger.warning(
+            "EventStore (ChromaDB RAG) no disponible — el backend arranca sin RAG: %s",
+            exc,
+        )
     app.state.event_store = event_store
-    logger.info("EventStore initialized (ChromaDB RAG)")
 
     # 6. Instanciar e inicializar IntelligenceEngine (0.5Hz / Triggers / Preempción)
     intelligence_engine = IntelligenceEngine(
@@ -258,7 +265,7 @@ async def lifespan(app: FastAPI):
         logger.info("HistoryStore saved to disk (%d records)", len(app.state.history_store.get_history()))
 
     # 4b. Limpiar EventStore (RAG)
-    if hasattr(app.state, "event_store"):
+    if getattr(app.state, "event_store", None) is not None:
         app.state.event_store.clear()
         logger.info("EventStore cleaned up (ChromaDB RAG)")
 

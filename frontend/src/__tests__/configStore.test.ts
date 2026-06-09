@@ -80,7 +80,7 @@ describe("AppStore", () => {
 
     it("debe tener configuración por defecto", () => {
       const state = useAppStore.getState();
-      expect(state.config.vllmIP).toBe("localhost");
+      expect(state.config.vllmIP).toBe("127.0.0.1");
       expect(state.config.serverPort).toBe(8008);
       expect(state.config.pttHotkey).toBe("Ctrl+Shift+P");
       expect(state.config.sensitivity).toBe(50);

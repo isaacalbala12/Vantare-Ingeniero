@@ -344,10 +344,10 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
     setTestStatus("Probando...");
     try {
       const health = await getHealth();
-      if (health.status === "ok") {
+      if (health?.status === "ok") {
         setTestStatus("✅ Backend OK");
       } else {
-        setTestStatus(`⚠️ ${health.status}`);
+        setTestStatus("❌ Backend no responde");
       }
     } catch (e) {
       setTestStatus("❌ Error de conexión");
