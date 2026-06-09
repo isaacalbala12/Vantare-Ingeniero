@@ -51,8 +51,10 @@ class HistoryStore:
             for i, existing in enumerate(self._history):
                 if existing["lap"] == lap:
                     self._history[i] = record
-                    return
-            self._history.append(record)
+                    break
+            else:
+                self._history.append(record)
+        self.save()
 
     def get_history(self) -> List[dict]:
         """Devuelve una copia del historial completo ordenado por vuelta."""
