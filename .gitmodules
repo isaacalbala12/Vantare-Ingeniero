@@ -1,3 +1,12 @@
 [submodule "Qwen3-TTS-GGUF"]
 	path = Qwen3-TTS-GGUF
 	url = https://huggingface.co/Qwen/Qwen3-TTS-GGUF
+[submodule "TinyPedal"]
+	path = TinyPedal
+	url = https://github.com/TinyPedal/TinyPedal.git
+[submodule "llama.cpp"]
+	path = llama.cpp
+	url = https://github.com/ggml-org/llama.cpp.git
+[submodule "voxtral-micro"]
+	path = voxtral-micro
+	url = https://github.com/DavidValin/voxtral-micro.git
