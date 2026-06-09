@@ -49,7 +49,7 @@ jobs:
           python build.py --noconfirm
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.artifact }}
           path: |
@@ -198,7 +198,7 @@ jobs:
           find . -type f \( -name "*.exe" -o -name "*.deb" -o -name "*.zip" -o -name "*.tar.gz" \) | head -20
 
       - name: Upload all installers
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: all-installers
           path: |
