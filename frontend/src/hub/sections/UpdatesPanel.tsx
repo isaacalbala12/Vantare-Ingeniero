@@ -75,7 +75,8 @@ export function UpdatesPanel() {
         <div className="flex flex-wrap gap-2">
           {(status.phase === "idle" ||
             status.phase === "not-available" ||
-            status.phase === "error") && (
+            status.phase === "error" ||
+            status.phase === "checking") && (
             <button
               type="button"
               className="hub-btn-primary"
