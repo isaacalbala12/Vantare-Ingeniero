@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@import "../core/styles/tokens-a1.css";
+
+html.overlay-shell,
+html.overlay-shell body,
+html.overlay-shell #root {
+  margin: 0;
+  padding: 0;
+  width: fit-content;
+  height: fit-content;
+  min-width: 0;
+  min-height: 0;
+  background: transparent;
+  overflow: visible;
+  user-select: none;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #f4f4f5;
+}

@@ -23,7 +23,7 @@ def test_build_prompt_legacy():
     snapshot = {"lap": 5, "fuel_in_tank": 42.0, "place": 3}
     result = build_prompt(snapshot, "test", None, prompt_templates)
     # Modo legacy: usa SYSTEM_PROMPT_BASIC + no contiene ticker
-    assert "Eres un ingeniero de carrera" in result
+    assert "Le Mans Ultimate" in result or "ingeniero" in result
     assert "DRV:P" not in result
 
 

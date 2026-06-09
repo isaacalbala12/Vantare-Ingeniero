@@ -7,6 +7,7 @@ from src.intelligence.prompt_templates import (
     SYSTEM_PROMPT_BASIC,
     SYSTEM_PROMPT_TICKER,
     render,
+    render_pilot_question_messages,
 )
 
 
@@ -265,3 +266,33 @@ class TestSystemPromptsDifference:
         result = render(context, "FAST")
         assert "profesional" in result.lower() or "limpio" in result.lower()
         assert "colorido" not in result.lower()
+
+
+class TestPilotQuestionMessages:
+    """PTT/ask: system+user sin diccionario ticker largo."""
+
+    def test_render_pilot_question_uses_system_role(self):
+        messages = render_pilot_question_messages(
+            {
+                "pilot_question": "¿Cómo va el fuel?",
+                "ticker_text": "DRV:P3|L12|F:40.0L",
+            },
+            "FAST",
+        )
+        assert messages[0]["role"] == "system"
+        assert "Le Mans Ultimate" in messages[0]["content"]
+        assert messages[1]["role"] == "user"
+        assert "DRV:P3" in messages[1]["content"]
+        assert "¿Cómo va el fuel?" in messages[1]["content"]
+        assert "Tabla Diccionario" not in messages[0]["content"]
+
+    def test_render_pilot_question_compact_snapshot_without_ticker(self):
+        messages = render_pilot_question_messages(
+            {
+                "pilot_question": "¿Ritmo?",
+                "snapshot": {"lap_number": 8, "place": 4, "fuel_in_tank": 35.0},
+            },
+            "FAST",
+        )
+        assert "vuelta 8" in messages[1]["content"]
+        assert "P4" in messages[1]["content"]

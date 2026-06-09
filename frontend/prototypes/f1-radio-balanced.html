@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vantare — Radio Punto Medio</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&family=Syne:wght@400;700;800&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #09090b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 52px;
+      font-family: 'Inter', sans-serif;
+      padding: 52px 24px;
+    }
+
+    .section-title {
+      color: #52525b;
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      font-weight: 500;
+      margin-bottom: -36px;
+      align-self: flex-start;
+      max-width: 560px;
+      width: 100%;
+    }
+
+    /* =========================================================
+       VARIANT 1: BROADCAST — Gráficos F1 modernos (Liberty)
+       ========================================================= */
+    .v1-broadcast {
+      --red: #c41e3a;
+      --red-glow: #e63950;
+      --surface: rgba(24, 24, 28, 0.95);
+      --text: #f4f4f5;
+      --text-dim: rgba(244, 244, 245, 0.35);
+      width: 100%; max-width: 540px;
+      position: relative;
+      padding: 28px 32px 24px;
+      background: var(--surface);
+      border-radius: 6px;
+      border-left: 3px solid var(--red);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+    .v1-broadcast::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--red), transparent 60%);
+    }
+    .v1-broadcast .header-row {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .v1-broadcast .radio-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .v1-broadcast .radio-label {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--red);
+    }
+    .v1-broadcast .wave-container {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .v1-broadcast .wave-line {
+      flex: 1; height: 24px;
+      display: flex; align-items: flex-end; gap: 2.5px;
+    }
+    .v1-broadcast .wave-line .bar {
+      flex: 1;
+      background: linear-gradient(180deg, var(--red-glow), var(--red));
+      border-radius: 1px;
+      opacity: 0.5;
+      animation: wave-smooth 1.2s ease-in-out infinite;
+      min-height: 2px;
+    }
+    .v1-broadcast .wave-line .bar:nth-child(1) { height: 35%; animation-delay: 0.0s; }
+    .v1-broadcast .wave-line .bar:nth-child(2) { height: 65%; animation-delay: 0.08s; }
+    .v1-broadcast .wave-line .bar:nth-child(3) { height: 45%; animation-delay: 0.16s; }
+    .v1-broadcast .wave-line .bar:nth-child(4) { height: 80%; animation-delay: 0.24s; }
+    .v1-broadcast .wave-line .bar:nth-child(5) { height: 55%; animation-delay: 0.32s; }
+    .v1-broadcast .wave-line .bar:nth-child(6) { height: 70%; animation-delay: 0.40s; }
+    .v1-broadcast .wave-line .bar:nth-child(7) { height: 40%; animation-delay: 0.48s; }
+    .v1-broadcast .wave-line .bar:nth-child(8) { height: 90%; animation-delay: 0.56s; }
+    .v1-broadcast .wave-line .bar:nth-child(9) { height: 50%; animation-delay: 0.64s; }
+    .v1-broadcast .wave-line .bar:nth-child(10) { height: 75%; animation-delay: 0.72s; }
+    .v1-broadcast .wave-line .bar:nth-child(11) { height: 60%; animation-delay: 0.80s; }
+    .v1-broadcast .wave-line .bar:nth-child(12) { height: 85%; animation-delay: 0.88s; }
+    .v1-broadcast .wave-line .bar:nth-child(13) { height: 45%; animation-delay: 0.96s; }
+    .v1-broadcast .wave-line .bar:nth-child(14) { height: 70%; animation-delay: 1.04s; }
+    .v1-broadcast .wave-line .bar:nth-child(15) { height: 55%; animation-delay: 1.12s; }
+    .v1-broadcast .wave-line .bar:nth-child(16) { height: 80%; animation-delay: 1.20s; }
+    .v1-broadcast .live-badge {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      display: flex; align-items: center; gap: 5px;
+      white-space: nowrap;
+    }
+    .v1-broadcast .live-badge::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: pulse-smooth 1.8s ease-in-out infinite;
+    }
+    .v1-broadcast .radio-message {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.55;
+      color: var(--text);
+      letter-spacing: 0.2px;
+    }
+    .v1-broadcast .radio-message.placeholder {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+    .v1-broadcast .footer-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(244,244,245,0.06);
+    }
+    .v1-broadcast .radio-source {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* =========================================================
+       VARIANT 2: GT — Cockpit Porsche/Mercedes, técnico limpio
+       ========================================================= */
+    .v2-gt {
+      --red: #a31830;
+      --red-bright: #d42040;
+      --panel: #121214;
+      --text: #e4e4e7;
+      --text-dim: rgba(228, 228, 231, 0.3);
+      width: 100%; max-width: 540px;
+      position: relative;
+      padding: 26px 30px 22px;
+      background: var(--panel);
+      border-radius: 3px;
+      box-shadow:
+        0 4px 16px rgba(0,0,0,0.4),
+        inset 0 0 0 1px rgba(255,255,255,0.04);
+    }
+    .v2-gt .top-bar {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 16px;
+    }
+    .v2-gt .top-bar .dot {
+      width: 6px; height: 6px;
+      background: var(--red-bright);
+      border-radius: 50%;
+      animation: pulse-smooth 2s ease-in-out infinite;
+    }
+    .v2-gt .top-bar .line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--red), transparent);
+      opacity: 0.4;
+    }
+    .v2-gt .header-row {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 14px;
+    }
+    .v2-gt .radio-name {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .v2-gt .radio-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red-bright);
+    }
+    .v2-gt .equalizer {
+      display: flex; align-items: flex-end; gap: 3px;
+      height: 22px; margin-bottom: 14px;
+    }
+    .v2-gt .equalizer .bar {
+      width: 3px;
+      background: var(--red-bright);
+      border-radius: 1px;
+      opacity: 0.6;
+      animation: wave-smooth 1s ease-in-out infinite;
+    }
+    .v2-gt .equalizer .bar:nth-child(1) { height: 30%; animation-delay: 0.0s; }
+    .v2-gt .equalizer .bar:nth-child(2) { height: 55%; animation-delay: 0.1s; }
+    .v2-gt .equalizer .bar:nth-child(3) { height: 40%; animation-delay: 0.2s; }
+    .v2-gt .equalizer .bar:nth-child(4) { height: 75%; animation-delay: 0.3s; }
+    .v2-gt .equalizer .bar:nth-child(5) { height: 50%; animation-delay: 0.4s; }
+    .v2-gt .equalizer .bar:nth-child(6) { height: 65%; animation-delay: 0.5s; }
+    .v2-gt .equalizer .bar:nth-child(7) { height: 35%; animation-delay: 0.6s; }
+    .v2-gt .equalizer .bar:nth-child(8) { height: 85%; animation-delay: 0.7s; }
+    .v2-gt .equalizer .bar:nth-child(9) { height: 45%; animation-delay: 0.8s; }
+    .v2-gt .equalizer .bar:nth-child(10) { height: 70%; animation-delay: 0.9s; }
+    .v2-gt .equalizer .bar:nth-child(11) { height: 55%; animation-delay: 1.0s; }
+    .v2-gt .equalizer .bar:nth-child(12) { height: 80%; animation-delay: 1.1s; }
+    .v2-gt .radio-message {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .v2-gt .radio-message.placeholder {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+    .v2-gt .footer-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 16px;
+    }
+    .v2-gt .radio-source {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .v2-gt .time-code {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      color: var(--red-bright);
+      opacity: 0.7;
+    }
+
+    /* =========================================================
+       VARIANT 3: LOUNGE — Bar premium, neon sutil
+       ========================================================= */
+    .v3-lounge {
+      --red: #9e1b32;
+      --red-glow: #cc2444;
+      --surface: rgba(16, 16, 20, 0.92);
+      --text: #f0f0f2;
+      --text-dim: rgba(240, 240, 242, 0.3);
+      width: 100%; max-width: 540px;
+      position: relative;
+      padding: 30px 34px 26px;
+      background: var(--surface);
+      border-radius: 8px;
+      border: 1px solid rgba(158, 27, 50, 0.15);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.03),
+        0 12px 40px rgba(0,0,0,0.5);
+    }
+    .v3-lounge::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 30px; right: 30px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--red-glow), transparent);
+    }
+    .v3-lounge .header-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .v3-lounge .radio-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .v3-lounge .radio-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red-glow);
+      opacity: 0.8;
+    }
+    .v3-lounge .spectrum {
+      height: 28px;
+      display: flex; align-items: flex-end; gap: 2px;
+      margin-bottom: 14px;
+      padding: 2px 0;
+    }
+    .v3-lounge .spectrum .bar {
+      flex: 1;
+      background: linear-gradient(180deg, var(--red-glow), var(--red));
+      border-radius: 2px;
+      opacity: 0.45;
+      animation: wave-smooth 0.9s ease-in-out infinite;
+    }
+    .v3-lounge .spectrum .bar:nth-child(1) { height: 30%; animation-delay: 0.00s; }
+    .v3-lounge .spectrum .bar:nth-child(2) { height: 55%; animation-delay: 0.06s; }
+    .v3-lounge .spectrum .bar:nth-child(3) { height: 40%; animation-delay: 0.12s; }
+    .v3-lounge .spectrum .bar:nth-child(4) { height: 75%; animation-delay: 0.18s; }
+    .v3-lounge .spectrum .bar:nth-child(5) { height: 50%; animation-delay: 0.24s; }
+    .v3-lounge .spectrum .bar:nth-child(6) { height: 65%; animation-delay: 0.30s; }
+    .v3-lounge .spectrum .bar:nth-child(7) { height: 35%; animation-delay: 0.36s; }
+    .v3-lounge .spectrum .bar:nth-child(8) { height: 85%; animation-delay: 0.42s; }
+    .v3-lounge .spectrum .bar:nth-child(9) { height: 45%; animation-delay: 0.48s; }
+    .v3-lounge .spectrum .bar:nth-child(10) { height: 70%; animation-delay: 0.54s; }
+    .v3-lounge .spectrum .bar:nth-child(11) { height: 55%; animation-delay: 0.60s; }
+    .v3-lounge .spectrum .bar:nth-child(12) { height: 80%; animation-delay: 0.66s; }
+    .v3-lounge .spectrum .bar:nth-child(13) { height: 40%; animation-delay: 0.72s; }
+    .v3-lounge .spectrum .bar:nth-child(14) { height: 75%; animation-delay: 0.78s; }
+    .v3-lounge .spectrum .bar:nth-child(15) { height: 50%; animation-delay: 0.84s; }
+    .v3-lounge .spectrum .bar:nth-child(16) { height: 65%; animation-delay: 0.90s; }
+    .v3-lounge .radio-message {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .v3-lounge .radio-message.placeholder {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+    .v3-lounge .footer-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(158, 27, 50, 0.08);
+    }
+    .v3-lounge .radio-source {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .v3-lounge .live-tag {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red-glow);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .v3-lounge .live-tag::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: var(--red-glow);
+      border-radius: 50%;
+      animation: pulse-smooth 1.6s ease-in-out infinite;
+    }
+
+    /* =========================================================
+       VARIANT 4: PADDOCK — VIP, negro mate, detalle rojo
+       ========================================================= */
+    .v4-paddock {
+      --red: #8b1a2e;
+      --red-bright: #b8203c;
+      --matte: #0f0f11;
+      --text: #e8e8ec;
+      --text-dim: rgba(232, 232, 236, 0.3);
+      width: 100%; max-width: 540px;
+      position: relative;
+      padding: 28px 32px 24px;
+      background: var(--matte);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .v4-paddock::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--red), var(--red-bright) 30%, transparent 60%);
+    }
+    .v4-paddock::after {
+      content: '';
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(184, 32, 60, 0.06) 0%, transparent 70%);
+    }
+    .v4-paddock .header-row {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 14px;
+    }
+    .v4-paddock .radio-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .v4-paddock .radio-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red-bright);
+    }
+    .v4-paddock .audio-strip {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+    .v4-paddock .audio-strip .track {
+      flex: 1; height: 18px;
+      display: flex; align-items: center; gap: 1.5px;
+    }
+    .v4-paddock .audio-strip .track .tick {
+      flex: 1; height: 100%;
+      background: var(--red-bright);
+      border-radius: 1px;
+      opacity: 0.25;
+      animation: tick-wave 0.8s ease-in-out infinite;
+    }
+    .v4-paddock .audio-strip .track .tick:nth-child(odd) { animation-duration: 0.9s; }
+    .v4-paddock .audio-strip .track .tick:nth-child(even) { animation-duration: 0.7s; }
+    .v4-paddock .audio-strip .track .tick:nth-child(3n) { animation-duration: 1.1s; }
+    .v4-paddock .audio-strip .live-dot {
+      width: 5px; height: 5px;
+      background: var(--red-bright);
+      border-radius: 50%;
+      animation: pulse-smooth 1.8s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+    @keyframes tick-wave {
+      0%, 100% { opacity: 0.15; transform: scaleY(0.5); }
+      50% { opacity: 0.5; transform: scaleY(1); }
+    }
+    .v4-paddock .radio-message {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .v4-paddock .radio-message.placeholder {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+    .v4-paddock .footer-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(232,232,236,0.05);
+    }
+    .v4-paddock .radio-source {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+
+    /* =========================================================
+       VARIANT 5: PIT WALL — Monitor técnico, grid sutil
+       ========================================================= */
+    .v5-pitwall {
+      --red: #a01e34;
+      --red-bright: #cc2848;
+      --grid: rgba(255,255,255,0.025);
+      --text: #e2e2e6;
+      --text-dim: rgba(226, 226, 230, 0.3);
+      width: 100%; max-width: 540px;
+      position: relative;
+      padding: 26px 30px 22px;
+      background:
+        linear-gradient(180deg, #111113 0%, #0d0d0f 100%);
+      border-radius: 2px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+      overflow: hidden;
+    }
+    .v5-pitwall::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px),
+        linear-gradient(0deg, var(--grid) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+    }
+    .v5-pitwall .header-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .v5-pitwall .radio-name {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .v5-pitwall .status-pill {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red-bright);
+      padding: 3px 8px;
+      border: 1px solid rgba(204, 40, 72, 0.25);
+      border-radius: 2px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .v5-pitwall .status-pill::before {
+      content: '';
+      width: 4px; height: 4px;
+      background: var(--red-bright);
+      border-radius: 50%;
+      animation: pulse-smooth 2s ease-in-out infinite;
+    }
+    .v5-pitwall .divider-line {
+      height: 1px;
+      background: linear-gradient(90deg, var(--red), transparent 50%);
+      opacity: 0.3;
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .v5-pitwall .radio-message {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.55;
+      color: var(--text);
+      position: relative;
+    }
+    .v5-pitwall .radio-message.placeholder {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+    .v5-pitwall .footer-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 16px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(226,226,230,0.04);
+      position: relative;
+    }
+    .v5-pitwall .radio-source {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .v5-pitwall .channel {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 8px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      color: var(--red-bright);
+      opacity: 0.5;
+    }
+
+    /* =========================================================
+       VARIANT 6: STRIPE — Rayas dinámicas, movimiento controlado
+       ========================================================= */
+    .v6-stripe {
+      --red: #9b1b32;
+      --red-bright: #c42040;
+      --surface: rgba(18, 18, 22, 0.96);
+      --text: #ededf0;
+      --text-dim: rgba(237, 237, 240, 0.3);
+      width: 100%; max-width: 540px;
+      position: relative;
+      padding: 28px 32px 24px;
+      background: var(--surface);
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow: 0 10px 36px rgba(0,0,0,0.45);
+    }
+    .v6-stripe .stripe-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      display: flex; gap: 2px;
+      padding: 0 2px;
+    }
+    .v6-stripe .stripe-bg .seg {
+      flex: 1; height: 100%;
+      background: var(--red);
+      opacity: 0;
+      animation: stripe-reveal 3s ease-in-out infinite;
+    }
+    .v6-stripe .stripe-bg .seg:nth-child(1) { animation-delay: 0.0s; }
+    .v6-stripe .stripe-bg .seg:nth-child(2) { animation-delay: 0.1s; }
+    .v6-stripe .stripe-bg .seg:nth-child(3) { animation-delay: 0.2s; }
+    .v6-stripe .stripe-bg .seg:nth-child(4) { animation-delay: 0.3s; }
+    .v6-stripe .stripe-bg .seg:nth-child(5) { animation-delay: 0.4s; }
+    .v6-stripe .stripe-bg .seg:nth-child(6) { animation-delay: 0.5s; }
+    .v6-stripe .stripe-bg .seg:nth-child(7) { animation-delay: 0.6s; }
+    .v6-stripe .stripe-bg .seg:nth-child(8) { animation-delay: 0.7s; }
+    .v6-stripe .stripe-bg .seg:nth-child(9) { animation-delay: 0.8s; }
+    .v6-stripe .stripe-bg .seg:nth-child(10) { animation-delay: 0.9s; }
+    .v6-stripe .stripe-bg .seg:nth-child(11) { animation-delay: 1.0s; }
+    .v6-stripe .stripe-bg .seg:nth-child(12) { animation-delay: 1.1s; }
+    @keyframes stripe-reveal {
+      0%, 100% { opacity: 0; }
+      30%, 70% { opacity: 0.6; }
+    }
+    .v6-stripe .header-row {
+      display: flex; align-items: baseline; gap: 12px;
+      margin-bottom: 14px;
+      margin-top: 4px;
+    }
+    .v6-stripe .radio-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+    .v6-stripe .radio-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--red-bright);
+    }
+    .v6-stripe .wave-minimal {
+      display: flex; align-items: flex-end; gap: 2.5px;
+      height: 20px; margin-bottom: 14px;
+    }
+    .v6-stripe .wave-minimal .bar {
+      width: 3px;
+      background: linear-gradient(180deg, var(--red-bright), var(--red));
+      border-radius: 1.5px;
+      opacity: 0.5;
+      animation: wave-smooth 1s ease-in-out infinite;
+    }
+    .v6-stripe .wave-minimal .bar:nth-child(1) { height: 35%; animation-delay: 0.0s; }
+    .v6-stripe .wave-minimal .bar:nth-child(2) { height: 60%; animation-delay: 0.1s; }
+    .v6-stripe .wave-minimal .bar:nth-child(3) { height: 45%; animation-delay: 0.2s; }
+    .v6-stripe .wave-minimal .bar:nth-child(4) { height: 80%; animation-delay: 0.3s; }
+    .v6-stripe .wave-minimal .bar:nth-child(5) { height: 55%; animation-delay: 0.4s; }
+    .v6-stripe .wave-minimal .bar:nth-child(6) { height: 70%; animation-delay: 0.5s; }
+    .v6-stripe .wave-minimal .bar:nth-child(7) { height: 40%; animation-delay: 0.6s; }
+    .v6-stripe .wave-minimal .bar:nth-child(8) { height: 85%; animation-delay: 0.7s; }
+    .v6-stripe .wave-minimal .bar:nth-child(9) { height: 50%; animation-delay: 0.8s; }
+    .v6-stripe .wave-minimal .bar:nth-child(10) { height: 75%; animation-delay: 0.9s; }
+    .v6-stripe .wave-minimal .bar:nth-child(11) { height: 60%; animation-delay: 1.0s; }
+    .v6-stripe .wave-minimal .bar:nth-child(12) { height: 80%; animation-delay: 1.1s; }
+    .v6-stripe .radio-message {
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 1.55;
+      color: var(--text);
+    }
+    .v6-stripe .radio-message.placeholder {
+      color: var(--text-dim);
+      font-weight: 400;
+    }
+    .v6-stripe .footer-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(237,237,240,0.05);
+    }
+    .v6-stripe .radio-source {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+    }
+    .v6-stripe .live-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red-bright);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .v6-stripe .live-text::before {
+      content: '';
+      width: 5px; height: 5px;
+      background: var(--red-bright);
+      border-radius: 50%;
+      animation: pulse-smooth 1.5s ease-in-out infinite;
+    }
+
+    @keyframes wave-smooth {
+      0%, 100% { transform: scaleY(0.5); opacity: 0.35; }
+      50% { transform: scaleY(1.0); opacity: 0.75; }
+    }
+    @keyframes pulse-smooth {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Controls */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center;
+      max-width: 540px;
+      margin-top: 8px;
+    }
+    .btn {
+      padding: 8px 16px;
+      border: 1px solid #27272a;
+      background: #18181b;
+      color: #71717a;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn:hover { border-color: #3f3f46; color: #a1a1aa; }
+  </style>
+</head>
+<body>
+
+  <div class="section-title">V1 — Broadcast (gráficos F1 modernos, Liberty)</div>
+  <div class="radio-card v1-broadcast" data-card>
+    <div class="header-row">
+      <div class="radio-name">Ingeniero</div>
+      <div class="radio-label">Radio</div>
+    </div>
+    <div class="wave-container">
+      <div class="wave-line">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+      <div class="live-badge">Live</div>
+    </div>
+    <div class="radio-message">Box esta vuelta, por favor. Tenemos el margen justo para mantener posición.</div>
+    <div class="footer-row">
+      <div class="radio-source">Vantare IA</div>
+    </div>
+  </div>
+
+  <div class="section-title">V2 — GT (cockpit Porsche/Mercedes, técnico limpio)</div>
+  <div class="radio-card v2-gt" data-card>
+    <div class="top-bar">
+      <div class="dot"></div>
+      <div class="line"></div>
+    </div>
+    <div class="header-row">
+      <div class="radio-name">Ingeniero</div>
+      <div class="radio-label">Radio</div>
+    </div>
+    <div class="equalizer">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+    <div class="radio-message">El coche de detrás acelera en el tercer sector. Recomiendo conservar neumático.</div>
+    <div class="footer-row">
+      <div class="radio-source">Vantare IA</div>
+      <div class="time-code">CH-07</div>
+    </div>
+  </div>
+
+  <div class="section-title">V3 — Lounge (bar premium, neon sutil)</div>
+  <div class="radio-card v3-lounge" data-card>
+    <div class="header-row">
+      <div class="radio-name">Ingeniero</div>
+      <div class="radio-label">Radio</div>
+    </div>
+    <div class="spectrum">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+    <div class="radio-message">DRS habilitado en la siguiente zona. Mantén el ritmo actual.</div>
+    <div class="footer-row">
+      <div class="radio-source">Vantare IA</div>
+      <div class="live-tag">Live</div>
+    </div>
+  </div>
+
+  <div class="section-title">V4 — Paddock (VIP, negro mate, detalle rojo)</div>
+  <div class="radio-card v4-paddock" data-card>
+    <div class="header-row">
+      <div class="radio-name">Ingeniero</div>
+      <div class="radio-label">Radio</div>
+    </div>
+    <div class="audio-strip">
+      <div class="track">
+        <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+        <div class="tick"></div><div class="tick"></div><div class="tick"></div><div class="tick"></div>
+      </div>
+      <div class="live-dot"></div>
+    </div>
+    <div class="radio-message">Vuelta rápida personal en el segundo sector. Continúa así.</div>
+    <div class="footer-row">
+      <div class="radio-source">Vantare IA</div>
+    </div>
+  </div>
+
+  <div class="section-title">V5 — Pit Wall (monitor técnico, grid sutil)</div>
+  <div class="radio-card v5-pitwall" data-card>
+    <div class="header-row">
+      <div class="radio-name">Ingeniero</div>
+      <div class="status-pill">Live</div>
+    </div>
+    <div class="divider-line"></div>
+    <div class="radio-message">Eres segundo, a 3.2 del líder. El siguiente coche está a una vuelta.</div>
+    <div class="footer-row">
+      <div class="radio-source">Vantare IA</div>
+      <div class="channel">RADIO-1</div>
+    </div>
+  </div>
+
+  <div class="section-title">V6 — Stripe (rayas dinámicas, movimiento controlado)</div>
+  <div class="radio-card v6-stripe" data-card>
+    <div class="stripe-bg">
+      <div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+      <div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+      <div class="seg"></div><div class="seg"></div><div class="seg"></div><div class="seg"></div>
+    </div>
+    <div class="header-row">
+      <div class="radio-name">Ingeniero</div>
+      <div class="radio-label">Radio</div>
+    </div>
+    <div class="wave-minimal">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+    <div class="radio-message">Push ahora. Safety car en pista. Ventana de pits cerrada.</div>
+    <div class="footer-row">
+      <div class="radio-source">Vantare IA</div>
+      <div class="live-text">Live</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn" onclick="cycleMessages()">Cambiar mensajes</button>
+    <button class="btn" onclick="clearAll()">Limpiar</button>
+  </div>
+
+  <script>
+    const messages = [
+      "Box esta vuelta, por favor. Tenemos el margen justo para mantener posición.",
+      "El coche de detrás acelera en el tercer sector. Recomiendo conservar neumático.",
+      "DRS habilitado en la siguiente zona. Mantén el ritmo actual.",
+      "Vuelta rápida personal en el segundo sector. Continúa así.",
+      "Eres segundo, a 3.2 del líder. El siguiente coche está a una vuelta.",
+      "Push ahora. Safety car en pista. Ventana de pits cerrada."
+    ];
+    let msgIndex = 0;
+
+    function cycleMessages() {
+      msgIndex = (msgIndex + 1) % messages.length;
+      const cards = document.querySelectorAll('[data-card]');
+      cards.forEach((card, i) => {
+        const msgEl = card.querySelector('.radio-message');
+        msgEl.textContent = messages[(msgIndex + i) % messages.length];
+        msgEl.classList.remove('placeholder');
+      });
+    }
+
+    function clearAll() {
+      document.querySelectorAll('[data-card]').forEach(card => {
+        const msgEl = card.querySelector('.radio-message');
+        msgEl.textContent = 'Radio silenciosa. Presiona PTT para transmitir.';
+        msgEl.classList.add('placeholder');
+      });
+    }
+  </script>
+</body>
+</html>

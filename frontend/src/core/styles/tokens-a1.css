@@ -1,0 +1,85 @@
+@theme {
+  --color-a1-bg: #09090b;
+  --color-a1-surface: rgb(18 18 22 / 0.94);
+  --color-a1-accent: #c42040;
+  --color-a1-accent-dark: #9b1b32;
+  --color-a1-accent-bright: #e63950;
+  --color-a1-text: #f4f4f5;
+  --color-a1-text-muted: rgb(244 244 245 / 0.45);
+  --color-a1-border: rgb(237 237 240 / 0.05);
+  --radius-a1: 5px;
+  --font-a1-display: "Space Grotesk", system-ui, sans-serif;
+  --font-a1-body: "Inter", system-ui, sans-serif;
+
+  --color-hub-sidebar: #0c0c0e;
+  --color-hub-surface: #121216;
+  --color-hub-card: rgb(255 255 255 / 0.04);
+  --color-hub-border: rgb(255 255 255 / 0.06);
+  --radius-hub-card: 12px;
+}
+
+@keyframes a1-aurora {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes a1-wave-smooth {
+  0%, 100% { transform: scaleY(0.45); opacity: 0.3; }
+  50% { transform: scaleY(1); opacity: 0.7; }
+}
+
+@keyframes a1-stripe-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.85; }
+}
+
+@keyframes a1-pulse-smooth {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.overlay-a1-aurora {
+  background: linear-gradient(90deg, #1a0a10, #120508, #1a0a10);
+  /* Static gradient — animated aurora was costly during overlay show */
+}
+
+.overlay-a1-wave-bar {
+  animation: a1-wave-smooth 1.4s ease-in-out infinite;
+}
+
+.overlay-a1-stripe {
+  /* Static accent stripe */
+}
+
+.overlay-a1-live-dot {
+  animation: a1-pulse-smooth 2.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay-a1-wave-bar,
+  .overlay-a1-live-dot {
+    animation: none !important;
+  }
+}
+
+.hub-root {
+  background-color: var(--color-a1-bg);
+  color: var(--color-a1-text);
+}
+
+.hub-input {
+  @apply bg-hub-surface border border-hub-border rounded-md px-3 py-2 text-sm text-a1-text focus:border-a1-accent focus:outline-none;
+}
+
+.hub-label {
+  @apply text-[10px] uppercase tracking-wider text-a1-text-muted font-medium;
+}
+
+.hub-btn-primary {
+  @apply bg-a1-accent hover:bg-a1-accent-bright text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-md transition-colors;
+}
+
+.hub-btn-secondary {
+  @apply bg-hub-card hover:bg-white/10 border border-hub-border text-a1-text text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-md;
+}

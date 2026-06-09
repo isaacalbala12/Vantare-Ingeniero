@@ -7,14 +7,25 @@ Inherit Python mapping of LMU Shared Memory Interface
 from __future__ import annotations
 
 import ctypes
+import importlib
 import logging
 import mmap
-import platform
+import sys
 
 from . import lmu_data
 from .lmu_data import LMUConstants
 
-PLATFORM = platform.system()
+
+def _stdlib_platform():
+    """Load stdlib platform; avoid PyInstaller shadowing by local src/platform package."""
+    existing = sys.modules.get("platform")
+    if existing is not None and hasattr(existing, "system"):
+        return existing
+    sys.modules.pop("platform", None)
+    return importlib.import_module("platform")
+
+
+PLATFORM = _stdlib_platform().system()
 MAX_VEHICLES = LMUConstants.MAX_MAPPED_VEHICLES
 INVALID_INDEX = -1
 

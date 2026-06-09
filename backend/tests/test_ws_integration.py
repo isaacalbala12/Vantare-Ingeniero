@@ -33,7 +33,7 @@ def ws_app():
     app.state.intelligence_engine = None
     app.state.spotter_service = None
     app.state.latest_client_frame = None
-    app.state.latest_strategy_frame = None
+    app.state.latest_client_frame = None
     app.state._last_telemetry_t = 0.0
     app.state.event_store = None
 
