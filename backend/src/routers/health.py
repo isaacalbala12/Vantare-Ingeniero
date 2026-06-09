@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from src.config import settings
-from src.platform.runtime import native_telemetry_enabled
+from src.app_runtime.runtime import native_telemetry_enabled
 from src.services.lmu_api import get_cache_sizes
 from src.services.asr_service import get_asr_status
 

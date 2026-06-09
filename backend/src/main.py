@@ -36,7 +36,7 @@ from src.persistence.history_store import HistoryStore
 from src.persistence.profile_store import ProfileStore
 from src.persistence.trace_store import TraceStore
 from shared_telemetry import TelemetryReader
-from src.platform.runtime import native_telemetry_enabled
+from src.app_runtime.runtime import native_telemetry_enabled
 
 from src.routers.health import router as health_router
 from src.routers.websocket import router as ws_router, broadcast_sync
