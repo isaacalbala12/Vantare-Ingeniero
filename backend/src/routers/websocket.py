@@ -12,6 +12,22 @@ logger = logging.getLogger("vantare.websocket")
 
 router = APIRouter()
 
+MAX_PILOT_QUESTION_LEN = 512
+
+
+def _normalize_pilot_question(question: str) -> str | None:
+    cleaned = (question or "").strip()
+    if not cleaned:
+        return None
+    if len(cleaned) > MAX_PILOT_QUESTION_LEN:
+        logger.warning(
+            "pilot_question truncado de %d a %d caracteres",
+            len(cleaned),
+            MAX_PILOT_QUESTION_LEN,
+        )
+        return cleaned[:MAX_PILOT_QUESTION_LEN]
+    return cleaned
+
 
 async def _safe_evaluate_cycle(engine, frame, advice) -> None:
     """Wrapper seguro para evaluate_cycle que captura excepciones sin tirar abajo el WebSocket."""
@@ -341,9 +357,10 @@ async def websocket_endpoint(websocket: WebSocket):
                         await manager.broadcast(ack)
                         logger.info("[WS] spotter enabled=%s", spotter.enabled)
                 elif event == "pilot_question":
-                    question = msg.get("data", {}).get("question", "")
+                    raw_question = msg.get("data", {}).get("question", "")
+                    question = _normalize_pilot_question(raw_question)
                     if question:
-                        logger.info(f"[WS] Pregunta del piloto recibida: {question[:80]}...")
+                        logger.info("[WS] Pregunta del piloto recibida: %s...", question[:80])
                         engine = getattr(app_state, "intelligence_engine", None)
                         if engine:
                             task = asyncio.create_task(_safe_handle_pilot_question(engine, question))
