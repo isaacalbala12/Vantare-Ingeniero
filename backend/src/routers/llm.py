@@ -1,7 +1,11 @@
 from typing import List, Optional
+import logging
+
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
+
+logger = logging.getLogger("vantare.llm_router")
 
 router = APIRouter()
 
@@ -44,12 +48,16 @@ async def ask_copilot(request: Request, body: AskRequest):
             })
 
     # 3. Procesar la pregunta usando IntelligenceEngine
+    logger.info("[/ask] pregunta: %r", body.question)
     full_response = ""
     async for chunk in engine.ask_async(body.question, formatted_history):
         full_response += chunk
 
     if not full_response.strip():
         full_response = "No he podido generar una respuesta en este momento."
+        logger.warning("[/ask] respuesta vacía para pregunta: %r", body.question)
+    else:
+        logger.info("[/ask] respuesta (%d chars): %s", len(full_response), full_response)
 
     # 4. Devolver texto plano (el TTS se solicita al endpoint /tts)
     return Response(

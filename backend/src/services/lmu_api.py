@@ -12,12 +12,49 @@ logger = logging.getLogger("vantare.lmu_api")
 _weather_cache: dict = {}
 _strategy_usage_cache: dict = {}
 _garage_wear_cache: dict = {}
+_session_settings_cache: dict = {}
 
 _weather_updated: float = 0.0
 _strategy_updated: float = 0.0
 _garage_updated: float = 0.0
+_session_settings_updated: float = 0.0
 
 _cache_lock = Lock()
+
+
+def lmu_weather_scalar(value, default: float = 0.0) -> float:
+    """Extrae un número de un campo REST de LMU (plano o {currentValue, stringValue})."""
+    if isinstance(value, dict):
+        raw = value.get("currentValue", default)
+        try:
+            return float(raw)
+        except (TypeError, ValueError):
+            return default
+    if value is None:
+        return default
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _normalize_weather_node(node: dict) -> dict:
+    if not isinstance(node, dict):
+        return {}
+    return {key: lmu_weather_scalar(val) for key, val in node.items()}
+
+
+def _normalize_weather_cache(raw: dict) -> dict:
+    """Aplana el formato anidado de la REST API real de LMU."""
+    normalized: dict = {}
+    for session_key, session_val in raw.items():
+        if not isinstance(session_val, dict):
+            continue
+        normalized[session_key] = {}
+        for node_key, node_val in session_val.items():
+            if isinstance(node_val, dict):
+                normalized[session_key][node_key] = _normalize_weather_node(node_val)
+    return normalized
 
 
 def get_weather() -> dict:
@@ -47,6 +84,12 @@ def get_garage_wear() -> dict:
     """
     with _cache_lock:
         return _garage_wear_cache.copy()
+
+
+def get_session_settings() -> dict:
+    """Devuelve ajustes de sesión LMU cacheados (SESSSET_*). Thread-safe."""
+    with _cache_lock:
+        return _session_settings_cache.copy()
 
 
 def get_additional_data(category: str) -> dict:
@@ -82,18 +125,41 @@ def get_cache_sizes() -> dict:
             "weather_age_s": time.monotonic() - _weather_updated if _weather_updated else -1,
             "strategy_age_s": time.monotonic() - _strategy_updated if _strategy_updated else -1,
             "garage_age_s": time.monotonic() - _garage_updated if _garage_updated else -1,
+            "session_settings": len(_session_settings_cache),
+            "session_settings_age_s": time.monotonic() - _session_settings_updated if _session_settings_updated else -1,
             # Claves compatibles para no romper la API de health actual
             "drivers": len(_strategy_usage_cache),
             "brakes": len(_garage_wear_cache)
         }
 
 
+async def get_pit_menu() -> list:
+    async with httpx.AsyncClient() as client:
+        resp = await client.get(
+            f"{settings.LMU_REST_URL}/rest/garage/PitMenu/receivePitMenu",
+            timeout=2.0,
+        )
+        resp.raise_for_status()
+        return resp.json()
+
+
+async def post_pit_menu(menu: list) -> bool:
+    async with httpx.AsyncClient() as client:
+        resp = await client.post(
+            f"{settings.LMU_REST_URL}/rest/garage/PitMenu/loadPitMenu",
+            json=menu,
+            timeout=2.0,
+        )
+        return 200 <= resp.status_code < 300
+
+
 async def poll_api() -> None:
-    """Loop infinito asíncrono que consulta los 3 endpoints reales de LMU de forma no bloqueante.
+    """Loop infinito asíncrono que consulta endpoints REST de LMU de forma no bloqueante.
     
     - /rest/sessions/weather: cada 120 segundos.
     - /rest/strategy/usage: cada 3 segundos.
     - /rest/garage/UIScreen/RepairAndRefuel: cada 3 segundos.
+    - /rest/sessions/getAllSessionSettings: cada 30 segundos.
     
     Arrancado como tarea asyncio en background desde el lifespan de FastAPI.
     """
@@ -102,6 +168,7 @@ async def poll_api() -> None:
     last_weather_poll = 0.0
     last_strategy_poll = 0.0
     last_garage_poll = 0.0
+    last_session_settings_poll = 0.0
     
     try:
         async with httpx.AsyncClient() as client:
@@ -125,6 +192,16 @@ async def poll_api() -> None:
                 if current_time - last_garage_poll >= 3.0:
                     tasks.append(client.get(f"{settings.LMU_REST_URL}/rest/garage/UIScreen/RepairAndRefuel", timeout=2.0))
                     task_keys.append("garage_wear")
+
+                poll_s = getattr(settings, "LMU_SESSION_SETTINGS_POLL_S", 5.0)
+                if current_time - last_session_settings_poll >= poll_s:
+                    tasks.append(
+                        client.get(
+                            f"{settings.LMU_REST_URL}/rest/sessions/getAllSessionSettings",
+                            timeout=2.0,
+                        )
+                    )
+                    task_keys.append("session_settings")
                 
                 if tasks:
                     # Ejecutar en paralelo todas las consultas agendadas
@@ -133,6 +210,7 @@ async def poll_api() -> None:
                     new_weather = None
                     new_strategy = None
                     new_garage = None
+                    new_session_settings = None
                     
                     for key, result in zip(task_keys, results):
                         if isinstance(result, Exception):
@@ -149,14 +227,17 @@ async def poll_api() -> None:
                                 new_strategy = data
                             elif key == "garage_wear":
                                 new_garage = data
+                            elif key == "session_settings":
+                                new_session_settings = data
                         except Exception as e:
                             logger.debug(f"Failed to parse JSON response for {key}: {e}")
                     
                     # Swap atómico con lock para mantener la persistencia
-                    global _weather_cache, _strategy_usage_cache, _garage_wear_cache, _weather_updated, _strategy_updated, _garage_updated
+                    global _weather_cache, _strategy_usage_cache, _garage_wear_cache, _session_settings_cache
+                    global _weather_updated, _strategy_updated, _garage_updated, _session_settings_updated
                     with _cache_lock:
                         if new_weather is not None:
-                            _weather_cache = new_weather
+                            _weather_cache = _normalize_weather_cache(new_weather)
                             _weather_updated = current_time
                         if new_strategy is not None:
                             _strategy_usage_cache = new_strategy
@@ -164,6 +245,9 @@ async def poll_api() -> None:
                         if new_garage is not None:
                             _garage_wear_cache = new_garage
                             _garage_updated = current_time
+                        if new_session_settings is not None:
+                            _session_settings_cache = new_session_settings
+                            _session_settings_updated = current_time
                             
                     # Actualizar timestamps de última consulta para evitar busy-waiting
                     if "weather" in task_keys:
@@ -172,6 +256,8 @@ async def poll_api() -> None:
                         last_strategy_poll = current_time
                     if "garage_wear" in task_keys:
                         last_garage_poll = current_time
+                    if "session_settings" in task_keys:
+                        last_session_settings_poll = current_time
                 
                 # Tick cada 1 segundo para verificar tiempos de refresco
                 await asyncio.sleep(1.0)

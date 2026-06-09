@@ -38,6 +38,15 @@ def fuzzy_match(spoken: str, known: list[str], threshold: float = 0.8) -> tuple[
     return None
 
 
+def shorten_driver_name(name: str, max_len: int = 12) -> str:
+    """Apellido o nombre corto para TTS."""
+    if not name:
+        return "Rival"
+    parts = name.strip().split()
+    short = parts[-1] if parts else name
+    return short[:max_len]
+
+
 def get_driver_by_partial(spoken: str, drivers: list[dict]) -> dict | None:
     """Busca piloto por apellido parcial o fuzzy sobre driver_name."""
     if not spoken or not drivers:

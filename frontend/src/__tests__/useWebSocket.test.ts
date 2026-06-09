@@ -36,8 +36,11 @@ vi.stubGlobal("WebSocket", MockWebSocket);
 vi.mock("../services/audioQueue", () => ({
   audioQueue: {
     enqueue: vi.fn(),
+    enqueueImmediate: vi.fn(),
     stop: vi.fn(),
+    stopNormal: vi.fn(),
     setOnPlaybackChange: vi.fn(),
+    setOnIdle: vi.fn(),
   },
 }));
 

@@ -1,0 +1,136 @@
+{
+  "ticks": [
+    {
+      "session_type": "race",
+      "in_pits": false,
+      "lap_number": 5,
+      "lap_distance": 2400.0,
+      "path_lateral": 0.0,
+      "pos_x": 100.0,
+      "pos_y": 0.0,
+      "pos_z": 200.0,
+      "vel_x": 0.0,
+      "vel_y": 0.0,
+      "vel_z": 35.0,
+      "ori_fwd_x": 0.0,
+      "ori_fwd_z": 1.0,
+      "player_class": "GT3",
+      "vehicle_name": "Porsche 911 GT3 R",
+      "competitors": []
+    },
+    {
+      "session_type": "race",
+      "in_pits": false,
+      "lap_number": 5,
+      "lap_distance": 2405.0,
+      "path_lateral": 0.0,
+      "pos_x": 100.0,
+      "pos_y": 0.0,
+      "pos_z": 205.0,
+      "vel_x": 0.0,
+      "vel_y": 0.0,
+      "vel_z": 35.0,
+      "ori_fwd_x": 0.0,
+      "ori_fwd_z": 1.0,
+      "player_class": "GT3",
+      "vehicle_name": "Porsche 911 GT3 R",
+      "competitors": [
+        {
+          "driver_index": 42,
+          "driver_class": "Hypercar",
+          "driver_name": "Villeneuve",
+          "lap_number": 5,
+          "lap_distance": 2403.0,
+          "path_lateral": 0.0,
+          "speed": 45.0,
+          "in_pits": false,
+          "pos_x": 102.5,
+          "pos_y": 0.0,
+          "pos_z": 204.0
+        }
+      ]
+    },
+    {
+      "session_type": "race",
+      "in_pits": false,
+      "lap_number": 5,
+      "lap_distance": 2410.0,
+      "path_lateral": 0.0,
+      "pos_x": 100.0,
+      "pos_y": 0.0,
+      "pos_z": 210.0,
+      "vel_x": 0.0,
+      "vel_y": 0.0,
+      "vel_z": 35.0,
+      "ori_fwd_x": 0.0,
+      "ori_fwd_z": 1.0,
+      "player_class": "GT3",
+      "vehicle_name": "Porsche 911 GT3 R",
+      "competitors": [
+        {
+          "driver_index": 42,
+          "driver_class": "Hypercar",
+          "driver_name": "Villeneuve",
+          "lap_number": 5,
+          "lap_distance": 2408.0,
+          "path_lateral": 0.0,
+          "speed": 45.0,
+          "in_pits": false,
+          "pos_x": 102.5,
+          "pos_y": 0.0,
+          "pos_z": 209.0
+        }
+      ]
+    },
+    {
+      "session_type": "race",
+      "in_pits": false,
+      "lap_number": 5,
+      "lap_distance": 2415.0,
+      "path_lateral": 0.0,
+      "pos_x": 100.0,
+      "pos_y": 0.0,
+      "pos_z": 215.0,
+      "vel_x": 0.0,
+      "vel_y": 0.0,
+      "vel_z": 35.0,
+      "ori_fwd_x": 0.0,
+      "ori_fwd_z": 1.0,
+      "player_class": "GT3",
+      "vehicle_name": "Porsche 911 GT3 R",
+      "competitors": [
+        {
+          "driver_index": 42,
+          "driver_class": "Hypercar",
+          "driver_name": "Villeneuve",
+          "lap_number": 5,
+          "lap_distance": 2413.0,
+          "path_lateral": 0.0,
+          "speed": 45.0,
+          "in_pits": false,
+          "pos_x": 102.5,
+          "pos_y": 0.0,
+          "pos_z": 214.0
+        }
+      ]
+    },
+    {
+      "session_type": "race",
+      "in_pits": false,
+      "lap_number": 5,
+      "lap_distance": 2500.0,
+      "path_lateral": 0.0,
+      "pos_x": 100.0,
+      "pos_y": 0.0,
+      "pos_z": 300.0,
+      "vel_x": 0.0,
+      "vel_y": 0.0,
+      "vel_z": 35.0,
+      "ori_fwd_x": 0.0,
+      "ori_fwd_z": 1.0,
+      "player_class": "GT3",
+      "vehicle_name": "Porsche 911 GT3 R",
+      "competitors": []
+    }
+  ]
+}

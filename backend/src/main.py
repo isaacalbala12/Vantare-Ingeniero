@@ -36,6 +36,7 @@ from src.persistence.history_store import HistoryStore
 from src.persistence.profile_store import ProfileStore
 from src.persistence.trace_store import TraceStore
 from shared_telemetry import TelemetryReader
+from src.app_runtime.runtime import native_telemetry_enabled
 
 from src.routers.health import router as health_router
 from src.routers.websocket import router as ws_router, broadcast_sync
@@ -46,6 +47,7 @@ from src.routers.transcribe import router as transcribe_router
 from src.routers.profiles import router as profiles_router
 from src.routers.version import router as version_router
 from src.routers.traces import router as traces_router
+from src.routers.debug_ingest import router as debug_ingest_router
 from src.version import APP_VERSION
 
 from src.intelligence.spotter import SpotterService
@@ -65,15 +67,13 @@ async def lifespan(app: FastAPI):
     logger.info("Initializing Ingeniero de IA Backend Services...")
 
     # 1. Instanciar e inicializar el lector de telemetría física de LMU
-    # En Linux, no hay shared memory de LMU. Usamos TelemetryReader en modo offline como fallback.
-    # La telemetría real vendrá del frontend Windows vía WebSocket → app.state.latest_client_frame.
-    reader = TelemetryReader(offline=True, poll_rate=settings.TELEMETRY_POLL_RATE)
+    native = native_telemetry_enabled()
+    reader = TelemetryReader(offline=not native, poll_rate=settings.TELEMETRY_POLL_RATE)
     reader.start()
     app.state.telemetry_reader = reader
     app.state.latest_client_frame = None  # Se poblará desde el frontend vía WebSocket
-    app.state.latest_strategy_frame = None  # Se poblará desde el sidecar Windows vía /ws/sidecar
     app.state._last_telemetry_t = 0.0  # Para gap detection en websocket_endpoint
-    logger.info(f"TelemetryReader started (offline_mode={reader.offline}). Waiting for frontend telemetry.")
+    logger.info("TelemetryReader started (native=%s, offline=%s)", native, reader.offline)
 
     # 2. Iniciar el Poller REST de la API de LMU en background
     api_poller_task = asyncio.create_task(poll_api())
@@ -86,10 +86,40 @@ async def lifespan(app: FastAPI):
     app.state.strategy_service = strategy_service
     logger.info("StrategyService loop spawned")
 
+    # 3a. Precargar Whisper ASR en paralelo con el primer ciclo de estrategia
+    whisper_preload_task = None
+    if settings.WHISPER_PRELOAD.lower() == "startup":
+        from src.services.asr_service import preload_whisper
+
+        logger.info(
+            "Whisper ASR: precarga en arranque (model=%s, device=%s)",
+            settings.WHISPER_MODEL,
+            settings.WHISPER_DEVICE,
+        )
+        whisper_preload_task = asyncio.create_task(asyncio.to_thread(preload_whisper))
+    else:
+        logger.info(
+            "Whisper ASR: carga diferida (WHISPER_PRELOAD=%s)",
+            settings.WHISPER_PRELOAD,
+        )
+
     # 3b. Esperar a que el primer ciclo de estrategia se complete antes de arrancar el engine
     await strategy_service.wait_until_ready()
     logger.info("StrategyService primer ciclo completado")
-    logger.info("Esperando strategy_frame del sidecar Windows en /ws/sidecar. Usando StrategyService offline como fallback.")
+
+    if whisper_preload_task is not None:
+        whisper_ok = await whisper_preload_task
+        from src.services.asr_service import get_asr_status
+
+        if whisper_ok:
+            logger.info("Whisper ASR precargado y listo para PTT")
+        else:
+            status = get_asr_status()
+            logger.warning("Whisper ASR no disponible: %s", status.get("error") or "unknown")
+    if native:
+        logger.info("Native telemetry mode — reading LMU shared memory in-process.")
+    else:
+        logger.info("Offline telemetry mode — simulated shared memory.")
 
     # 4. Instanciar e inicializar SpotterService (20Hz)
     spotter_service = SpotterService(broadcast_callback=broadcast_sync)
@@ -127,9 +157,20 @@ async def lifespan(app: FastAPI):
         event_store=event_store,
     )
     intelligence_engine.sweary_messages = settings.USE_SWEARY_MESSAGES
+    intelligence_engine.set_spotter_service(spotter_service)
+
+    from src.intelligence.crewchief_events.game_state import CrewChiefGameStateLoop
+    from src.intelligence.crewchief_events.suite_factory import build_crewchief_suite
+
+    intelligence_engine.crewchief_suite = build_crewchief_suite(intelligence_engine)
+    app.state.crewchief_game_state_loop = CrewChiefGameStateLoop(
+        engine=intelligence_engine,
+    )
+
     app.state.intelligence_engine = intelligence_engine
     app.state.sweary_messages = settings.USE_SWEARY_MESSAGES
     logger.info("IntelligenceEngine initialized and hooked to WS broadcaster")
+    logger.info("CrewChiefGameStateLoop wired @ 20 Hz (crewchief_suite placeholder)")
 
     if not settings.LLM_API_KEY:
         logger.error(
@@ -307,6 +348,7 @@ app.include_router(transcribe_router)
 app.include_router(profiles_router)
 app.include_router(version_router)
 app.include_router(traces_router)
+app.include_router(debug_ingest_router)
 
 
 if __name__ == "__main__":

@@ -37,7 +37,7 @@ class TestTriggerStructure:
     def test_all_triggers_have_required_attributes(self):
         """Cada trigger debe tener priority, min_interval, tier, action y description."""
         triggers = get_all_triggers()
-        assert len(triggers) >= 12, "Debe haber al menos 12 triggers"
+        assert len(triggers) == 3, "Post-cutover: Weather, Phase, PilotQuestion"
 
         for trigger in triggers:
             assert isinstance(trigger, BaseTrigger)
@@ -49,21 +49,16 @@ class TestTriggerStructure:
             assert isinstance(trigger.description, str) and len(trigger.description) > 0, f"{trigger.__class__.__name__}: description vacía"
 
     def test_triggers_priority_order(self):
-        """Los triggers CRITICAL deben estar antes que MEDIUM."""
+        """Los triggers activos post-cutover son todos HIGH."""
         triggers = get_all_triggers()
-        priorities = [t.priority.value for t in triggers]
-        # Verificar que no hay MEDIUM antes que CRITICAL
-        first_medium = priorities.index(2) if 2 in priorities else len(priorities)
-        last_critical = len(priorities) - 1 - priorities[::-1].index(4) if 4 in priorities else -1
-        assert last_critical < first_medium, "CRITICAL triggers deben ir antes que MEDIUM"
+        assert all(t.priority.value == 3 for t in triggers)
 
-    def test_all_priorities_represented(self):
-        """Debe haber al menos un trigger de cada nivel de prioridad."""
+    def test_pilot_question_in_active_triggers(self):
         triggers = get_all_triggers()
-        prio_values = {t.priority for t in triggers}
-        assert Priority.CRITICAL in prio_values
-        assert Priority.HIGH in prio_values
-        assert Priority.MEDIUM in prio_values
+        names = {t.__class__.__name__ for t in triggers}
+        assert "PilotQuestionTrigger" in names
+        assert "WeatherChangeTrigger" in names
+        assert "PhaseChangedTrigger" in names
 
     def test_cooldown_values_reasonable(self):
         """Los cooldowns deben estar entre 0 y 300 segundos."""
@@ -82,7 +77,9 @@ class TestFuelCriticalTrigger:
     def test_triggers_when_fuel_below_3_laps(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         strategy = dict(mock_strategy_dict)
         strategy["fuel"]["estimated_laps_remaining"] = 2.5
+        strategy["fuel"]["pit_stops_needed"] = 1
         assert trigger.condition(mock_telemetry_dict, strategy, mock_session_dict) is True
+        assert trigger.condition(mock_telemetry_dict, strategy, mock_session_dict) is False
 
     def test_triggers_at_exactly_3_laps(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         strategy = dict(mock_strategy_dict)
@@ -116,13 +113,17 @@ class TestFlagsMonitorTrigger:
 
     def test_triggers_on_safety_car(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         telemetry = dict(mock_telemetry_dict)
+        trigger.condition(telemetry, mock_strategy_dict, mock_session_dict)
         telemetry["safety_car_active"] = True
         assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is True
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
 
     def test_triggers_on_fcy(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         telemetry = dict(mock_telemetry_dict)
+        trigger.condition(telemetry, mock_strategy_dict, mock_session_dict)
         telemetry["full_course_yellow_active"] = True
         assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is True
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
 
     def test_not_triggers_when_racing(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         assert trigger.condition(mock_telemetry_dict, mock_strategy_dict, mock_session_dict) is False
@@ -155,6 +156,7 @@ class TestTiresThermalOverheatingTrigger:
         telemetry = dict(mock_telemetry_dict)
         telemetry["tyre_temp_fl"] = 110.0
         assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is True
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
 
     def test_not_triggers_when_temps_normal(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         assert trigger.condition(mock_telemetry_dict, mock_strategy_dict, mock_session_dict) is False
@@ -249,6 +251,7 @@ class TestPitWindowOpenedTrigger:
         strategy = dict(mock_strategy_dict)
         strategy["pit_window"]["pit_window_open"] = True
         assert trigger.condition(mock_telemetry_dict, strategy, mock_session_dict) is True
+        assert trigger.condition(mock_telemetry_dict, strategy, mock_session_dict) is False
 
     def test_not_triggers_when_window_closed(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         assert trigger.condition(mock_telemetry_dict, mock_strategy_dict, mock_session_dict) is False
@@ -275,6 +278,7 @@ class TestPitWindowClosingTrigger:
         telemetry = dict(mock_telemetry_dict)
         telemetry["lap_number"] = 3  # 5 - 3 = 2 <= 2
         assert trigger.condition(telemetry, strategy, mock_session_dict) is True
+        assert trigger.condition(telemetry, strategy, mock_session_dict) is False
 
     def test_not_triggers_when_window_just_opened(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         strategy = dict(mock_strategy_dict)
@@ -294,6 +298,48 @@ class TestPitWindowClosingTrigger:
         assert trigger.condition(telemetry, strategy, mock_session_dict) is False
 
 
+class TestCompetitorPittedTrigger:
+    """Rival adyacente entra a boxes (transición in_pits false→true)."""
+
+    @pytest.fixture
+    def trigger(self):
+        return CompetitorPittedTrigger()
+
+    def test_triggers_on_pit_entry_transition(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
+        telemetry = dict(mock_telemetry_dict)
+        telemetry["standing_position"] = 5
+        telemetry["competitors"] = [
+            {"standing_position": 4, "in_pits": False},
+        ]
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
+        telemetry["competitors"] = [
+            {"standing_position": 4, "in_pits": True},
+        ]
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is True
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
+
+    def test_no_trigger_on_cold_start_already_in_pits(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
+        telemetry = dict(mock_telemetry_dict)
+        telemetry["standing_position"] = 5
+        telemetry["competitors"] = [
+            {"standing_position": 6, "in_pits": True},
+        ]
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
+
+    def test_ignores_non_adjacent_competitors(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
+        telemetry = dict(mock_telemetry_dict)
+        telemetry["standing_position"] = 5
+        telemetry["competitors"] = [
+            {"standing_position": 2, "in_pits": False},
+        ]
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
+        telemetry["competitors"] = [
+            {"standing_position": 2, "in_pits": True},
+        ]
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
+
+
 class TestGapClosedTrigger:
     """Brecha cerrada con rival (< 1.5s)."""
 
@@ -305,6 +351,11 @@ class TestGapClosedTrigger:
         telemetry = dict(mock_telemetry_dict)
         telemetry["gap_ahead"] = 1.0
         telemetry["gap_behind"] = 5.0
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is True
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
+        telemetry["gap_ahead"] = 5.0
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
+        telemetry["gap_ahead"] = 1.0
         assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is True
 
     def test_triggers_when_gap_behind_close(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):

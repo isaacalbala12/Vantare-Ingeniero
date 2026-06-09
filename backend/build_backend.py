@@ -88,6 +88,7 @@ def build():
         "src.intelligence.engine",
         "shared_telemetry",
         "shared_strategy",
+        "platform",
         "uvicorn",
         "fastapi",
         "pydantic",

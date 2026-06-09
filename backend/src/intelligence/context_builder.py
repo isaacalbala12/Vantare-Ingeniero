@@ -287,6 +287,55 @@ def build_prompt_for_question(
     return templates.render(context_dict, tier)
 
 
+def build_pilot_question_messages(
+    snapshot: dict,
+    pilot_question: str,
+    chat_history: Optional[list] = None,
+    templates: Optional[Any] = None,
+    event_store: Optional[Any] = None,
+    telemetry_frame: Optional[dict] = None,
+    strategy_advice: Optional[dict] = None,
+    lmu_api: Optional[Any] = None,
+    sweary: bool = False,
+    strategy_service: Optional[Any] = None,
+) -> list:
+    """Mensajes system+user para PTT/ask: ticker compacto, sin diccionario largo."""
+    context_dict: dict = {
+        "snapshot": snapshot,
+        "pilot_question": pilot_question,
+        "sweary": sweary,
+    }
+    if chat_history:
+        context_dict["chat_history"] = chat_history
+
+    competitor_ctx = _resolve_competitor_context(pilot_question, strategy_advice)
+    if competitor_ctx:
+        context_dict["competitor_context"] = competitor_ctx
+    sector_ctx = _build_sector_context(strategy_service)
+    if sector_ctx:
+        context_dict["sector_context"] = sector_ctx
+
+    if telemetry_frame is not None:
+        ticker_data = _build_ticker_data(snapshot, telemetry_frame, strategy_advice, lmu_api)
+        ticker_data["max_cls_rivals"] = 4
+        ticker_text = generate_ticker(ticker_data)
+        context_dict["ticker_text"] = ticker_text
+    else:
+        rag_context = _build_rag_context(snapshot, event_store)
+        if rag_context:
+            context_dict["rag_context"] = rag_context
+
+    tier = "FAST"
+    if snapshot.get("lap_number", 0) > 0 and (snapshot.get("speed") or snapshot.get("fuel")):
+        tier = "STANDARD"
+    if snapshot.get("weather_forecast"):
+        tier = "DEEP"
+
+    if templates is None:
+        from src.intelligence import prompt_templates as templates
+    return templates.render_pilot_question_messages(context_dict, tier)
+
+
 def _build_rag_context(
     snapshot: dict,
     event_store: Optional[Any] = None,

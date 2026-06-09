@@ -146,3 +146,21 @@ class TestTTSEndpoint:
             response = client.get("/tts", params={"text": "exito"})
             assert response.status_code == 200
             assert len(received_text) > 0
+
+    def test_tts_em_dash_in_response_header(self):
+        """Em-dash in spotter copy must not break X-Response-Text header encoding."""
+        mock_edge = MagicMock()
+
+        async def fake_synthesize(text, voice=""):
+            return b"MP3 audio data"
+
+        mock_edge.synthesize = fake_synthesize
+
+        app = make_app_with_tts_services(edge_service=mock_edge)
+        with TestClient(app) as client:
+            response = client.get(
+                "/tts",
+                params={"text": "HYPERCAR alcanzando — 1.8s detrás.", "voice": "es-ES-AlvaroNeural"},
+            )
+            assert response.status_code == 200
+            assert "X-Response-Text" in response.headers

@@ -103,7 +103,7 @@ class TestStrategyService:
 
         # Crear estado con player
         session = SessionData(
-            session_type=4, time_remaining=3600.0,
+            session_type=10, time_remaining=3600.0,
             track_temp=25.0, ambient_temp=20.0, wetness_average=0.0,
             raininess=0.0, track_name="Spa",
         )
@@ -189,6 +189,15 @@ class TestStrategyService:
 
         summary = service.get_race_summary()
         assert summary.get("session_type") == "practice"
+
+        session_race = SessionData(
+            session_type=10, time_remaining=3600.0,
+            track_temp=25.0, ambient_temp=20.0, wetness_average=0.0,
+            raininess=0.0, track_name="Spa",
+        )
+        race_state.session = session_race
+        summary_race = service.get_race_summary()
+        assert summary_race.get("session_type") == "race"
 
 
 class TestStrategyHelpers:
@@ -280,9 +289,9 @@ class TestStrategyServiceState:
 
     def test_lap_accumulators_initialized(self, service):
         """Acumuladores de vuelta deben estar inicializados."""
-        assert service._simulated_fuel == 100.0
-        assert service._last_lap == 0
-        assert service._lap_fuel_start == 100.0
-        assert service._prev_battery_charge == 100.0
-        assert service._lap_battery_drain == 0.0
-        assert service._lap_battery_regen == 0.0
+        assert service._frame_state.simulated_fuel == 100.0
+        assert service._frame_state.last_lap == 0
+        assert service._frame_state.lap_fuel_start == 100.0
+        assert service._frame_state.prev_battery_charge == 100.0
+        assert service._frame_state.lap_battery_drain == 0.0
+        assert service._frame_state.lap_battery_regen == 0.0

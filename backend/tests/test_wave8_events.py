@@ -19,8 +19,10 @@ class TestFlagsMonitorTrigger:
 
     def test_triggers_on_safety_car(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         telemetry = dict(mock_telemetry_dict)
+        trigger.condition(telemetry, mock_strategy_dict, mock_session_dict)
         telemetry["safety_car_active"] = True
         assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is True
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
 
     def test_triggers_on_blue_flag_edge(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
         telemetry = dict(mock_telemetry_dict)
@@ -88,23 +90,11 @@ class TestPenaltyMonitorTrigger:
     def trigger(self):
         return PenaltyMonitorTrigger()
 
-    def test_new_penalty(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
+    def test_disabled_in_wave1(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
+        """Wave 1: penalizaciones las gestiona ProactiveMonitorSuite."""
         telemetry = dict(mock_telemetry_dict)
-        telemetry["num_penalties"] = 0
-        trigger.condition(telemetry, mock_strategy_dict, mock_session_dict)
-
         telemetry["num_penalties"] = 1
-        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is True
-        assert "Penalización asignada" in trigger.alert_text
-
-    def test_penalty_served(self, trigger, mock_telemetry_dict, mock_strategy_dict, mock_session_dict):
-        telemetry = dict(mock_telemetry_dict)
-        telemetry["num_penalties"] = 2
-        trigger.condition(telemetry, mock_strategy_dict, mock_session_dict)
-
-        telemetry["num_penalties"] = 1
-        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is True
-        assert "servida" in trigger.alert_text.lower()
+        assert trigger.condition(telemetry, mock_strategy_dict, mock_session_dict) is False
 
 
 class TestPushNowTrigger:

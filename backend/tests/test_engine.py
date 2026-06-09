@@ -23,6 +23,10 @@ def mock_context_builder():
     mock = MagicMock()
     mock.build_prompt.return_value = {"system": "prompt", "user": "question", "ticker_data": {}}
     mock.build_prompt_for_question.return_value = "prompt for question"
+    mock.build_pilot_question_messages.return_value = [
+        {"role": "system", "content": "system"},
+        {"role": "user", "content": "question"},
+    ]
     return mock
 
 
@@ -48,7 +52,13 @@ def mock_llm_client():
         engine_ref.broadcaster.send(AdviceEndMessage(advice_id=advice_id, full_text="token1", actions=[], event="advice_end"))
 
     mock.ask_streaming_text = mock_stream_text
+    mock.ask_streaming_messages = mock_stream_text
     mock.ask_streaming = mock_stream
+    mock.ask_with_tools = AsyncMock(
+        return_value=__import__(
+            "src.intelligence.llm_client", fromlist=["AskWithToolsResult"]
+        ).AskWithToolsResult(content="", tool_calls=[])
+    )
     mock.health_check = AsyncMock(return_value=True)
     return mock
 
@@ -125,6 +135,69 @@ class TestIntelligenceEngine:
         assert mock_broadcaster.send.called
 
     @pytest.mark.asyncio
+    async def test_pilot_question_fuel_emits_llm_pending(self, engine, mock_broadcaster, mock_strategy_service, mock_llm_client):
+        """PTT pregunta abierta sin tool → free-form llm_pending."""
+        from src.intelligence.llm_client import AskWithToolsResult
+        from src.models.messages import LLMPendingMessage, AdviceEndMessage
+
+        mock_strategy_service.latest_frame = MagicMock(session_type="RACE", model_dump=lambda: {"session_type": "RACE"})
+        mock_strategy_service.latest_advice = MagicMock(model_dump=lambda: {"fuel": {"estimated_laps_remaining": 8.0}})
+        mock_strategy_service.get_race_summary.return_value = {}
+        mock_llm_client.ask_with_tools = AsyncMock(return_value=AskWithToolsResult(content="", tool_calls=[]))
+
+        async def _fake_stream(_messages, tier="FAST"):
+            yield "Estrategia conservadora en boxes."
+
+        mock_llm_client.ask_streaming_messages = _fake_stream
+        mock_llm_client._complete_speech_messages = AsyncMock(return_value="")
+
+        await engine.handle_pilot_question("explicame la estrategia de ritmo en boxes")
+        if engine._current_llm_task is not None:
+            await engine._current_llm_task
+
+        pending = [
+            c[0][0]
+            for c in mock_broadcaster.send.call_args_list
+            if isinstance(c[0][0], LLMPendingMessage)
+        ]
+        assert pending, "debe emitir llm_pending para PTT abierto"
+        assert pending[-1].trigger_name == "Pregunta directa del piloto"
+        ends = [
+            c[0][0]
+            for c in mock_broadcaster.send.call_args_list
+            if isinstance(c[0][0], AdviceEndMessage)
+        ]
+        assert ends and ends[-1].full_text
+
+    @pytest.mark.asyncio
+    async def test_pilot_question_fuel_via_tool(self, engine, mock_broadcaster, mock_strategy_service, mock_llm_client):
+        """PTT combustible con tool → voice_response, sin llm_pending."""
+        from src.intelligence.llm_client import AskWithToolsResult, ParsedToolCall
+        from src.models.messages import AlertMessage, LLMPendingMessage
+
+        mock_strategy_service.latest_frame = MagicMock(
+            model_dump=lambda: {"fuel_laps_remaining": 8.0, "session_type": "RACE"}
+        )
+        mock_strategy_service.latest_advice = MagicMock()
+        mock_llm_client.ask_with_tools = AsyncMock(
+            return_value=AskWithToolsResult(
+                tool_calls=[ParsedToolCall(name="get_fuel_status", arguments={})],
+            )
+        )
+
+        await engine.handle_pilot_question("¿Cuánto combustible me queda?")
+
+        alerts = [
+            c[0][0]
+            for c in mock_broadcaster.send.call_args_list
+            if isinstance(c[0][0], AlertMessage) and c[0][0].category == "voice_response"
+        ]
+        assert alerts, "fuel vía tool debe emitir voice_response"
+        assert not any(
+            isinstance(c[0][0], LLMPendingMessage) for c in mock_broadcaster.send.call_args_list
+        )
+
+    @pytest.mark.asyncio
     async def test_cancel_current_llm_no_task(self, engine):
         """cancel_current_llm sin tarea activa no debe crashear."""
         await engine.cancel_current_llm()
@@ -176,21 +249,5 @@ class TestIntelligenceEngine:
         mock_broadcaster.send.assert_called_once()
         alert = mock_broadcaster.send.call_args[0][0]
         assert alert.category == "pearl"
-
-    @pytest.mark.asyncio
-    async def test_overtake_emits_pearl(self, engine, mock_broadcaster):
-        engine._last_standing_position = 5
-        with patch.object(engine, "_current_llm_task", None):
-            await engine.evaluate_cycle(
-                telemetry_state={"standing_position": 4, "lap_number": 1, "session_type": "RACE"},
-                strategy_state={},
-                session_state={"session_type": "RACE"},
-            )
-        pearl_calls = [
-            c for c in mock_broadcaster.send.call_args_list
-            if getattr(c[0][0], "category", None) == "pearl"
-        ]
-        assert len(pearl_calls) >= 1
-
 
 import asyncio
