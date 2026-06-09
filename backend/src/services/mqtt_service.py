@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 from typing import Any
@@ -53,10 +54,8 @@ class MqttService:
     async def shutdown_worker(self) -> None:
         if self._worker_task is not None:
             self._worker_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._worker_task
-            except asyncio.CancelledError:
-                pass
             self._worker_task = None
 
     @property
@@ -116,9 +115,6 @@ class MqttService:
         await asyncio.to_thread(_publish)
 
     def shutdown(self) -> None:
-        if self._worker_task is not None:
-            self._worker_task.cancel()
-            self._worker_task = None
         if self._client is not None:
             try:
                 self._client.loop_stop()

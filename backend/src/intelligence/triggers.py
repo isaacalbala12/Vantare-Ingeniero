@@ -1,12 +1,12 @@
 import logging
 import time
 from abc import ABC, abstractmethod
-from enum import Enum
+from enum import Enum, StrEnum
 
 logger = logging.getLogger("vantare.triggers")
 
 
-class TriggerAction(str, Enum):
+class TriggerAction(StrEnum):
     LLM_REQUIRED = "LLM_REQUIRED"
     DETERMINISTIC_ONLY = "DETERMINISTIC_ONLY"
     ALERT_ONLY = "ALERT_ONLY"
@@ -19,7 +19,7 @@ class Priority(int, Enum):
     LOW = 1
 
 
-class ContextTier(str, Enum):
+class ContextTier(StrEnum):
     FAST = "FAST"
     STANDARD = "STANDARD"
     DEEP = "DEEP"

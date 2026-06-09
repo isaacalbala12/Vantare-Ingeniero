@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import logging
 import re
 
 import httpx
 from src.version import APP_VERSION, GITHUB_REPO
+
+logger = logging.getLogger("vantare.update")
 
 
 def parse_version(version: str) -> tuple[int, int, int]:
@@ -22,11 +25,6 @@ def parse_version(version: str) -> tuple[int, int, int]:
 
 def is_newer_version(latest: str, current: str) -> bool:
     return parse_version(latest) > parse_version(current)
-
-
-import logging
-
-logger = logging.getLogger("vantare.update")
 
 
 async def fetch_latest_release(repo: str = GITHUB_REPO) -> dict | None:

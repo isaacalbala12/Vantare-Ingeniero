@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 
-class PearlType(str, Enum):
+class PearlType(StrEnum):
     STANDARD = "standard"
     COMEBACK = "comeback"
     FAST_LAP = "fast_lap"

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
 from pydantic import BaseModel
@@ -10,7 +10,7 @@ from src.intelligence.driver_names import get_driver_by_partial
 from src.intelligence.time_format import format_laptime
 
 
-class CompetitorQueryType(str, Enum):
+class CompetitorQueryType(StrEnum):
     BY_NAME = "by_name"
     BY_POSITION = "by_position"
     BY_CLASS = "by_class"

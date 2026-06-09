@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import logging
 import math
 import time
@@ -76,10 +77,8 @@ class StrategyService:
         """Detiene el bucle asíncrono."""
         if self._loop_task is not None:
             self._loop_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._loop_task
-            except asyncio.CancelledError:
-                pass
             self._loop_task = None
             logger.info("StrategyService loop stopped")
 
