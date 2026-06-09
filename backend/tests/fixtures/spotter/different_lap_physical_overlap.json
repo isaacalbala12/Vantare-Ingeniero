@@ -1,0 +1,32 @@
+{
+  "session_type": "race",
+  "in_pits": false,
+  "lap_number": 8,
+  "lap_distance": 1200.0,
+  "path_lateral": 0.0,
+  "pos_x": 300.0,
+  "pos_y": 0.0,
+  "pos_z": 400.0,
+  "vel_x": 0.0,
+  "vel_y": 0.0,
+  "vel_z": 30.0,
+  "ori_fwd_x": 0.0,
+  "ori_fwd_z": 1.0,
+  "player_class": "GT3",
+  "vehicle_name": "Porsche 911 GT3 R",
+  "competitors": [
+    {
+      "driver_index": 11,
+      "driver_class": "Hypercar",
+      "driver_name": "Lapped",
+      "lap_number": 9,
+      "lap_distance": 1202.0,
+      "path_lateral": 0.0,
+      "speed": 50.0,
+      "in_pits": false,
+      "pos_x": 302.0,
+      "pos_y": 0.0,
+      "pos_z": 401.0
+    }
+  ]
+}

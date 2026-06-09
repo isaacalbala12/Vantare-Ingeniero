@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 import uuid
 import sys
 from typing import Any, Dict, List, Optional
@@ -9,7 +10,9 @@ from src.models.messages import (
     BaseMessage,
     LLMPendingMessage,
     AlertMessage,
-    AdviceEndMessage
+    AdviceEndMessage,
+    AdviceStartMessage,
+    AdviceTokenMessage,
 )
 from src.intelligence.triggers import get_all_triggers, PilotQuestionTrigger, TriggerAction
 
@@ -107,7 +110,58 @@ class IntelligenceEngine:
         self.pearls = PearlsService()
         
         self.triggers = get_all_triggers()
+        # Evitar avalancha de triggers LLM al arrancar/reiniciar backend
+        self._llm_warmup_until = time.monotonic() + 5.0
         self._event_store = event_store
+
+        from src.intelligence.personality_pack import PersonalityPack
+        from src.intelligence.verbosity_controller import VerbosityController
+        from src.intelligence.commentary_orchestrator import CommentaryOrchestrator
+        from src.intelligence.proactive_monitors import ProactiveMonitorSuite
+
+        self.personality = PersonalityPack()
+        self.verbosity = VerbosityController()
+        try:
+            from src.config import settings
+
+            self.verbosity.set_enable_commentary_batch(settings.ENABLE_COMMENTARY_BATCH)
+        except Exception:
+            pass
+        self.commentary = CommentaryOrchestrator(
+            broadcast_callback=lambda msg: self.broadcaster.send(msg),
+            verbosity=self.verbosity,
+            personality=self.personality,
+            llm_complete=self.llm_client.complete_text if self.llm_client else None,
+        )
+        self.proactive_monitors = ProactiveMonitorSuite(
+            verbosity_should_emit=self.verbosity.should_emit_priority,
+        )
+        self.crewchief_suite = None
+        self.penalty_tracker = None
+        self._history_store = history_store
+        self._spotter_service = None
+        self._spotter_enabled_before_speak_only: Optional[bool] = None
+        self.engineer_enabled: bool = False
+
+    def _is_cc_owned_event(self, event_id: str) -> bool:
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        return is_cc_owned_event(event_id)
+
+    def set_spotter_service(self, spotter) -> None:
+        """Enlaza spotter para snapshots config_ack bidireccionales."""
+        self._spotter_service = spotter
+
+    _RUNTIME_CONFIG_KEYS = frozenset({
+        "personalityProfileId",
+        "verbosityLevel",
+        "brakingZonesMute",
+        "swearyMessages",
+        "speakOnlyWhenSpokenTo",
+        "enableCommentaryBatch",
+        "engineerEnabled",
+        "spotterEnabled",
+    })
 
     def _get_strategy_service(self):
         if self.strategy_service is not None:
@@ -148,9 +202,188 @@ class IntelligenceEngine:
             return f"Dejé de monitorizar rival {idx}."
         return "Acción de monitor no válida."
 
+    def pit_menu_dry_run(self) -> bool:
+        """PitMenu write seguro por defecto (Task 10 / 44)."""
+        from src.config import settings
+        return bool(getattr(settings, "PIT_MENU_DRY_RUN", True))
+
+    def apply_engineer_toggle(self, enabled: bool, *, emit_alert: bool = True) -> str:
+        """Activa/desactiva comentarios proactivos del ingeniero (PTT sigue disponible)."""
+        self.engineer_enabled = bool(enabled)
+        self.broadcast_config_ack()
+        msg = "Ingeniero activado." if enabled else "Ingeniero desactivado."
+        if emit_alert:
+            alert = AlertMessage(
+                event="alert",
+                alert_id=str(uuid.uuid4()),
+                category="engineer",
+                message=msg,
+                audio_priority="1",
+                severity="INFO",
+                ttl=3,
+                dismissable=True,
+                payload={"engineer_enabled": self.engineer_enabled, "service": "engineer"},
+            )
+            self.broadcaster.send(alert)
+        return msg
+
+    def apply_spotter_toggle(self, enabled: bool, *, emit_alert: bool = True) -> str | None:
+        """Activa/desactiva spotter vía tool PTT o circuit breaker."""
+        spotter = self._spotter_service
+        if spotter is None:
+            msg = "Spotter no disponible."
+            if emit_alert:
+                self._emit_voice_response(msg)
+            return msg
+        spotter.enabled = bool(enabled)
+        self.broadcast_config_ack()
+        msg = "Spotter activado." if enabled else "Spotter desactivado."
+        if emit_alert:
+            alert = AlertMessage(
+                event="alert",
+                alert_id=str(uuid.uuid4()),
+                category="spotter",
+                message=msg,
+                audio_priority="1",
+                severity="INFO",
+                ttl=3,
+                dismissable=True,
+                payload={"spotter_enabled": spotter.enabled},
+            )
+            self.broadcaster.send(alert)
+        return msg
+
+    def apply_speak_only(self, enabled: bool, *, emit_voice: bool = True) -> str:
+        """Modo 'cállate': silencia spotter, ingeniero proactivo y comentarios; solo responde al PTT."""
+        enabled = bool(enabled)
+        spotter = self._spotter_service
+        was_speak_only = self.verbosity.speak_only_when_spoken_to
+
+        if enabled and not was_speak_only:
+            self._spotter_enabled_before_speak_only = (
+                spotter.enabled if spotter is not None else None
+            )
+
+        self.verbosity.set_speak_only_when_spoken_to(enabled)
+
+        if enabled and spotter is not None:
+            spotter.enabled = False
+        elif not enabled and spotter is not None and self._spotter_enabled_before_speak_only is not None:
+            spotter.enabled = self._spotter_enabled_before_speak_only
+            self._spotter_enabled_before_speak_only = None
+
+        msg = (
+            "Vale, solo hablaré cuando me preguntes."
+            if enabled
+            else "Vale, vuelvo al modo normal."
+        )
+        self.broadcast_config_ack()
+        if emit_voice:
+            self._emit_voice_response(msg)
+        return msg
+
+    def apply_set_verbosity(self, level: str) -> str:
+        """Cambia verbosidad de comentarios proactivos vía tool LLM (PTT)."""
+        _, msg = self.verbosity.set_level(level)
+        self.broadcast_config_ack()
+        return msg
+
+    def apply_set_braking_zones_mute(self, enabled: bool) -> str:
+        """Activa/desactiva silencio TTS en zonas de frenado."""
+        self.verbosity.set_braking_zones_mute(bool(enabled))
+        self.broadcast_config_ack()
+        state = "activado" if enabled else "desactivado"
+        return f"Silencio en frenada {state}."
+
+    def runtime_config_snapshot(self) -> dict:
+        """Estado runtime sincronizable con frontend."""
+        snap = {
+            "personalityProfileId": self.personality.profile_id,
+            "verbosityLevel": self.verbosity.level.value,
+            "brakingZonesMute": self.verbosity.braking_zones_mute,
+            "swearyMessages": self.sweary_messages,
+            "speakOnlyWhenSpokenTo": self.verbosity.speak_only_when_spoken_to,
+            "enableCommentaryBatch": self.verbosity.enable_commentary_batch,
+            "engineerEnabled": self.engineer_enabled,
+        }
+        spotter = self._spotter_service
+        if spotter is not None:
+            snap["spotterEnabled"] = bool(spotter.enabled)
+            if hasattr(spotter, "runtime_config_snapshot"):
+                snap.update(spotter.runtime_config_snapshot())
+        return snap
+
+    def broadcast_config_ack(self) -> None:
+        from src.models.messages import ConfigAckMessage
+
+        self.broadcaster.send(
+            ConfigAckMessage(event="config_ack", config=self.runtime_config_snapshot())
+        )
+
+    def apply_runtime_config(self, cfg: dict) -> None:
+        """Aplica config runtime desde WS config_update (frontend ConfigTab)."""
+        if not cfg or not any(k in cfg for k in self._RUNTIME_CONFIG_KEYS):
+            return
+        if "personalityProfileId" in cfg:
+            self.personality.set_profile(str(cfg["personalityProfileId"]))
+        if "verbosityLevel" in cfg:
+            self.verbosity.set_level(str(cfg["verbosityLevel"]))
+        if "brakingZonesMute" in cfg:
+            self.verbosity.set_braking_zones_mute(bool(cfg["brakingZonesMute"]))
+        if "swearyMessages" in cfg:
+            self.sweary_messages = bool(cfg["swearyMessages"])
+        if "speakOnlyWhenSpokenTo" in cfg:
+            self.apply_speak_only(bool(cfg["speakOnlyWhenSpokenTo"]), emit_voice=False)
+        if "enableCommentaryBatch" in cfg:
+            self.verbosity.set_enable_commentary_batch(bool(cfg["enableCommentaryBatch"]))
+        if "engineerEnabled" in cfg:
+            self.apply_engineer_toggle(bool(cfg["engineerEnabled"]), emit_alert=False)
+        if "spotterEnabled" in cfg:
+            self.apply_spotter_toggle(bool(cfg["spotterEnabled"]), emit_alert=False)
+
+    def enqueue_commentary(
+        self,
+        event_id: str,
+        summary: str,
+        priority: str | None = None,
+        payload: dict | None = None,
+    ) -> bool:
+        """API pública para monitores proactivos (legacy ruta B, opt-in)."""
+        from src.intelligence.crewchief_events.cutover_registry import is_legacy_commentary_allowed
+        from shared_telemetry.session_kind import resolve_session_kind, should_emit_commentary_event
+
+        if not self.engineer_enabled:
+            return False
+        if not self.verbosity.enable_commentary_batch:
+            return False
+        if self._is_cc_owned_event(event_id) and not is_legacy_commentary_allowed(event_id):
+            return False
+
+        tele = getattr(self, "_eval_telemetry", None) or {}
+        sess = getattr(self, "_eval_session", None) or {}
+        if not should_emit_commentary_event(event_id, tele, sess):
+            logger.debug(
+                "Commentary race-only bloqueado: %s (sesión=%s)",
+                event_id,
+                resolve_session_kind(tele, sess),
+            )
+            return False
+        return self.commentary.enqueue(event_id, summary, priority, payload)
+
+    def _get_history_store(self):
+        return getattr(self, "_history_store", None)
+
     def _emit_pearl(self, pearl_type) -> None:
         from src.intelligence.pearls_of_wisdom import PearlType
-        message = self.pearls.on_event(pearl_type, sweary=self.sweary_messages)
+        if not self.engineer_enabled or self.verbosity.speak_only_when_spoken_to:
+            return
+        if self.verbosity.max_pearls_per_race <= 0:
+            return
+        message = self.pearls.on_event(
+            pearl_type,
+            sweary=self.sweary_messages,
+            max_per_race=self.verbosity.max_pearls_per_race,
+        )
         if not message:
             return
         alert = AlertMessage(
@@ -158,7 +391,7 @@ class IntelligenceEngine:
             alert_id=str(uuid.uuid4()),
             category="pearl",
             message=message,
-            audio_priority="1",
+            audio_priority="2",
             severity="INFO",
             ttl=8,
             dismissable=True,
@@ -166,29 +399,92 @@ class IntelligenceEngine:
         )
         self.broadcaster.send(alert)
 
+    def emit_crewchief_messages(self, messages) -> None:
+        """Emit deterministic Crew Chief alerts (20 Hz path, not commentary batch)."""
+        if not messages or not self.engineer_enabled:
+            return
+        from src.intelligence.crewchief_events.playback import _category_for, map_message_to_alert
+
+        for cc_message in messages:
+            category = _category_for(cc_message)
+            if not self.verbosity.should_emit_crewchief_category(
+                category,
+                cc_message.priority.value,
+                cc_message.play_even_when_silenced,
+            ):
+                continue
+            self.broadcaster.send(map_message_to_alert(cc_message))
+
     def _maybe_emit_pearls(self, telemetry_dict: dict) -> None:
         from src.intelligence.pearls_of_wisdom import PearlType
         pos = telemetry_dict.get("standing_position")
-        if pos is not None and self._last_standing_position is not None:
-            if int(pos) < int(self._last_standing_position):
-                self._emit_pearl(PearlType.OVERTAKE)
         if pos is not None:
-            self._last_standing_position = int(pos)
+            pos_int = int(pos)
+            if self._last_standing_position is not None:
+                if pos_int < int(self._last_standing_position):
+                    self._emit_pearl(PearlType.OVERTAKE)
+                elif pos_int > int(self._last_standing_position):
+                    pass  # position lost — no pearl
+            if self.proactive_monitors.check_comeback_pearl(pos_int):
+                self._emit_pearl(PearlType.COMEBACK)
+            self._last_standing_position = pos_int
 
-    def _check_fast_lap_pearl(self, telemetry_dict: dict) -> None:
-        from src.intelligence.pearls_of_wisdom import PearlType
-        prev = float(telemetry_dict.get("lap_time_previous") or 0)
-        best = float(telemetry_dict.get("lap_time_best") or 0)
-        if prev > 0 and best > 0 and abs(prev - best) < 0.05:
-            self._emit_pearl(PearlType.FAST_LAP)
+    async def _run_proactive_monitors(
+        self,
+        telemetry_dict: dict,
+        strategy_dict: dict,
+        session_dict: dict,
+    ) -> None:
+        from src.intelligence.immediate_alert import ImmediateAlert
+        from src.intelligence.triggers import Priority
+
+        events = self.proactive_monitors.evaluate(
+            telemetry_dict,
+            strategy_dict,
+            session_dict,
+            history_store=self._get_history_store(),
+            strategy_service=self._get_strategy_service(),
+        )
+        for evt in events:
+            if isinstance(evt, ImmediateAlert):
+                if self._is_cc_owned_event(evt.event_id):
+                    continue
+                try:
+                    prio_val = Priority[evt.priority].value
+                except KeyError:
+                    prio_val = Priority.MEDIUM.value
+                alert = AlertMessage(
+                    event="alert",
+                    alert_id=str(uuid.uuid4()),
+                    category=evt.category,
+                    message=evt.message,
+                    audio_priority=str(prio_val),
+                    severity=evt.priority,
+                    ttl=12,
+                    dismissable=True,
+                    payload={"event_id": evt.event_id, **evt.payload},
+                )
+                self.broadcaster.send(alert)
+            else:
+                event_id, summary, priority = evt
+                if self._is_cc_owned_event(event_id):
+                    continue
+                self.enqueue_commentary(event_id, summary, priority)
 
     async def evaluate_cycle(self, telemetry_state, strategy_state, session_state=None, pilot_question: Optional[str] = None) -> None:
         """Ciclo principal invocado periódicamente para evaluar los triggers de carrera."""
+        from shared_telemetry.session_kind import sync_session_fields
+
         telemetry_dict = self._to_dict(telemetry_state)
         strategy_dict = self._to_dict(strategy_state)
         session_dict = self._to_dict(session_state)
 
-        # Si session_dict no está provisto (por ej., desde websocket.py), lo autocompletamos con la REST API cache de LMU
+        telemetry_dict, session_dict = sync_session_fields(telemetry_dict, session_dict)
+        self._eval_telemetry = telemetry_dict
+        self._eval_session = session_dict
+        self.verbosity.update_auto_context(telemetry_dict, session_dict)
+
+        # Autocompletar pronóstico/clima solo si no llegó estado de sesión (p. ej. pilot question sin frame).
         if not session_dict:
             weather_data = {}
             try:
@@ -210,16 +506,18 @@ class IntelligenceEngine:
                 "finish_criteria": "TIME_LIMIT",
                 "weather_forecast": forecast
             }
+            telemetry_dict, session_dict = sync_session_fields(telemetry_dict, session_dict)
+            self._eval_session = session_dict
 
         # 1. Actualizar datos en tiempo real (entre vueltas) y detectar cruce de meta
         self.live_context.update_realtime(telemetry_dict, strategy_dict)
         current_lap = telemetry_dict.get("lap_number", 0)
         if self._last_lap_number > 0 and current_lap > self._last_lap_number:
             self.live_context.on_lap_completed(telemetry_dict, strategy_dict, session_dict)
-            self._check_fast_lap_pearl(telemetry_dict)
         self._last_lap_number = current_lap
 
-        self._maybe_emit_pearls(telemetry_dict)
+        if self.engineer_enabled and not self.verbosity.speak_only_when_spoken_to:
+            await self._run_proactive_monitors(telemetry_dict, strategy_dict, session_dict)
 
         driver_name = str(telemetry_dict.get("driver_name", "") or "").strip()
         if driver_name and self._last_driver_name and driver_name != self._last_driver_name:
@@ -282,13 +580,19 @@ class IntelligenceEngine:
             return
 
         # 3. Iterar sobre los 12 triggers estándar
+        if not self.engineer_enabled or self.verbosity.speak_only_when_spoken_to:
+            return
+
+        if time.monotonic() < self._llm_warmup_until:
+            return
+
         for trigger in self.triggers:
             # Si el piloto tiene una pregunta activa, solo triggers CRITICAL pueden interrumpir
             from src.intelligence.triggers import Priority
             if self._active_trigger_name == "Pregunta directa del piloto" and trigger.priority != Priority.CRITICAL:
                 continue
 
-            if trigger.should_evaluate() and trigger.condition(telemetry_dict, strategy_dict, session_dict):
+            if trigger.should_evaluate() and trigger.applies(telemetry_dict, strategy_dict, session_dict):
                 trigger.mark_triggered()
 
                 current_prio_val = 0
@@ -359,12 +663,13 @@ class IntelligenceEngine:
                         alert_id=str(uuid.uuid4()),
                         category="strategy",
                         message=trigger.alert_text,
-                        audio_priority=trigger.priority.name,
+                        audio_priority=str(int(trigger.priority)),
                         payload={
                             "severity": trigger.priority.name,
+                            "trigger": getattr(trigger, "name", trigger.description),
                             "ttl": 10,
-                            "dismissable": True
-                        }
+                            "dismissable": True,
+                        },
                     )
                     self.broadcaster.send(alert_msg)
                     break
@@ -418,6 +723,88 @@ class IntelligenceEngine:
             # It's a standard coroutine
             await res
 
+    def _build_pilot_question_messages(
+        self,
+        pilot_question: str,
+        chat_history: Optional[list] = None,
+    ) -> list:
+        """Mensajes system+user para PTT /ask con telemetría compacta."""
+        strategy_service = self._get_strategy_service()
+        snapshot = self.live_context.snapshot(tier="FAST")
+        if strategy_service:
+            race_summary = strategy_service.get_race_summary()
+            if race_summary and "status" not in race_summary:
+                for key, value in race_summary.items():
+                    if key not in snapshot:
+                        snapshot[key] = value
+        strat_advice = None
+        if strategy_service and getattr(strategy_service, "latest_advice", None) is not None:
+            strat_advice = self._to_dict(strategy_service.latest_advice)
+        telemetry = self._resolve_ptt_telemetry()
+        return self.context_builder.build_pilot_question_messages(
+            snapshot=snapshot,
+            pilot_question=pilot_question,
+            chat_history=chat_history,
+            templates=self.prompt_templates,
+            event_store=self._get_event_store(),
+            telemetry_frame=telemetry if telemetry else None,
+            strategy_advice=strat_advice,
+            lmu_api=self.lmu_api,
+            sweary=self.sweary_messages,
+            strategy_service=strategy_service,
+        )
+
+    async def _run_pilot_question_stream(self, messages: list, advice_id: str) -> None:
+        """Streaming PTT free-form → advice_* (mismo motor que /ask)."""
+        from src.intelligence.llm_speech_sanitize import sanitize_llm_speech
+
+        self._log_ptt_llm_request(messages, advice_id=advice_id)
+
+        self.broadcaster.send(
+            AdviceStartMessage(advice_id=advice_id, tier="FAST", event="advice_start")
+        )
+        parts: list[str] = []
+        try:
+            async for token in self.llm_client.ask_streaming_messages(messages, tier="FAST"):
+                if token:
+                    parts.append(token)
+                    self.broadcaster.send(
+                        AdviceTokenMessage(advice_id=advice_id, token=token, event="advice_token")
+                    )
+        except Exception as exc:
+            logger.error("PTT stream falló: %s", exc, exc_info=True)
+
+        raw_stream = "".join(parts)
+        spoken = sanitize_llm_speech(raw_stream, finalize=True)
+        source = "stream"
+        if not spoken.strip():
+            try:
+                raw = await self.llm_client._complete_speech_messages(messages, max_tokens=1024)
+                spoken = sanitize_llm_speech(raw, finalize=True)
+                source = "fallback_complete"
+                raw_stream = raw
+            except Exception as exc:
+                logger.warning("PTT complete_text fallback falló: %s", exc)
+        if not spoken.strip():
+            spoken = "No he podido generar respuesta ahora. Repite la pregunta."
+            source = "hard_fallback"
+
+        self._log_ptt_llm_response(
+            spoken,
+            advice_id=advice_id,
+            source=source,
+            raw=raw_stream,
+        )
+
+        self.broadcaster.send(
+            AdviceEndMessage(
+                advice_id=advice_id,
+                full_text=spoken,
+                actions=[],
+                event="advice_end",
+            )
+        )
+
     async def ask_async(self, pilot_question: str, chat_history: list = None):
         """Procesa pregunta del piloto de forma asíncrona (para endpoint HTTP /ask).
         
@@ -434,41 +821,34 @@ class IntelligenceEngine:
             Chunks de texto de la respuesta del LLM
         """
         
-        # 1. Obtener contexto desde strategy_service y live_context
-        strategy_service = self._get_strategy_service()
+        # 4. Construir mensajes usando context_builder
+        messages = self._build_pilot_question_messages(pilot_question, chat_history)
+        self._log_ptt_llm_request(messages, question=pilot_question)
         
-        # 2. Obtener snapshot del tier FAST (mínimo para preguntas)
-        snapshot = self.live_context.snapshot(tier="FAST")
-        
-        # 3. Enriquecer con datos de race_summary si disponibles
-        if strategy_service:
-            race_summary = strategy_service.get_race_summary()
-            if race_summary and "status" not in race_summary:
-                # Merge race_summary en snapshot
-                for key, value in race_summary.items():
-                    if key not in snapshot:
-                        snapshot[key] = value
-        
-        # 4. Construir prompt usando context_builder
-        prompt = self.context_builder.build_prompt_for_question(
-            snapshot=snapshot,
-            pilot_question=pilot_question,
-            chat_history=chat_history,
-            templates=self.prompt_templates,
-            event_store=self._get_event_store(),
-            sweary=self.sweary_messages,
-        )
-        
-        # 5. Ejecutar streaming del LLM usando ask_streaming_text
+        # 5. Ejecutar streaming del LLM
         full_text = ""
         try:
-            async for token in self.llm_client.ask_streaming_text(prompt, tier="FAST"):
+            async for token in self.llm_client.ask_streaming_messages(messages, tier="FAST"):
                 full_text += token
         except Exception as e:
             logger.error(f"Error en ask_async LLM stream: {e}", exc_info=True)
             full_text = "Error de comunicación con el muro de boxes."
+
+        from src.intelligence.llm_speech_sanitize import sanitize_llm_speech
+
+        raw = full_text
+        full_text = sanitize_llm_speech(full_text, finalize=True)
+        source = "stream"
+        if not full_text.strip():
+            try:
+                raw = await self.llm_client._complete_speech_messages(messages, max_tokens=1024)
+                full_text = sanitize_llm_speech(raw, finalize=True)
+                source = "fallback_complete"
+            except Exception as exc:
+                logger.warning("/ask fallback falló: %s", exc)
+        self._log_ptt_llm_response(full_text or raw, source=source, raw=raw)
         
-        yield full_text
+        yield full_text or "No he podido generar una respuesta en este momento."
 
     def _on_llm_task_done(self, task: asyncio.Task) -> None:
         """Callback para tareas LLM completadas. Recupera excepciones y envía AdviceEndMessage de emergencia si falló."""
@@ -484,7 +864,7 @@ class IntelligenceEngine:
                     from src.transport.broadcaster import send
                     err_msg = AdviceEndMessage(
                         advice_id=self._current_advice_id,
-                        full_text="... Pérdida de comunicación de radio con el muro de boxes ...",
+                        full_text="--- Pérdida de comunicación de radio con el muro de boxes ---",
                         actions=[],
                         event="advice_end"
                     )
@@ -539,7 +919,77 @@ class IntelligenceEngine:
         self._active_trigger_name = ""
 
     async def handle_pilot_question(self, question: str) -> None:
-        """Dispara evaluate_cycle con pregunta del piloto; emite datos de rival si aplica."""
+        """PTT del piloto: agent tool-first, luego streaming si pregunta abierta."""
+        from src.intelligence.pilot_ptt_agent import handle_pilot_ptt
+
+        await handle_pilot_ptt(self, question)
+
+    def build_ptt_context_minimal(self) -> str:
+        """Contexto compacto para el turno PTT (sin RAG)."""
+        tele = self._resolve_ptt_telemetry()
+        if not tele:
+            return ""
+        parts = []
+        lap = tele.get("lap_number") or tele.get("lap")
+        if lap:
+            parts.append(f"vuelta={lap}")
+        pos = tele.get("position") or tele.get("place")
+        if pos:
+            parts.append(f"pos={pos}")
+        laps = tele.get("fuel_laps_remaining")
+        if laps is not None:
+            parts.append(f"fuel_vueltas={float(laps):.1f}")
+        return " | ".join(parts)
+
+    def _resolve_ptt_telemetry(self) -> dict:
+        tele = getattr(self, "_eval_telemetry", None) or {}
+        if tele:
+            return self._to_dict(tele)
+        svc = self._get_strategy_service()
+        latest = getattr(svc, "latest_frame", None) if svc else None
+        if latest is not None:
+            return self._to_dict(latest)
+        return {}
+
+    def _log_ptt_llm_request(self, messages: list, *, advice_id: str = "", question: str = "") -> None:
+        system = next((m.get("content", "") for m in messages if m.get("role") == "system"), "")
+        user = next((m.get("content", "") for m in messages if m.get("role") == "user"), "")
+        tag = advice_id[:8] if advice_id else "-"
+        q = question or user.split("Pregunta del piloto:")[-1].strip()[:120]
+        logger.info(
+            "[PTT LLM] → pregunta=%r advice=%s | system=%d user=%d chars",
+            q,
+            tag,
+            len(system),
+            len(user),
+        )
+        logger.info("[PTT LLM] → contexto user: %s", user[:320].replace("\n", " | "))
+
+    def _log_ptt_llm_response(
+        self,
+        spoken: str,
+        *,
+        advice_id: str = "",
+        source: str = "stream",
+        raw: str = "",
+    ) -> None:
+        tag = advice_id[:8] if advice_id else "-"
+        logger.info(
+            "[PTT LLM] ← respuesta advice=%s source=%s (%d chars): %s",
+            tag,
+            source,
+            len(spoken),
+            spoken,
+        )
+        if raw and raw.strip() != spoken.strip():
+            logger.info(
+                "[PTT LLM] ← raw antes sanitize (%d chars): %s",
+                len(raw),
+                raw[:400],
+            )
+
+    async def _handle_free_form_question(self, question: str) -> None:
+        """Pregunta abierta: mismo pipeline que /ask, emitido por WebSocket."""
         from src.intelligence.context_builder import _resolve_competitor_context
 
         competitors = self.get_competitors_list()
@@ -560,13 +1010,107 @@ class IntelligenceEngine:
                 )
                 self.broadcaster.send(alert)
 
-        strat_service = self._get_strategy_service()
-        telemetry_state = strat_service.latest_frame if strat_service else None
-        strategy_state = strat_service.latest_advice if strat_service else None
-        session_state = {}
-        if telemetry_state:
-            session_state = {"phase": getattr(telemetry_state, "session_type", "RACE")}
-        await self.evaluate_cycle(telemetry_state, strategy_state, session_state, pilot_question=question)
+        advice_id = str(uuid.uuid4())
+        self._current_advice_id = advice_id
+        trigger = PilotQuestionTrigger()
+        self._active_trigger_priority = trigger.priority.name
+        self._active_trigger_name = "Pregunta directa del piloto"
+
+        self.broadcaster.send(
+            LLMPendingMessage(
+                event="llm_pending",
+                advice_id=advice_id,
+                trigger_name=self._active_trigger_name,
+                priority=self._active_trigger_priority,
+            )
+        )
+
+        messages = self._build_pilot_question_messages(question)
+        self._current_llm_task = asyncio.create_task(
+            self._run_pilot_question_stream(messages, advice_id)
+        )
+        self._current_llm_task.add_done_callback(self._on_llm_task_done)
+
+    def _try_handle_fast_command(self, command) -> bool:
+        """Respuestas deterministas PTT sin LLM (Crew Chief fast path)."""
+        if command.intent == "speak_only_on":
+            self.apply_speak_only(True)
+            return True
+        if command.intent == "speak_only_off":
+            self.apply_speak_only(False)
+            return True
+        if command.intent == "spotter_enable":
+            self.apply_spotter_toggle(True)
+            return True
+        if command.intent == "spotter_disable":
+            self.apply_spotter_toggle(False)
+            return True
+        if command.intent == "fuel_status":
+            tele = getattr(self, "_eval_telemetry", None) or {}
+            if not tele:
+                svc = self._get_strategy_service()
+                latest = getattr(svc, "latest_frame", None) if svc else None
+                if latest is not None:
+                    tele = self._to_dict(latest)
+            laps = tele.get("fuel_laps_remaining")
+            if laps is None:
+                advice = self._to_dict(getattr(self._get_strategy_service(), "latest_advice", None))
+                fuel = advice.get("fuel") if isinstance(advice.get("fuel"), dict) else {}
+                laps = fuel.get("estimated_laps_remaining")
+            if laps is not None:
+                self._emit_voice_response(f"Te quedan unos {float(laps):.1f} vueltas de combustible.")
+                return True
+        if command.intent == "gap_status":
+            tele = getattr(self, "_eval_telemetry", None) or {}
+            if not tele:
+                svc = self._get_strategy_service()
+                latest = getattr(svc, "latest_frame", None) if svc else None
+                if latest is not None:
+                    tele = self._to_dict(latest)
+            ahead = tele.get("time_gap_car_ahead") or tele.get("gap_ahead")
+            behind = tele.get("time_gap_car_behind") or tele.get("gap_behind")
+            if ahead is not None or behind is not None:
+                parts = []
+                if ahead is not None:
+                    parts.append(f"delante {float(ahead):.1f}")
+                if behind is not None:
+                    parts.append(f"detrás {float(behind):.1f}")
+                self._emit_voice_response(f"Gap {' y '.join(parts)} segundos.")
+                return True
+        if command.intent == "damage_status":
+            from src.intelligence.damage_report import (
+                active_damage_items,
+                format_damage_status_message,
+                format_damage_summary,
+            )
+
+            tele = self._resolve_ptt_telemetry()
+            items = active_damage_items(tele)
+            msg = format_damage_status_message(tele, items) if items else format_damage_summary(tele)
+            if not msg:
+                msg = "No detecto daños significativos en el coche."
+            self._emit_voice_response(msg)
+            return True
+        return False
+
+    def _emit_voice_response(self, message: str) -> None:
+        from src.intelligence.llm_speech_sanitize import sanitize_llm_speech
+
+        spoken = sanitize_llm_speech(message)
+        if not spoken:
+            return
+        alert = AlertMessage(
+            event="alert",
+            alert_id=str(uuid.uuid4()),
+            category="voice_response",
+            message=spoken,
+            audio_priority="2",
+            severity="INFO",
+            ttl=8,
+            dismissable=True,
+            payload={"fast_command": True},
+        )
+        self.broadcaster.send(alert)
 
     def _to_dict(self, obj) -> dict:
         """Helper para convertir cualquier objeto de estado (Pydantic, dataclass) a diccionario."""
@@ -575,18 +1119,22 @@ class IntelligenceEngine:
         if isinstance(obj, dict):
             return obj
 
-        # Safe check for unittest.mock.Mock to prevent dynamic hasattr/getattr calling model_dump
-        from unittest.mock import Mock
-        if isinstance(obj, Mock):
-            d = {}
-            for k in dir(obj):
-                if not k.startswith('_'):
-                    try:
-                        val = getattr(obj, k)
-                        if not isinstance(val, Mock):
-                            d[k] = val
-                    except AttributeError:
-                        pass
+        # Evitar llamar model_dump en mocks de unittest (tests de preemption/engine).
+        if getattr(obj, "_mock_name", None) is not None or type(obj).__module__.startswith("unittest."):
+            if hasattr(obj, "model_dump") and callable(obj.model_dump):
+                try:
+                    dumped = obj.model_dump()
+                    if isinstance(dumped, dict):
+                        return dumped
+                except TypeError:
+                    pass
+            d: dict = {}
+            for k, val in vars(obj).items():
+                if k.startswith("_"):
+                    continue
+                if getattr(val, "_mock_name", None) is not None:
+                    continue
+                d[k] = val
             return d
 
         if hasattr(obj, "model_dump"):

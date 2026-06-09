@@ -19,7 +19,7 @@ def spotter_ws_app():
     app.state.strategy_service = None
     app.state.intelligence_engine = None
     app.state.latest_client_frame = None
-    app.state.latest_strategy_frame = None
+    app.state.latest_client_frame = None
     app.state._last_telemetry_t = 0.0
     return app, spotter
 

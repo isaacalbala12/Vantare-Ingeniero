@@ -1,6 +1,8 @@
 import copy
 from typing import Any, Dict, List, Optional
 
+from src.services.lmu_api import lmu_weather_scalar
+
 class LiveContextManager:
     """Administrador de contexto incremental vuelta a vuelta en tres tiers de snapshots."""
 
@@ -143,7 +145,11 @@ class LiveContextManager:
         weather_forecast = weather_list[:3] if isinstance(weather_list, list) else []
         
         # Lluvia prevista si la probabilidad en alguno de los primeros slots es > 20%
-        rain_expected = any(float(slot.get("WNV_RAIN_CHANCE", 0.0)) > 20.0 for slot in weather_forecast if isinstance(slot, dict))
+        rain_expected = any(
+            lmu_weather_scalar(slot.get("WNV_RAIN_CHANCE", 0.0)) > 20.0
+            for slot in weather_forecast
+            if isinstance(slot, dict)
+        )
 
         damage = {
             "aero": telemetry.get("damage_aero", 0.0),

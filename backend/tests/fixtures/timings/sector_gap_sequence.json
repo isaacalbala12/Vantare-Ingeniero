@@ -1,0 +1,25 @@
+{
+  "meta": {
+    "module": "timings",
+    "event_id": "gap_ahead_decreasing",
+    "lmu_id": "LMU-22",
+    "description": "Sector 1→2 with gap closing 2.0→1.2"
+  },
+  "session": {
+    "phase": "race",
+    "session_type_int": 10,
+    "enable_gap_messages": true,
+    "frequency_of_gap_ahead_reports": 10,
+    "gap_message_randomness": 0
+  },
+  "frames": [
+    {"sector": 1, "time_gap_car_ahead": 2.0, "session_type_int": 10, "in_pits": false},
+    {"sector": 1, "time_gap_car_ahead": 1.8, "session_type_int": 10, "in_pits": false},
+    {"sector": 1, "time_gap_car_ahead": 1.5, "session_type_int": 10, "in_pits": false},
+    {"sector": 2, "time_gap_car_ahead": 1.2, "session_type_int": 10, "in_pits": false}
+  ],
+  "expect": {
+    "min_messages": 1,
+    "event_ids": ["gap_ahead_decreasing"]
+  }
+}

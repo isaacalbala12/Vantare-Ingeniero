@@ -1,0 +1,38 @@
+appId: com.vantare.ingeniero
+productName: Vantare Ingeniero IA
+directories:
+  output: release
+files:
+  - dist/**/*
+  - electron-dist/**/*
+  - package.json
+extraResources:
+  - from: ../backend/dist/backend
+    to: backend
+    filter:
+      - "**/*"
+  - from: ../native/duck_lmu/target/release/duck_lmu.exe
+    to: duck_lmu.exe
+  - from: src-tauri/icons/icon.ico
+    to: icons/icon.ico
+publish:
+  provider: github
+  owner: isaacalbala12
+  repo: Vantare-Ingeniero
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: src-tauri/icons/icon.ico
+  publisherName: Vantare
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Vantare Ingeniero IA
+  installerIcon: src-tauri/icons/icon.ico
+  uninstallDisplayName: Vantare Ingeniero IA
+  artifactName: vantare-ingeniero-${version}-setup.${ext}

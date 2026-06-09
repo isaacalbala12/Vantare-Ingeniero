@@ -1,0 +1,66 @@
+name: Release Desktop
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch: {}
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  build-windows-desktop:
+    runs-on: windows-2022
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: false
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Python deps
+        run: |
+          pip install -e ./shared-telemetry -e ./shared-strategy
+          pip install -e ./backend
+          pip install pyinstaller
+
+      - name: Build duck_lmu
+        run: cargo build --release
+        working-directory: native/duck_lmu
+
+      - name: Build backend
+        run: python backend/build_backend.py
+
+      - name: Install frontend deps
+        run: npm ci
+        working-directory: frontend
+
+      - name: Build desktop installer
+        run: npm run build:desktop
+        working-directory: frontend
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify release artifacts
+        run: powershell -File scripts/verify-desktop-artifacts.ps1
+
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            frontend/release/*.exe
+            frontend/release/latest.yml
+          generate_release_notes: true

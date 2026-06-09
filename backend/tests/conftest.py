@@ -146,6 +146,18 @@ def mock_session_dict():
     return {
         "phase": "RACE",
         "finish_criteria": "TIME_LIMIT",
+        "enable_fuel_messages": False,
+        "enable_push_now_messages": False,
+        "enable_session_end_messages": False,
+        "enable_pit_stop_messages": False,
+        "enable_gap_messages": False,
+        "enable_fcy_messages": False,
+        "enable_blue_flag_messages": False,
+        "enable_multiclass_messages": False,
+        "enable_battery_messages": False,
+        "enable_tyre_temp_messages": False,
+        "enable_tyre_wear_messages": False,
+        "enable_brake_wear_messages": False,
         "weather_forecast": [
             {"WNV_SKY": 0, "WNV_TEMPERATURE": 25.0, "WNV_RAIN_CHANCE": 5.0},
             {"WNV_SKY": 0, "WNV_TEMPERATURE": 24.5, "WNV_RAIN_CHANCE": 10.0},

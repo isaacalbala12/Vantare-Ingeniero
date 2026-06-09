@@ -14,15 +14,17 @@ import json
 from typing import Any, Dict, List
 
 SYSTEM_PROMPT_BASIC = (
-    "Eres un ingeniero de carrera. Para preguntas técnicas de carrera, sé técnico y conciso. "
-    "Para preguntas generales, responde normalmente sin añadir contexto innecesario. "
-    "Máximo 2-3 frases. Estilo radio."
+    "Eres el ingeniero de pista de un equipo de resistencia en Le Mans Ultimate. "
+    "Hablas SOLO como ingeniero de pista: profesional, serio, 1-2 frases, estilo radio del muro de boxes. "
+    "Responde ÚNICAMENTE a lo que pregunta el piloto; no añadas telemetría, estrategia ni estado de sesión "
+    "si no lo pidió. Check de radio → confirma recepción en una frase, sin datos extra. "
+    "Sin saludos innecesarios, sin repetir, sin comillas. No inventes datos que no estén en el contexto."
 )
 
 # System prompt con formato ticker embebido para el LLM.
 # Incluye tabla diccionario que explica cada línea del ticker.
 # Tamaño aproximado: ~800 tokens (system + formato + ticker + RAG).
-SYSTEM_PROMPT_TICKER = """Eres un ingeniero de carrera. Recibes datos en formato ticker compacto.
+SYSTEM_PROMPT_TICKER = """Eres el ingeniero de pista de un equipo de resistencia en Le Mans Ultimate. Profesional, serio y directo. Recibes datos en formato ticker compacto.
 
 FORMATO TICKER — Tabla Diccionario:
 =============================
@@ -196,8 +198,306 @@ MONITOR_COMPETITOR_TOOL = {
 }
 
 
+SET_VERBOSITY_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "set_verbosity",
+        "description": "Cambia el nivel de verbosidad del ingeniero (comentarios proactivos).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "level": {
+                    "type": "string",
+                    "enum": ["silent", "normal", "detailed"],
+                    "description": "silent=solo crítico+spotter; normal=medio+; detailed=todo.",
+                },
+            },
+            "required": ["level"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+SET_BRAKING_ZONES_MUTE_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "set_braking_zones_mute",
+        "description": (
+            "Activa o desactiva silenciar TTS del ingeniero mientras el piloto frena fuerte. "
+            "Usar cuando pide silencio en frenada o zonas de frenado."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "True para silenciar comentarios NORMAL al frenar.",
+                },
+            },
+            "required": ["enabled"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+SET_SPEAK_ONLY_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "set_speak_only",
+        "description": (
+            "Silencia o restaura comentarios proactivos del ingeniero. "
+            "Usar cuando el piloto pide silencio, 'cállate', 'shhh', 'solo cuando te pregunte', "
+            "o cuando quiere volver al modo normal."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "True = solo hablar cuando el piloto pregunte; False = modo normal.",
+                },
+            },
+            "required": ["enabled"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+GET_FUEL_STATUS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_fuel_status",
+        "description": (
+            "Consulta combustible restante (vueltas o litros). "
+            "Usar cuando el piloto pregunta por gasolina, fuel, autonomía o cuántas vueltas le quedan."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+GET_GAP_STATUS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_gap_status",
+        "description": (
+            "Consulta gap con el coche de delante y/o detrás en segundos. "
+            "Usar cuando pregunta por distancia, gap, quién va delante o detrás."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+GET_DAMAGE_REPORT_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_damage_report",
+        "description": (
+            "Informe de daños del coche (aero, pinchazos, piezas). "
+            "Usar cuando pregunta por daños, estado del coche tras golpe, '¿estoy bien?'."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+GET_TIRE_WEAR_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_tire_wear",
+        "description": (
+            "Desgaste de neumáticos por eje. "
+            "Usar cuando pregunta por neumáticos, gomas, desgaste, tyres."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+SET_PIT_FUEL_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "set_pit_fuel",
+        "description": (
+            "Configura litros de combustible en el menú de boxes (PitMenu LMU). "
+            "Usar cuando pide añadir combustible en parada, ej. 'add 10 litres', 'pon 50 litros'."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "litres": {
+                    "type": "integer",
+                    "description": "Litros mínimos deseados en la próxima parada.",
+                },
+            },
+            "required": ["litres"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+SPOTTER_TOGGLE_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "spotter_toggle",
+        "description": (
+            "Activa o desactiva el spotter de proximidad. "
+            "Usar para 'spot', 'espiar', 'don't spot', 'deja de espiar', silenciar spotter."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean",
+                    "description": "True = activar spotter; False = desactivar.",
+                },
+            },
+            "required": ["enabled"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+GET_FLAG_STATUS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_flag_status",
+        "description": "Estado de banderas (amarilla, SC, FCY). Usar si pregunta por bandera o safety car.",
+        "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
+    },
+}
+
+
+GET_RACE_TIME_REMAINING_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_race_time_remaining",
+        "description": "Tiempo o vueltas restantes de sesión/carrera.",
+        "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
+    },
+}
+
+
+GET_PIT_WINDOW_STATUS_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "get_pit_window_status",
+        "description": "Estado de ventana de boxes (abierta/cerrada/próxima parada).",
+        "parameters": {"type": "object", "properties": {}, "additionalProperties": False},
+    },
+}
+
+
+WATCH_SNIP_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "watch_snip",
+        "description": "Marca rival para mensaje 'snip' / vigilancia activa (watch opponent).",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "type": "string",
+                    "enum": ["snip", "clear"],
+                    "description": "snip = vigilar rival activo; clear = quitar snip.",
+                },
+            },
+            "required": ["action"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+SET_PIT_TYRES_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "set_pit_tyres",
+        "description": "Configura compound de neumáticos en menú boxes LMU.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "compound": {"type": "string", "description": "Primary, Alternate, Wet, etc."},
+                "confirm": {
+                    "type": "boolean",
+                    "description": "True solo tras confirmación explícita del piloto.",
+                },
+            },
+            "required": ["compound"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+PILOT_PTT_TURN_TWO_PROMPT = (
+    "Resume en 1-2 frases estilo radio lo que acabas de hacer para el piloto. "
+    "Combina acción y datos si hubo varias tools. Sé breve."
+)
+
+
+PILOT_PTT_SYSTEM_PROMPT = """Eres el ingeniero de pista de un equipo de resistencia (Le Mans Ultimate): profesional, serio y breve.
+
+El piloto habla por PTT; la transcripción puede ser imperfecta. Antes de responder en prosa:
+
+1. Si pide cambiar tu comportamiento (silencio, verbosidad, frenada, pit menu, monitor rival) → tool de acción.
+2. Si pide un dato concreto (fuel, gap, daños, neumáticos, rival) → tool de consulta. No inventes números.
+3. Solo si es consejo abierto o estrategia sin dato concreto → responde sin tool (1-2 frases, estilo radio).
+4. Responde solo a lo preguntado; no vuelques telemetría si no la pidieron.
+
+Para acciones y consultas de estado DEBES usar tools. No simules la acción solo con texto."""
+
+
+def get_pilot_ptt_tools(include_competitor_query: bool = True) -> List[Dict[str, Any]]:
+    """Tools disponibles en el turno PTT (Task 13A/B/C)."""
+    tools = [
+        SET_SPEAK_ONLY_TOOL,
+        SPOTTER_TOGGLE_TOOL,
+        GET_FUEL_STATUS_TOOL,
+        GET_GAP_STATUS_TOOL,
+        GET_DAMAGE_REPORT_TOOL,
+        GET_TIRE_WEAR_TOOL,
+        SET_VERBOSITY_TOOL,
+        SET_BRAKING_ZONES_MUTE_TOOL,
+        SET_PIT_FUEL_TOOL,
+        GET_FLAG_STATUS_TOOL,
+        GET_RACE_TIME_REMAINING_TOOL,
+        GET_PIT_WINDOW_STATUS_TOOL,
+        WATCH_SNIP_TOOL,
+        SET_PIT_TYRES_TOOL,
+    ]
+    if include_competitor_query:
+        tools.append(COMPETITOR_QUERY_TOOL)
+        tools.append(MONITOR_COMPETITOR_TOOL)
+    return tools
+
+
 def get_llm_tools(include_competitor_query: bool = True) -> List[Dict[str, Any]]:
     tools = list(UI_TOOLS)
+    tools.append(SET_VERBOSITY_TOOL)
+    tools.append(SET_BRAKING_ZONES_MUTE_TOOL)
     if include_competitor_query:
         tools.append(COMPETITOR_QUERY_TOOL)
         tools.append(MONITOR_COMPETITOR_TOOL)
@@ -208,15 +508,99 @@ def _has_telemetry(context: dict) -> bool:
     """Detecta si el contexto tiene telemetría real de carrera (modo legacy)."""
     if not context:
         return False
-    lap = context.get("lap", 0)
+    if _snapshot_has_telemetry(context.get("snapshot") or {}):
+        return True
+    lap = context.get("lap", 0) or context.get("lap_number", 0)
     speed = context.get("speed", 0)
-    fuel = context.get("fuel", 0)
+    fuel = context.get("fuel", 0) or context.get("fuel_in_tank", 0)
     return lap > 0 and (speed > 0 or fuel > 0)
+
+
+def _snapshot_has_telemetry(snapshot: dict) -> bool:
+    if not snapshot:
+        return False
+    lap = snapshot.get("lap", 0) or snapshot.get("lap_number", 0)
+    speed = snapshot.get("speed", 0)
+    fuel = snapshot.get("fuel", 0) or snapshot.get("fuel_in_tank", 0)
+    return lap > 0 and (speed > 0 or fuel > 0)
+
+
+def _format_snapshot_compact(snapshot: dict) -> str:
+    """Una línea de estado para PTT sin volcar JSON completo."""
+    parts: list[str] = []
+    lap = snapshot.get("lap_number") or snapshot.get("lap")
+    if lap:
+        parts.append(f"vuelta {lap}")
+    pos = snapshot.get("position") or snapshot.get("place")
+    if pos:
+        parts.append(f"P{pos}")
+    fuel = snapshot.get("fuel") or snapshot.get("fuel_in_tank")
+    if fuel:
+        parts.append(f"fuel {fuel}L")
+    laps_rest = snapshot.get("fuel_laps_remaining")
+    if laps_rest is not None:
+        parts.append(f"~{float(laps_rest):.1f} vueltas restantes")
+    gap_ahead = snapshot.get("gap_ahead")
+    gap_behind = snapshot.get("gap_behind")
+    if gap_ahead is not None and float(gap_ahead) < 99:
+        parts.append(f"+{gap_ahead}s adelante")
+    if gap_behind is not None and float(gap_behind) < 99:
+        parts.append(f"-{gap_behind}s detrás")
+    return " | ".join(parts)
 
 
 def _has_ticker_text(context: dict) -> bool:
     """Detecta si el contexto usa ticker_text (modo nuevo)."""
     return "ticker_text" in context and context["ticker_text"]
+
+
+def render_pilot_question_messages(context_dict: dict, tier: str) -> List[Dict[str, str]]:
+    """PTT /ask: system + user con ticker compacto (sin diccionario de 800 tokens)."""
+    style_hint = SWEARY_STYLE_HINT if context_dict.get("sweary") else CLEAN_STYLE_HINT
+    system_content = f"{SYSTEM_PROMPT_BASIC}{style_hint}"
+
+    user_sections: list[str] = []
+    ticker_text = context_dict.get("ticker_text")
+    if ticker_text:
+        user_sections.append("Telemetría actual (ticker compacto):")
+        user_sections.append(ticker_text)
+    else:
+        snapshot = context_dict.get("snapshot") or {}
+        compact = _format_snapshot_compact(snapshot)
+        if compact:
+            user_sections.append(f"Estado: {compact}")
+
+    rag_context = context_dict.get("rag_context")
+    if rag_context:
+        user_sections.append(f"Contexto reciente:\n{rag_context}")
+
+    competitor_context = context_dict.get("competitor_context")
+    if competitor_context:
+        user_sections.append(f"Rival consultado:\n{competitor_context}")
+
+    sector_context = context_dict.get("sector_context")
+    if sector_context:
+        user_sections.append(f"Sectores:\n{sector_context}")
+
+    chat_history = context_dict.get("chat_history") or []
+    if chat_history:
+        hist_lines = [
+            f"{msg.get('role', 'user')}: {msg.get('content', '')}"
+            for msg in chat_history[-4:]
+            if msg.get("content")
+        ]
+        if hist_lines:
+            user_sections.append("Historial breve:\n" + "\n".join(hist_lines))
+
+    pilot_question = context_dict.get("pilot_question", "")
+    if pilot_question:
+        user_sections.append(f"Pregunta del piloto: {pilot_question}")
+
+    user_content = "\n\n".join(user_sections) if user_sections else pilot_question
+    return [
+        {"role": "system", "content": system_content},
+        {"role": "user", "content": user_content},
+    ]
 
 
 def render(context_dict: dict, tier: str) -> str:
@@ -282,7 +666,11 @@ def render(context_dict: dict, tier: str) -> str:
     has_telemetry = _has_telemetry(context_dict)
     if has_telemetry:
         system_prompt = SYSTEM_PROMPT_BASIC
-        context_json = json.dumps(context_dict, ensure_ascii=False, indent=2)
+        payload = {k: v for k, v in context_dict.items() if k != "snapshot"}
+        snapshot = context_dict.get("snapshot")
+        if snapshot:
+            payload["telemetry"] = snapshot
+        context_json = json.dumps(payload, ensure_ascii=False, indent=2)
         telemetry_section = (
             f"### CONTEXTO DE TELEMETRÍA ({tier}) ###\n"
             f"{context_json}\n\n"

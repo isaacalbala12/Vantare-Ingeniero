@@ -1,4 +1,5 @@
 import logging
+import unicodedata
 from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import Response
 
@@ -10,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/tts")
-async def synthesize_tts(request: Request, text: str = ""):
+async def synthesize_tts(request: Request, text: str = "", voice: str = ""):
     """Convierte texto a audio usando el backend TTS configurado.
 
     Backends:
@@ -20,7 +21,7 @@ async def synthesize_tts(request: Request, text: str = ""):
       - "gemini":     Gemini TTS (cloud) -> audio/wav
 
     Si el backend configurado falla, intenta el otro como fallback automático.
-    Uso: GET /tts?text=Hola%20piloto
+    Uso: GET /tts?text=Hola%20piloto&voice=es-ES-AlvaroNeural
     """
     if not text or not text.strip():
         raise HTTPException(status_code=400, detail="Texto vacío")
@@ -43,7 +44,7 @@ async def synthesize_tts(request: Request, text: str = ""):
         service = services.get(candidate)
         if not service:
             continue
-        audio_bytes, media_type = await _try_synthesize(service, candidate, text)
+        audio_bytes, media_type = await _try_synthesize(service, candidate, text, voice)
         if audio_bytes is not None:
             if candidate != backend:
                 logger.warning("Fallback TTS: backend '%s' usado en lugar de '%s'", candidate, backend)
@@ -66,16 +67,25 @@ def _content_type(backend: str) -> str:
     return "audio/mpeg" if backend in ("edge", "elevenlabs") else "audio/wav"
 
 
-async def _try_synthesize(service, backend: str, text: str):
+async def _try_synthesize(service, backend: str, text: str, voice: str = ""):
     """Intenta sintetizar con un servicio. Retorna (bytes|None, media_type)."""
     if not service:
         return None, None
     try:
-        audio = await service.synthesize(text)
+        if backend == "edge" and voice.strip():
+            audio = await service.synthesize(text, voice=voice.strip())
+        else:
+            audio = await service.synthesize(text)
         return audio, _content_type(backend)
     except Exception as e:
         logger.error("Error en TTS backend '%s': %s", backend, e)
         return None, None
+
+
+def _safe_header_value(value: str) -> str:
+    """HTTP headers must be ASCII; spotter copy may include em-dashes and accents."""
+    normalized = unicodedata.normalize("NFKD", value.strip()[:500])
+    return normalized.encode("ascii", "ignore").decode("ascii")
 
 
 def _build_response(audio_bytes: bytes, media_type: str, text: str) -> Response:
@@ -83,7 +93,7 @@ def _build_response(audio_bytes: bytes, media_type: str, text: str) -> Response:
         content=audio_bytes,
         media_type=media_type,
         headers={
-            "X-Response-Text": text.strip()[:500],
+            "X-Response-Text": _safe_header_value(text),
             "Content-Length": str(len(audio_bytes)),
         },
     )

@@ -1,0 +1,81 @@
+{
+  "generated_at": "2026-06-06T23:48:46.152520+00:00",
+  "release": "R3",
+  "tasks": "24-32",
+  "scenarios": [
+    {
+      "name": "task-24-yellow-flag",
+      "pass": true
+    },
+    {
+      "name": "task-24-flags-monitor-trigger",
+      "pass": true
+    },
+    {
+      "name": "task-25-multiclass-warning",
+      "pass": true
+    },
+    {
+      "name": "task-26-driver-swap",
+      "pass": true
+    },
+    {
+      "name": "task-27-penalty-monitor",
+      "pass": true
+    },
+    {
+      "name": "task-28-push-and-session-end",
+      "pass": true
+    },
+    {
+      "name": "task-29-profile-store",
+      "pass": true
+    },
+    {
+      "name": "task-30-version-check",
+      "pass": true
+    },
+    {
+      "name": "task-31-lmu-dummy-server",
+      "pass": true
+    },
+    {
+      "name": "task-32-trace-playback",
+      "pass": true
+    },
+    {
+      "name": "integration-monitor-competitor",
+      "pass": true
+    },
+    {
+      "name": "integration-spotter-flags-coexist",
+      "pass": true
+    }
+  ],
+  "scenarios_pass": 12,
+  "scenarios_total": 12,
+  "pytest_r3_subset": {
+    "pass": true,
+    "summary": "39 passed in 1.53s",
+    "returncode": 0
+  },
+  "pytest_backend_full": {
+    "pass": true,
+    "summary": "412 passed, 14 warnings in 63.13s (0:01:03)",
+    "returncode": 0
+  },
+  "pytest_shared_strategy": {
+    "pass": true,
+    "summary": "14 passed in 0.05s",
+    "returncode": 0
+  },
+  "frontend_vitest": {
+    "pass": true,
+    "summary": [
+      "      Tests  92 passed (92)",
+      "   Start at  01:48:44",
+      "   Duration  1.45s (transform 803ms, setup 241ms, import 1.03s, tests 216ms, environment 6.72s)"
+    ]
+  },
+  "verdict": "APPROVE"
+}
