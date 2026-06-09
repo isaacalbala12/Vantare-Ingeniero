@@ -125,6 +125,7 @@ async def lifespan(app: FastAPI):
         broadcast_callback=broadcast_sync,
         history_store=history_store,
         event_store=event_store,
+        strategy_service=strategy_service,
     )
     intelligence_engine.sweary_messages = settings.USE_SWEARY_MESSAGES
     app.state.intelligence_engine = intelligence_engine
