@@ -583,30 +583,7 @@ class IntelligenceEngine:
 
     def _to_dict(self, obj) -> dict:
         """Helper para convertir cualquier objeto de estado (Pydantic, dataclass) a diccionario."""
-        if obj is None:
-            return {}
-        if isinstance(obj, dict):
-            return obj
-
-        # Safe check for unittest.mock.Mock to prevent dynamic hasattr/getattr calling model_dump
-        from unittest.mock import Mock
-        if isinstance(obj, Mock):
-            d = {}
-            for k in dir(obj):
-                if not k.startswith('_'):
-                    try:
-                        val = getattr(obj, k)
-                        if not isinstance(val, Mock):
-                            d[k] = val
-                    except AttributeError:
-                        pass
-            return d
-
-        if hasattr(obj, "model_dump"):
-            return obj.model_dump()
-        if hasattr(obj, "dict"):
-            return obj.dict()
-        try:
-            return vars(obj)
-        except Exception:
-            return {}
+        from src.intelligence.state_coercion import coerce_state_dict
+        import sys
+        allow_mock = "pytest" in sys.modules
+        return coerce_state_dict(obj, allow_mock=allow_mock)
