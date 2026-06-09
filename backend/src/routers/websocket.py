@@ -197,7 +197,7 @@ async def _index_events_async(event_store, frame: dict, events: list[dict]) -> N
             batches.append((frame, event_type, lap))
 
         if batches:
-            event_store.store_events_batch(batches)
+            await asyncio.to_thread(event_store.store_events_batch, batches)
             logger.debug("Indexados %d eventos en EventStore", len(batches))
     except Exception as e:
         logger.warning("Error indexing events in EventStore: %s", e)
