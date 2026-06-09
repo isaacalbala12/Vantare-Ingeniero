@@ -150,7 +150,11 @@ activemq-data/
 *.sage.py
 
 # Environments
-# .env (subido intencionadamente - repo privado)
+.env
+.env.*
+!.env.example
+**/.env
+!**/.env.example
 .envrc
 .venv
 env/
@@ -223,7 +227,6 @@ __marimo__/
 node_modules/
 
 # Archivos sensibles locales
-# .env (subido intencionadamente - repo privado)
 test_edge.mp3
 # Herramientas de desarrollo
 .aider-desk/
