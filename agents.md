@@ -8,8 +8,12 @@ This file provides guidance to AI agents working in **Vantare-Ingeniero**.
 
 **Stack:**
 - **Backend:** Python 3.12+ / FastAPI (`backend/src`, port 8008)
-- **Frontend:** React 19 + TypeScript + Tauri 2 + Zustand + TailwindCSS v4
+- **Desktop:** Electron 34 + electron-builder (NSIS) — Hub + overlay + auto-update
+- **Frontend:** React 19 + TypeScript + Zustand + TailwindCSS v4 + Vite 6
+- **Legacy:** Tauri 2 (`frontend/src-tauri`) — no usar para releases
 - **Shared libs:** `shared-telemetry`, `shared-strategy` (no UI deps)
+
+Ver ADR-001: [`docs/decisions/ADR-001-electron-desktop-shell.md`](docs/decisions/ADR-001-electron-desktop-shell.md)
 
 ## High-Level Architecture
 
@@ -30,10 +34,10 @@ shared-telemetry (in-process @ 20 Hz via StrategyService)
 └──────────────────────┬──────────────────────────────┘
                        │ WebSocket :8008
 ┌──────────────────────▼──────────────────────────────┐
-│                  FRONTEND (Tauri)                   │
+│              ELECTRON (Hub + Overlay)               │
 │  useWebSocket → priorityAudioQueue (IMMEDIATE/NORMAL)│
 │  PTT → LLM, Speech Recognition, spotter phrases     │
-│  ConfigTab, RadioOverlay, audio ducking (Rust)      │
+│  ConfigTab / Hub sections, tray, electron-updater   │
 └─────────────────────────────────────────────────────┘
 ```
 
