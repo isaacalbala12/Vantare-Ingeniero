@@ -1,0 +1,17 @@
+{
+  "fuel_critical": {
+    "standard": "Te quedan menos de tres vueltas de gasolina|Gasolina para menos de tres vueltas, planifica parada",
+    "formal": "Autonomía inferior a tres vueltas. Planifique parada.",
+    "aggressive": "¡Te secas en tres vueltas! Entra ya a boxes"
+  },
+  "fcy_active": {
+    "standard": "Full course yellow, levanta el pie|FCY en pista, reduce ritmo",
+    "formal": "Full course yellow activo. Reduzca velocidad.",
+    "aggressive": "¡FCY! Levanta el pie ya"
+  },
+  "rain_increasing": {
+    "standard": "Sube la probabilidad de lluvia|Ojo, puede llover en breve",
+    "formal": "Probabilidad de lluvia en aumento.",
+    "aggressive": "Viene lluvia, estate listo"
+  }
+}
