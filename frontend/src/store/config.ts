@@ -85,6 +85,8 @@ export interface AppConfig {
 	ttsVoiceEngineer: string;
 	ttsVoiceSpotter: string;
 	ttsBackend: string;
+	ttsProviderEngineer: "edge" | "gemini";
+	ttsProviderSpotter: "edge" | "gemini";
 	spotterClearDelayS: number;
 	spotterOverlapDelayS: number;
 	spotterHoldRepeatS: number;
@@ -158,7 +160,7 @@ function normalizePttHotkey(value: string | undefined): string {
 	return trimmed || DEFAULT_PTT_HOTKEY;
 }
 
-const CONFIG_SCHEMA_VERSION = 4;
+const CONFIG_SCHEMA_VERSION = 5;
 
 const loadSavedConfig = (): AppConfig => {
 	try {
@@ -169,6 +171,7 @@ const loadSavedConfig = (): AppConfig => {
 			const legacy = schemaVersion < 2;
 			const migrateV3 = schemaVersion < 3;
 			const migrateV4 = schemaVersion < 4;
+			const migrateV5 = schemaVersion < 5;
 			const config: AppConfig = {
 				vllmIP: parsed.vllmIP ?? "127.0.0.1",
 				serverPort: parsed.serverPort ?? 8008,
@@ -190,6 +193,8 @@ const loadSavedConfig = (): AppConfig => {
 				ttsVoiceEngineer: parsed.ttsVoiceEngineer ?? "es-ES-AlvaroNeural",
 				ttsVoiceSpotter: parsed.ttsVoiceSpotter ?? "es-ES-ElviraNeural",
 				ttsBackend: parsed.ttsBackend ?? "edge",
+				ttsProviderEngineer: migrateV5 ? "edge" : (parsed.ttsProviderEngineer ?? "edge"),
+				ttsProviderSpotter: migrateV5 ? "edge" : (parsed.ttsProviderSpotter ?? "edge"),
 				spotterClearDelayS: parsed.spotterClearDelayS ?? 0.15,
 				spotterOverlapDelayS: parsed.spotterOverlapDelayS ?? 2.0,
 				spotterHoldRepeatS:
@@ -251,6 +256,8 @@ const loadSavedConfig = (): AppConfig => {
 		ttsVoiceEngineer: "es-ES-AlvaroNeural",
 		ttsVoiceSpotter: "es-ES-ElviraNeural",
 		ttsBackend: "edge",
+		ttsProviderEngineer: "edge",
+		ttsProviderSpotter: "edge",
 		spotterClearDelayS: 0.15,
 		spotterOverlapDelayS: 2.0,
 		spotterHoldRepeatS: 3.0,

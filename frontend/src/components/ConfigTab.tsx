@@ -116,6 +116,12 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 	const [ttsVolumeBoost, setTtsVolumeBoost] = useState(
 		config.ttsVolumeBoost ?? 100,
 	);
+	const [ttsProviderEngineer, setTtsProviderEngineer] = useState<
+		"edge" | "gemini"
+	>(config.ttsProviderEngineer ?? "edge");
+	const [ttsProviderSpotter, setTtsProviderSpotter] = useState<
+		"edge" | "gemini"
+	>(config.ttsProviderSpotter ?? "edge");
 
 	// Estados de test y dispositivos
 	const [testStatus, setTestStatus] = useState<string | null>(null);
@@ -217,6 +223,8 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 			ttsVoiceEngineer: ttsVoiceEngineer.trim(),
 			ttsVoiceSpotter: ttsVoiceSpotter.trim(),
 			ttsBackend: config.ttsBackend ?? "edge",
+			ttsProviderEngineer,
+			ttsProviderSpotter,
 			spotterClearDelayS: Number(spotterClearDelayS),
 			spotterOverlapDelayS: config.spotterOverlapDelayS ?? 2.0,
 			spotterHoldRepeatS: Number(spotterHoldRepeatS),
@@ -257,6 +265,8 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		setVerbosityLevel(merged.verbosityLevel ?? "normal");
 		setTtsVoiceEngineer(merged.ttsVoiceEngineer ?? "es-ES-AlvaroNeural");
 		setTtsVoiceSpotter(merged.ttsVoiceSpotter ?? "es-ES-ElviraNeural");
+		setTtsProviderEngineer(merged.ttsProviderEngineer ?? "edge");
+		setTtsProviderSpotter(merged.ttsProviderSpotter ?? "edge");
 		setSpotterClearDelayS(merged.spotterClearDelayS ?? 0.15);
 		setSpotterHoldRepeatS(merged.spotterHoldRepeatS ?? 3.0);
 		setSpotterGapFrequencyS(merged.spotterGapFrequencyS ?? 30);
@@ -755,6 +765,46 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 								onSpotterVoice={setTtsVoiceSpotter}
 								onVolume={setTtsVolumeBoost}
 							/>
+							<div className="flex flex-col gap-1">
+								<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
+									Ingeniero TTS
+								</label>
+								<select
+									value={ttsProviderEngineer}
+									onChange={(e) =>
+										setTtsProviderEngineer(
+											e.target.value as "edge" | "gemini",
+										)
+									}
+									className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[12px] text-white"
+								>
+									<option value="edge">Edge (Microsoft)</option>
+									<option value="gemini">Gemini (Google)</option>
+								</select>
+								<span className="text-[9px] text-a1-text-muted">
+									Gemini requiere GEMINI_API_KEY en backend
+								</span>
+							</div>
+							<div className="flex flex-col gap-1">
+								<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
+									Spotter TTS
+								</label>
+								<select
+									value={ttsProviderSpotter}
+									onChange={(e) =>
+										setTtsProviderSpotter(
+											e.target.value as "edge" | "gemini",
+										)
+									}
+									className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[12px] text-white"
+								>
+									<option value="edge">Edge (Microsoft)</option>
+									<option value="gemini">Gemini (Google)</option>
+								</select>
+								<span className="text-[9px] text-a1-text-muted">
+									Gemini requiere GEMINI_API_KEY en backend
+								</span>
+							</div>
 							<button
 								type="button"
 								className="mt-2 hub-btn-secondary w-fit"

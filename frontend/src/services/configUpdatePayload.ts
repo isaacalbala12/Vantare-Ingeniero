@@ -23,5 +23,7 @@ export function buildConfigUpdatePayload(cfg: AppConfig): Record<string, unknown
   if (typeof cfg.engineerEnabled === "boolean") {
     payload.engineerEnabled = cfg.engineerEnabled;
   }
+  payload.ttsProviderEngineer = cfg.ttsProviderEngineer ?? "edge";
+  payload.ttsProviderSpotter = cfg.ttsProviderSpotter ?? "edge";
   return payload;
 }

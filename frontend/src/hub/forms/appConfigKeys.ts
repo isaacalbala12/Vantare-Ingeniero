@@ -5,6 +5,7 @@ export const APP_CONFIG_KEYS = [
   "pttHotkey", "pttStopHotkey", "wakeWordEnabled", "swearyMessages",
   "spotterOffQualifying", "spotterExcludeStopped", "mqttEnabled", "mqttBroker", "mqttPort",
   "personalityProfileId", "verbosityLevel", "ttsVoiceEngineer", "ttsVoiceSpotter", "ttsBackend",
+  "ttsProviderEngineer", "ttsProviderSpotter",
   "spotterClearDelayS", "spotterOverlapDelayS", "spotterHoldRepeatS", "spotterGapFrequencyS",
   "spotterCarLengthM", "spotterMinSpeedMs", "spotterRaceStartDelayS",
   "brakingZonesMute", "speakOnlyWhenSpokenTo", "ttsVolumeBoost",
