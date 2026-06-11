@@ -13,5 +13,20 @@
     "standard": "Sube la probabilidad de lluvia|Ojo, puede llover en breve",
     "formal": "Probabilidad de lluvia en aumento.",
     "aggressive": "Viene lluvia, estate listo"
+  },
+  "brake_wear_high": {
+    "standard": "Frenos con desgaste alto, cuida las frenadas|Desgaste de frenos superior al ochenta por ciento",
+    "formal": "Desgaste de frenos crítico. Reduzca carga en frenada.",
+    "aggressive": "¡Frenos al límite! Cuidado con las frenadas"
+  },
+  "tyre_wear_high": {
+    "standard": "Neumáticos con desgaste alto, ritmo degradado|Las gomas están cayendo, gestión de ritmo",
+    "formal": "Degradación de neumáticos elevada. Ritmo comprometido.",
+    "aggressive": "¡Los neumáticos no dan más! Gestión ya"
+  },
+  "pit_window_opened": {
+    "standard": "Ventana de paradas abierta, puedes entrar|Boxes abiertos, empieza la ventana de paradas",
+    "formal": "Ventana de paradas activa. Analizando estrategia óptima.",
+    "aggressive": "¡Ventana de paradas abierta! Entra cuando quieras"
   }
 }

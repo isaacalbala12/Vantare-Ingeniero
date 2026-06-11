@@ -64,6 +64,7 @@ class BaseTrigger(ABC):
         min_interval: float,
         description: str,
         alert_text: str,
+        phrase_key: str | None = None,
     ) -> None:
         self.priority = priority
         self.tier = tier
@@ -71,9 +72,19 @@ class BaseTrigger(ABC):
         self.min_interval = min_interval
         self.description = description
         self.alert_text = alert_text
+        self.phrase_key = phrase_key
         self.last_triggered: float = 0.0
         self.name = description
         self._edge_latched = False
+
+    def resolve_message(self, personality) -> str:
+        if not self.phrase_key:
+            return self.alert_text
+        from src.intelligence.phrase_picker import PhrasePicker
+
+        picker = PhrasePicker.load_defaults()
+        msg = picker.trigger_phrase(self.phrase_key, profile_id=personality.profile_id)
+        return msg or self.alert_text
 
     def _fire_rising_edge(self, active: bool) -> bool:
         if not active:
@@ -130,7 +141,8 @@ class FuelCriticalTrigger(BaseTrigger):
             TriggerAction.DETERMINISTIC_ONLY,
             min_interval=15.0,
             description="Combustible críticamente bajo",
-            alert_text="¡ATENCIÓN! Quedan menos de 3 vueltas de combustible. Planifica parada.",
+            alert_text="Fallback combustible bajo.",
+            phrase_key="fuel_critical",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -404,7 +416,8 @@ class BrakeWearCriticalTrigger(BaseTrigger):
             TriggerAction.DETERMINISTIC_ONLY,
             min_interval=20.0,
             description="Desgaste crítico de frenos",
-            alert_text="¡AVISO DE FRENOS! Desgaste superior al 80% detectado.",
+            alert_text="Fallback desgaste frenos alto.",
+            phrase_key="brake_wear_high",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -428,7 +441,8 @@ class TyreDegAccelTrigger(BaseTrigger):
             TriggerAction.DETERMINISTIC_ONLY,
             min_interval=30.0,
             description="Degradación de neumáticos acelerada",
-            alert_text="Desgaste promedio de neumáticos elevado. Ritmo degradado.",
+            alert_text="Fallback desgaste neumáticos alto.",
+            phrase_key="tyre_wear_high",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -479,7 +493,8 @@ class WeatherChangeTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=120.0,
             description="Amenaza de lluvia inminente",
-            alert_text="Probabilidad de lluvia superior al 30% en el forecast actual.",
+            alert_text="Fallback probabilidad de lluvia.",
+            phrase_key="rain_increasing",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -507,7 +522,8 @@ class PitWindowOpenedTrigger(BaseTrigger):
             TriggerAction.DETERMINISTIC_ONLY,
             min_interval=30.0,
             description="Ventana de parada abierta",
-            alert_text="Ventana de paradas activa. Analizando estrategia óptima.",
+            alert_text="Fallback ventana de parada abierta.",
+            phrase_key="pit_window_opened",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:

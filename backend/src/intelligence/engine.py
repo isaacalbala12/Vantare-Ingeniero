@@ -437,7 +437,7 @@ class IntelligenceEngine(EnginePttMixin):
                         event="alert",
                         alert_id=str(uuid.uuid4()),
                         category="strategy",
-                        message=trigger.alert_text,
+                        message=trigger.resolve_message(self.personality),
                         audio_priority=trigger.priority.name,
                         payload={"severity": trigger.priority.name, "ttl": 10, "dismissable": True},
                     )
