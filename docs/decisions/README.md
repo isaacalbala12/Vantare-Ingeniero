@@ -13,7 +13,10 @@ Registro de decisiones técnicas relevantes para humanos y agentes IA.
 
 | Plan | Descripción |
 |------|-------------|
-| [2026-06-07-monolith-voice-beta-rearchitecture.md](../superpowers/plans/2026-06-07-monolith-voice-beta-rearchitecture.md) | **Plan maestro** — 23 tasks TDD punta a punta |
+| [ROADMAP-1.0.md](../ROADMAP-1.0.md) | **Visión producto** 0.3 → 1.1 |
+| [2026-06-11-roadmap-1.0-ORCHESTRATOR-INDEX.md](../superpowers/plans/2026-06-11-roadmap-1.0-ORCHESTRATOR-INDEX.md) | **Orquestador** — mini-planes ejecutables |
+| [2026-06-11-roadmap-1.0-master-plan.md](../superpowers/plans/2026-06-11-roadmap-1.0-master-plan.md) | Plan maestro roadmap 1.0 |
+| [2026-06-07-monolith-voice-beta-rearchitecture.md](../superpowers/plans/2026-06-07-monolith-voice-beta-rearchitecture.md) | **Plan maestro** — 23 tasks TDD punta a punta (Voice Beta, completado) |
 | [2026-06-07-rearchitecture-decisions-record.md](../architecture/2026-06-07-rearchitecture-decisions-record.md) | Registro hallazgos + acuerdos |
 
 ## Plantilla

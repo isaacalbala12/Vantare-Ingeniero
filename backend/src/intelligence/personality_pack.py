@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Dict
+
+from src.intelligence.phrase_picker import PhrasePicker
 
 DEFAULT_PROFILE_ID = "standard"
 
@@ -47,11 +47,7 @@ _PROFILES: Dict[str, PersonalityProfile] = {
     ),
 }
 
-_PHRASES_PATH = Path(__file__).resolve().parent.parent / "data" / "spotter_phrases_es.json"
-_SPOTTER_PHRASES: Dict[str, Dict[str, str]] = {}
-if _PHRASES_PATH.is_file():
-    with open(_PHRASES_PATH, encoding="utf-8") as f:
-        _SPOTTER_PHRASES = json.load(f)
+_picker = PhrasePicker.load_defaults()
 
 
 class PersonalityPack:
@@ -89,13 +85,7 @@ class PersonalityPack:
         return self.get().tts_voice_spotter
 
     def spotter_phrase(self, key: str, **kwargs: str) -> str:
-        template = _SPOTTER_PHRASES.get(self._profile_id, {}).get(key, "")
-        if not template:
-            return ""
-        try:
-            return template.format(**kwargs)
-        except KeyError:
-            return template
+        return _picker.spotter_phrase(key, profile_id=self._profile_id, **kwargs)
 
     @staticmethod
     def list_profiles() -> list[PersonalityProfile]:

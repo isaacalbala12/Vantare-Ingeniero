@@ -1,7 +1,7 @@
 ﻿{
-    "finished_at":  "2026-06-11T12:57:52.5796511+02:00",
+    "finished_at":  "2026-06-11T13:45:13.3529007+02:00",
     "overall":  "PASS",
-    "version":  "0.2.13",
+    "version":  "0.2.14",
     "steps":  {
                   "beta_gate":  {
                                     "detail":  "skipped",
@@ -16,7 +16,7 @@
                                         "status":  "WARN"
                                     },
                   "desktop_artifacts":  {
-                                            "detail":  "vantare-ingeniero-0.2.13-setup.exe",
+                                            "detail":  "vantare-ingeniero-0.2.14-setup.exe",
                                             "status":  "PASS"
                                         },
                   "bundle_native_telemetry":  {
@@ -36,7 +36,7 @@
                                          "status":  "PASS"
                                      },
                   "backend_smoke":  {
-                                        "detail":  "telemetry=native binary=64 json=4 (LMU detected)",
+                                        "detail":  "telemetry=native binary=61 json=5 (LMU detected)",
                                         "status":  "PASS"
                                     },
                   "trace_replay":  {
@@ -44,5 +44,5 @@
                                        "status":  "PASS"
                                    }
               },
-    "started_at":  "2026-06-11T12:57:03.9539363+02:00"
+    "started_at":  "2026-06-11T13:44:21.5276588+02:00"
 }

@@ -8,19 +8,21 @@
     "llm_configured": true
   },
   "websocket": {
-    "binary_frames": 64,
-    "json_event_count": 4,
+    "binary_frames": 61,
+    "json_event_count": 5,
     "json_events": [
       "strategy",
       "config_ack",
       "config_ack",
-      "config_ack"
+      "config_ack",
+      "voice_playback_end"
     ],
     "json_events_sample": [
       "strategy",
       "config_ack",
       "config_ack",
-      "config_ack"
+      "config_ack",
+      "voice_playback_end"
     ]
   },
   "bundle": {

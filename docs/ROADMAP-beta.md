@@ -1,5 +1,8 @@
 # Roadmap Beta — Paridad Crew Chief (post-alpha)
 
+> **Plan activo 0.3 → 1.1:** [`ROADMAP-1.0.md`](ROADMAP-1.0.md)  
+> Este documento conserva la deuda explícita del cierre alpha/beta.
+
 Elementos **explícitamente diferidos** del plan alpha. No implementar hasta cierre A8 + validación LMU.
 
 ## TTS premium

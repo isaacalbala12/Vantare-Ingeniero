@@ -27,5 +27,12 @@ def test_dual_voices_per_profile():
 def test_spotter_phrase_by_profile():
     aggressive = PersonalityPack("aggressive")
     msg = aggressive.spotter_phrase("hold_line", side="derecha")
-    assert "Aguanta" in msg
+    assert any(w in msg for w in ("Aguanta", "desvíes", "viene"))
     assert "derecha" in msg
+
+
+def test_spotter_phrase_supports_pipe_variants():
+    pack = PersonalityPack("standard")
+    msg = pack.spotter_phrase("clear_left")
+    assert msg
+    assert any(w in msg.lower() for w in ("despejado", "libre", "clear"))
