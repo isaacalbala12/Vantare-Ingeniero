@@ -2,9 +2,9 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
-## [0.2.14] - 2026-06-11 — Alpha inicial (Voice Beta)
+## [0.2.14] - 2026-06-11 — Voice Beta (stable)
 
-Primera alpha pública de la **re-arquitectura de voz**: audio reproducido en el backend (pygame), telemetría y race loop in-process, contrato de voz documentado y gates de calidad para beta.
+Release estable de la **re-arquitectura de voz**: validada en pista (LMU) y promovida desde pre-release el 2026-06-11. Audio reproducido en el backend (pygame), telemetría y race loop in-process, contrato de voz documentado y gates de calidad.
 
 ### Added
 
@@ -30,7 +30,7 @@ Primera alpha pública de la **re-arquitectura de voz**: audio reproducido en el
 - Overlay de radio invisible cuando el audio salía del backend
 - Gates de commentary batch y coherencia runtime/config sync
 
-### Known limitations (alpha)
+### Known limitations
 
 - `duck_lmu.exe` opcional no incluido en el instalador (ducking LMU manual)
 - Requiere clave LLM configurada en `.env` del backend empaquetado
