@@ -2,6 +2,12 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [0.5.1] - 2026-06-11 — Auto-update sin firma de código
+
+### Fixed
+
+- **Auto-update** — desactiva verificación Authenticode en instaladores sin certificado (`verifyUpdateCodeSignature=false`); corrige error *"not signed by the application owner"* al actualizar desde v0.2.x
+
 ## [0.5.0] - 2026-06-11 — Personalidades avanzadas
 
 Configuración avanzada de personalidad del ingeniero: control de proactividad (filtro por prioridad), frecuencia de perlas de sabiduría (0-100%), y tono coloquial opcional.

@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from "electron";
-import { autoUpdater, type UpdateInfo } from "electron-updater";
+import { autoUpdater, NsisUpdater, type UpdateInfo } from "electron-updater";
 
 export type DesktopUpdatePhase =
   | "idle"
@@ -38,6 +38,10 @@ export function getDesktopUpdateSnapshot(): DesktopUpdateSnapshot {
 export function initDesktopUpdater(getHubWindow: () => BrowserWindow | null): void {
   autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = true;
+  // Instaladores sin certificado Authenticode (beta): omitir verificación de firma en Windows.
+  if (process.platform === "win32") {
+    (autoUpdater as NsisUpdater).verifyUpdateCodeSignature = async () => null;
+  }
 
   autoUpdater.on("checking-for-update", () => {
     broadcast(getHubWindow(), { phase: "checking", currentVersion: app.getVersion() });

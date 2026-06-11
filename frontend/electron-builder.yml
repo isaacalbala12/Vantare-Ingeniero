@@ -27,7 +27,7 @@ win:
       arch:
         - x64
   icon: src-tauri/icons/icon.ico
-  publisherName: Vantare
+  # Sin certificado de firma de código; verifyUpdateCodeSignature=false en electron/updater.ts
 nsis:
   oneClick: false
   perMachine: false
