@@ -296,7 +296,7 @@ async def lifespan(app: FastAPI):
 
         spotter_cache = SpotterPhraseCache(edge)
         try:
-            await spotter_cache.warm()
+            await spotter_cache.warm(voice=app.state.tts_routing.edge_voice_spotter)
             logger.info("SpotterPhraseCache warmed (%d phrases)", spotter_cache.size)
         except Exception as exc:
             logger.warning("Spotter cache warm failed — live TTS only: %s", exc)

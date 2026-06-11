@@ -2,7 +2,15 @@
 
 Crew chief en español para **Le Mans Ultimate**: telemetría nativa Windows, spotter de baja latencia, ingeniero por voz (PTT + LLM) y overlay F1-style.
 
-**Distribución actual:** instalador Windows (Electron + backend empaquetado). Ver [Instalación desktop](docs/instalacion-desktop.md).
+**Versión actual:** **0.3.0** — frases humanas + Gemini TTS selectable por rol (ingeniero/spotter).
+
+**Distribución:** instalador Windows (Electron + backend empaquetado). Ver [Instalación desktop](docs/instalacion-desktop.md) y [Releases](https://github.com/isaacalbala12/Vantare-Ingeniero/releases).
+
+## Novedades v0.3.0
+
+- **Frases spotter/triggers** con variantes naturales (tono radio, perfiles standard/formal/aggressive)
+- **Gemini TTS** opcional por rol en Hub → Audio → proveedor ingeniero/spotter (requiere `GEMINI_API_KEY` en backend; fallback Edge automático)
+- **Voice Beta** sin cambios de arquitectura: audio sigue en backend (`voice_loop` + pygame)
 
 ## Quick start (desarrollo)
 
@@ -21,6 +29,7 @@ cd backend
 pip install -e ../shared-telemetry -e ../shared-strategy -e ".[dev]"
 copy .env.example .env
 # Editar .env — LLM_API_KEY obligatorio para PTT/ingeniero
+# GEMINI_API_KEY opcional — TTS Gemini (Hub → proveedor ingeniero/spotter)
 python run_dev.py
 ```
 
@@ -84,7 +93,8 @@ Runbook: [docs/launch/first-deploy-runbook.md](docs/launch/first-deploy-runbook.
 - [Instalación y actualizaciones](docs/instalacion-desktop.md)
 - [Smoke checklist Electron](docs/qa/electron-smoke-checklist.md)
 - [AGENTS.md](AGENTS.md) — guía para agentes IA
-- [Roadmap beta](docs/ROADMAP-beta.md)
+- [Roadmap producto 0.3→1.1](docs/ROADMAP-1.0.md)
+- [Roadmap beta / deuda alpha](docs/ROADMAP-beta.md)
 
 ## Licencia
 

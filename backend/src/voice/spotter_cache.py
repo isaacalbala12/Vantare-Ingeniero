@@ -4,6 +4,8 @@ import json
 import logging
 from pathlib import Path
 
+from src.intelligence.phrase_picker import pick_variant, spotter_phrase_for_cache
+
 logger = logging.getLogger("vantare.spotter_cache")
 
 # Alineado con frontend SPOTTER_PREFETCH_PHRASES + spotter_phrases_es.json
@@ -29,6 +31,19 @@ PREFETCH_PHRASES: dict[str, str] = {
     "limiter_disengage_legacy": "Desactiva el limiter de boxes.",
 }
 
+_SPOTTER_JSON_KEYS = (
+    "clear_left",
+    "clear_right",
+    "clear_all_round",
+    "hold_line",
+    "still_there",
+    "closing_fast",
+    "in_the_middle",
+    "engage_limiter",
+    "disengage_limiter",
+    "fuel_critical",
+)
+
 
 def default_spotter_phrases() -> dict[str, str]:
     path = Path(__file__).resolve().parents[1] / "data" / "spotter_phrases_es.json"
@@ -37,12 +52,14 @@ def default_spotter_phrases() -> dict[str, str]:
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
             std = data.get("standard", {})
-            if std.get("clear_left"):
-                phrases.setdefault("clear_left", std["clear_left"])
-            if std.get("clear_right"):
-                phrases.setdefault("clear_right", std["clear_right"])
-            if std.get("fuel_critical"):
-                phrases.setdefault("fuel_critical", std["fuel_critical"])
+            for key in _SPOTTER_JSON_KEYS:
+                raw = std.get(key)
+                if not raw:
+                    continue
+                if "|" in raw:
+                    phrases[key] = spotter_phrase_for_cache(key, profile_id="standard", seed=0)
+                else:
+                    phrases.setdefault(key, raw)
         except Exception as exc:
             logger.warning("Could not merge spotter_phrases_es.json: %s", exc)
     return {k: v for k, v in phrases.items() if v and v.strip()}
@@ -53,12 +70,16 @@ class SpotterPhraseCache:
         self._tts = tts
         self._bytes: dict[str, bytes] = {}
 
-    async def warm(self, phrases: dict[str, str] | None = None) -> None:
+    async def warm(self, phrases: dict[str, str] | None = None, *, voice: str | None = None) -> None:
         phrases = phrases or default_spotter_phrases()
         for key, text in phrases.items():
             if not text or not text.strip():
                 continue
-            self._bytes[key] = await self._tts.synthesize(text.strip())
+            warm_text = pick_variant(text.strip(), seed=0) if "|" in text else text.strip()
+            if voice and hasattr(self._tts, "synthesize"):
+                self._bytes[key] = await self._tts.synthesize(warm_text, voice=voice)
+            else:
+                self._bytes[key] = await self._tts.synthesize(warm_text)
 
     def get(self, key: str | None) -> bytes | None:
         if not key:

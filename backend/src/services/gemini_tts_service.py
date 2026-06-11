@@ -33,7 +33,22 @@ class GeminiTTSService:
             self._client = google.genai.Client(api_key=self.api_key)
         return self._client
 
-    def _synthesize_sync(self, text: str) -> bytes:
+    async def synthesize(self, text: str, voice: str | None = None) -> bytes:
+        """Sintetiza texto a audio WAV asíncronamente sin bloquear el event loop.
+
+        Args:
+            text: Texto a sintetizar.
+            voice: Voz Gemini opcional; si no se indica, usa la del servicio.
+
+        Returns:
+            Bytes del audio WAV (o vacíos si text está en blanco).
+        """
+        if not text or not text.strip():
+            return b""
+        selected_voice = voice.strip() if voice and voice.strip() else self.voice_name
+        return await asyncio.to_thread(self._synthesize_sync, text.strip(), selected_voice)
+
+    def _synthesize_sync(self, text: str, voice_name: str) -> bytes:
         """Síncrono: realiza la llamada real a Google AI Studio."""
         if len(text) > 2000:
             logger.warning("Texto Gemini truncado de %d a 2000 caracteres", len(text))
@@ -45,7 +60,9 @@ class GeminiTTSService:
         response_modalities = ["AUDIO"]
 
         # Configurar voz
-        voice_config = types.VoiceConfig(prebuilt_voice=types.PrebuiltVoiceConfig(voice_name=self.voice_name))
+        voice_config = types.VoiceConfig(
+            prebuilt_voice=types.PrebuiltVoiceConfig(voice_name=voice_name)
+        )
 
         # Solicitar generación de audio
         response = client.models.generate_content(
@@ -76,16 +93,3 @@ class GeminiTTSService:
             wav_file.writeframes(pcm_data)
 
         return wav_buffer.getvalue()
-
-    async def synthesize(self, text: str) -> bytes:
-        """Sintetiza texto a audio WAV asíncronamente sin bloquear el event loop.
-
-        Args:
-            text: Texto a sintetizar.
-
-        Returns:
-            Bytes del audio WAV (o vacíos si text está en blanco).
-        """
-        if not text or not text.strip():
-            return b""
-        return await asyncio.to_thread(self._synthesize_sync, text.strip())

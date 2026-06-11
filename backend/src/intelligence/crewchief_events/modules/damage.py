@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from src.intelligence.crewchief_events.templates import render_template
+from src.intelligence.phrase_picker import trigger_phrase_for_session
 from src.intelligence.damage_report import (
     CRASH_LOW_SPEED_MS,
     CRASH_POST_IMPACT_WAIT_S,
@@ -84,9 +85,10 @@ class DamageEvent(CrewChiefEventModule):
             max_brake = max(float(brake.get(k, 0) or 0) for k in ("fl", "fr", "rl", "rr"))
             if max_brake >= 80.0 and now - self._last_brake_wear_alert >= 120.0:
                 self._last_brake_wear_alert = now
+                fallback = render_template("brake_wear_high", {"wear": f"{max_brake:.0f}"})
                 return self._message(
                     "damage_brake_wear",
-                    render_template("brake_wear_high", {"wear": f"{max_brake:.0f}"}),
+                    trigger_phrase_for_session(ctx.session, "brake_wear_high", fallback),
                     CrewChiefPriority.NORMAL,
                 )
 

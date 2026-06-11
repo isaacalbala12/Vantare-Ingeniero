@@ -15,7 +15,8 @@ def test_sector_three_about_to_run_out_message():
     messages = module.evaluate(ctx)
 
     assert messages[0].event_id == "fuel_about_to_run_out"
-    assert "combustible" in messages[0].text.lower()
+    text = messages[0].text.lower()
+    assert any(w in text for w in ("combustible", "gasolina", "vueltas", "boxes", "parada"))
     assert messages[0].play_even_when_silenced is True
 
 
@@ -29,7 +30,11 @@ def test_fuel_laps_remaining_tier():
         now_monotonic=10.0,
     )
     messages = module.evaluate(ctx)
-    assert any(m.event_id == "fuel_laps_remaining" and "combustible" in m.text.lower() for m in messages)
+    assert any(
+        m.event_id == "fuel_laps_remaining"
+        and any(w in m.text.lower() for w in ("combustible", "gasolina", "vueltas", "boxes", "parada"))
+        for m in messages
+    )
 
 
 def test_fuel_box_this_lap_in_sector_three():

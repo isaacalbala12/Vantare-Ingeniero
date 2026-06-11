@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 _DATA = Path(__file__).resolve().parent.parent / "data"
+_picker_singleton: PhrasePicker | None = None
 
 
 def pick_variant(template: str, *, seed: int | None = None) -> str:
@@ -51,3 +52,39 @@ class PhrasePicker:
             return text.format(**kwargs)
         except KeyError:
             return text
+
+
+def get_picker() -> PhrasePicker:
+    global _picker_singleton
+    if _picker_singleton is None:
+        _picker_singleton = PhrasePicker.load_defaults()
+    return _picker_singleton
+
+
+def profile_from_session(session: dict | None) -> str:
+    if not session:
+        return "standard"
+    pid = str(session.get("personalityProfileId") or "standard").strip().lower()
+    return pid if pid in ("standard", "formal", "aggressive") else "standard"
+
+
+def trigger_phrase_for_session(
+    session: dict | None,
+    key: str,
+    fallback: str = "",
+    *,
+    seed: int | None = None,
+    **kwargs: str,
+) -> str:
+    msg = get_picker().trigger_phrase(
+        key,
+        profile_id=profile_from_session(session),
+        seed=seed,
+        **kwargs,
+    )
+    return msg or fallback
+
+
+def spotter_phrase_for_cache(key: str, *, profile_id: str = "standard", seed: int = 0) -> str:
+    """Primera variante estable para precalentar caché TTS spotter."""
+    return get_picker().spotter_phrase(key, profile_id=profile_id, seed=seed)

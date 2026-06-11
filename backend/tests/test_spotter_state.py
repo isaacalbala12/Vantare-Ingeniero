@@ -38,7 +38,10 @@ class TestSpotterStateMachine:
         sm.update([], player_class="GT3", threshold_m=3.0, now=t0 + 0.05)
         cleared = sm.update([], player_class="GT3", threshold_m=3.0, now=t0 + 0.3)
         assert any(tr.is_clear for tr in cleared)
-        assert any("despejado" in tr.message.lower() for tr in cleared)
+        assert any(
+            any(w in tr.message.lower() for w in ("despejado", "libre", "clear"))
+            for tr in cleared
+        )
 
     def test_hysteresis_avoids_flicker(self):
         sm = SpotterStateMachine(clear_delay_s=1.0, exit_hysteresis=1.25)
@@ -71,7 +74,7 @@ class TestSpotterStateMachine:
         clear_msgs = [tr for tr in cleared if tr.is_clear]
         assert len(clear_msgs) == 1
         assert clear_msgs[0].is_clear_all
-        assert "alrededor" in clear_msgs[0].message.lower() or "lados" in clear_msgs[0].message.lower()
+        assert "alrededor" in clear_msgs[0].message.lower() or "lados" in clear_msgs[0].message.lower() or "cerca" in clear_msgs[0].message.lower() or "despejado" in clear_msgs[0].message.lower()
 
     def test_three_wide_exit_immediate_clear_and_reannounce(self):
         sm = SpotterStateMachine(clear_delay_s=0.15, hold_repeat_s=3.0)
@@ -94,7 +97,10 @@ class TestSpotterStateMachine:
         sm.update([], player_class="GT3", threshold_m=3.0, now=t0 + 0.05)
         cleared = sm.update([], player_class="GT3", threshold_m=3.0, now=t0 + 0.25)
         assert any(tr.is_clear and tr.audio_priority == 2 for tr in cleared)
-        assert any("despejado" in tr.message.lower() for tr in cleared)
+        assert any(
+            any(w in tr.message.lower() for w in ("despejado", "libre", "clear"))
+            for tr in cleared
+        )
 
     def test_multiclass_message_on_enter(self):
         sm = SpotterStateMachine(clear_delay_s=0.1)
@@ -120,6 +126,12 @@ class TestSpotterStateMachine:
         sm.update([_hit("derecha")], player_class="GT3", threshold_m=3.0, now=t0)
         assert sm.update([_hit("derecha")], player_class="GT3", threshold_m=3.0, now=t0 + 2.9) == []
         first_still = sm.update([_hit("derecha")], player_class="GT3", threshold_m=3.0, now=t0 + 3.01)
-        assert any("sigue" in tr.message.lower() for tr in first_still)
+        assert any(
+            any(w in tr.message.lower() for w in ("sigue", "todavía", "todavia", "aún", "aun", "coche"))
+            for tr in first_still
+        )
         second_still = sm.update([_hit("derecha")], player_class="GT3", threshold_m=3.0, now=t0 + 6.01)
-        assert any("sigue" in tr.message.lower() for tr in second_still)
+        assert any(
+            any(w in tr.message.lower() for w in ("sigue", "todavía", "todavia", "aún", "aun", "coche"))
+            for tr in second_still
+        )

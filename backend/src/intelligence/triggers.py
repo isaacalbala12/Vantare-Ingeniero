@@ -80,10 +80,9 @@ class BaseTrigger(ABC):
     def resolve_message(self, personality) -> str:
         if not self.phrase_key:
             return self.alert_text
-        from src.intelligence.phrase_picker import PhrasePicker
+        from src.intelligence.phrase_picker import get_picker
 
-        picker = PhrasePicker.load_defaults()
-        msg = picker.trigger_phrase(self.phrase_key, profile_id=personality.profile_id)
+        msg = get_picker().trigger_phrase(self.phrase_key, profile_id=personality.profile_id)
         return msg or self.alert_text
 
     def _fire_rising_edge(self, active: bool) -> bool:
@@ -170,6 +169,7 @@ class FlagsMonitorTrigger(BaseTrigger):
         )
         self.name = "Flags Monitor"
         self._prev_snapshot = None
+        self.phrase_key = None
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
         from src.intelligence.flags_monitor import (
@@ -192,6 +192,7 @@ class FlagsMonitorTrigger(BaseTrigger):
         self._prev_snapshot = current
 
         if (current.safety_car or current.fcy) and not (previous.safety_car or previous.fcy):
+            self.phrase_key = "fcy_active" if current.fcy else None
             self.alert_text = "¡SAFETY CAR o FCY ACTIVO! Reduce velocidad y prepárate."
             return True
 
@@ -199,6 +200,7 @@ class FlagsMonitorTrigger(BaseTrigger):
         if event is not None:
             if not telemetry_on_track(telemetry):
                 return False
+            self.phrase_key = None
             self.alert_text = event.message
             return True
         return False
@@ -455,7 +457,7 @@ class TyreDegAccelTrigger(BaseTrigger):
         w_rl = telemetry.get("tyre_wear_rl", 0.0)
         w_rr = telemetry.get("tyre_wear_rr", 0.0)
         avg_wear = (w_fl + w_fr + w_rl + w_rr) / 4.0
-        return avg_wear > 25.0
+        return self._fire_rising_edge(avg_wear > 25.0)
 
 
 class HybridDeployMapTrigger(BaseTrigger):
@@ -504,12 +506,14 @@ class WeatherChangeTrigger(BaseTrigger):
         if not isinstance(weather_list, list) or not weather_list:
             return False
         # Evaluar los primeros nodos de previsión (ej: NODE_25, NODE_50)
+        active = False
         for slot in weather_list[:2]:
             if isinstance(slot, dict):
                 rain_chance = lmu_scalar(slot.get("WNV_RAIN_CHANCE", 0.0))
                 if rain_chance > 30.0:
-                    return True
-        return False
+                    active = True
+                    break
+        return self._fire_rising_edge(active)
 
 
 class PitWindowOpenedTrigger(BaseTrigger):

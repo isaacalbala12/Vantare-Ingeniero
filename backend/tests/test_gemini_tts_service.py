@@ -20,7 +20,7 @@ async def test_synthesize_empty_text_returns_empty_bytes():
 async def test_synthesize_does_not_block_event_loop():
     svc = GeminiTTSService(api_key="test-key")
 
-    def slow_sync(text: str) -> bytes:
+    def slow_sync(text: str, voice_name: str = "Kore") -> bytes:
         time.sleep(0.12)
         return b"RIFF...."
 

@@ -39,4 +39,5 @@ def test_spotter_apply_runtime_config_personality_phrases():
     sm._left_hit = hit
     transitions = sm._maybe_hold_or_closing("izquierda", hit, sm.overlap_delay_s + 1.0)
     assert transitions
-    assert "Aguanta" in transitions[0].message
+    msg = transitions[0].message.lower()
+    assert any(w in msg for w in ("aguanta", "desvíes", "desvies", "coche"))

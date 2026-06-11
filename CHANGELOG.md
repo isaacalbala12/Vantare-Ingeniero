@@ -2,6 +2,34 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [0.3.0] - 2026-06-11 — Frases humanas + Gemini TTS
+
+Release con copy de radio más natural y **Gemini TTS** como proveedor selectable por rol (ingeniero/spotter), manteniendo Edge como fallback.
+
+### Added
+
+- **`phrase_picker`** — variantes con `|` en JSON spotter/triggers; perfiles standard/formal/aggressive
+- **`trigger_phrases_es.json`** — catálogo P0 (fuel, FCY, lluvia, frenos, neumáticos, ventana pits)
+- **`TtsRouting`** + selectores Hub `ttsProviderEngineer` / `ttsProviderSpotter` (schema config v5)
+- **Gemini TTS** en `TTSManager` con fallback Edge; voz por rol (engineer/spotter)
+- Tests: `test_phrase_picker`, `test_trigger_phrases_wired`, `test_tts_manager_gemini`, `test_engine_trigger_phrases`, `test_crewchief_phrase_picker`
+
+### Changed
+
+- Spotter usa `PhrasePicker` para frases con variantes humanas
+- Módulos Crew Chief (fuel tiers 2–3, tyre/brake wear, pits, flags FCY) priorizan frases del picker
+- `IntelligenceEngine` emite alertas con `phrase_key` en triggers DETERMINISTIC/LLM
+- Caché spotter: variante estable al warm con voz spotter; bypass cuando spotter usa Gemini
+
+### Fixed
+
+- `runtime_config_snapshot` devuelve strings de provider TTS correctamente
+- Gemini spotter ya no reproduce WAV precalentados en Edge cuando el provider es Gemini
+- Frases picker cableadas al path de voz real (CC + engine), no solo unit tests
+- Rising-edge en triggers lluvia/neumáticos para evitar spam de alertas
+- FCY humano solo en activación FCY; Safety Car y pits cerrados conservan copy específico
+- Fuel tier 1 (&lt;1 vuelta) mantiene template crítico dedicado
+
 ## [0.2.14] - 2026-06-11 — Voice Beta (stable)
 
 Release estable de la **re-arquitectura de voz**: validada en pista (LMU) y promovida desde pre-release el 2026-06-11. Audio reproducido en el backend (pygame), telemetría y race loop in-process, contrato de voz documentado y gates de calidad.

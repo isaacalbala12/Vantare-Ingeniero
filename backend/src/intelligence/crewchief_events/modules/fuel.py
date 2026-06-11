@@ -3,6 +3,7 @@ from __future__ import annotations
 from src.intelligence.crewchief_events.lap_edge import lap_completed, read_sector
 from src.intelligence.crewchief_events.templates import render_template
 from src.intelligence.fuel_safety import fuel_critical_from_strategy, fuel_critical_from_tick
+from src.intelligence.phrase_picker import trigger_phrase_for_session
 from src.persistence.fuel_usage_store import FuelUsageStore
 
 from ..base import CrewChiefEventModule
@@ -65,9 +66,11 @@ class FuelEvent(CrewChiefEventModule):
         if tier in self._warned_tiers:
             return None
         self._warned_tiers.add(tier)
+        fallback = render_template("fuel_laps_remaining", {"level": tier, "laps": f"{laps:.1f}"})
+        text = fallback if tier == 1 else trigger_phrase_for_session(ctx.session, "fuel_critical", fallback)
         return CrewChiefMessage(
             event_id="fuel_laps_remaining",
-            text=render_template("fuel_laps_remaining", {"level": tier, "laps": f"{laps:.1f}"}),
+            text=text,
             priority=CrewChiefPriority.IMPORTANT,
             channel=CrewChiefChannel.ENGINEER,
             ttl_ms=10000,

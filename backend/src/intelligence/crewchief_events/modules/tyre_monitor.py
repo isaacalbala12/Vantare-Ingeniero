@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from src.intelligence.crewchief_events.templates import render_template
+from src.intelligence.phrase_picker import trigger_phrase_for_session
 from src.intelligence.crewchief_events.vehicle_thresholds import (
     BRAKE_WEAR_WARN_PCT,
     TYRE_WEAR_WARN_PCT,
@@ -76,9 +77,10 @@ class TyreMonitorEvent(CrewChiefEventModule):
         if avg < TYRE_WEAR_WARN_PCT or self._warned_wear:
             return None
         self._warned_wear = True
+        fallback = render_template("tyre_wear_high", {"wear": f"{avg:.0f}"})
         return CrewChiefMessage(
             event_id="tyre_wear_high",
-            text=render_template("tyre_wear_high", {"wear": f"{avg:.0f}"}),
+            text=trigger_phrase_for_session(ctx.session, "tyre_wear_high", fallback),
             priority=CrewChiefPriority.NORMAL,
             channel=CrewChiefChannel.ENGINEER,
             ttl_ms=12000,
@@ -89,9 +91,10 @@ class TyreMonitorEvent(CrewChiefEventModule):
         if mx < BRAKE_WEAR_WARN_PCT or self._warned_brake:
             return None
         self._warned_brake = True
+        fallback = render_template("brake_wear_high", {"wear": f"{mx:.0f}"})
         return CrewChiefMessage(
             event_id="brake_wear_high",
-            text=render_template("brake_wear_high", {"wear": f"{mx:.0f}"}),
+            text=trigger_phrase_for_session(ctx.session, "brake_wear_high", fallback),
             priority=CrewChiefPriority.IMPORTANT,
             channel=CrewChiefChannel.ENGINEER,
             ttl_ms=12000,

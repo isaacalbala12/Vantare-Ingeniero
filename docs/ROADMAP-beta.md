@@ -6,7 +6,7 @@
 Elementos **explícitamente diferidos** del plan alpha. No implementar hasta cierre A8 + validación LMU.
 
 ## TTS premium
-- **Gemini TTS** como voz premium por perfil (`PersonalityPack`)
+- ~~**Gemini TTS** como voz premium por perfil~~ → **v0.3.0** (selectable por rol ingeniero/spotter en Hub)
 - ElevenLabs producción opcional
 - Voice packs descargables
 

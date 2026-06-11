@@ -44,6 +44,9 @@ def test_config_ack_includes_tts_providers():
     })
     assert routing.provider_engineer == "gemini"
     assert routing.provider_spotter == "edge"
+    snap = eng.runtime_config_snapshot()
+    assert snap["ttsProviderEngineer"] == "gemini"
+    assert snap["ttsProviderSpotter"] == "edge"
 
 
 def test_config_update_cannot_enable_commentary_batch_when_beta_slim():
