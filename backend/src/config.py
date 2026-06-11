@@ -49,6 +49,19 @@ class Settings(BaseSettings):
     SPOTTER_OFF_QUALIFYING: bool = True
     SPOTTER_EXCLUDE_STOPPED: bool = True
     AUDIO_DUCK_LEVEL: float = 0.2  # 20% volumen LMU durante TTS
+    VOICE_BACKEND_PLAYBACK: bool = True  # backend reproduce audio, no frontend
+    SPOTTER_CAR_LENGTH_M: float = 4.5
+    SPOTTER_MIN_SPEED_MS: float = 5.0
+    SPOTTER_RACE_START_DELAY_S: float = 3.0
+    SPOTTER_CLEAR_DELAY_S: float = 0.15
+    SPOTTER_OVERLAP_DELAY_S: float = 0.3
+    SPOTTER_HOLD_REPEAT_S: float = 3.0
+    SPOTTER_CLOSING_SPEED_MS: float = 12.0
+    PIT_LIMITER_ENTRY_WINDOW_S: float = 8.0
+    PIT_LIMITER_COOLDOWN_S: float = 30.0
+    PIT_LIMITER_GRACE_S: float = 3.0
+    PIT_LIMITER_EXIT_CHECK_S: float = 2.0
+    PIT_LIMITER_MIN_SPEED_MS: float = 1.0
 
     # MQTT (opt-in, broker local por defecto)
     MQTT_ENABLED: bool = False
@@ -68,6 +81,16 @@ class Settings(BaseSettings):
     # Gemini TTS Settings
     GEMINI_API_KEY: str = ""
     GEMINI_TTS_VOICE: str = "Kore"
+
+    # Windows native telemetry (Settings fallback; env VANTARE_NATIVE_TELEMETRY takes precedence)
+    NATIVE_TELEMETRY: bool = True
+
+    # Beta slim mode — desactiva features no core
+    BETA_SLIM: bool = True
+    ENABLE_CHROMA_RAG: bool = False
+    ENABLE_MQTT: bool = False
+    ENABLE_COMMENTARY_BATCH: bool = False
+    WHISPER_PRELOAD: str = "off"
 
     model_config = SettingsConfigDict(env_file=ENV_FILE, env_file_encoding="utf-8", extra="ignore")
 

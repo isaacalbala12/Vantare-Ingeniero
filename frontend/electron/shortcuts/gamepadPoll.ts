@@ -9,6 +9,8 @@ let stopTarget: { pad: number; button: number } | null = null;
 let toggleMode = true;
 let hubWindowRef: BrowserWindow | null = null;
 const pressed = new Set<string>();
+const lastToggleAt = new Map<string, number>();
+const TOGGLE_DEBOUNCE_MS = 400;
 
 function padKey(pad: number, button: number): string {
   return `${pad}:${button}`;
@@ -38,6 +40,10 @@ function handleEdge({ pad, button, down }: PadEdge): void {
   const isStop = stopTarget && stopTarget.pad === pad && stopTarget.button === button;
 
   if (toggleMode && isStart && down) {
+    const now = Date.now();
+    const last = lastToggleAt.get(key) ?? 0;
+    if (now - last < TOGGLE_DEBOUNCE_MS) return;
+    lastToggleAt.set(key, now);
     sendPtt("toggle");
     return;
   }

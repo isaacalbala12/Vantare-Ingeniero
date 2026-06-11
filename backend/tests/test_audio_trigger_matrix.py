@@ -98,7 +98,12 @@ class TestTriggerActions:
     def test_llm_required_triggers_are_legacy_fallback_only(self):
         llm = [t for t in get_all_triggers() if t.action == TriggerAction.LLM_REQUIRED]
         names = {t.__class__.__name__ for t in llm}
-        assert names == {"WeatherChangeTrigger", "PhaseChangedTrigger", "PilotQuestionTrigger"}
+        assert names == {
+            "WeatherChangeTrigger",
+            "PhaseChangedTrigger",
+            "PilotQuestionTrigger",
+            "FlagsMonitorTrigger",
+        }
 
 
 def _base_telemetry() -> dict:
@@ -292,7 +297,7 @@ class TestIndividualTriggerConditions:
         strat = {"fuel": {"estimated_laps_remaining": 2.0, "pit_stops_needed": 1}}
         assert t.condition({"in_pits": False}, strat, session) is True
         assert t.condition({"in_pits": False}, strat, session) is False
-        assert t.action == TriggerAction.LLM_REQUIRED
+        assert t.action == TriggerAction.DETERMINISTIC_ONLY
 
     def test_fuel_critical_suppressed_when_cc_active(self):
         t = FuelCriticalTrigger()

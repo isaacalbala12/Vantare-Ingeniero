@@ -7,7 +7,8 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "=== Verificando artefactos en $ReleaseDir ==="
 
-$exe = Get-ChildItem -Path $ReleaseDir -Filter "vantare-ingeniero-*-setup.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+$exe = Get-ChildItem -Path $ReleaseDir -Filter "vantare-ingeniero-*-setup.exe" -ErrorAction SilentlyContinue |
+  Sort-Object LastWriteTime -Descending | Select-Object -First 1
 if (-not $exe) {
   Write-Error "No se encontro vantare-ingeniero-*-setup.exe en $ReleaseDir"
 }

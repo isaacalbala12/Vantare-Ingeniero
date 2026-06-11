@@ -20,6 +20,17 @@ export function getOverlayWindow(): BrowserWindow | null {
   return overlayWindow;
 }
 
+export function destroyOverlayWindow(): void {
+  if (!overlayWindow || overlayWindow.isDestroyed()) {
+    overlayWindow = null;
+    return;
+  }
+  overlayWindow.removeAllListeners("close");
+  overlayWindow.destroy();
+  overlayWindow = null;
+  currentPresentation = "hidden";
+}
+
 function listeningAnchorBounds(width: number, height: number) {
   const display = screen.getPrimaryDisplay();
   const { x: areaX, y: areaY } = display.workArea;

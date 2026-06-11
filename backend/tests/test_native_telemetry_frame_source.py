@@ -18,6 +18,7 @@ async def test_telemetry_loop_uses_strategy_service_snapshot_when_native():
         "num_penalties": 0,
     }
     app_state.strategy_service = strategy
+    app_state.telemetry_hub = None  # sin hub → fallback snapshot_frame (native path)
     app_state.spotter_service = None
     app_state.crewchief_game_state_loop = None
     app_state.telemetry_reader = MagicMock()

@@ -154,6 +154,7 @@ def mock_session_dict():
         "enable_fcy_messages": False,
         "enable_blue_flag_messages": False,
         "enable_multiclass_messages": False,
+        "enable_driver_swap_messages": False,
         "enable_battery_messages": False,
         "enable_tyre_temp_messages": False,
         "enable_tyre_wear_messages": False,

@@ -66,8 +66,15 @@ class PearlsService:
         self._count = 0
         self._index = {t: 0 for t in PearlType}
 
-    def on_event(self, event_type: PearlType, sweary: bool = False) -> str | None:
-        if self._count >= self.MAX_PER_RACE:
+    def on_event(
+        self,
+        event_type: PearlType,
+        sweary: bool = False,
+        *,
+        max_per_race: int | None = None,
+    ) -> str | None:
+        limit = max_per_race if max_per_race is not None else self.MAX_PER_RACE
+        if self._count >= limit:
             return None
         pool = _PEARLS_SWEARY if sweary else _PEARLS_CLEAN
         messages = pool.get(event_type) or pool[PearlType.STANDARD]

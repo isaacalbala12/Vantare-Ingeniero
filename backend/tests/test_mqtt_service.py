@@ -16,6 +16,8 @@ async def test_publish_skipped_when_disabled(monkeypatch):
 @pytest.mark.asyncio
 async def test_publish_when_enabled(monkeypatch):
     monkeypatch.setattr("src.services.mqtt_service.settings.MQTT_ENABLED", True)
+    monkeypatch.setattr("src.services.mqtt_service.settings.ENABLE_MQTT", True)
+    monkeypatch.setattr("src.services.mqtt_service.settings.BETA_SLIM", False)
     monkeypatch.setattr("src.services.mqtt_service.settings.MQTT_BROKER", "localhost")
     monkeypatch.setattr("src.services.mqtt_service.settings.MQTT_PORT", 1883)
     monkeypatch.setattr("src.services.mqtt_service.settings.MQTT_TOPIC", "vantare/telemetry")
@@ -31,6 +33,8 @@ async def test_publish_when_enabled(monkeypatch):
 @pytest.mark.asyncio
 async def test_enqueue_keeps_only_latest_frame(monkeypatch):
     monkeypatch.setattr("src.services.mqtt_service.settings.MQTT_ENABLED", True)
+    monkeypatch.setattr("src.services.mqtt_service.settings.ENABLE_MQTT", True)
+    monkeypatch.setattr("src.services.mqtt_service.settings.BETA_SLIM", False)
     svc = MqttService()
     publish_calls = []
 

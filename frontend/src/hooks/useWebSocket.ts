@@ -2,7 +2,8 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useAppStore } from "../store/config";
 import { audioQueue } from "../services/audioQueue";
 import { encodeMsgpack, decodeMsgpack, computeDelta, SNAPSHOT_INTERVAL } from "../services/msgpack";
-import { shouldVoiceAlert, shouldVoiceDuringSpeakOnly, shouldVoiceForServiceToggle } from "../services/alertVoice";
+import { evaluateAlertTts, evaluateAdviceTts, evaluateCommentaryTts, logTtsBlocked, shouldDiscardTtsPlayback as shouldDiscardPlayback } from "../services/ttsPlaybackGate";
+import { createTtsPipeline } from "../services/ttsPipeline";
 import { classifyTtsPriority, type TtsPriority } from "../services/spotterPhrases";
 import { spotterPrefetchPhrases } from "../services/spotterPhraseResolver";
 import { buildConfigUpdatePayload } from "../services/configUpdatePayload";
@@ -11,34 +12,25 @@ import { registerWsCommands } from "../services/wsCommands";
 import { getHealth } from "../services/api";
 import { buildVoiceHash, ttsCache } from "../services/ttsCache";
 import { gapsFromCompetitorPace, gapsFromNativeFrame, mapSidecarBinaryFrame } from "../services/telemetryFrame";
-import { expiresAtFromPayload, delayedUntilFromPayload, validationKeyFromPayload, isExpiredAt } from "../services/alertExpiry";
+import { expiresAtFromPayload, delayedUntilFromPayload, validationKeyFromPayload } from "../services/alertExpiry";
 import { isInternalRadioText } from "../hub/forms/telemetryFilters";
-
-function shouldDiscardTtsPlayback(mode: string): boolean {
-  // Solo descartar mientras el piloto tiene el PTT abierto — no durante THINKING
-  // (respuestas voice_response llegan en THINKING y deben reproducirse).
-  return mode === "LISTENING_PILOT";
-}
+import {
+  flattenAlertPayload,
+  shouldVoiceAlert,
+  shouldVoiceDuringSpeakOnly,
+  shouldVoiceForServiceToggle,
+} from "../services/alertVoice";
+import {
+  handleBackendVoicePlaybackEnd,
+  handleBackendVoicePlaybackStart,
+} from "../services/backendVoiceOverlay";
 
 function shouldSpeakAdvice(text: string): boolean {
   return text.length > 0 && !isInternalRadioText(text);
 }
 
-const TTS_FETCH_TIMEOUT_MS = 20_000;
-const TTS_RECONNECT_GRACE_MS = 10_000;
-const TTS_SPOKEN_COOLDOWN_MS = 45_000;
-const TTS_QUEUE_MAX = 5;
+const TTS_RECONNECT_GRACE_MS = 3_000;
 const TELEMETRY_UI_INTERVAL_MS = 200; // 5 Hz — evita re-render a 20 Hz
-
-function ttsPriorityRank(priority: TtsPriority): number {
-  if (priority === "ENGINEER") return 0;
-  if (priority === "IMMEDIATE") return 1;
-  return 2;
-}
-
-function sortTtsQueue(items: TtsQueueItem[]): void {
-  items.sort((a, b) => ttsPriorityRank(a.priority) - ttsPriorityRank(b.priority));
-}
 
 function extractBrakePressure(frame: Record<string, unknown> | null | undefined): number {
   if (!frame) return 0;
@@ -47,16 +39,6 @@ function extractBrakePressure(frame: Record<string, unknown> | null | undefined)
   const raw = frame.brake ?? frame.brake_pressure ?? player?.brake ?? controls?.brake;
   const value = Number(raw ?? 0);
   return Number.isFinite(value) ? value : 0;
-}
-
-interface TtsQueueItem {
-  text: string;
-  priority: TtsPriority;
-  source: string;
-  voiceRole: "engineer" | "spotter";
-  expiresAt?: number;
-  delayedUntilMs?: number;
-  validationKey?: string;
 }
 
 function shouldDeferForBraking(priority: TtsPriority, cfg: ReturnType<typeof useAppStore.getState>["config"], frame: Record<string, unknown> | null | undefined): boolean {
@@ -107,15 +89,14 @@ export function useWebSocket() {
   const reconnectTimeoutRef = useRef<number | null>(null);
   const reconnectDelayRef = useRef<number>(1000); // Backoff inicial a 1s
   const manuallyClosedRef = useRef<boolean>(false);
-  const ttsQueueRef = useRef<TtsQueueItem[]>([]);
-  const isTtsProcessingRef = useRef<boolean>(false);
-  const ttsCurrentPriorityRef = useRef<TtsPriority>("NORMAL");
-  const ttsAbortRef = useRef<AbortController | null>(null);
-  const ttsAbortIntentionalRef = useRef<boolean>(false);
+  const ttsPipelineRef = useRef<ReturnType<typeof createTtsPipeline> | null>(null);
   const ttsReconnectGraceUntilRef = useRef<number>(0);
-  const spokenTtsAtRef = useRef<Map<string, number>>(new Map());
   const latestTelemetryRef = useRef<any>(null);
   const lastTelemetryUiUpdateRef = useRef<number>(0);
+  const pendingTelemetryFlushRef = useRef<number | null>(null);
+  const binarySeqRef = useRef<number>(0);
+  const lastAppliedBinarySeqRef = useRef<number>(0);
+  const lastAppliedBinaryTimeRef = useRef<number>(Number.NEGATIVE_INFINITY);
   const serverTelemetryActiveRef = useRef<boolean>(false);
   const pendingAdviceTokensRef = useRef<string>("");
   const lastAdviceTokenUiRef = useRef<number>(0);
@@ -133,23 +114,19 @@ export function useWebSocket() {
   }, []);
 
   const clearPendingTts = useCallback(() => {
-    ttsAbortIntentionalRef.current = true;
-    ttsQueueRef.current = [];
-    isTtsProcessingRef.current = false;
-    ttsAbortRef.current?.abort();
-    ttsAbortRef.current = null;
-    ttsAbortIntentionalRef.current = false;
-    audioQueue.stop();
+    const pipeline = ttsPipelineRef.current;
+    pipeline?.clearQueueKeepImmediate();
+    if (pipeline?.getCurrentPriority() !== "ENGINEER" && pipeline?.isProcessing()) {
+      pipeline.abortProcessingIntentional();
+    }
+    audioQueue.stopNormal();
   }, []);
 
   const clearPendingEngineerTts = useCallback(() => {
-    ttsQueueRef.current = ttsQueueRef.current.filter((item) => item.priority === "IMMEDIATE");
-    if (ttsCurrentPriorityRef.current !== "IMMEDIATE" && isTtsProcessingRef.current) {
-      ttsAbortIntentionalRef.current = true;
-      ttsAbortRef.current?.abort();
-      ttsAbortRef.current = null;
-      isTtsProcessingRef.current = false;
-      ttsAbortIntentionalRef.current = false;
+    const pipeline = ttsPipelineRef.current;
+    pipeline?.clearQueueKeepImmediate();
+    if (pipeline?.getCurrentPriority() !== "IMMEDIATE" && pipeline?.isProcessing()) {
+      pipeline.abortProcessingIntentional();
     }
     audioQueue.stopEngineer();
   }, []);
@@ -177,6 +154,53 @@ export function useWebSocket() {
     });
   }, []);
 
+  const processTtsQueueRef = useRef<() => void>(() => {});
+
+  useEffect(() => {
+    ttsPipelineRef.current = createTtsPipeline({
+      deferFinishUntilPlaybackIdle: true,
+      fetchTts: async (text, voice, signal) => {
+        const configState = useAppStore.getState().config;
+        const baseUrl = `http://${configState.vllmIP || "127.0.0.1"}:${configState.serverPort || 8008}`;
+        const res = await fetch(
+          `${baseUrl}/tts?text=${encodeURIComponent(text)}&voice=${encodeURIComponent(voice)}`,
+          { signal },
+        );
+        if (!res.ok) throw new Error(`TTS returned ${res.status}`);
+        return await res.blob();
+      },
+      getVoice: (role) => resolveTtsVoice(role, useAppStore.getState().config),
+      getVoiceHash: (params) => buildVoiceHash({
+        ttsBackend: params.ttsBackend,
+        ttsVoice: params.ttsVoice,
+        role: params.role as "engineer" | "spotter",
+        profileId: params.profileId,
+      }),
+      getCache: () => ttsCache,
+      getAudioQueue: () => audioQueue,
+      shouldDiscard: shouldDiscardPlayback,
+      getRadioMode: () => useAppStore.getState().radio.mode,
+      getConfig: () => useAppStore.getState().config as unknown as Record<string, unknown>,
+      shouldDeferItem: (item) => {
+        const cfg = useAppStore.getState().config;
+        return (
+          shouldDeferForBraking(item.priority, cfg, latestTelemetryRef.current) ||
+          (typeof item.delayedUntilMs === "number" && item.delayedUntilMs > performance.now())
+        );
+      },
+    });
+
+    audioQueue.setOnIdle(() => {
+      if (ttsPipelineRef.current?.isProcessing()) {
+        ttsPipelineRef.current.finish();
+      }
+    });
+
+    processTtsQueueRef.current = () => {
+      void ttsPipelineRef.current?.processNext();
+    };
+  }, []);
+
   const enqueueTtsText = useCallback((
     text: string,
     source = "unknown",
@@ -202,45 +226,11 @@ export function useWebSocket() {
       delayedUntilMs = performance.now() + 300;
     }
 
-    const now = performance.now();
-    const lastSpoken = spokenTtsAtRef.current.get(trimmed);
-    if (lastSpoken !== undefined && now - lastSpoken < TTS_SPOKEN_COOLDOWN_MS) {
-      return false;
-    }
-    if (ttsQueueRef.current.some((item) => item.text === trimmed)) {
-      return false;
-    }
-    if (ttsQueueRef.current.length >= TTS_QUEUE_MAX) {
-      if (resolvedPriority === "IMMEDIATE") {
-        const dropIdx = ttsQueueRef.current.findIndex((item) => item.priority === "NORMAL");
-        if (dropIdx >= 0) {
-          ttsQueueRef.current.splice(dropIdx, 1);
-        } else {
-          const dropImm = ttsQueueRef.current.findIndex((item) => item.priority === "IMMEDIATE");
-          if (dropImm >= 0) {
-            ttsQueueRef.current.splice(dropImm, 1);
-          } else {
-            console.warn("[WS] Cola TTS llena — no se pudo encolar alerta IMMEDIATE");
-            return false;
-          }
-        }
-      } else if (resolvedPriority === "ENGINEER") {
-        const dropIdx = ttsQueueRef.current.findIndex((item) => item.priority !== "ENGINEER");
-        if (dropIdx >= 0) {
-          ttsQueueRef.current.splice(dropIdx, 1);
-        } else {
-          console.warn("[WS] Cola TTS llena — descartando mensaje ENGINEER antiguo");
-          ttsQueueRef.current.shift();
-        }
-      } else {
-        console.warn("[WS] Cola TTS llena — descartando mensaje");
-        return false;
-      }
-    }
-
-    spokenTtsAtRef.current.set(trimmed, now);
     const resolvedVoiceRole = source === "alert" ? spotterVoiceRoleForAlert(payload) : voiceRole;
-    ttsQueueRef.current.push({
+    const pipeline = ttsPipelineRef.current;
+    if (!pipeline) return false;
+
+    return pipeline.enqueue({
       text: trimmed,
       priority: resolvedPriority,
       source,
@@ -249,166 +239,7 @@ export function useWebSocket() {
       delayedUntilMs,
       validationKey: validationKeyFromPayload(payload),
     });
-    sortTtsQueue(ttsQueueRef.current);
-
-    if (
-      resolvedPriority === "IMMEDIATE" &&
-      isTtsProcessingRef.current &&
-      ttsCurrentPriorityRef.current !== "ENGINEER"
-    ) {
-      ttsAbortIntentionalRef.current = true;
-      ttsAbortRef.current?.abort();
-      ttsAbortRef.current = null;
-      isTtsProcessingRef.current = false;
-      ttsAbortIntentionalRef.current = false;
-    }
-
-    return true;
   }, []);
-
-  const finishTtsItem = useCallback(() => {
-    isTtsProcessingRef.current = false;
-    if (ttsQueueRef.current.length > 0) {
-      processTtsQueueRef.current();
-    }
-  }, []);
-
-  const processTtsQueueRef = useRef<() => void>(() => {});
-
-  // Función para procesar la cola de solicitudes TTS (una síntesis HTTP a la vez)
-  const processTtsQueue = useCallback(async () => {
-    if (isTtsProcessingRef.current || ttsQueueRef.current.length === 0) return;
-
-    isTtsProcessingRef.current = true;
-    sortTtsQueue(ttsQueueRef.current);
-    while (ttsQueueRef.current.length > 0 && isExpiredAt(ttsQueueRef.current[0].expiresAt)) {
-      ttsQueueRef.current.shift();
-    }
-    if (ttsQueueRef.current.length === 0) {
-      isTtsProcessingRef.current = false;
-      return;
-    }
-
-    const head = ttsQueueRef.current[0];
-    const cfg = useAppStore.getState().config;
-    const brakeDeferred =
-      shouldDeferForBraking(head.priority, cfg, latestTelemetryRef.current) ||
-      (typeof head.delayedUntilMs === "number" && head.delayedUntilMs > performance.now());
-    if (brakeDeferred) {
-      head.delayedUntilMs = performance.now() + 300;
-      isTtsProcessingRef.current = false;
-      window.setTimeout(() => processTtsQueueRef.current(), 300);
-      return;
-    }
-
-    const queueItem = ttsQueueRef.current.shift()!;
-    const fullText = queueItem.text;
-    ttsCurrentPriorityRef.current = queueItem.priority;
-
-    const configState = useAppStore.getState().config;
-    const baseUrl = `http://${configState.vllmIP || "127.0.0.1"}:${configState.serverPort || 8008}`;
-    const ttsText = fullText.length > 2000 ? fullText.slice(0, 1997) + "..." : fullText;
-    const ttsVoice = resolveTtsVoice(queueItem.voiceRole, configState);
-    const voiceHash = buildVoiceHash({
-      ttsBackend: configState.ttsBackend,
-      ttsVoice: ttsVoice,
-      role: queueItem.voiceRole,
-      profileId: configState.personalityProfileId,
-    });
-
-    const cachedUrl = ttsCache.get(ttsText, voiceHash);
-    if (cachedUrl) {
-      if (isExpiredAt(queueItem.expiresAt)) {
-        finishTtsItem();
-        return;
-      }
-      const currentMode = useAppStore.getState().radio.mode;
-      if (shouldDiscardTtsPlayback(currentMode)) {
-        finishTtsItem();
-        return;
-      }
-      const audioOpts = {
-        expiresAt: queueItem.expiresAt,
-        delayedUntilMs: queueItem.delayedUntilMs,
-        validationKey: queueItem.validationKey,
-      };
-      if (queueItem.priority === "ENGINEER") {
-        audioQueue.enqueueEngineer(fullText, cachedUrl, queueItem.source, audioOpts);
-      } else if (queueItem.priority === "IMMEDIATE") {
-        audioQueue.enqueueImmediate(fullText, cachedUrl, queueItem.source, audioOpts);
-      } else {
-        audioQueue.enqueue(fullText, cachedUrl, "NORMAL", audioOpts);
-      }
-      return;
-    }
-
-    const controller = new AbortController();
-    ttsAbortRef.current = controller;
-    const timeoutId = window.setTimeout(() => controller.abort(), TTS_FETCH_TIMEOUT_MS);
-
-    try {
-      const res = await fetch(
-        `${baseUrl}/tts?text=${encodeURIComponent(ttsText)}&voice=${encodeURIComponent(ttsVoice)}`,
-        { signal: controller.signal },
-      );
-      if (!res.ok) throw new Error(`TTS returned ${res.status}`);
-      const audioBlob = await res.blob();
-      if (!audioBlob || audioBlob.size === 0) throw new Error("TTS returned empty audio blob");
-
-      const url = ttsCache.set(ttsText, voiceHash, audioBlob);
-      if (isExpiredAt(queueItem.expiresAt)) {
-        finishTtsItem();
-        return;
-      }
-      const currentMode = useAppStore.getState().radio.mode;
-      if (shouldDiscardTtsPlayback(currentMode)) {
-        console.log("[WS] TTS listo pero piloto activo — descartando reproducción");
-        finishTtsItem();
-        return;
-      }
-
-      const audioOpts = {
-        expiresAt: queueItem.expiresAt,
-        delayedUntilMs: queueItem.delayedUntilMs,
-        validationKey: queueItem.validationKey,
-      };
-      if (queueItem.priority === "ENGINEER") {
-        audioQueue.enqueueEngineer(fullText, url, queueItem.source, audioOpts);
-      } else if (queueItem.priority === "IMMEDIATE") {
-        audioQueue.enqueueImmediate(fullText, url, queueItem.source, audioOpts);
-      } else {
-        audioQueue.enqueue(fullText, url, "NORMAL", audioOpts);
-      }
-      // Mantener isTtsProcessingRef=true hasta que audioQueue quede idle
-    } catch (err) {
-      if (controller.signal.aborted && !ttsAbortIntentionalRef.current) {
-        ttsQueueRef.current.unshift(queueItem);
-      }
-      if (controller.signal.aborted) {
-        console.warn("[WS] TTS timeout o cancelado");
-      } else {
-        console.warn("[WS] TTS no disponible:", err);
-      }
-      finishTtsItem();
-    } finally {
-      clearTimeout(timeoutId);
-      if (ttsAbortRef.current === controller) {
-        ttsAbortRef.current = null;
-      }
-    }
-  }, [finishTtsItem, setRadioMode]);
-
-  processTtsQueueRef.current = () => {
-    void processTtsQueue();
-  };
-
-  useEffect(() => {
-    audioQueue.setOnIdle(() => {
-      if (isTtsProcessingRef.current) {
-        finishTtsItem();
-      }
-    });
-  }, [finishTtsItem]);
 
   const connect = useCallback(() => {
     if (socketRef.current && (socketRef.current.readyState === WebSocket.CONNECTING || socketRef.current.readyState === WebSocket.OPEN)) {
@@ -425,8 +256,79 @@ export function useWebSocket() {
 
     console.log(`[useWebSocket] Conectando a ${wsUrl}...`);
 
+    const flushTelemetryToUi = (decoded: Record<string, unknown>) => {
+      const mapped = mapSidecarBinaryFrame(decoded);
+      const nativeGaps = gapsFromNativeFrame(decoded);
+      setLastTelemetry(decoded);
+      updateTelemetry({
+        ...mapped,
+        ...(nativeGaps ? { gaps: nativeGaps } : {}),
+      });
+    };
+
+    const flushPendingTelemetryNow = () => {
+      if (pendingTelemetryFlushRef.current !== null) {
+        clearTimeout(pendingTelemetryFlushRef.current);
+        pendingTelemetryFlushRef.current = null;
+      }
+      const latest = latestTelemetryRef.current as Record<string, unknown> | null;
+      if (!latest) {
+        return;
+      }
+      lastTelemetryUiUpdateRef.current = performance.now();
+      flushTelemetryToUi(latest);
+    };
+
+    const scheduleTrailingTelemetryFlush = () => {
+      if (pendingTelemetryFlushRef.current !== null) {
+        return;
+      }
+      const elapsed = performance.now() - lastTelemetryUiUpdateRef.current;
+      const delay = Math.max(0, TELEMETRY_UI_INTERVAL_MS - elapsed);
+      pendingTelemetryFlushRef.current = window.setTimeout(() => {
+        pendingTelemetryFlushRef.current = null;
+        const latest = latestTelemetryRef.current as Record<string, unknown> | null;
+        if (!latest) {
+          return;
+        }
+        lastTelemetryUiUpdateRef.current = performance.now();
+        flushTelemetryToUi(latest);
+      }, delay);
+    };
+
+    const applyBinaryTelemetry = (buffer: ArrayBuffer, seq: number) => {
+      serverTelemetryActiveRef.current = true;
+      try {
+        const decoded: Record<string, unknown> = decodeMsgpack(new Uint8Array(buffer));
+        const frameTime = typeof decoded._t === "number" ? decoded._t : Number.NaN;
+        const seqIsFresh = seq >= lastAppliedBinarySeqRef.current;
+        const timeIsFresh = Number.isFinite(frameTime) && frameTime >= lastAppliedBinaryTimeRef.current;
+        if (!seqIsFresh && !timeIsFresh) {
+          return;
+        }
+
+        lastAppliedBinarySeqRef.current = Math.max(lastAppliedBinarySeqRef.current, seq);
+        if (Number.isFinite(frameTime)) {
+          lastAppliedBinaryTimeRef.current = Math.max(lastAppliedBinaryTimeRef.current, frameTime);
+        }
+        latestTelemetryRef.current = decoded;
+
+        const now = performance.now();
+        if (now - lastTelemetryUiUpdateRef.current < TELEMETRY_UI_INTERVAL_MS) {
+          scheduleTrailingTelemetryFlush();
+          return;
+        }
+
+        lastTelemetryUiUpdateRef.current = now;
+        flushTelemetryToUi(decoded);
+      } catch (e) {
+        console.error("[useWebSocket] Error decoding MessagePack:", e);
+      }
+    };
+
     try {
       const ws = new WebSocket(wsUrl);
+      ws.binaryType = "arraybuffer";
       socketRef.current = ws;
 
       ws.onopen = () => {
@@ -435,9 +337,16 @@ export function useWebSocket() {
         reconnectDelayRef.current = 1000; // Resetear backoff
         ttsReconnectGraceUntilRef.current = performance.now() + TTS_RECONNECT_GRACE_MS;
         clearPendingTts();
-        spokenTtsAtRef.current.clear();
+        ttsPipelineRef.current?.clearSpokenCooldown();
         void prefetchSpotterTts();
         serverTelemetryActiveRef.current = false;
+        binarySeqRef.current = 0;
+        lastAppliedBinarySeqRef.current = 0;
+        lastAppliedBinaryTimeRef.current = Number.NEGATIVE_INFINITY;
+        if (pendingTelemetryFlushRef.current !== null) {
+          clearTimeout(pendingTelemetryFlushRef.current);
+          pendingTelemetryFlushRef.current = null;
+        }
         if (reconnectTimeoutRef.current) {
           clearTimeout(reconnectTimeoutRef.current);
           reconnectTimeoutRef.current = null;
@@ -455,34 +364,18 @@ export function useWebSocket() {
       };
 
       ws.onmessage = (event) => {
-        // Handle binary (MessagePack telemetry)
+        // Binary telemetry (MessagePack @ 20 Hz). Electron may deliver Blob unless binaryType is set.
         if (event.data instanceof ArrayBuffer) {
-          serverTelemetryActiveRef.current = true;
-          try {
-            const decoded: any = decodeMsgpack(new Uint8Array(event.data as ArrayBuffer));
-            latestTelemetryRef.current = decoded;
-
-            const now = performance.now();
-            if (now - lastTelemetryUiUpdateRef.current < TELEMETRY_UI_INTERVAL_MS) {
-              return;
-            }
-
-            const mapped = mapSidecarBinaryFrame(decoded);
-            const nativeGaps = gapsFromNativeFrame(decoded);
-            lastTelemetryUiUpdateRef.current = now;
-
-            setLastTelemetry(decoded);
-            updateTelemetry({
-              ...mapped,
-              ...(nativeGaps ? { gaps: nativeGaps } : {}),
-            });
-            return;
-          } catch (e) {
-            console.error("[useWebSocket] Error decoding MessagePack:", e);
-            return;
-          }
+          const seq = ++binarySeqRef.current;
+          applyBinaryTelemetry(event.data, seq);
+          return;
         }
-        
+        if (typeof Blob !== "undefined" && event.data instanceof Blob) {
+          const seq = ++binarySeqRef.current;
+          void event.data.arrayBuffer().then((buffer) => applyBinaryTelemetry(buffer, seq));
+          return;
+        }
+
         // Handle text JSON (all other events: strategy, advice, alert, etc)
         let parsed: any;
         try {
@@ -578,14 +471,24 @@ export function useWebSocket() {
 
           case "llm_pending": {
             setLastPending(payload);
-            setRadioMode("THINKING_LLM");
+            const mode = useAppStore.getState().radio.mode;
+            const speakOnly = useAppStore.getState().config.speakOnlyWhenSpokenTo;
+            const pttFlow = mode === "LISTENING_PILOT" || mode === "THINKING_LLM";
+            if (pttFlow || !speakOnly) {
+              setRadioMode("THINKING_LLM");
+            }
             break;
           }
 
           case "advice_start": {
             clearPendingEngineerTts();
             setLastAdvice(payload);
-            setRadioMode("THINKING_LLM");
+            const mode = useAppStore.getState().radio.mode;
+            const speakOnly = useAppStore.getState().config.speakOnlyWhenSpokenTo;
+            const pttFlow = mode === "LISTENING_PILOT" || mode === "THINKING_LLM";
+            if (pttFlow || !speakOnly) {
+              setRadioMode("THINKING_LLM");
+            }
             setCurrentTokens("");
             break;
           }
@@ -619,12 +522,27 @@ export function useWebSocket() {
 
             const inReconnectGrace = performance.now() < ttsReconnectGraceUntilRef.current;
             const speakOnly = useAppStore.getState().config.speakOnlyWhenSpokenTo;
+
+            // Unified gate — evaluateAdviceTts handles all checks
+            const adviceDecision = evaluateAdviceTts({
+              fullText,
+              speakOnlyWhenSpokenTo: speakOnly,
+              inReconnectGrace,
+            });
+
+            if (!adviceDecision.allow) {
+              logTtsBlocked("advice_end", adviceDecision.reason, { speakOnlyWhenSpokenTo: speakOnly });
+              setRadioMode("IDLE");
+              break;
+            }
+
             const willSpeak =
               showInUi &&
-              shouldSpeakAdvice(fullText) &&
-              !inReconnectGrace &&
-              shouldVoiceDuringSpeakOnly(speakOnly, "advice", "advice") &&
               enqueueTtsText(fullText, "advice", "ENGINEER", undefined, "engineer");
+
+            if (!willSpeak) {
+              logTtsBlocked("advice_end", "enqueue_failed_or_empty", { speakOnlyWhenSpokenTo: speakOnly });
+            }
 
             if (willSpeak) {
               processTtsQueueRef.current();
@@ -644,12 +562,26 @@ export function useWebSocket() {
             const inReconnectGrace = performance.now() < ttsReconnectGraceUntilRef.current;
             const speakOnlyCommentary = useAppStore.getState().config.speakOnlyWhenSpokenTo;
             const engineerEnabled = useAppStore.getState().config.engineerEnabled;
+
+            // Unified gate — evaluateCommentaryTts handles all checks
+            const commentaryDecision = evaluateCommentaryTts({
+              fullText: commentaryText,
+              speakOnlyWhenSpokenTo: speakOnlyCommentary,
+              engineerEnabled,
+              inReconnectGrace,
+            });
+
+            if (!commentaryDecision.allow) {
+              logTtsBlocked("commentary_end", commentaryDecision.reason, {
+                speakOnlyWhenSpokenTo: speakOnlyCommentary,
+                engineerEnabled,
+              });
+              setRadioMode("IDLE");
+              break;
+            }
+
             const willSpeak =
               showInUi &&
-              shouldSpeakAdvice(commentaryText) &&
-              !inReconnectGrace &&
-              engineerEnabled &&
-              shouldVoiceDuringSpeakOnly(speakOnlyCommentary, "commentary", "commentary") &&
               enqueueTtsText(commentaryText, "commentary", "ENGINEER", payload, "engineer");
 
             if (willSpeak) {
@@ -659,6 +591,14 @@ export function useWebSocket() {
             }
             break;
           }
+
+          case "voice_playback_start":
+            handleBackendVoicePlaybackStart(payload);
+            break;
+
+          case "voice_playback_end":
+            handleBackendVoicePlaybackEnd(payload);
+            break;
 
           case "config_ack": {
             const ackCfg = payload.config ?? payload;
@@ -712,6 +652,9 @@ export function useWebSocket() {
               if (typeof ackCfg.engineerEnabled === "boolean") {
                 patch.engineerEnabled = ackCfg.engineerEnabled;
               }
+              if (typeof ackCfg.voiceBackendPlayback === "boolean") {
+                patch.voiceBackendPlayback = ackCfg.voiceBackendPlayback;
+              }
               if (Object.keys(patch).length > 0) {
                 updateConfig(patch);
               }
@@ -738,24 +681,46 @@ export function useWebSocket() {
               addMessageToHistory("engineer", alertMsg);
             }
 
-            // Loguear alertas de radio al historial (solo las audibles; gaps es visual)
+            // Historial: criterio de voz UI (independiente de backend playback)
+            const { speakOnlyWhenSpokenTo, spotterEnabled, engineerEnabled, voiceBackendPlayback } =
+              useAppStore.getState().config;
+            const voicePayload = flattenAlertPayload(payload);
+            const shouldLogRadioHistory =
+              Boolean(alertMsg) &&
+              !isInternalRadioText(alertMsg) &&
+              shouldVoiceAlert(voicePayload) &&
+              shouldVoiceDuringSpeakOnly(speakOnlyWhenSpokenTo, category, "alert") &&
+              shouldVoiceForServiceToggle(category, spotterEnabled, engineerEnabled, voicePayload);
+
+            const ttsDecision = evaluateAlertTts({
+              message: alertMsg,
+              payload,
+              speakOnlyWhenSpokenTo,
+              spotterEnabled,
+              engineerEnabled,
+              voiceBackendPlayback,
+            });
+
             const spotterCategories = new Set([
               "proximity", "pit_limiter", "fuel", "safety_car", "damage", "puncture", "impact", "limiter",
             ]);
-            if (alertMsg && !isInternalRadioText(alertMsg) && shouldVoiceAlert(payload)) {
+            if (shouldLogRadioHistory) {
               if (spotterCategories.has(category)) {
                 addRadioAlertToHistory("spotter", alertMsg, category);
               } else if (category !== "voice_response" && category !== "system" && category !== "spotter") {
                 addRadioAlertToHistory("engineer", alertMsg, category);
               }
             }
-            
-            const { speakOnlyWhenSpokenTo, spotterEnabled, engineerEnabled } =
-              useAppStore.getState().config;
-            const voiceOk =
-              shouldVoiceAlert(payload) &&
-              shouldVoiceDuringSpeakOnly(speakOnlyWhenSpokenTo, category, "alert") &&
-              shouldVoiceForServiceToggle(category, spotterEnabled, engineerEnabled, payload);
+
+            const voiceOk = ttsDecision.allow;
+            if (!voiceOk && ttsDecision.reason !== "backend_playback") {
+              logTtsBlocked("alert", ttsDecision.reason, {
+                category,
+                speakOnlyWhenSpokenTo,
+                spotterEnabled,
+                engineerEnabled,
+              });
+            }
             const alertPriority: TtsPriority = isPttResponse ? "ENGINEER" : "IMMEDIATE";
             const alertVoiceRole: "engineer" | "spotter" = isPttResponse
               ? "engineer"
@@ -775,6 +740,7 @@ export function useWebSocket() {
 
       ws.onclose = (event) => {
         serverTelemetryActiveRef.current = false;
+        flushPendingTelemetryNow();
         registerConfigWs(null);
         registerWsCommands(null);
         console.warn(`[useWebSocket] Conexión cerrada. Código: ${event.code}.`);

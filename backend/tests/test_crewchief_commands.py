@@ -79,7 +79,7 @@ async def test_handle_pilot_question_speak_only_on_fast_path():
     await eng.handle_pilot_question("cállate hasta que te pregunte")
 
     assert eng.verbosity.speak_only_when_spoken_to is True
-    assert spotter.enabled is False
+    assert spotter.enabled is True
     alerts = [m for m in sent if isinstance(m, AlertMessage)]
     assert any("solo hablaré" in a.message.lower() for a in alerts)
     assert alerts[-1].category == "voice_response"
@@ -92,7 +92,7 @@ async def test_speak_only_off_restores_spotter():
     spotter = type("SpotterStub", (), {"enabled": True})()
     eng.set_spotter_service(spotter)
     eng.apply_speak_only(True, emit_voice=False)
-    assert spotter.enabled is False
+    assert spotter.enabled is True
 
     eng.apply_speak_only(False, emit_voice=False)
     assert spotter.enabled is True

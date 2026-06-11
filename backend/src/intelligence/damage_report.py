@@ -9,6 +9,9 @@ from src.intelligence.crewchief_events.templates import render_template
 IMPACT_MAGNITUDE_MIN = 25.0
 IMPACT_SETTLE_S = 3.0
 IMPACT_CRASH_THRESHOLD_MS2 = 392.0  # ~40G
+# LMU a menudo deja mLastImpact* en 0; el spotter usa aceleración local como respaldo.
+SPOTTER_ACCEL_IMPACT_MS2 = 120.0  # ~12G — impacto audible en pista
+SPOTTER_ACCEL_COOLDOWN_S = 3.0
 CRASH_POST_IMPACT_WAIT_S = 2.0
 CRASH_LOW_SPEED_MS = 3.0
 PUNCTURE_DELAY_S = 5.0
@@ -168,7 +171,7 @@ def format_damage_status_message(
 
     if len(items) >= 2:
         if damage_items_are_severe(items, tick):
-            return render_template("damage_are_you_ok", {"attempt": 0})
+            return "Múltiples daños en el coche. ¿Estás bien?"
         return render_template("damage_impact", {"severity": "moderado"})
 
     item = items[0]

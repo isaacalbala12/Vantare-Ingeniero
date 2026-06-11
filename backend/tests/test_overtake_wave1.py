@@ -1,60 +1,79 @@
-"""F5 — detección de adelantamientos."""
+"""F5 — detección de adelantamientos (PositionEvent / CC @ 20 Hz)."""
 
-import time
-
-from src.intelligence.immediate_alert import ImmediateAlert
-from src.intelligence.proactive_monitors import ProactiveMonitorSuite
+from src.intelligence.crewchief_events.modules.position import PositionEvent
+from src.intelligence.crewchief_events.types import CrewChiefFrameContext
 
 
-def _overtake_telemetry(**overrides):
-    base = {
-        "standing_position": 4,
-        "competitors": [
-            {"driver_index": 1, "driver_name": "Rival", "standing_position": 5, "in_pits": False},
-            {"driver_index": 2, "driver_name": "Behind", "standing_position": 6, "in_pits": False},
-        ],
-        "time_gap_car_ahead": 2.0,
-        "time_gap_car_behind": 0.5,
-        "in_pits": False,
-        "session_type": "RACE",
-        "yellow_flag_active": False,
-        "full_course_yellow_active": False,
-    }
-    base.update(overrides)
-    return base
+def _ctx(previous: dict, current: dict, *, now: float = 1.0) -> CrewChiefFrameContext:
+    return CrewChiefFrameContext(
+        previous=previous,
+        current=current,
+        strategy={},
+        session={"phase": "race", "session_type_int": 10},
+        now_monotonic=now,
+    )
 
 
 def test_overtake_detected():
-    monitor = ProactiveMonitorSuite()
-    monitor._last_opponent_ahead_key = "1"
-    monitor._gap_samples_ahead = [0.5] * 20
-    telemetry = _overtake_telemetry(
-        standing_position=4,
-        competitors=[
-            {"driver_index": 3, "driver_name": "NewAhead", "standing_position": 3, "in_pits": False},
-            {"driver_index": 1, "driver_name": "Rival", "standing_position": 5, "in_pits": False},
-        ],
+    module = PositionEvent()
+    competitors_before = [
+        {"driver_index": 10, "standing_position": 4, "driver_name": "Leader", "in_pits": False},
+        {"driver_index": 42, "standing_position": 5, "driver_name": "Rival A", "in_pits": False},
+        {"driver_index": 7, "standing_position": 6, "driver_name": "Player", "in_pits": False},
+    ]
+    competitors_after = [
+        {"driver_index": 10, "standing_position": 3, "driver_name": "Leader", "in_pits": False},
+        {"driver_index": 42, "standing_position": 5, "driver_name": "Rival A", "in_pits": False},
+        {"driver_index": 7, "standing_position": 4, "driver_name": "Player", "in_pits": False},
+    ]
+    module.evaluate(
+        _ctx(
+            {"standing_position": 6, "time_gap_car_ahead": 0.25, "competitors": competitors_before, "session_type_int": 10},
+            {"standing_position": 6, "time_gap_car_ahead": 0.25, "competitors": competitors_before, "session_type_int": 10},
+            now=1.0,
+        )
     )
-    events = monitor._detect_overtakes(telemetry, time.monotonic(), {"phase": "RACE"})
-    overtakes = [e for e in events if isinstance(e, ImmediateAlert) and e.event_id == "overtake"]
-    assert len(overtakes) >= 1
+    messages = module.evaluate(
+        _ctx(
+            {"standing_position": 6, "time_gap_car_ahead": 0.25, "competitors": competitors_before, "session_type_int": 10},
+            {"standing_position": 4, "time_gap_car_ahead": 0.25, "competitors": competitors_after, "session_type_int": 10},
+            now=22.0,
+        )
+    )
+    assert any(m.event_id == "overtake_position_gain" for m in messages)
 
 
 def test_no_overtake_under_yellow():
-    monitor = ProactiveMonitorSuite()
-    telemetry = _overtake_telemetry(yellow_flag_active=True)
-    assert monitor._detect_overtakes(telemetry, time.monotonic(), {"phase": "RACE"}) == []
+    module = PositionEvent()
+    messages = module.evaluate(
+        _ctx(
+            {"standing_position": 6, "session_type_int": 10},
+            {
+                "standing_position": 4,
+                "yellow_flag_active": True,
+                "session_type_int": 10,
+                "competitors": [],
+            },
+            now=22.0,
+        )
+    )
+    assert not any(m.event_id == "overtake_position_gain" for m in messages)
 
 
 def test_overtake_cooldown_20s():
-    monitor = ProactiveMonitorSuite()
-    monitor._last_overtake_at = time.monotonic()
-    monitor._last_opponent_ahead_key = "1"
-    monitor._gap_samples_ahead = [0.5] * 20
-    telemetry = _overtake_telemetry(
-        competitors=[
-            {"driver_index": 3, "driver_name": "NewAhead", "standing_position": 3, "in_pits": False},
-            {"driver_index": 1, "driver_name": "Rival", "standing_position": 5, "in_pits": False},
-        ],
+    module = PositionEvent()
+    module._last_opponent_ahead_key = "1"
+    module._gap_samples_ahead = [0.5] * 20
+    module._last_overtake_at = 100.0
+    competitors_after = [
+        {"driver_index": 3, "driver_name": "NewAhead", "standing_position": 3, "in_pits": False},
+        {"driver_index": 1, "driver_name": "Rival", "standing_position": 5, "in_pits": False},
+    ]
+    messages = module.evaluate(
+        _ctx(
+            {"standing_position": 4, "time_gap_car_ahead": 0.25, "competitors": competitors_after, "session_type_int": 10},
+            {"standing_position": 4, "time_gap_car_ahead": 0.25, "competitors": competitors_after, "session_type_int": 10},
+            now=110.0,
+        )
     )
-    assert monitor._detect_overtakes(telemetry, time.monotonic(), {"phase": "RACE"}) == []
+    assert not any(m.event_id == "overtake" for m in messages)

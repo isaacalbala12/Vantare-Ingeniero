@@ -253,7 +253,7 @@ def _format_riv(data: dict) -> str:
     max_far_gap = 0
 
     for comp in competitors:
-        name = abbreviate_name(comp.get("name", "DRV"))
+        name = abbreviate_name(comp.get("name") or comp.get("driver_name") or "DRV")
         cls = comp.get("class", "GT3")
         gap = comp.get("gap", 0.0)
         laps = comp.get("laps", 0)

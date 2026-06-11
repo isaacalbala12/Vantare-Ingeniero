@@ -66,6 +66,7 @@ class TelemetryFrame(BaseModel):
     session_laps_left: float
     lap_number: int
     lap_distance: float  # metros acumulados en la vuelta actual
+    track_length_m: float = 0.0  # longitud de circuito (mLapDist scoring)
     path_lateral: float = 0.0  # offset lateral respecto a la línea de racing (LMU mPathLateral)
     lap_time_best: float
     lap_time_previous: float

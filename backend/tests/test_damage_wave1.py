@@ -86,4 +86,4 @@ def test_puncture_reports_generic_message():
     module._puncture_batch_ready_at = 5.0
     messages = module.evaluate(_ctx_from_tick(tick, now=6.0))
     assert len(messages) == 1
-    assert messages[0].text == "Pinchazo en el coche."
+    assert "delantero izquierdo" in messages[0].text.lower()

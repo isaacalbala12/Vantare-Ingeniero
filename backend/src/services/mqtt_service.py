@@ -60,7 +60,11 @@ class MqttService:
 
     @property
     def enabled(self) -> bool:
-        return bool(settings.MQTT_ENABLED)
+        return bool(
+            settings.MQTT_ENABLED
+            and settings.ENABLE_MQTT
+            and not settings.BETA_SLIM
+        )
 
     def _ensure_client(self) -> bool:
         if not self.enabled:

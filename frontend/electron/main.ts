@@ -1,10 +1,11 @@
-import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
+import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { appendFileSync, existsSync } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { app, BrowserWindow, ipcMain, Menu, Tray } from "electron";
 import { createHubWindow } from "./windows/hubWindow";
 import {
+  destroyOverlayWindow,
   getOverlayWindow,
   hideOverlayWindow,
   resizeOverlayContent,
@@ -26,8 +27,22 @@ import {
 } from "./updater";
 
 const isDev = !app.isPackaged;
+
+if (!isDev) {
+  app.setName("Vantare Ingeniero IA");
+}
+
+/** Evita múltiples copias (y backends duplicados en :8008) si se abre el acceso directo otra vez. */
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+if (!gotSingleInstanceLock) {
+  app.quit();
+  process.exit(0);
+}
+
 let hubWindow: BrowserWindow | null = null;
 let backendChild: ChildProcessWithoutNullStreams | null = null;
+/** True only when this Electron instance spawned backend.exe (skip kill on quit if false). */
+let backendSpawnedByUs = false;
 let tray: Tray | null = null;
 /** null = unchecked, true/false = cached availability */
 let duckLmuAvailable: boolean | null = null;
@@ -81,6 +96,17 @@ function appendBackendLog(line: string): void {
 
 const BACKEND_HEALTH_URL = "http://127.0.0.1:8008/health";
 
+async function isBackendAlreadyRunning(): Promise<boolean> {
+  try {
+    const res = await fetch(BACKEND_HEALTH_URL, { signal: AbortSignal.timeout(2_000) });
+    if (!res.ok) return false;
+    const body = (await res.json()) as { status?: string };
+    return body.status === "ok";
+  } catch {
+    return false;
+  }
+}
+
 async function waitForBackendReady(maxWaitMs = 120_000): Promise<boolean> {
   const deadline = Date.now() + maxWaitMs;
   while (Date.now() < deadline) {
@@ -106,9 +132,16 @@ async function waitForBackendReady(maxWaitMs = 120_000): Promise<boolean> {
   return false;
 }
 
-function spawnBackendIfRelease(): void {
+async function spawnBackendIfRelease(): Promise<void> {
   if (isDev) {
     console.log("[electron] dev mode: backend not auto-spawned");
+    return;
+  }
+
+  if (await isBackendAlreadyRunning()) {
+    backendSpawnedByUs = false;
+    console.log("[electron] Backend already running");
+    appendBackendLog("Backend already running — skipping spawn");
     return;
   }
 
@@ -135,17 +168,20 @@ function spawnBackendIfRelease(): void {
     stdio: "pipe",
     windowsHide: true,
   });
-
-  backendChild.on("error", (err) => {
-    const msg = `Backend spawn error: ${err.message}`;
-    console.error("[electron]", msg);
-    appendBackendLog(`ERROR ${msg}`);
-  });
+  backendSpawnedByUs = true;
 
   backendChild.on("exit", (code, signal) => {
+    backendSpawnedByUs = false;
     const msg = `Backend exited code=${code ?? "null"} signal=${signal ?? "null"}`;
     console.error("[electron]", msg);
     appendBackendLog(msg);
+  });
+
+  backendChild.on("error", (err) => {
+    backendSpawnedByUs = false;
+    const msg = `Backend spawn error: ${err.message}`;
+    console.error("[electron]", msg);
+    appendBackendLog(`ERROR ${msg}`);
   });
 
   backendChild.stdout?.on("data", (chunk: Buffer) => {
@@ -158,6 +194,36 @@ function spawnBackendIfRelease(): void {
     console.error("[backend]", line);
     appendBackendLog(`stderr ${line}`);
   });
+}
+
+function shutdownBackend(): void {
+  if (!backendSpawnedByUs) return;
+
+  const child = backendChild;
+  backendChild = null;
+  backendSpawnedByUs = false;
+  if (!child || child.killed) return;
+
+  const pid = child.pid;
+  appendBackendLog(`Stopping backend pid=${pid ?? "unknown"}`);
+  try {
+    child.kill();
+  } catch {
+    // already gone
+  }
+  if (process.platform === "win32" && pid) {
+    spawnSync("taskkill", ["/PID", String(pid), "/T", "/F"], {
+      stdio: "ignore",
+      windowsHide: true,
+    });
+  }
+}
+
+function destroyHubWindow(): void {
+  if (!hubWindow || hubWindow.isDestroyed()) return;
+  hubWindow.removeAllListeners("close");
+  hubWindow.destroy();
+  hubWindow = null;
 }
 
 function registerIpc(): void {
@@ -221,6 +287,12 @@ function registerIpc(): void {
   ipcMain.handle("desktop-update:check", () => checkForDesktopUpdates());
   ipcMain.handle("desktop-update:download", () => downloadDesktopUpdate());
   ipcMain.handle("desktop-update:quitAndInstall", () => quitAndInstallDesktopUpdate());
+
+  ipcMain.on("overlay:publishState", (_event, payload: unknown) => {
+    const overlay = getOverlayWindow();
+    if (!overlay || overlay.isDestroyed()) return;
+    overlay.webContents.send("overlay:state", payload);
+  });
 }
 
 function resolveTrayIcon(): string {
@@ -236,14 +308,28 @@ function createTray(): void {
     { type: "separator" },
     { label: "Salir", click: () => app.quit() },
   ]);
-  tray.setToolTip("Vantare Ingeniero");
+  tray.setToolTip("Vantare Ingeniero IA");
   tray.setContextMenu(menu);
+  tray.on("double-click", () => {
+    if (hubWindow && !hubWindow.isDestroyed()) {
+      hubWindow.show();
+      hubWindow.focus();
+    }
+  });
 }
+
+app.on("second-instance", () => {
+  if (hubWindow && !hubWindow.isDestroyed()) {
+    if (hubWindow.isMinimized()) hubWindow.restore();
+    hubWindow.show();
+    hubWindow.focus();
+  }
+});
 
 app.whenReady().then(async () => {
   registerIpc();
   initDesktopUpdater(() => hubWindow);
-  spawnBackendIfRelease();
+  await spawnBackendIfRelease();
   if (!isDev) {
     const ready = await waitForBackendReady();
     if (!ready) {
@@ -264,9 +350,11 @@ app.whenReady().then(async () => {
 
 app.on("will-quit", () => {
   unregisterPttShortcuts();
-  if (backendChild && !backendChild.killed) {
-    backendChild.kill();
-  }
+  shutdownBackend();
+  destroyOverlayWindow();
+  destroyHubWindow();
+  tray?.destroy();
+  tray = null;
 });
 
 app.on("window-all-closed", () => {

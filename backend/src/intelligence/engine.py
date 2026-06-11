@@ -5,6 +5,8 @@ import sys
 import uuid
 from typing import Any
 
+from src.config import settings
+from src.intelligence.engine_ptt_mixin import EnginePttMixin
 from src.intelligence.triggers import PilotQuestionTrigger, TriggerAction, get_all_triggers
 from src.models.messages import AdviceEndMessage, AlertMessage, BaseMessage, LLMPendingMessage
 
@@ -17,7 +19,7 @@ class StrategyUpdateMessage(BaseMessage):
     advice: Any
 
 
-class IntelligenceEngine:
+class IntelligenceEngine(EnginePttMixin):
     """Orquestador central de la Capa de Inteligencia del Ingeniero de IA.
 
     Evalúa triggers a 0.5Hz, gestiona el ciclo de vida de las llamadas vLLM
@@ -111,11 +113,63 @@ class IntelligenceEngine:
         self._last_driver_name: str = ""
 
         from src.intelligence.pearls_of_wisdom import PearlsService
+        from src.intelligence.personality_pack import PersonalityPack
+        from src.intelligence.verbosity_controller import VerbosityController
 
         self.pearls = PearlsService()
+        self.personality = PersonalityPack()
+        self.verbosity = VerbosityController()
+        self.engineer_enabled = False
+        self._spotter_service = None
+        self._eval_telemetry: dict[str, Any] = {}
+        self._eval_session: dict[str, Any] = {}
 
         self.triggers = get_all_triggers()
         self._event_store = event_store
+        self._commentary_orchestrator = None
+        from src.intelligence.proactive_monitors import ProactiveMonitorSuite
+
+        self._proactive_monitor_suite = ProactiveMonitorSuite()
+
+    @property
+    def proactive_monitors(self):
+        return self._proactive_monitor_suite
+
+    async def _run_proactive_monitors(
+        self,
+        telemetry_dict: dict,
+        strategy_dict: dict,
+        session_dict: dict,
+    ) -> None:
+        events = self.proactive_monitors.evaluate(
+            telemetry_dict,
+            strategy_dict,
+            session_dict,
+            strategy_service=self._get_strategy_service(),
+        )
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+        from src.intelligence.immediate_alert import ImmediateAlert, proactive_event_id, proactive_message
+
+        for evt in events:
+            event_id = proactive_event_id(evt)
+            if is_cc_owned_event(event_id):
+                continue
+            if isinstance(evt, ImmediateAlert):
+                self.broadcaster.send(
+                    AlertMessage(
+                        event="alert",
+                        alert_id=str(uuid.uuid4()),
+                        category=evt.category,
+                        message=evt.message,
+                        audio_priority=evt.priority,
+                        severity=evt.priority,
+                        ttl=10,
+                        dismissable=True,
+                        payload={"event_id": evt.event_id, **evt.payload},
+                    )
+                )
+            else:
+                self.enqueue_commentary(event_id, proactive_message(evt), evt[2])
 
     def _get_strategy_service(self):
         return self.strategy_service
@@ -159,6 +213,10 @@ class IntelligenceEngine:
         return "Acción de monitor no válida."
 
     def _emit_pearl(self, pearl_type) -> None:
+        from src.intelligence.verbosity_controller import VerbosityLevel
+
+        if self.verbosity.level == VerbosityLevel.SILENT:
+            return
         message = self.pearls.on_event(pearl_type, sweary=self.sweary_messages)
         if not message:
             return
@@ -167,7 +225,7 @@ class IntelligenceEngine:
             alert_id=str(uuid.uuid4()),
             category="pearl",
             message=message,
-            audio_priority="1",
+            audio_priority="2",
             severity="INFO",
             ttl=8,
             dismissable=True,
@@ -233,6 +291,10 @@ class IntelligenceEngine:
 
         self._maybe_emit_pearls(telemetry_dict)
 
+        self._eval_telemetry = telemetry_dict
+        self._eval_session = session_dict
+        await self._run_proactive_monitors(telemetry_dict, strategy_dict, session_dict)
+
         driver_name = str(telemetry_dict.get("driver_name", "") or "").strip()
         if driver_name and self._last_driver_name and driver_name != self._last_driver_name:
             svc = self._get_strategy_service()
@@ -294,7 +356,10 @@ class IntelligenceEngine:
             self._current_llm_task.add_done_callback(self._on_llm_task_done)
             return
 
-        # 3. Iterar sobre los 12 triggers estándar
+        # 3. Iterar sobre los 12 triggers estándar (solo si ingeniero proactivo permitido)
+        if not self.engineer_enabled or self.verbosity.speak_only_when_spoken_to:
+            return
+
         for trigger in self.triggers:
             # Si el piloto tiene una pregunta activa, solo triggers CRITICAL pueden interrumpir
             from src.intelligence.triggers import Priority
@@ -550,34 +615,110 @@ class IntelligenceEngine:
         self._active_trigger_name = ""
 
     async def handle_pilot_question(self, question: str) -> None:
-        """Dispara evaluate_cycle con pregunta del piloto; emite datos de rival si aplica."""
-        from src.intelligence.context_builder import _resolve_competitor_context
+        """PTT del piloto: fast path + tools + streaming bajo demanda."""
+        from src.intelligence.pilot_ptt_agent import handle_pilot_ptt
 
-        competitors = self.get_competitors_list()
-        if competitors:
-            comp_dicts = [c.model_dump() if hasattr(c, "model_dump") else c for c in competitors]
-            ctx = _resolve_competitor_context(question, {"competitors": comp_dicts})
-            if ctx:
-                alert = AlertMessage(
-                    event="alert",
-                    alert_id=str(uuid.uuid4()),
-                    category="competitor",
-                    message=ctx,
-                    audio_priority="1",
-                    severity="INFO",
-                    ttl=10,
-                    dismissable=True,
-                    payload={"query": question[:120]},
-                )
-                self.broadcaster.send(alert)
+        await handle_pilot_ptt(self, question)
 
-        strat_service = self._get_strategy_service()
-        telemetry_state = strat_service.latest_frame if strat_service else None
-        strategy_state = strat_service.latest_advice if strat_service else None
-        session_state = {}
-        if telemetry_state:
-            session_state = {"phase": getattr(telemetry_state, "session_type", "RACE")}
-        await self.evaluate_cycle(telemetry_state, strategy_state, session_state, pilot_question=question)
+    def set_spotter_service(self, spotter) -> None:
+        self._spotter_service = spotter
+
+    def apply_runtime_config(self, cfg: dict[str, Any]) -> None:
+        if not isinstance(cfg, dict):
+            return
+        if "personalityProfileId" in cfg:
+            self.personality.set_profile(str(cfg["personalityProfileId"]))
+        if "verbosityLevel" in cfg:
+            self.verbosity.set_level(str(cfg["verbosityLevel"]))
+        if "brakingZonesMute" in cfg:
+            self.verbosity.set_braking_zones_mute(bool(cfg["brakingZonesMute"]))
+        if "speakOnlyWhenSpokenTo" in cfg:
+            self.verbosity.set_speak_only_when_spoken_to(bool(cfg["speakOnlyWhenSpokenTo"]))
+        if "enableCommentaryBatch" in cfg:
+            if settings.BETA_SLIM or not settings.ENABLE_COMMENTARY_BATCH:
+                self.verbosity.set_enable_commentary_batch(False)
+            else:
+                self.verbosity.set_enable_commentary_batch(bool(cfg["enableCommentaryBatch"]))
+        if "engineerEnabled" in cfg:
+            self.engineer_enabled = bool(cfg["engineerEnabled"])
+            self._emit_config_ack()
+        if "spotterEnabled" in cfg and self._spotter_service is not None:
+            if bool(cfg["spotterEnabled"]):
+                self._spotter_service.enabled = True
+        if "swearyMessages" in cfg:
+            self.sweary_messages = bool(cfg["swearyMessages"])
+
+    def _emit_config_ack(self) -> None:
+        self.broadcast_config_ack()
+
+    def runtime_config_snapshot(self) -> dict[str, Any]:
+        snap: dict[str, Any] = {
+            "personalityProfileId": self.personality.profile_id,
+            "verbosityLevel": self.verbosity.level.value,
+            "brakingZonesMute": self.verbosity.braking_zones_mute,
+            "speakOnlyWhenSpokenTo": self.verbosity.speak_only_when_spoken_to,
+            "enableCommentaryBatch": self.verbosity.enable_commentary_batch,
+            "engineerEnabled": self.engineer_enabled,
+            "swearyMessages": self.sweary_messages,
+            "voiceBackendPlayback": settings.VOICE_BACKEND_PLAYBACK,
+        }
+        if self._spotter_service is not None:
+            snap["spotterEnabled"] = self._spotter_service.enabled
+            if hasattr(self._spotter_service, "runtime_config_snapshot"):
+                snap.update(self._spotter_service.runtime_config_snapshot())
+        return snap
+
+    def broadcast_config_ack(self) -> None:
+        from src.models.messages import ConfigAckMessage
+
+        self.broadcaster.send(ConfigAckMessage(event="config_ack", config=self.runtime_config_snapshot()))
+
+    def emit_crewchief_messages(self, messages: list[Any]) -> None:
+        if not self.engineer_enabled:
+            return
+        from src.intelligence.crewchief_events.playback import map_message_to_alert
+
+        for message in messages:
+            category = "engineer"
+            priority = "NORMAL"
+            play_even = False
+            if hasattr(message, "channel"):
+                from src.intelligence.crewchief_events.types import CrewChiefChannel
+
+                if message.channel == CrewChiefChannel.SPOTTER:
+                    category = "spotter"
+                elif message.channel == CrewChiefChannel.VOICE_RESPONSE:
+                    category = "voice_response"
+            if hasattr(message, "priority"):
+                priority = getattr(message.priority, "value", str(message.priority))
+                play_even = bool(getattr(message, "play_even_when_silenced", False))
+            if not self.verbosity.should_emit_crewchief_category(category, priority, play_even):
+                continue
+            self.broadcaster.send(map_message_to_alert(message))
+
+    def enqueue_commentary(self, event_id: str, text: str, priority: str = "NORMAL") -> bool:
+        if not self.verbosity.enable_commentary_batch:
+            return False
+        from src.intelligence.crewchief_events.cutover_registry import is_cc_owned_event
+
+        if is_cc_owned_event(event_id):
+            return False
+        phase = str(self._eval_session.get("phase") or self._eval_telemetry.get("session_type") or "").lower()
+        if event_id == "position_change" and phase in ("practice", "test"):
+            return False
+        return self.commentary.enqueue(event_id, text, priority=priority)
+
+    @property
+    def commentary(self):
+        if self._commentary_orchestrator is None:
+            from src.intelligence.commentary_orchestrator import CommentaryOrchestrator
+
+            self._commentary_orchestrator = CommentaryOrchestrator(
+                broadcast_callback=self.broadcaster.send,
+                verbosity=self.verbosity,
+                personality=self.personality,
+            )
+        return self._commentary_orchestrator
 
     def _to_dict(self, obj) -> dict:
         """Helper para convertir cualquier objeto de estado (Pydantic, dataclass) a diccionario."""

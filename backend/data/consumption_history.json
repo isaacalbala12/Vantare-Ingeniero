@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "lap": 1,
+    "consumption": 3.5,
+    "fuelRemaining": 96.5,
+    "lapTime": 120.5
+  },
+  {
+    "lap": 2,
+    "consumption": 3.8,
+    "fuelRemaining": 92.7,
+    "lapTime": 121.0
+  }
+]

@@ -76,6 +76,7 @@ def frame_to_spotter_tick(frame: dict, advice: dict | None = None) -> dict:
         "gap_behind": gap_behind,
         "lap_number": int(frame.get("lap_number", 1)),
         "lap_distance": float(frame.get("lap_distance", 0.0)),
+        "track_length_m": float(frame.get("track_length_m", 0.0)),
         "path_lateral": float(frame.get("path_lateral", 0.0)),
         "damage_aero": float(frame.get("damage_aero", 0.0)),
         "suspension_damage": float(frame.get("suspension_damage", 0.0)),

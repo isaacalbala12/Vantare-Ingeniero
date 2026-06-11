@@ -12,12 +12,13 @@ export function buildConfigUpdatePayload(cfg: AppConfig): Record<string, unknown
     spotterHoldRepeatS: cfg.spotterHoldRepeatS ?? 3.0,
     spotterGapFrequencyS: cfg.spotterGapFrequencyS ?? 30.0,
     spotterCarLengthM: cfg.spotterCarLengthM ?? 4.5,
-    spotterMinSpeedMs: cfg.spotterMinSpeedMs ?? 10.0,
-    spotterRaceStartDelayS: cfg.spotterRaceStartDelayS ?? 20.0,
+    spotterMinSpeedMs: cfg.spotterMinSpeedMs ?? 5.0,
+    spotterRaceStartDelayS: cfg.spotterRaceStartDelayS ?? 3.0,
     brakingZonesMute: cfg.brakingZonesMute ?? false,
+    spotterEnabled: cfg.spotterEnabled ?? true,
   };
-  if (typeof cfg.spotterEnabled === "boolean") {
-    payload.spotterEnabled = cfg.spotterEnabled;
+  if (typeof cfg.speakOnlyWhenSpokenTo === "boolean") {
+    payload.speakOnlyWhenSpokenTo = cfg.speakOnlyWhenSpokenTo;
   }
   if (typeof cfg.engineerEnabled === "boolean") {
     payload.engineerEnabled = cfg.engineerEnabled;

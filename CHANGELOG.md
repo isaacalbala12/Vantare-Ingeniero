@@ -2,6 +2,40 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/).
 
+## [0.2.14] - 2026-06-11 — Alpha inicial (Voice Beta)
+
+Primera alpha pública de la **re-arquitectura de voz**: audio reproducido en el backend (pygame), telemetría y race loop in-process, contrato de voz documentado y gates de calidad para beta.
+
+### Added
+
+- **Pipeline de voz in-process** (`voice_loop`, cola con prioridad, moderador, caché TTS, pygame)
+- **Race loop nativo** sin sidecar WS separado; telemetría LMU vía memoria compartida
+- **Contrato de voz** normativo (`docs/voice-contract.md`) + matriz de tests frontend/backend
+- **Spotter cartesiano** y frases ES; integración spotter → cola de voz
+- **Monitores proactivos** (combustible, lluvia, FCY, daños, penalizaciones, pits)
+- **Overlay sincronizado con backend playback** vía eventos WS `voice_playback_start` / `voice_playback_end`
+- **Scripts de release/QA:** `verify_beta_gate.ps1`, `verify_bundle_startup.ps1`, `verify_voice_contract.py`, `verify-release.ps1`, `doctor.ps1`
+- **Planes y ADRs** de la re-arquitectura voice beta (Hitos 1–8)
+
+### Changed
+
+- **`voiceBackendPlayback=true` por defecto** — el frontend ya no reproduce TTS; solo orquesta UI/overlay
+- Hub y overlay Electron actualizados (`ttsPipeline`, `ttsPlaybackGate`, `backendVoiceOverlay`)
+- Bundle PyInstaller ampliado (pygame/SDL, faster-whisper, voice modules)
+- Versión unificada backend/frontend en `0.2.14`
+
+### Fixed
+
+- Crash al arrancar bundle (`UnboundLocalError: broadcast_sync` en `main.py`)
+- Overlay de radio invisible cuando el audio salía del backend
+- Gates de commentary batch y coherencia runtime/config sync
+
+### Known limitations (alpha)
+
+- `duck_lmu.exe` opcional no incluido en el instalador (ducking LMU manual)
+- Requiere clave LLM configurada en `.env` del backend empaquetado
+- Windows x64 + Le Mans Ultimate
+
 ## [0.2.3] - 2026-06-09
 
 ### Added

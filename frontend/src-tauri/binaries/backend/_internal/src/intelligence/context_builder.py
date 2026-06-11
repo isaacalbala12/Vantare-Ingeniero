@@ -7,19 +7,32 @@ Si hay un EventStore configurado, inyecta los top-5 eventos históricos más
 similares a la telemetría actual como contexto RAG.
 """
 
+import asyncio
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from src.intelligence.ticker import generate_ticker
 
 logger = logging.getLogger("vantare.context_builder")
 
 
+def _leader_best_lap(competitors: list[dict]) -> float:
+    leaders = [c for c in competitors if int(c.get("standing_position") or 0) == 1]
+    if leaders:
+        return float(leaders[0].get("lap_time_best") or leaders[0].get("best_lap") or 0)
+    best = 0.0
+    for comp in competitors:
+        lap = float(comp.get("lap_time_best") or comp.get("best_lap") or 0)
+        if lap > 0.1 and (best <= 0.1 or lap < best):
+            best = lap
+    return best
+
+
 def _build_ticker_data(
     snapshot: dict,
-    telemetry_frame: Optional[dict] = None,
-    strategy_advice: Optional[dict] = None,
-    lmu_api: Optional[Any] = None,
+    telemetry_frame: dict | None = None,
+    strategy_advice: dict | None = None,
+    lmu_api: Any | None = None,
 ) -> dict:
     """Construye el diccionario de datos para generate_ticker desde snapshot y fuentes adicionales.
 
@@ -68,8 +81,16 @@ def _build_ticker_data(
     data["brake_wear"] = brake_wear
 
     # Gaps (de telemetry_frame o snapshot)
-    ahead_gap = telemetry_frame.get("time_gap_place_ahead", snapshot.get("gap_ahead", 0)) if telemetry_frame else snapshot.get("gap_ahead", 0)
-    behind_gap = telemetry_frame.get("time_gap_place_behind", snapshot.get("gap_behind", 0)) if telemetry_frame else snapshot.get("gap_behind", 0)
+    ahead_gap = (
+        telemetry_frame.get("time_gap_place_ahead", snapshot.get("gap_ahead", 0))
+        if telemetry_frame
+        else snapshot.get("gap_ahead", 0)
+    )
+    behind_gap = (
+        telemetry_frame.get("time_gap_place_behind", snapshot.get("gap_behind", 0))
+        if telemetry_frame
+        else snapshot.get("gap_behind", 0)
+    )
     data["ahead_gap"] = ahead_gap
     data["behind_gap"] = behind_gap
 
@@ -78,24 +99,51 @@ def _build_ticker_data(
     if telemetry_frame:
         competitors = telemetry_frame.get("competitors", [])
     data["competitors"] = competitors
-    data["total_cars"] = len(competitors)
+    data["total_cars"] = (len(competitors) + 1) if competitors else 0
 
-    # Extraer nombres de rivales de competitors si no hay ahead_name/behind_name
-    if competitors and len(competitors) > 0:
-        comps_sorted = sorted(competitors, key=lambda c: c.get("gap", 999))
-        # El más cercano detrás (gap positivo = detrás de ti)
-        behind = [c for c in comps_sorted if c.get("gap", 0) > 0]
-        # El más cercano adelante (gap negativo o menor que el tuyo... no tenemos posición aquí)
-        # Simplificar: el de menor gap es el rival más cercano (adelante si gap negativo, detrás si positivo)
-        data["behind_name"] = behind[0].get("name", "") if behind else ""
-        data["ahead_name"] = ""  # No detectamos quién va adelante sin standing_position
-    data["ahead_best"] = 0
-    data["behind_best"] = 0
+    player_pos = int(
+        (telemetry_frame.get("standing_position") if telemetry_frame else None)
+        or snapshot.get("position")
+        or snapshot.get("place")
+        or 0
+    )
+    data["position"] = player_pos or data.get("position", 0)
+
+    ahead_name, behind_name = "", ""
+    ahead_best, behind_best = 0.0, 0.0
+    for comp in competitors:
+        if not isinstance(comp, dict):
+            comp = comp.model_dump() if hasattr(comp, "model_dump") else {}
+        name = comp.get("driver_name") or comp.get("name") or ""
+        pos = int(comp.get("standing_position") or comp.get("place") or 0)
+        best = float(comp.get("lap_time_best") or comp.get("best_lap") or 0)
+        if player_pos and pos == player_pos - 1:
+            ahead_name = name
+            ahead_best = best
+        elif player_pos and pos == player_pos + 1:
+            behind_name = name
+            behind_best = best
+
+    data["ahead_name"] = ahead_name
+    data["behind_name"] = behind_name
+    data["ahead_best"] = ahead_best
+    data["behind_best"] = behind_best
     data["delta"] = 0
+    data["leader_best_lap"] = _leader_best_lap(
+        [c if isinstance(c, dict) else (c.model_dump() if hasattr(c, "model_dump") else {}) for c in competitors]
+    )
 
     # Sesión
-    data["session_class"] = telemetry_frame.get("session_class", "GT3") if telemetry_frame else "GT3"
-    data["session_type"] = telemetry_frame.get("session_type", snapshot.get("phase", "RACE")) if telemetry_frame else snapshot.get("phase", "RACE")
+    data["session_class"] = (
+        telemetry_frame.get("player_class") or telemetry_frame.get("session_class", "GT3")
+        if telemetry_frame
+        else "GT3"
+    )
+    data["session_type"] = (
+        telemetry_frame.get("session_type", snapshot.get("phase", "RACE"))
+        if telemetry_frame
+        else snapshot.get("phase", "RACE")
+    )
     data["total_laps"] = telemetry_frame.get("session_laps_left", 0) if telemetry_frame else 0
     data["time_left"] = telemetry_frame.get("session_time_left", 0) if telemetry_frame else 0
 
@@ -120,15 +168,71 @@ def _build_ticker_data(
     return data
 
 
+def _resolve_competitor_context(
+    pilot_question: str,
+    strategy_advice: dict | None,
+) -> str | None:
+    """Pre-resuelve consultas de rivales por nombre en la pregunta del piloto."""
+    if not pilot_question or not strategy_advice:
+        return None
+    competitors = strategy_advice.get("competitors") or []
+    if not competitors:
+        return None
+
+    import re
+
+    from src.intelligence.competitor_queries import CompetitorQuery, CompetitorQueryType, resolve_query
+    from src.intelligence.driver_names import get_driver_by_partial
+
+    match_driver = get_driver_by_partial(pilot_question, competitors)
+    if not match_driver:
+        for token in re.findall(r"[\w']+", pilot_question, flags=re.UNICODE):
+            if len(token) >= 3:
+                match_driver = get_driver_by_partial(token, competitors)
+                if match_driver:
+                    break
+    if match_driver:
+        result = resolve_query(
+            CompetitorQuery(query_type=CompetitorQueryType.BY_NAME, name=match_driver.get("driver_name", "")),
+            competitors,
+        )
+        if result.found:
+            return result.summary
+    return None
+
+
+def _build_sector_context(strategy_service: Any | None = None) -> str | None:
+    if strategy_service is None:
+        return None
+    try:
+        from src.intelligence.sector_analysis import analyze_sectors, format_sector_analysis
+
+        fuel = strategy_service.state.fuel
+        track_length = strategy_service.track.track_length
+        insights = analyze_sectors(
+            fuel.delta_array_raw,
+            fuel.delta_array_last,
+            "Spa-Francorchamps",
+            track_length,
+        )
+        text = format_sector_analysis(insights)
+        return text or None
+    except Exception:
+        return None
+
+
 def build_prompt(
     snapshot: dict,
     trigger_reason: str,
-    pilot_question: Optional[str],
+    pilot_question: str | None,
     templates: Any,
-    event_store: Optional[Any] = None,
-    telemetry_frame: Optional[dict] = None,
-    strategy_advice: Optional[dict] = None,
-    lmu_api: Optional[Any] = None,
+    event_store: Any | None = None,
+    telemetry_frame: dict | None = None,
+    strategy_advice: dict | None = None,
+    lmu_api: Any | None = None,
+    sweary: bool = False,
+    strategy_service: Any | None = None,
+    rag_context: str | None = None,
 ) -> str:
     """Construye el prompt completo para el LLM.
 
@@ -148,9 +252,17 @@ def build_prompt(
     context_dict: dict = {
         "snapshot": snapshot,
         "trigger_reason": trigger_reason,
+        "sweary": sweary,
     }
     if pilot_question:
         context_dict["pilot_question"] = pilot_question
+        competitor_ctx = _resolve_competitor_context(pilot_question, strategy_advice)
+        if competitor_ctx:
+            context_dict["competitor_context"] = competitor_ctx
+
+    sector_ctx = _build_sector_context(strategy_service)
+    if sector_ctx:
+        context_dict["sector_context"] = sector_ctx
 
     # Si hay telemetry_frame, usar ticker en vez de snapshot crudo
     if telemetry_frame is not None:
@@ -160,9 +272,11 @@ def build_prompt(
         context_dict.pop("snapshot", None)
     else:
         # Inyectar RAG: top-5 eventos históricos con telemetría similar
-        rag_context = _build_rag_context(snapshot, event_store)
-        if rag_context:
-            context_dict["rag_context"] = rag_context
+        resolved_rag = rag_context
+        if resolved_rag is None and event_store is not None:
+            resolved_rag = _build_rag_context(snapshot, event_store)
+        if resolved_rag:
+            context_dict["rag_context"] = resolved_rag
 
     # Determinar tier para template
     tier = "FAST"
@@ -177,20 +291,31 @@ def build_prompt(
 def build_prompt_for_question(
     snapshot: dict,
     pilot_question: str,
-    chat_history: Optional[list] = None,
-    templates: Optional[Any] = None,
-    event_store: Optional[Any] = None,
-    telemetry_frame: Optional[dict] = None,
-    strategy_advice: Optional[dict] = None,
-    lmu_api: Optional[Any] = None,
+    chat_history: list | None = None,
+    templates: Any | None = None,
+    event_store: Any | None = None,
+    telemetry_frame: dict | None = None,
+    strategy_advice: dict | None = None,
+    lmu_api: Any | None = None,
+    sweary: bool = False,
+    strategy_service: Any | None = None,
+    rag_context: str | None = None,
 ) -> str:
     """Construye prompt para pregunta directa del piloto con RAG y ticker."""
     context_dict: dict = {
         "snapshot": snapshot,
         "pilot_question": pilot_question,
+        "sweary": sweary,
     }
     if chat_history:
         context_dict["chat_history"] = chat_history
+
+    competitor_ctx = _resolve_competitor_context(pilot_question, strategy_advice)
+    if competitor_ctx:
+        context_dict["competitor_context"] = competitor_ctx
+    sector_ctx = _build_sector_context(strategy_service)
+    if sector_ctx:
+        context_dict["sector_context"] = sector_ctx
 
     # Si hay telemetry_frame, usar ticker en vez de snapshot crudo
     if telemetry_frame is not None:
@@ -200,9 +325,11 @@ def build_prompt_for_question(
         context_dict.pop("snapshot", None)
     else:
         # RAG
-        rag_context = _build_rag_context(snapshot, event_store)
-        if rag_context:
-            context_dict["rag_context"] = rag_context
+        resolved_rag = rag_context
+        if resolved_rag is None and event_store is not None:
+            resolved_rag = _build_rag_context(snapshot, event_store)
+        if resolved_rag:
+            context_dict["rag_context"] = resolved_rag
 
     tier = "FAST"
     if snapshot.get("lap_number", 0) > 0 and (snapshot.get("speed") or snapshot.get("fuel")):
@@ -215,11 +342,22 @@ def build_prompt_for_question(
     return templates.render(context_dict, tier)
 
 
+async def prefetch_rag_context(
+    snapshot: dict,
+    event_store: Any | None = None,
+    top_k: int = 5,
+) -> str | None:
+    """Consulta RAG en un hilo de background para no bloquear asyncio."""
+    if event_store is None:
+        return None
+    return await asyncio.to_thread(_build_rag_context, snapshot, event_store, top_k)
+
+
 def _build_rag_context(
     snapshot: dict,
-    event_store: Optional[Any] = None,
+    event_store: Any | None = None,
     top_k: int = 5,
-) -> Optional[str]:
+) -> str | None:
     """Consulta el EventStore y devuelve un string formateado con los top-k eventos.
 
     Si no hay EventStore o la consulta no devuelve resultados, retorna None.
@@ -247,7 +385,7 @@ def _build_rag_context(
     return "\n".join(lines)
 
 
-def _snapshot_to_frame(snapshot: dict) -> Optional[dict]:
+def _snapshot_to_frame(snapshot: dict) -> dict | None:
     """Convierte un snapshot de LiveContextManager a formato frame para EventStore query."""
     if not snapshot:
         return None

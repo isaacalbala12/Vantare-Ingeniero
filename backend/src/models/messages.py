@@ -63,6 +63,22 @@ class ConfigAckMessage(BaseMessage):
     config: dict[str, Any] = Field(default_factory=dict)
 
 
+class VoicePlaybackStartMessage(BaseMessage):
+    """Backend pygame empezó a reproducir un PlayCommand (overlay UI)."""
+
+    playback_id: str
+    text: str
+    category: str = ""
+    priority: str = "NORMAL"
+    source: str = "engineer"  # spotter | engineer
+
+
+class VoicePlaybackEndMessage(BaseMessage):
+    """Backend pygame terminó (o abortó) un PlayCommand."""
+
+    playback_id: str
+
+
 class AlertMessage(BaseMessage):
     """Alerta determinista instantánea del Spotter (20Hz) que no requiere LLM."""
 

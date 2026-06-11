@@ -1,0 +1,30 @@
+{
+  "ok": true,
+  "port": 8009,
+  "health": {
+    "telemetry_source": "native",
+    "shared_memory_status": "connected",
+    "offline_mode": false,
+    "llm_configured": true
+  },
+  "websocket": {
+    "binary_frames": 64,
+    "json_event_count": 4,
+    "json_events": [
+      "strategy",
+      "config_ack",
+      "config_ack",
+      "config_ack"
+    ],
+    "json_events_sample": [
+      "strategy",
+      "config_ack",
+      "config_ack",
+      "config_ack"
+    ]
+  },
+  "bundle": {
+    "native_telemetry_reader": true,
+    "uses_native_flag": true
+  }
+}

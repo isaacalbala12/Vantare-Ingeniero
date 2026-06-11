@@ -183,7 +183,7 @@ class PilotToolExecutor:
                 engine._emit_voice_response(msg)
             return ToolResult(ok=False, spoken_message=msg)
         if emit_voice:
-            engine._emit_voice_response(summary)
+            engine._emit_competitor_response(summary, payload={"summary": summary})
         return ToolResult(ok=True, spoken_message=summary, data={"summary": summary})
 
     async def _handle_set_braking_zones_mute(

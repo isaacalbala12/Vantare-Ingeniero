@@ -22,9 +22,9 @@ describe("buildConfigUpdatePayload", () => {
     expect(p.spotterRaceStartDelayS).toBe(20);
   });
 
-  it("omits power toggles when not provided", () => {
+  it("omits engineer toggle when not provided; spotter defaults on", () => {
     const p = buildConfigUpdatePayload({ personalityProfileId: "standard" } as any);
-    expect(p.spotterEnabled).toBeUndefined();
+    expect(p.spotterEnabled).toBe(true);
     expect(p.engineerEnabled).toBeUndefined();
   });
 
@@ -35,5 +35,10 @@ describe("buildConfigUpdatePayload", () => {
     } as any);
     expect(p.spotterEnabled).toBe(true);
     expect(p.engineerEnabled).toBe(false);
+  });
+
+  it("includes speakOnlyWhenSpokenTo when boolean", () => {
+    const p = buildConfigUpdatePayload({ speakOnlyWhenSpokenTo: true } as any);
+    expect(p.speakOnlyWhenSpokenTo).toBe(true);
   });
 });

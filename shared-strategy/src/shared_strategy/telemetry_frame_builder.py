@@ -266,6 +266,9 @@ def build_telemetry_frame_from_reader_state(
 
                 fuel_fraction = veh_info.mFuelFraction / 255.0
                 pit_requested = veh_info.mPitState == 1
+                opp_lap = int(veh_info.mTotalLaps + 1)
+                if opp_tele_idx != -1 and opp_tele_idx < len(data.telemetry.telemInfo):
+                    opp_lap = int(data.telemetry.telemInfo[opp_tele_idx].mLapNumber)
 
                 competitors_list.append(
                     CompetitorTelemetry(
@@ -274,7 +277,7 @@ def build_telemetry_frame_from_reader_state(
                         driver_class=safe_str(veh_info.mVehicleClass),
                         standing_position=int(veh_info.mPlace),
                         class_position=int(veh_info.mPlace),
-                        lap_number=int(veh_info.mTotalLaps + 1),
+                        lap_number=opp_lap,
                         lap_distance=safe_float(veh_info.mLapDist),
                         lap_time_best=safe_float(veh_info.mBestLapTime),
                         lap_time_previous=safe_float(veh_info.mLastLapTime),
@@ -320,6 +323,7 @@ def build_telemetry_frame_from_reader_state(
         session_laps_left=session_laps_left,
         lap_number=player.current_lap,
         lap_distance=player.lap_distance,
+        track_length_m=ctx.track.track_length,
         path_lateral=path_lateral,
         lap_time_best=player.best_laptime,
         lap_time_previous=player.last_laptime,

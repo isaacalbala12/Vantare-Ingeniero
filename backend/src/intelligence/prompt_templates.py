@@ -290,3 +290,88 @@ def render(context_dict: dict, tier: str) -> str:
             return f"{system_prompt}\n\nPREGUNTA DEL PILOTO:\n{pilot_question}"
         else:
             return system_prompt
+
+
+PILOT_QUESTION_SYSTEM = (
+    "Eres el ingeniero de radio de Le Mans Ultimate (estilo WEC/F1). "
+    "Responde en español, tono radio, directo. "
+    "Responde SOLO a lo que pregunta el piloto: no recites telemetría no solicitada "
+    "(temperaturas, lista de rivales, clima, desgaste) salvo que lo pida explícitamente. "
+    "Saludos o small talk: UNA frase breve y humana, sin datos de pista. "
+    "Preguntas técnicas: máximo 2 frases con las cifras relevantes. "
+    "Usa únicamente datos del contexto; si falta un dato, dilo en una frase corta sin inventar."
+)
+
+PILOT_PTT_SYSTEM_PROMPT = (
+    "Eres el ingeniero de radio de Le Mans Ultimate. El piloto habla por PTT. "
+    "Elige la tool adecuada si la pregunta encaja; si es conversación abierta no uses tools."
+)
+
+PILOT_PTT_TURN_TWO_PROMPT = (
+    "Resume en UNA frase corta estilo radio lo que acabas de hacer por el piloto."
+)
+
+
+def _tool(name: str, description: str, properties: dict, required: list[str] | None = None) -> dict:
+    return {
+        "type": "function",
+        "function": {
+            "name": name,
+            "description": description,
+            "parameters": {
+                "type": "object",
+                "properties": properties,
+                "required": required or [],
+                "additionalProperties": False,
+            },
+        },
+    }
+
+
+def get_pilot_ptt_tools(include_competitor_query: bool = True) -> list[dict[str, Any]]:
+    tools = [
+        _tool("set_speak_only", "Silenciar ingeniero hasta nueva pregunta o reactivar voz.", {"enabled": {"type": "boolean"}}, ["enabled"]),
+        _tool("set_verbosity", "Cambiar verbosidad: silent, normal, detailed.", {"level": {"type": "string"}}, ["level"]),
+        _tool("spotter_toggle", "Activar o desactivar spotter de proximidad.", {"enabled": {"type": "boolean"}}, ["enabled"]),
+        _tool("get_fuel_status", "Consultar combustible / vueltas restantes.", {}),
+        _tool("get_gap_status", "Consultar gap adelante y detrás.", {}),
+        _tool("get_damage_report", "Informe de daños del monoplaza.", {}),
+        _tool("get_tire_wear", "Desgaste de neumáticos por rueda.", {}),
+        _tool("set_braking_zones_mute", "Silenciar alertas en zonas de frenada.", {"enabled": {"type": "boolean"}}, ["enabled"]),
+        _tool("get_flag_status", "Estado de banderas / safety car.", {}),
+        _tool("get_race_time_remaining", "Tiempo o vueltas restantes de sesión.", {}),
+        _tool("get_pit_window_status", "Estado de ventana de boxes.", {}),
+        _tool("watch_snip", "Vigilar rival activo (snip).", {"action": {"type": "string"}}, ["action"]),
+        _tool("set_pit_fuel", "Configurar litros en menú de boxes.", {"litres": {"type": "number"}}, ["litres"]),
+        _tool("set_pit_tyres", "Configurar compuesto en menú de boxes.", {"compound": {"type": "string"}}, ["compound"]),
+        _tool("monitor_competitor", "Monitorizar rival por índice.", {"action": {"type": "string"}, "driver_index": {"type": "integer"}}, ["action", "driver_index"]),
+    ]
+    if include_competitor_query:
+        tools.append(COMPETITOR_QUERY_TOOL)
+    return tools
+
+
+def render_pilot_question_messages(context_dict: dict, tier: str = "FAST") -> list[dict[str, str]]:
+    """System + user messages for PTT free-form (sin tabla diccionario completa)."""
+    pilot_question = context_dict.get("pilot_question", "")
+    user_parts: list[str] = []
+    ptt_context = context_dict.get("ptt_context")
+    ticker_text = context_dict.get("ticker_text")
+    snapshot = context_dict.get("snapshot") or {}
+    if ptt_context:
+        user_parts.append(f"Contexto:\n{ptt_context}")
+    elif ticker_text:
+        user_parts.append(f"Telemetría:\n{ticker_text}")
+    elif snapshot:
+        lap = snapshot.get("lap_number") or snapshot.get("lap") or 0
+        pos = snapshot.get("place") or snapshot.get("position") or snapshot.get("standing_position") or "?"
+        fuel = snapshot.get("fuel_in_tank") or snapshot.get("fuel") or "?"
+        user_parts.append(f"Resumen: vuelta {lap}, P{pos}, fuel {fuel}L.")
+    if pilot_question:
+        user_parts.append(f"Pregunta del piloto: {pilot_question}")
+    style = SWEARY_STYLE_HINT if context_dict.get("sweary") else CLEAN_STYLE_HINT
+    system = f"{PILOT_QUESTION_SYSTEM}\n{style}"
+    return [
+        {"role": "system", "content": system},
+        {"role": "user", "content": "\n\n".join(user_parts) if user_parts else pilot_question},
+    ]

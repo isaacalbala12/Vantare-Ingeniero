@@ -159,7 +159,7 @@ def _cap_radio_sentences(text: str, max_sentences: int = 2) -> str:
     return " ".join(parts[:max_sentences]).strip()
 
 
-def sanitize_llm_speech(text: str, *, finalize: bool = True) -> str:
+def sanitize_llm_speech(text: str, *, finalize: bool = True, preserve_trailing_space: bool = False) -> str:
     """Devuelve solo texto apto para radio (sin chain-of-thought)."""
     if not text:
         return ""
@@ -174,11 +174,15 @@ def sanitize_llm_speech(text: str, *, finalize: bool = True) -> str:
         return ""
 
     if not finalize:
-        # En stream: no emitir razonamiento ni bloques entre comillas incompletos.
-        partial = _strip_wrapping_quotes(cleaned.strip())
-        if _looks_like_reasoning_blob(partial):
+        partial = cleaned.rstrip("\r\n")
+        unquoted = partial
+        while len(unquoted) >= 2 and unquoted[0] in "\"'«»" and unquoted[-1] in "\"'«»":
+            unquoted = unquoted[1:-1]
+        if _looks_like_reasoning_blob(unquoted.rstrip(" \t")):
             return ""
-        return partial
+        if not preserve_trailing_space:
+            unquoted = unquoted.rstrip(" \t")
+        return unquoted
 
     collapsed = _collapse_duplicate_quoted_blocks(cleaned)
     if collapsed != cleaned and collapsed:

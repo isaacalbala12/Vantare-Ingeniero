@@ -100,6 +100,24 @@ class TestTTSEndpoint:
             assert len(received_text) == 2000
             assert not received_text.endswith("...")
 
+    def test_tts_header_strips_newlines(self):
+        """X-Response-Text must not contain CR/LF (invalid HTTP header value)."""
+        mock_edge = MagicMock()
+
+        async def fake_synthesize(text):
+            return b"MP3 audio data"
+
+        mock_edge.synthesize = fake_synthesize
+
+        app = make_app_with_tts_services(edge_service=mock_edge)
+        text_with_newlines = "El usuario me está presentando\nun escenario.\n\nRespuesta final."
+        with TestClient(app) as client:
+            response = client.get("/tts", params={"text": text_with_newlines})
+            assert response.status_code == 200
+            header = response.headers.get("X-Response-Text", "")
+            assert "\n" not in header
+            assert "\r" not in header
+
     def test_tts_returns_500_when_all_backends_unavailable(self):
         """GET /tts cuando ningún backend TTS está disponible debe devolver 500."""
         app = make_app_with_tts_services(edge_service=None, piper_service=None)

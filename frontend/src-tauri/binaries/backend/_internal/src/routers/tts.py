@@ -1,7 +1,7 @@
 import logging
-from fastapi import APIRouter, Request, HTTPException
-from fastapi.responses import Response
 
+from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import Response
 from src.config import settings
 
 logger = logging.getLogger("vantare.tts_router")
@@ -78,12 +78,22 @@ async def _try_synthesize(service, backend: str, text: str):
         return None, None
 
 
+def _header_safe_text(text: str, max_len: int = 500) -> str:
+    """Metadata header only; synthesis keeps full Unicode."""
+    import re
+
+    collapsed = re.sub(r"[\r\n\t]+", " ", text.strip())
+    collapsed = re.sub(r"[\x00-\x1f\x7f]+", " ", collapsed)
+    collapsed = re.sub(r"  +", " ", collapsed)
+    return collapsed[:max_len].encode("ascii", "replace").decode("ascii")
+
+
 def _build_response(audio_bytes: bytes, media_type: str, text: str) -> Response:
     return Response(
         content=audio_bytes,
         media_type=media_type,
         headers={
-            "X-Response-Text": text.strip()[:500],
+            "X-Response-Text": _header_safe_text(text),
             "Content-Length": str(len(audio_bytes)),
         },
     )

@@ -7,6 +7,14 @@ Registro de decisiones técnicas relevantes para humanos y agentes IA.
 | [ADR-001](ADR-001-electron-desktop-shell.md) | Electron como shell desktop | Accepted |
 | [ADR-002](ADR-002-github-releases-auto-update.md) | Distribución GitHub Releases + electron-updater | Accepted |
 | [ADR-003](ADR-003-native-telemetry-windows.md) | Telemetría nativa Windows sin sidecar | Accepted |
+| [ADR-004](ADR-004-dual-process-voice-architecture.md) | Monolito + audio worker (R1) | Revised |
+
+## Planes de implementación activos
+
+| Plan | Descripción |
+|------|-------------|
+| [2026-06-07-monolith-voice-beta-rearchitecture.md](../superpowers/plans/2026-06-07-monolith-voice-beta-rearchitecture.md) | **Plan maestro** — 23 tasks TDD punta a punta |
+| [2026-06-07-rearchitecture-decisions-record.md](../architecture/2026-06-07-rearchitecture-decisions-record.md) | Registro hallazgos + acuerdos |
 
 ## Plantilla
 

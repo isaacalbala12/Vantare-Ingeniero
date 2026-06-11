@@ -9,10 +9,10 @@ Formato de cada registro:
 
 Thread-safe mediante threading.Lock.
 """
+
 import json
 import os
 import threading
-from typing import List
 
 # Ruta base para datos persistentes (relativa a backend/)
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "data")
@@ -24,7 +24,7 @@ class HistoryStore:
 
     def __init__(self, auto_load: bool = True) -> None:
         self._lock = threading.Lock()
-        self._history: List[dict] = []
+        self._history: list[dict] = []
         if auto_load:
             self.load()
 
@@ -51,10 +51,12 @@ class HistoryStore:
             for i, existing in enumerate(self._history):
                 if existing["lap"] == lap:
                     self._history[i] = record
-                    return
-            self._history.append(record)
+                    break
+            else:
+                self._history.append(record)
+        self.save()
 
-    def get_history(self) -> List[dict]:
+    def get_history(self) -> list[dict]:
         """Devuelve una copia del historial completo ordenado por vuelta."""
         with self._lock:
             return sorted(self._history, key=lambda r: r["lap"])
@@ -69,11 +71,13 @@ class HistoryStore:
     # ------------------------------------------------------------------
 
     def save(self) -> None:
-        """Persiste el historial actual a disco como JSON."""
+        """Persiste el historial actual a disco como JSON (write atómico)."""
         with self._lock:
             os.makedirs(DATA_DIR, exist_ok=True)
-            with open(SESSION_FILE, "w", encoding="utf-8") as f:
+            tmp_path = f"{SESSION_FILE}.tmp"
+            with open(tmp_path, "w", encoding="utf-8") as f:
                 json.dump(self._history, f, indent=2, ensure_ascii=False)
+            os.replace(tmp_path, SESSION_FILE)
 
     def load(self) -> None:
         """Carga el historial desde disco (si existe)."""
@@ -81,7 +85,7 @@ class HistoryStore:
             self._history = []
             return
         try:
-            with open(SESSION_FILE, "r", encoding="utf-8") as f:
+            with open(SESSION_FILE, encoding="utf-8") as f:
                 data = json.load(f)
             if isinstance(data, list):
                 self._history = data

@@ -56,9 +56,10 @@ def main() -> None:
 
     print("=== Verificación pipeline audio + triggers ===\n")
 
+    print("[0/4] Voice contract gate (VC-A/B/P/C/Q/R)...")
+    run([sys.executable, str(ROOT / "scripts" / "verify_voice_contract.py")], ROOT)
 
-
-    print("[1/3] Backend pytest (matriz + contrato spotter + engine + alpha parity)...")
+    print("\n[1/4] Backend pytest (matriz + contrato spotter + engine + alpha parity)...")
 
     run(
 
@@ -106,6 +107,8 @@ def main() -> None:
 
             "tests/test_braking_zones_mute.py",
 
+            "tests/test_voice_contract_backend.py",
+
             "-v",
 
             "--tb=short",
@@ -118,7 +121,7 @@ def main() -> None:
 
 
 
-    print("\n[2/3] Frontend vitest (matriz + pipeline integración)...")
+    print("\n[2/4] Frontend vitest (matriz + pipeline integración)...")
 
     run(
 
@@ -146,6 +149,14 @@ def main() -> None:
 
             "spotterPipeline.integration.test.ts",
 
+            "voiceContractMatrix.test.ts",
+
+            "voiceContractPtt.test.ts",
+
+            "ttsQueue.contract.test.ts",
+
+            "configMigration.voice.test.ts",
+
             "--run",
 
         ],
@@ -156,7 +167,7 @@ def main() -> None:
 
 
 
-    print("\n[3/3] Spotter pipeline smoke...")
+    print("\n[3/4] Spotter pipeline smoke...")
 
     run([sys.executable, str(ROOT / "scripts" / "verify_spotter_pipeline.py")], ROOT)
 

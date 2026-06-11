@@ -131,6 +131,7 @@ def test_crewchief_position_via_game_state_loop_not_commentary_batch():
 
     sent = []
     engine = IntelligenceEngine(broadcast_callback=sent.append)
+    engine.apply_runtime_config({"verbosityLevel": "normal", "engineerEnabled": True})
     engine.crewchief_suite = CrewChiefEventSuite([PositionEvent()], engine=engine)
     loop = CrewChiefGameStateLoop(engine=engine)
 

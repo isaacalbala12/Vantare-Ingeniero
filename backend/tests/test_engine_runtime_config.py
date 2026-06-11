@@ -62,10 +62,13 @@ def test_apply_runtime_config_speak_only_when_spoken_to():
 def test_apply_runtime_config_power_toggles():
     sent = []
     eng = IntelligenceEngine(broadcast_callback=sent.append)
-    spotter = SpotterService(broadcast_callback=lambda m: None)
+    spotter = SpotterService(broadcast_callback=lambda m: None, enabled=True)
     eng.set_spotter_service(spotter)
     eng.apply_runtime_config({"engineerEnabled": False, "spotterEnabled": False})
     assert eng.engineer_enabled is False
+    # config_update con spotterEnabled=false no apaga (solo spotter_command / toggle explícito)
+    assert spotter.enabled is True
+    eng.apply_spotter_toggle(False, emit_alert=False)
     assert spotter.enabled is False
     snap = eng.runtime_config_snapshot()
     assert snap["engineerEnabled"] is False

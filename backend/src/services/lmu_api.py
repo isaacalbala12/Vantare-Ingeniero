@@ -12,12 +12,44 @@ logger = logging.getLogger("vantare.lmu_api")
 _weather_cache: dict = {}
 _strategy_usage_cache: dict = {}
 _garage_wear_cache: dict = {}
+_session_settings_cache: dict = {}
 
 _weather_updated: float = 0.0
 _strategy_updated: float = 0.0
 _garage_updated: float = 0.0
+_session_settings_updated: float = 0.0
 
 _cache_lock = Lock()
+
+
+def lmu_weather_scalar(node: object, default: float = 0.0) -> float:
+    """Extrae escalar de campos REST LMU ({currentValue, stringValue}) o planos."""
+    if isinstance(node, dict):
+        node = node.get("currentValue", default)
+    try:
+        return float(node)
+    except (TypeError, ValueError):
+        return default
+
+
+def _normalize_weather_cache(raw: dict) -> dict:
+    """Normaliza nodos anidados de clima a escalares float."""
+    normalized: dict = {}
+    for session_key, session_data in raw.items():
+        if not isinstance(session_data, dict):
+            normalized[session_key] = session_data
+            continue
+        session_out: dict = {}
+        for node_key, node_data in session_data.items():
+            if isinstance(node_data, dict):
+                session_out[node_key] = {
+                    field: lmu_weather_scalar(value)
+                    for field, value in node_data.items()
+                }
+            else:
+                session_out[node_key] = lmu_weather_scalar(node_data)
+        normalized[session_key] = session_out
+    return normalized
 
 
 def get_weather() -> dict:
@@ -49,6 +81,12 @@ def get_garage_wear() -> dict:
         return _garage_wear_cache.copy()
 
 
+def get_session_settings() -> dict:
+    """Devuelve ajustes de sesión LMU cacheados (SESSSET_*). Thread-safe."""
+    with _cache_lock:
+        return _session_settings_cache.copy()
+
+
 def get_additional_data(category: str) -> dict:
     """Devuelve datos de cache de forma thread-safe y retrocompatible.
 
@@ -69,6 +107,8 @@ def get_additional_data(category: str) -> dict:
             # Extrae el desgaste aerodinámico de wearables
             aero = _garage_wear_cache.get("wearables", {}).get("body", {}).get("aero", 0.0)
             return {"aero": aero}
+        elif category == "session_settings":
+            return _session_settings_cache.copy()
         return {}
 
 
@@ -164,7 +204,7 @@ async def poll_api() -> None:
                         _garage_updated
                     with _cache_lock:
                         if new_weather is not None:
-                            _weather_cache = new_weather
+                            _weather_cache = _normalize_weather_cache(new_weather)
                             _weather_updated = current_time
                         if new_strategy is not None:
                             _strategy_usage_cache = new_strategy

@@ -275,14 +275,15 @@ class TestPilotQuestionMessages:
         messages = render_pilot_question_messages(
             {
                 "pilot_question": "¿Cómo va el fuel?",
-                "ticker_text": "DRV:P3|L12|F:40.0L",
+                "ptt_context": "Vuelta 12, P3. Combustible 40L.",
             },
             "FAST",
         )
         assert messages[0]["role"] == "system"
         assert "Le Mans Ultimate" in messages[0]["content"]
+        assert "SOLO a lo que pregunta" in messages[0]["content"]
         assert messages[1]["role"] == "user"
-        assert "DRV:P3" in messages[1]["content"]
+        assert "Combustible 40L" in messages[1]["content"]
         assert "¿Cómo va el fuel?" in messages[1]["content"]
         assert "Tabla Diccionario" not in messages[0]["content"]
 

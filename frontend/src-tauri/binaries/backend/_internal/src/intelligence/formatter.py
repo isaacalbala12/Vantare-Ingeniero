@@ -9,7 +9,7 @@ L{vuelta}|P{pos}|F{combustible}|T{FL/FR/RL/RR}|SC{S/N}|YF{S/N}|G{+ahead/-behind}
 Regla especial: si lap ≤ 3, se omite el campo T (neumáticos no representativos).
 """
 
-from typing import Any, Optional
+from typing import Any
 
 
 def format_event_text(frame: dict, event_type: str, lap: int) -> str:

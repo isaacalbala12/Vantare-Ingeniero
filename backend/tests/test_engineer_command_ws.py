@@ -22,20 +22,24 @@ def engineer_ws_app():
     return app, engine
 
 
+def _wait_config_ack(ws, *, max_messages: int = 12) -> dict | None:
+    for _ in range(max_messages):
+        msg = ws.receive_json()
+        if msg.get("event") == "config_ack":
+            return msg
+    return None
+
+
 def test_engineer_command_disable(engineer_ws_app):
     app, engine = engineer_ws_app
+    engine.engineer_enabled = True
     client = TestClient(app)
     with client.websocket_connect("/ws") as ws:
         ws.send_json({"event": "engineer_command", "data": {"action": "disable"}})
-        alert = None
-        for _ in range(3):
-            msg = ws.receive_json()
-            if msg["event"] == "alert":
-                alert = msg
-                break
-        assert alert is not None
+        ack = _wait_config_ack(ws)
+        assert ack is not None
         assert engine.engineer_enabled is False
-        assert "desactivado" in alert["data"]["message"].lower()
+        assert ack["data"]["config"]["engineerEnabled"] is False
 
 
 def test_engineer_command_enable(engineer_ws_app):
@@ -44,12 +48,7 @@ def test_engineer_command_enable(engineer_ws_app):
     client = TestClient(app)
     with client.websocket_connect("/ws") as ws:
         ws.send_json({"event": "engineer_command", "data": {"action": "enable"}})
-        alert = None
-        for _ in range(3):
-            msg = ws.receive_json()
-            if msg["event"] == "alert":
-                alert = msg
-                break
-        assert alert is not None
+        ack = _wait_config_ack(ws)
+        assert ack is not None
         assert engine.engineer_enabled is True
-        assert "activado" in alert["data"]["message"].lower()
+        assert ack["data"]["config"]["engineerEnabled"] is True

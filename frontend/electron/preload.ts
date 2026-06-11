@@ -43,4 +43,10 @@ contextBridge.exposeInMainWorld("vantare", {
     ipcRenderer.on("desktop-update:status", listener);
     return () => ipcRenderer.removeListener("desktop-update:status", listener);
   },
+  publishOverlayState: (payload: unknown) => ipcRenderer.send("overlay:publishState", payload),
+  subscribeOverlayState: (handler: (payload: unknown) => void) => {
+    const listener = (_event: unknown, payload: unknown) => handler(payload);
+    ipcRenderer.on("overlay:state", listener);
+    return () => ipcRenderer.removeListener("overlay:state", listener);
+  },
 });

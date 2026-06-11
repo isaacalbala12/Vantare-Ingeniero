@@ -371,3 +371,49 @@ class TestSpotterEvaluateTick:
         """Sin alertas, no debe haber broadcasts."""
         spotter.evaluate_tick(normal_tick)
         assert len(broadcast_messages) == 0
+
+
+class TestSpotterImpactFallback:
+    """LMU a veces deja mLastImpact* en 0; el spotter usa aceleración/dent como respaldo."""
+
+    def test_accel_spike_triggers_damage_when_impact_fields_empty(self, spotter):
+        tick = {
+            "lap_number": 3,
+            "session_type": "practice",
+            "in_pits": False,
+            "last_impact_et": 0.0,
+            "last_impact_magnitude": 0.0,
+            "local_accel_x": 0.0,
+            "local_accel_y": 0.0,
+            "local_accel_z": -150.0,
+            "dent_severity_max": 0,
+            "damage_aero": 0.0,
+            "detached": False,
+            "vel_x": 20.0,
+            "vel_z": 0.0,
+            "competitors": [],
+        }
+        spotter._race_start_at = 0
+        alerts = spotter.evaluate(tick)
+        assert any(a.category == "damage" for a in alerts)
+
+    def test_dent_increase_triggers_damage(self, spotter):
+        tick = {
+            "lap_number": 4,
+            "session_type": "practice",
+            "in_pits": False,
+            "last_impact_et": 0.0,
+            "last_impact_magnitude": 0.0,
+            "local_accel_x": 0.0,
+            "local_accel_y": 0.0,
+            "local_accel_z": -5.0,
+            "dent_severity_max": 1,
+            "damage_aero": 10.0,
+            "detached": False,
+            "vel_x": 20.0,
+            "vel_z": 0.0,
+            "competitors": [],
+        }
+        spotter._race_start_at = 0
+        alerts = spotter.evaluate(tick)
+        assert any(a.category == "damage" for a in alerts)

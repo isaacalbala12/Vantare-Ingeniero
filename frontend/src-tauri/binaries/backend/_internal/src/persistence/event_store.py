@@ -8,19 +8,17 @@ Al cerrar sesión, la colección se borra (no hay persistencia entre sesiones).
 La feature v1.1 (recopilación centralizada) exportará los datos antes de borrar.
 """
 
+import contextlib
 import logging
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import chromadb
-from chromadb.api.types import EmbeddingFunction, Documents, Embeddings
-
+from chromadb.api.types import Documents, EmbeddingFunction, Embeddings
 from src.intelligence.formatter import format_event_text
 
 logger = logging.getLogger("vantare.event_store")
-
-
 
 
 class _E5EmbeddingFunction(EmbeddingFunction):
@@ -39,6 +37,7 @@ class _E5EmbeddingFunction(EmbeddingFunction):
         logger.info("Cargando modelo de embeddings multilingual-e5-large...")
         start = time.monotonic()
         from sentence_transformers import SentenceTransformer
+
         self._model = SentenceTransformer(
             "intfloat/multilingual-e5-large",
             device="cpu",
@@ -75,9 +74,9 @@ class EventStore:
         # Resolve and normalize the path to prevent path traversal
         self._persist_path = str(Path(persist_path).resolve().expanduser())
         self._collection_name = collection_name
-        self._client: Optional[chromadb.Client] = None
-        self._collection: Optional[Any] = None
-        self._current_race_id: Optional[str] = None
+        self._client: chromadb.Client | None = None
+        self._collection: Any | None = None
+        self._current_race_id: str | None = None
         self._embedding_fn = _E5EmbeddingFunction()
 
     # --- Lifecycle ---
@@ -93,10 +92,8 @@ class EventStore:
         self._client = chromadb.PersistentClient(path=self._persist_path)
 
         # Eliminar colección anterior si existe (limpieza)
-        try:
+        with contextlib.suppress(ValueError, chromadb.errors.NotFoundError):
             self._client.delete_collection(self._collection_name)
-        except (ValueError, chromadb.errors.NotFoundError):
-            pass  # No existía
 
         self._collection = self._client.create_collection(
             name=self._collection_name,
@@ -105,7 +102,8 @@ class EventStore:
         )
         logger.info(
             "EventStore inicializado: race_id=%s, persist_path=%s",
-            race_id, self._persist_path,
+            race_id,
+            self._persist_path,
         )
 
     def clear(self) -> None:
@@ -118,8 +116,8 @@ class EventStore:
                 try:
                     self._client.delete_collection(self._collection_name)
                     logger.info("Colección ChromaDB eliminada")
-                except (ValueError, chromadb.errors.NotFoundError, chromadb.errors.InternalError):
-                    pass
+                except (ValueError, chromadb.errors.NotFoundError, chromadb.errors.InternalError) as exc:
+                    logger.debug("ChromaDB collection already absent during clear: %s", exc)
         except Exception as e:
             logger.warning("Error al limpiar ChromaDB: %s", e)
         self._collection = None
@@ -147,13 +145,15 @@ class EventStore:
         self._collection.add(
             documents=[text],
             ids=[event_id],
-            metadatas=[{
-                "type": event_type,
-                "lap": lap,
-                "timestamp": now,
-                "race_id": self._current_race_id or "",
-                "session_type": frame.get("session_type", "race"),
-            }],
+            metadatas=[
+                {
+                    "type": event_type,
+                    "lap": lap,
+                    "timestamp": now,
+                    "race_id": self._current_race_id or "",
+                    "session_type": frame.get("session_type", "race"),
+                }
+            ],
         )
 
     def store_events_batch(self, frames: list[tuple[dict, str, int]]) -> None:
@@ -175,13 +175,15 @@ class EventStore:
             text = format_event_text(frame, event_type, lap)
             documents.append(text)
             ids.append(f"{event_type}_{lap}_{int(now * 1000 + len(ids))}")
-            metadatas.append({
-                "type": event_type,
-                "lap": lap,
-                "timestamp": now,
-                "race_id": race_id,
-                "session_type": frame.get("session_type", "race"),
-            })
+            metadatas.append(
+                {
+                    "type": event_type,
+                    "lap": lap,
+                    "timestamp": now,
+                    "race_id": race_id,
+                    "session_type": frame.get("session_type", "race"),
+                }
+            )
 
         self._collection.add(
             documents=documents,
@@ -218,13 +220,15 @@ class EventStore:
         output: list[dict] = []
         for i in range(len(results["ids"][0])):
             meta = results["metadatas"][0][i] if results["metadatas"] else {}
-            output.append({
-                "text": results["documents"][0][i] if results["documents"] else "",
-                "type": meta.get("type", "unknown"),
-                "lap": meta.get("lap", 0),
-                "timestamp": meta.get("timestamp", 0.0),
-                "distance": results["distances"][0][i] if results["distances"] else 0.0,
-            })
+            output.append(
+                {
+                    "text": results["documents"][0][i] if results["documents"] else "",
+                    "type": meta.get("type", "unknown"),
+                    "lap": meta.get("lap", 0),
+                    "timestamp": meta.get("timestamp", 0.0),
+                    "distance": results["distances"][0][i] if results["distances"] else 0.0,
+                }
+            )
 
         return output
 
@@ -236,5 +240,5 @@ class EventStore:
             return 0
         return self._collection.count()
 
-    def get_current_race_id(self) -> Optional[str]:
+    def get_current_race_id(self) -> str | None:
         return self._current_race_id

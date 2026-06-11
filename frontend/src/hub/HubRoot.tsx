@@ -165,7 +165,7 @@ export function HubRoot() {
     playBeep(false);
     const wavBlob = stopCapture();
     await stopSpeechRecognition();
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     const config = useAppStore.getState().config;
     const baseUrl = `http://${config.vllmIP}:${config.serverPort}`;

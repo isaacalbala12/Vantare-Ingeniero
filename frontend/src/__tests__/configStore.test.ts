@@ -40,7 +40,7 @@ describe("AppStore", () => {
         alerts: [],
       },
       config: {
-        vllmIP: "localhost",
+        vllmIP: "127.0.0.1",
         serverPort: 8008,
         micDevice: "default",
         speakerDevice: "default",
@@ -48,7 +48,8 @@ describe("AppStore", () => {
         sensitivity: 50,
         pttHotkey: "Ctrl+Shift+P",
         pttStopHotkey: "Ctrl+Shift+P",
-        wakeWordEnabled: true,
+        wakeWordEnabled: false,
+        speakOnlyWhenSpokenTo: true,
       },
     });
     localStorage.clear();

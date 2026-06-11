@@ -1,4 +1,42 @@
+from enum import Enum
 from pydantic import BaseModel, Field
+
+class TyreCompoundType(str, Enum):
+    SOFT = "soft"
+    MEDIUM = "medium"
+    HARD = "hard"
+    WET = "wet"
+
+class TyreDimensions(BaseModel):
+    width_mm: float
+    diameter_mm: float
+    compound_type: TyreCompoundType
+
+class CarDimensions(BaseModel):
+    width_m: float
+    length_m: float
+    wheelbase_m: float
+    tyre_data: list[TyreDimensions] = Field(default_factory=list)
+
+_CLASS_WIDTHS: dict[str, float] = {
+    "Hypercar": 2.0,
+    "LMH": 2.0,
+    "LMP2": 1.9,
+    "LMP3": 1.95,
+    "GT3": 2.05,
+    "GTE": 2.05,
+}
+
+class VehicleClassInfo(BaseModel):
+    class_name: str = ""
+    typical_width_m: float = 2.0
+
+    def get_width(self, class_name: str) -> float:
+        return _CLASS_WIDTHS.get(class_name, 2.0)
+
+    def get_vehicle_width(self, vehicle_name: str, class_name: str = "") -> float:
+        from shared_strategy.vehicle_lookup import get_vehicle_width
+        return get_vehicle_width(vehicle_name, self.get_width(class_name))
 
 class CompetitorTelemetry(BaseModel):
     driver_index: int
@@ -15,14 +53,21 @@ class CompetitorTelemetry(BaseModel):
     estimated_time_into_lap: float
     speed: float  # m/s
     fuel_capacity_fraction: float  # 0.0 a 1.0
+    pos_x: float = 0.0
+    pos_y: float = 0.0
+    pos_z: float = 0.0
+    path_lateral: float = 0.0
 
 class TelemetryFrame(BaseModel):
     # Sesión y Tiempos
     session_type: str  # "practice", "qualifying", "race"
+    session_type_int: int = 0  # mSession crudo LMU (0-13); fuente autoritativa para gating
     session_time_left: float  # segundos
     session_laps_left: float
     lap_number: int
     lap_distance: float  # metros acumulados en la vuelta actual
+    track_length_m: float = 0.0  # longitud de circuito (mLapDist scoring)
+    path_lateral: float = 0.0  # offset lateral respecto a la línea de racing (LMU mPathLateral)
     lap_time_best: float
     lap_time_previous: float
     is_invalid_lap: bool
@@ -32,8 +77,16 @@ class TelemetryFrame(BaseModel):
     
     # Banderas de la Sesión
     yellow_flag_active: bool
+    local_yellow_active: bool = False
     safety_car_active: bool
     full_course_yellow_active: bool
+    blue_flag_active: bool = False
+    session_stopped: bool = False
+    session_over: bool = False
+
+    # Piloto y penalizaciones
+    driver_name: str = ""
+    num_penalties: int = 0
 
     # Combustible e Híbrido
     fuel_in_tank: float  # litros
@@ -67,6 +120,43 @@ class TelemetryFrame(BaseModel):
     pos_x: float
     pos_y: float
     pos_z: float
+    vel_x: float = 0.0
+    vel_y: float = 0.0
+    vel_z: float = 0.0
+    ori_fwd_x: float = 0.0
+    ori_fwd_z: float = 0.0
+    player_class: str = ""
+    vehicle_name: str = ""
+    standing_position: int = 1
+    # Gaps nativos LMU (coche adelante/detrás en pista, todas las clases)
+    time_gap_car_ahead: float = 0.0
+    time_gap_car_behind: float = 0.0
+    time_gap_place_ahead: float = 0.0
+    time_gap_place_behind: float = 0.0
+
+    # Daños / impactos (LMU shared memory)
+    damage_aero: float = 0.0
+    suspension_damage: float = 0.0
+    dent_severity_avg: float = 0.0
+    dent_severity_max: int = 0
+    detached: bool = False
+    last_impact_et: float = 0.0
+    last_impact_magnitude: float = 0.0
+
+    # Wave 1 — telemetría LMU adicional
+    raining_intensity: float = 0.0
+    yellow_flag_state: int = 0
+    local_accel_x: float = 0.0
+    local_accel_y: float = 0.0
+    local_accel_z: float = 0.0
+    tyre_flat_fl: bool = False
+    tyre_flat_fr: bool = False
+    tyre_flat_rl: bool = False
+    tyre_flat_rr: bool = False
+    track_limits_steps: int = 0
+    current_sector: int = 0  # mSector LMU: 0=sector3, 1=sector1, 2=sector2
+    game_phase: int = 5
+    sector_flags: list[int] = Field(default_factory=list)
 
     # Competidores
     competitors: list[CompetitorTelemetry] = Field(default_factory=list)
@@ -161,6 +251,8 @@ class CompetitorHistoryState(BaseModel):
 
 class CompetitorTrackerState(BaseModel):
     competitors: dict[int, CompetitorHistoryState] = Field(default_factory=dict)  # Mapeado por driver_index
+    monitored: list[int] = Field(default_factory=list)  # driver_index en monitoreo activo (max 3)
+    monitor_snapshots: dict[int, dict] = Field(default_factory=dict)  # último estado por rival monitorizado
 
 class StrategyState(BaseModel):
     fuel: FuelState = Field(default_factory=FuelState)
@@ -208,6 +300,9 @@ class CompetitorPace(BaseModel):
     driver_class: str
     standing_position: int
     class_position: int
+    track_position: int = 0
+    lap_number: int = 0
+    lap_distance: float = 0.0
     gap_to_player: float
     best_lap: float
     average_lap: float

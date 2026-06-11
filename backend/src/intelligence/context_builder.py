@@ -16,6 +16,18 @@ from src.intelligence.ticker import generate_ticker
 logger = logging.getLogger("vantare.context_builder")
 
 
+def _leader_best_lap(competitors: list[dict]) -> float:
+    leaders = [c for c in competitors if int(c.get("standing_position") or 0) == 1]
+    if leaders:
+        return float(leaders[0].get("lap_time_best") or leaders[0].get("best_lap") or 0)
+    best = 0.0
+    for comp in competitors:
+        lap = float(comp.get("lap_time_best") or comp.get("best_lap") or 0)
+        if lap > 0.1 and (best <= 0.1 or lap < best):
+            best = lap
+    return best
+
+
 def _build_ticker_data(
     snapshot: dict,
     telemetry_frame: dict | None = None,
@@ -87,23 +99,46 @@ def _build_ticker_data(
     if telemetry_frame:
         competitors = telemetry_frame.get("competitors", [])
     data["competitors"] = competitors
-    data["total_cars"] = len(competitors)
+    data["total_cars"] = (len(competitors) + 1) if competitors else 0
 
-    # Extraer nombres de rivales de competitors si no hay ahead_name/behind_name
-    if competitors and len(competitors) > 0:
-        comps_sorted = sorted(competitors, key=lambda c: c.get("gap", 999))
-        # El más cercano detrás (gap positivo = detrás de ti)
-        behind = [c for c in comps_sorted if c.get("gap", 0) > 0]
-        # El más cercano adelante (gap negativo o menor que el tuyo... no tenemos posición aquí)
-        # Simplificar: el de menor gap es el rival más cercano (adelante si gap negativo, detrás si positivo)
-        data["behind_name"] = behind[0].get("name", "") if behind else ""
-        data["ahead_name"] = ""  # No detectamos quién va adelante sin standing_position
-    data["ahead_best"] = 0
-    data["behind_best"] = 0
+    player_pos = int(
+        (telemetry_frame.get("standing_position") if telemetry_frame else None)
+        or snapshot.get("position")
+        or snapshot.get("place")
+        or 0
+    )
+    data["position"] = player_pos or data.get("position", 0)
+
+    ahead_name, behind_name = "", ""
+    ahead_best, behind_best = 0.0, 0.0
+    for comp in competitors:
+        if not isinstance(comp, dict):
+            comp = comp.model_dump() if hasattr(comp, "model_dump") else {}
+        name = comp.get("driver_name") or comp.get("name") or ""
+        pos = int(comp.get("standing_position") or comp.get("place") or 0)
+        best = float(comp.get("lap_time_best") or comp.get("best_lap") or 0)
+        if player_pos and pos == player_pos - 1:
+            ahead_name = name
+            ahead_best = best
+        elif player_pos and pos == player_pos + 1:
+            behind_name = name
+            behind_best = best
+
+    data["ahead_name"] = ahead_name
+    data["behind_name"] = behind_name
+    data["ahead_best"] = ahead_best
+    data["behind_best"] = behind_best
     data["delta"] = 0
+    data["leader_best_lap"] = _leader_best_lap(
+        [c if isinstance(c, dict) else (c.model_dump() if hasattr(c, "model_dump") else {}) for c in competitors]
+    )
 
     # Sesión
-    data["session_class"] = telemetry_frame.get("session_class", "GT3") if telemetry_frame else "GT3"
+    data["session_class"] = (
+        telemetry_frame.get("player_class") or telemetry_frame.get("session_class", "GT3")
+        if telemetry_frame
+        else "GT3"
+    )
     data["session_type"] = (
         telemetry_frame.get("session_type", snapshot.get("phase", "RACE"))
         if telemetry_frame

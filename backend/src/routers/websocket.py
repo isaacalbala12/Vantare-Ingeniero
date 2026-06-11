@@ -4,8 +4,9 @@ import logging
 import time
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-from src.intelligence.spotter_adapter import frame_to_spotter_tick
-from src.models.messages import BaseMessage
+from src.app_runtime.runtime import native_telemetry_enabled
+from src.config import settings
+from src.models.messages import BaseMessage, ConfigAckMessage
 from src.services.msgpack_codec import apply_delta, is_full_frame
 from src.services.msgpack_codec import decode as mp_decode
 from src.services.msgpack_codec import encode as mp_encode
@@ -17,6 +18,7 @@ router = APIRouter()
 MAX_PILOT_QUESTION_LEN = 512
 
 TELEMETRY_INTERVAL_S = 0.05
+UI_TELEMETRY_INTERVAL_S = 0.1  # 10 Hz UI broadcast
 STRATEGY_INTERVAL_S = 2.0
 
 
@@ -102,45 +104,34 @@ def broadcast_sync(message: BaseMessage) -> None:
 
 
 async def telemetry_sender_loop(websocket: WebSocket, app_state) -> None:
-    """Emite telemetría cruda a 20Hz (cada 50ms) y evalúa el Spotter en cada tick."""
-    reader = getattr(app_state, "telemetry_reader", None)
-    if not reader:
-        logger.warning("Telemetry reader not found in app state")
-        return
-
+    """Broadcast last snapshot from TelemetryHub to UI (~10 Hz). No race logic here."""
     while True:
         loop_started_at = time.monotonic()
         try:
-            # 1. Preferir telemetry del sidecar si está disponible
-            sidecar_frame = getattr(app_state, "latest_strategy_frame", None)
-            if sidecar_frame and sidecar_frame.get("frame"):
-                # El sidecar envía frame como dict, usar directamente
-                state_dict = sidecar_frame["frame"]
-                logger.debug("Usando telemetry del sidecar")
-            else:
-                # 2. Fallback: usar TelemetryReader local (simulated/offline)
-                state = reader.get_state()
-                if state is not None:
-                    state_dict = state.model_dump(mode="json")
+            state_dict = None
+            hub = getattr(app_state, "telemetry_hub", None)
+            if hub is not None:
+                state_dict, _ = hub.get_latest()
+
+            if state_dict is None:
+                strategy_service = getattr(app_state, "strategy_service", None)
+                if strategy_service and hasattr(strategy_service, "snapshot_frame"):
+                    state_dict = strategy_service.snapshot_frame()
                 else:
-                    await asyncio.sleep(TELEMETRY_INTERVAL_S)
-                    continue
-                logger.debug("Usando TelemetryReader (offline)")
+                    reader = getattr(app_state, "telemetry_reader", None)
+                    if reader:
+                        state = reader.get_state()
+                        if state is not None:
+                            state_dict = state.model_dump(mode="json")
 
-            # 3. Evaluar el SpotterService de ultra-baja latencia (20Hz)
-            spotter = getattr(app_state, "spotter_service", None)
-            if spotter:
-                sidecar_advice = None
-                if sidecar_frame:
-                    sidecar_advice = sidecar_frame.get("advice")
-                spotter_tick = frame_to_spotter_tick(state_dict, sidecar_advice)
-                spotter.evaluate_tick(spotter_tick)
+            if state_dict is None:
+                await asyncio.sleep(UI_TELEMETRY_INTERVAL_S)
+                continue
 
-            # 4. Enviar datos al frontend vía MessagePack
             raw = mp_encode(state_dict)
             await websocket.send_bytes(raw)
 
-            await asyncio.sleep(compute_loop_sleep(TELEMETRY_INTERVAL_S, loop_started_at))
+            await asyncio.sleep(compute_loop_sleep(UI_TELEMETRY_INTERVAL_S, loop_started_at))
         except asyncio.CancelledError:
             break
         except Exception as e:
@@ -165,31 +156,23 @@ async def strategy_sender_loop(websocket: WebSocket, app_state, active_subtasks:
                 await asyncio.sleep(STRATEGY_INTERVAL_S)
                 continue
 
-            # 1. Intentar usar strategy_frame del sidecar Windows
-            sidecar_frame = getattr(app_state, "latest_strategy_frame", None)
-            if sidecar_frame:
-                advice = sidecar_frame.get("advice")
-                frame = sidecar_frame.get("frame")
-                if advice is not None:
-                    advice_dict = advice if isinstance(advice, dict) else advice.model_dump(mode="json")
-                    logger.debug("Usando strategy_frame del sidecar Windows")
-                else:
-                    advice_dict = None
+            # Obtener frame y advice desde StrategyService (telemetría nativa o offline)
+            advice = strategy_service.get_latest_advice()
+            if advice is not None:
+                advice_dict = advice.model_dump(mode="json")
+                logger.debug("Usando StrategyService local")
             else:
-                # 2. Fallback: usar StrategyService local
-                advice = strategy_service.get_latest_advice()
-                if advice is not None:
-                    advice_dict = advice.model_dump(mode="json")
-                    logger.debug("Usando StrategyService offline (sidecar no detectado)")
-                else:
-                    advice_dict = None
+                advice_dict = None
 
-                # Resolver frame desde telemetry_reader
+            if native_telemetry_enabled() and strategy_service.latest_frame is not None:
+                frame = strategy_service.latest_frame.model_dump(mode="json")
+            else:
                 frame = getattr(app_state, "latest_client_frame", None)
                 if not frame:
                     reader = getattr(app_state, "telemetry_reader", None)
                     if reader:
-                        frame = reader.get_state()
+                        state = reader.get_state()
+                        frame = state.model_dump(mode="json") if state is not None else None
 
             if advice_dict is not None:
                 # Evaluar la capa de inteligencia y triggers tácticos
@@ -227,39 +210,6 @@ async def _index_events_async(event_store, frame: dict, events: list[dict]) -> N
             logger.debug("Indexados %d eventos en EventStore", len(batches))
     except Exception as e:
         logger.warning("Error indexing events in EventStore: %s", e)
-
-
-@router.websocket("/ws/sidecar")
-async def sidecar_endpoint(websocket: WebSocket):
-    """Endpoint dedicado para el sidecar StrategyService en Windows.
-
-    Solo recibe strategy_frame, sin loops de telemetría ni estrategia fantasma.
-    """
-    await websocket.accept()
-    app_state = websocket.app.state
-    logger.info("Sidecar conectado en /ws/sidecar")
-    try:
-        while True:
-            data = await websocket.receive_json()
-            event = data.get("event", "")
-            if event == "strategy_frame":
-                frame_data = data.get("data", {})
-                if frame_data:
-                    app_state.latest_strategy_frame = frame_data
-                    logger.debug("strategy_frame recibido del sidecar")
-
-                    # Indexar eventos en EventStore (RAG) — asíncrono, no bloquea
-                    events = frame_data.get("events", [])
-                    if events and getattr(app_state, "event_store", None) is not None:
-                        frame = frame_data.get("frame", {})
-                        event_store = app_state.event_store
-                        asyncio.ensure_future(_index_events_async(event_store, frame, events))
-            elif event == "ping":
-                await websocket.send_json({"event": "pong", "data": {}})
-    except WebSocketDisconnect:
-        logger.info("Sidecar desconectado de /ws/sidecar")
-    except Exception as e:
-        logger.warning(f"Error en sidecar endpoint: {e}")
 
 
 @router.websocket("/ws")
@@ -332,40 +282,86 @@ async def websocket_endpoint(websocket: WebSocket):
                             trace_store.append_frame(telemetry_data)
                 elif event == "config_update":
                     cfg = msg.get("data", {})
+                    engine = getattr(app_state, "intelligence_engine", None)
+                    if engine is not None and hasattr(engine, "apply_runtime_config"):
+                        engine.apply_runtime_config(cfg)
+                    spotter = getattr(app_state, "spotter_service", None)
+                    if spotter is not None and hasattr(spotter, "apply_runtime_config"):
+                        spotter.apply_runtime_config(cfg)
+                        if "spotterEnabled" in cfg:
+                            logger.info("[WS] config spotterEnabled=%s", cfg["spotterEnabled"])
                     if "swearyMessages" in cfg:
                         app_state.sweary_messages = bool(cfg["swearyMessages"])
-                        engine = getattr(app_state, "intelligence_engine", None)
                         if engine is not None:
                             engine.sweary_messages = app_state.sweary_messages
                         logger.info("[WS] sweary_messages=%s", app_state.sweary_messages)
-                    spotter = getattr(app_state, "spotter_service", None)
                     if spotter is not None:
                         if "spotterOffQualifying" in cfg:
                             spotter.spotter_off_qualifying = bool(cfg["spotterOffQualifying"])
                         if "spotterExcludeStopped" in cfg:
                             spotter.spotter_exclude_stopped = bool(cfg["spotterExcludeStopped"])
+                    if engine is not None and hasattr(engine, "runtime_config_snapshot"):
+                        await manager.broadcast(
+                            ConfigAckMessage(
+                                event="config_ack",
+                                config=engine.runtime_config_snapshot(),
+                            )
+                        )
+                elif event == "engineer_command":
+                    action = msg.get("data", {}).get("action", "")
+                    engine = getattr(app_state, "intelligence_engine", None)
+                    if engine and action in ("enable", "disable"):
+                        enabled = action == "enable"
+                        engine.apply_runtime_config({"engineerEnabled": enabled})
+                        engine.broadcast_config_ack()
+                        logger.info("[WS] engineer enabled=%s", enabled)
                 elif event == "spotter_command":
                     action = msg.get("data", {}).get("action", "")
                     spotter = getattr(app_state, "spotter_service", None)
-                    if spotter and action in ("enable", "disable"):
-                        spotter.enabled = action == "enable"
-                        import uuid as _uuid
+                    engine = getattr(app_state, "intelligence_engine", None)
+                    if action in ("enable", "disable") and spotter is not None:
+                        enabled = action == "enable"
+                        if engine is not None:
+                            if engine._spotter_service is None:
+                                engine._spotter_service = spotter
+                            engine.apply_spotter_toggle(enabled)
+                        else:
+                            spotter.enabled = enabled
+                            import uuid
 
-                        from src.models.messages import AlertMessage
+                            from src.models.messages import AlertMessage
 
-                        ack = AlertMessage(
-                            event="alert",
-                            alert_id=str(_uuid.uuid4()),
-                            category="spotter",
-                            message="Spotter activado." if spotter.enabled else "Spotter desactivado.",
-                            audio_priority="1",
-                            severity="INFO",
-                            ttl=3,
-                            dismissable=True,
-                            payload={"spotter_enabled": spotter.enabled},
+                            await manager.broadcast(
+                                AlertMessage(
+                                    event="alert",
+                                    alert_id=str(uuid.uuid4()),
+                                    category="spotter",
+                                    message="Spotter activado." if enabled else "Spotter desactivado.",
+                                    audio_priority="NORMAL",
+                                    severity="INFO",
+                                    ttl=8,
+                                    dismissable=True,
+                                    payload={"service": "spotter"},
+                                )
+                            )
+                        logger.info("[WS] spotter enabled=%s", enabled)
+                elif event == "test_audio":
+                    voice_queue = getattr(app_state, "voice_queue", None)
+                    if voice_queue is not None and settings.VOICE_BACKEND_PLAYBACK:
+                        from src.voice.play_command import play_command_from_alert
+
+                        cmd = play_command_from_alert(
+                            text="Probando audio. ¿Me escuchás?",
+                            category="engineer",
+                            audio_priority="NORMAL",
+                            event_id="test_audio",
+                            ttl_seconds=10,
+                            payload={"event_id": "test_audio"},
                         )
-                        await manager.broadcast(ack)
-                        logger.info("[WS] spotter enabled=%s", spotter.enabled)
+                        await voice_queue.put(cmd)
+                        logger.info("[WS] test_audio enqueued")
+                    else:
+                        logger.warning("[WS] test_audio ignored — voice queue unavailable")
                 elif event == "pilot_question":
                     raw_question = msg.get("data", {}).get("question", "")
                     question = _normalize_pilot_question(raw_question)

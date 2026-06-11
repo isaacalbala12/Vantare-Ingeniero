@@ -12,6 +12,7 @@ const IMMEDIATE_PATTERNS: RegExp[] = [
   /hypercar/i,
   /doblando por la (izquierda|derecha)$/i,
   /adelantando por la (izquierda|derecha)$/i,
+  /^sigue coche por (izquierda|derecha)/i,
   /pit limiter/i,
   /combustible cr[ií]tico/i,
   /safety car/i,
@@ -22,6 +23,8 @@ const IMMEDIATE_PATTERNS: RegExp[] = [
 export const SPOTTER_PREFETCH_PHRASES: string[] = [
   "Coche a la izquierda",
   "Coche a la derecha",
+  "Sigue coche por izquierda.",
+  "Sigue coche por derecha.",
   "Hypercar doblando por la derecha",
   "GT3 adelantando por la izquierda",
   "Despejado izquierda",

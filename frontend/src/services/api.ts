@@ -47,7 +47,7 @@ export async function getHealth(): Promise<HealthResponse | null> {
       return null;
     }
     const data = await res.json();
-    if (data.status !== "ok") {
+    if ((data.status ?? "ok") !== "ok") {
       console.warn("[api] Health status not ok:", data.status);
       return null;
     }

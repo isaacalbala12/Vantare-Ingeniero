@@ -164,11 +164,14 @@ class DamageEvent(CrewChiefEventModule):
                 self._last_reported_aero_level = aero_level
             return None
 
-        text = format_damage_status_message(
-            tick,
-            items,
-            impact_magnitude=self._pending_impact_magnitude,
-        )
+        if puncture_ready and not impact_ready and items == ["puncture"]:
+            text = format_damage_status_message(tick, items)
+        else:
+            text = format_damage_status_message(
+                tick,
+                items,
+                impact_magnitude=self._pending_impact_magnitude,
+            )
         if not text:
             return None
 

@@ -11,7 +11,7 @@ Límite de tokens: System prompt (~200) + ticker (~400) + RAG (~100) ≈ 700 tok
 """
 
 import json
-from typing import Any, Dict, List
+from typing import Any
 
 SYSTEM_PROMPT_BASIC = (
     "Eres un ingeniero de carrera. Para preguntas técnicas de carrera, sé técnico y conciso. "
@@ -106,6 +106,10 @@ Ejemplo: VST|HY|+2.1|V22 · ALO|HY|-1.2|V22
 
 Máximo 2-3 frases. Estilo radio. Técnico y conciso."""
 
+SWEARY_STYLE_HINT = "\n\nESTILO: Puedes usar lenguaje colorido y directo de paddock cuando encaje con la situación."
+
+CLEAN_STYLE_HINT = "\n\nESTILO: Mantén un tono profesional y limpio, sin palabrotas ni vulgaridades."
+
 UI_TOOLS = [
     {
         "type": "function",
@@ -118,24 +122,79 @@ UI_TOOLS = [
                     "target": {
                         "type": "string",
                         "enum": ["pit_button", "fuel_warning", "hybrid_map"],
-                        "description": "El control visual o advertencia objetivo en el panel."
+                        "description": "El control visual o advertencia objetivo en el panel.",
                     },
                     "action": {
                         "type": "string",
                         "enum": ["blink_red", "show", "switch_to_regen_2"],
-                        "description": "La acción visual o cambio de modo a ejecutar."
+                        "description": "La acción visual o cambio de modo a ejecutar.",
                     },
-                    "duration_ms": {
-                        "type": "integer",
-                        "description": "Duración de la alerta en milisegundos."
-                    }
+                    "duration_ms": {"type": "integer", "description": "Duración de la alerta en milisegundos."},
                 },
                 "required": ["target", "action", "duration_ms"],
-                "additionalProperties": False
-            }
-        }
+                "additionalProperties": False,
+            },
+        },
     }
 ]
+
+COMPETITOR_QUERY_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "query_competitor",
+        "description": "Consulta datos de un rival: posición, gap, mejor vuelta, boxes.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query_type": {
+                    "type": "string",
+                    "enum": ["by_name", "by_position", "by_class"],
+                    "description": "Tipo de búsqueda del rival.",
+                },
+                "name": {
+                    "type": "string",
+                    "description": "Nombre o apellido del piloto (query_type=by_name).",
+                },
+                "position": {
+                    "type": "integer",
+                    "description": "Posición en clasificación (query_type=by_position).",
+                },
+                "driver_class": {
+                    "type": "string",
+                    "description": "Clase del coche: Hypercar, GT3, LMP2, etc. (query_type=by_class).",
+                },
+            },
+            "required": ["query_type"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+MONITOR_COMPETITOR_TOOL = {
+    "type": "function",
+    "function": {
+        "name": "monitor_competitor",
+        "description": "Monitoriza un rival (max 3). Acciones: start o stop.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "action": {"type": "string", "enum": ["start", "stop"]},
+                "driver_index": {"type": "integer"},
+            },
+            "required": ["action", "driver_index"],
+            "additionalProperties": False,
+        },
+    },
+}
+
+
+def get_llm_tools(include_competitor_query: bool = True) -> list[dict[str, Any]]:
+    tools = list(UI_TOOLS)
+    if include_competitor_query:
+        tools.append(COMPETITOR_QUERY_TOOL)
+        tools.append(MONITOR_COMPETITOR_TOOL)
+    return tools
 
 
 def _has_telemetry(context: dict) -> bool:
@@ -184,6 +243,10 @@ def render(context_dict: dict, tier: str) -> str:
 
         # Construir prompt con formato ticker
         sections = [SYSTEM_PROMPT_TICKER]
+        if context_dict.get("sweary"):
+            sections.append(SWEARY_STYLE_HINT)
+        else:
+            sections.append(CLEAN_STYLE_HINT)
 
         # Sección de telemetría en formato ticker
         sections.append("\n### TELEMETRÍA ###\n")
@@ -197,6 +260,12 @@ def render(context_dict: dict, tier: str) -> str:
         # Sección de trigger o pregunta
         if pilot_question:
             sections.append(f"\n### PREGUNTA DEL PILOTO ###\n{pilot_question}")
+            competitor_context = context_dict.get("competitor_context")
+            if competitor_context:
+                sections.append(f"\n### DATOS RIVAL (consulta resuelta) ###\n{competitor_context}")
+            sector_context = context_dict.get("sector_context")
+            if sector_context:
+                sections.append(f"\n### ANÁLISIS SECTORES ###\n{sector_context}")
         elif trigger_reason:
             sections.append(f"\n### MOTIVO ###\n{trigger_reason}")
 
@@ -221,3 +290,88 @@ def render(context_dict: dict, tier: str) -> str:
             return f"{system_prompt}\n\nPREGUNTA DEL PILOTO:\n{pilot_question}"
         else:
             return system_prompt
+
+
+PILOT_QUESTION_SYSTEM = (
+    "Eres el ingeniero de radio de Le Mans Ultimate (estilo WEC/F1). "
+    "Responde en español, tono radio, directo. "
+    "Responde SOLO a lo que pregunta el piloto: no recites telemetría no solicitada "
+    "(temperaturas, lista de rivales, clima, desgaste) salvo que lo pida explícitamente. "
+    "Saludos o small talk: UNA frase breve y humana, sin datos de pista. "
+    "Preguntas técnicas: máximo 2 frases con las cifras relevantes. "
+    "Usa únicamente datos del contexto; si falta un dato, dilo en una frase corta sin inventar."
+)
+
+PILOT_PTT_SYSTEM_PROMPT = (
+    "Eres el ingeniero de radio de Le Mans Ultimate. El piloto habla por PTT. "
+    "Elige la tool adecuada si la pregunta encaja; si es conversación abierta no uses tools."
+)
+
+PILOT_PTT_TURN_TWO_PROMPT = (
+    "Resume en UNA frase corta estilo radio lo que acabas de hacer por el piloto."
+)
+
+
+def _tool(name: str, description: str, properties: dict, required: list[str] | None = None) -> dict:
+    return {
+        "type": "function",
+        "function": {
+            "name": name,
+            "description": description,
+            "parameters": {
+                "type": "object",
+                "properties": properties,
+                "required": required or [],
+                "additionalProperties": False,
+            },
+        },
+    }
+
+
+def get_pilot_ptt_tools(include_competitor_query: bool = True) -> list[dict[str, Any]]:
+    tools = [
+        _tool("set_speak_only", "Silenciar ingeniero hasta nueva pregunta o reactivar voz.", {"enabled": {"type": "boolean"}}, ["enabled"]),
+        _tool("set_verbosity", "Cambiar verbosidad: silent, normal, detailed.", {"level": {"type": "string"}}, ["level"]),
+        _tool("spotter_toggle", "Activar o desactivar spotter de proximidad.", {"enabled": {"type": "boolean"}}, ["enabled"]),
+        _tool("get_fuel_status", "Consultar combustible / vueltas restantes.", {}),
+        _tool("get_gap_status", "Consultar gap adelante y detrás.", {}),
+        _tool("get_damage_report", "Informe de daños del monoplaza.", {}),
+        _tool("get_tire_wear", "Desgaste de neumáticos por rueda.", {}),
+        _tool("set_braking_zones_mute", "Silenciar alertas en zonas de frenada.", {"enabled": {"type": "boolean"}}, ["enabled"]),
+        _tool("get_flag_status", "Estado de banderas / safety car.", {}),
+        _tool("get_race_time_remaining", "Tiempo o vueltas restantes de sesión.", {}),
+        _tool("get_pit_window_status", "Estado de ventana de boxes.", {}),
+        _tool("watch_snip", "Vigilar rival activo (snip).", {"action": {"type": "string"}}, ["action"]),
+        _tool("set_pit_fuel", "Configurar litros en menú de boxes.", {"litres": {"type": "number"}}, ["litres"]),
+        _tool("set_pit_tyres", "Configurar compuesto en menú de boxes.", {"compound": {"type": "string"}}, ["compound"]),
+        _tool("monitor_competitor", "Monitorizar rival por índice.", {"action": {"type": "string"}, "driver_index": {"type": "integer"}}, ["action", "driver_index"]),
+    ]
+    if include_competitor_query:
+        tools.append(COMPETITOR_QUERY_TOOL)
+    return tools
+
+
+def render_pilot_question_messages(context_dict: dict, tier: str = "FAST") -> list[dict[str, str]]:
+    """System + user messages for PTT free-form (sin tabla diccionario completa)."""
+    pilot_question = context_dict.get("pilot_question", "")
+    user_parts: list[str] = []
+    ptt_context = context_dict.get("ptt_context")
+    ticker_text = context_dict.get("ticker_text")
+    snapshot = context_dict.get("snapshot") or {}
+    if ptt_context:
+        user_parts.append(f"Contexto:\n{ptt_context}")
+    elif ticker_text:
+        user_parts.append(f"Telemetría:\n{ticker_text}")
+    elif snapshot:
+        lap = snapshot.get("lap_number") or snapshot.get("lap") or 0
+        pos = snapshot.get("place") or snapshot.get("position") or snapshot.get("standing_position") or "?"
+        fuel = snapshot.get("fuel_in_tank") or snapshot.get("fuel") or "?"
+        user_parts.append(f"Resumen: vuelta {lap}, P{pos}, fuel {fuel}L.")
+    if pilot_question:
+        user_parts.append(f"Pregunta del piloto: {pilot_question}")
+    style = SWEARY_STYLE_HINT if context_dict.get("sweary") else CLEAN_STYLE_HINT
+    system = f"{PILOT_QUESTION_SYSTEM}\n{style}"
+    return [
+        {"role": "system", "content": system},
+        {"role": "user", "content": "\n\n".join(user_parts) if user_parts else pilot_question},
+    ]

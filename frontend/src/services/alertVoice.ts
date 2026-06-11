@@ -1,4 +1,13 @@
-/** Bloquea TTS proactivo cuando el piloto pidió silencio ("cállate"); solo voice_response y advice PTT. */
+/** Une campos anidados de AlertMessage.payload con el envelope WS para gates de voz. */
+export function flattenAlertPayload(data: Record<string, unknown>): Record<string, unknown> {
+  const inner = data.payload;
+  if (inner && typeof inner === "object" && !Array.isArray(inner)) {
+    return { ...(inner as Record<string, unknown>), ...data };
+  }
+  return data;
+}
+
+/** Bloquea TTS proactivo del ingeniero; spotter y respuestas PTT siguen audibles. */
 export function shouldVoiceDuringSpeakOnly(
   speakOnly: boolean,
   category: string,
@@ -13,13 +22,20 @@ export function shouldVoiceDuringSpeakOnly(
   if (source === "commentary") {
     return false;
   }
-  return category === "voice_response";
+  const cat = category.toLowerCase();
+  if (cat === "voice_response") {
+    return true;
+  }
+  if (SPOTTER_VOICE_CATEGORIES.has(cat)) {
+    return true;
+  }
+  return false;
 }
 const NAMED_VOICE_PRIORITIES = new Set(["CRITICAL", "HIGH", "WARNING"]);
 /** Solo alertas sin voz por diseño (gaps = visual; system/spotter = interno o UI-only). Perlas audibles en A2. */
 const NO_VOICE_CATEGORIES = new Set(["gaps", "system", "spotter"]);
 
-const SPOTTER_VOICE_CATEGORIES = new Set([
+export const SPOTTER_VOICE_CATEGORIES = new Set([
   "proximity",
   "pit_limiter",
   "fuel",

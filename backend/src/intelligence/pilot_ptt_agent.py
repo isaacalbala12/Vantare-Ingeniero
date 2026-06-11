@@ -13,6 +13,31 @@ logger = logging.getLogger("vantare.pilot_ptt_agent")
 _executor = PilotToolExecutor()
 
 
+async def _try_handle_competitor_question(engine, question: str) -> bool:
+    competitors = engine.get_competitors_list()
+    if not competitors:
+        return False
+    from src.intelligence.driver_names import get_driver_by_partial
+    from src.intelligence.pilot_tool_executor import PilotToolExecutor
+
+    comp_dicts = [c.model_dump() if hasattr(c, "model_dump") else c for c in competitors]
+    matched = get_driver_by_partial(question, comp_dicts)
+    if matched is None:
+        for comp in comp_dicts:
+            name = str(comp.get("driver_name") or "")
+            if not name:
+                continue
+            surname = name.split()[-1]
+            if len(surname) >= 3 and surname.lower() in question.lower():
+                matched = comp
+                break
+    if matched is None:
+        return False
+    name = str(matched.get("driver_name") or "")
+    await PilotToolExecutor().run(engine, "query_competitor", {"name": name})
+    return True
+
+
 async def handle_pilot_ptt(engine, question: str) -> None:
     """PTT: fast path → free-form directo → tools solo si intención mixta."""
     question = normalize_pilot_question(question)
@@ -22,20 +47,22 @@ async def handle_pilot_ptt(engine, question: str) -> None:
     await engine.cancel_current_llm()
 
     if match_radio_check(question):
-        engine._emit_voice_response("Afirmativo, recepción clara.")
+        engine._emit_voice_response("Afirmativo, recepción clara.", fast_command=True)
         return
 
     intent_groups = count_fast_intent_groups(question)
     cmd = match_fast_command(question)
 
     if intent_groups == 1 and cmd is not None:
-        if engine._try_handle_fast_command(cmd):
+        if await engine._try_handle_fast_command(cmd):
             return
         if cmd.intent in ("fuel_status", "gap_status", "damage_status"):
             await engine._handle_free_form_question(question)
             return
 
     if intent_groups == 0:
+        if await _try_handle_competitor_question(engine, question):
+            return
         await engine._handle_free_form_question(question)
         return
 

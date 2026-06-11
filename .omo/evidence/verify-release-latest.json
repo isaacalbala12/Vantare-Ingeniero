@@ -1,0 +1,48 @@
+﻿{
+    "finished_at":  "2026-06-11T12:57:52.5796511+02:00",
+    "overall":  "PASS",
+    "version":  "0.2.13",
+    "steps":  {
+                  "beta_gate":  {
+                                    "detail":  "skipped",
+                                    "status":  "WARN"
+                                },
+                  "ws_integration":  {
+                                         "detail":  "skipped",
+                                         "status":  "WARN"
+                                     },
+                  "build_desktop":  {
+                                        "detail":  "skipped (use -Build to rebuild)",
+                                        "status":  "WARN"
+                                    },
+                  "desktop_artifacts":  {
+                                            "detail":  "vantare-ingeniero-0.2.13-setup.exe",
+                                            "status":  "PASS"
+                                        },
+                  "bundle_native_telemetry":  {
+                                                  "detail":  "C:\\Users\\isaac\\Desktop\\Vantare-Ingeniero\\backend\\dist\\backend\\_internal\\src\\main.py",
+                                                  "status":  "PASS"
+                                              },
+                  "bundle_main_contract":  {
+                                               "detail":  "lifespan contracts OK",
+                                               "status":  "PASS"
+                                           },
+                  "bundle_freshness":  {
+                                           "detail":  "source vs bundle mtime OK (main, bridge, tick_loop)",
+                                           "status":  "PASS"
+                                       },
+                  "bundle_startup":  {
+                                         "detail":  "lifespan + /health contract",
+                                         "status":  "PASS"
+                                     },
+                  "backend_smoke":  {
+                                        "detail":  "telemetry=native binary=64 json=4 (LMU detected)",
+                                        "status":  "PASS"
+                                    },
+                  "trace_replay":  {
+                                       "detail":  "minimal_race.trace",
+                                       "status":  "PASS"
+                                   }
+              },
+    "started_at":  "2026-06-11T12:57:03.9539363+02:00"
+}

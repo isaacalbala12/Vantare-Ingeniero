@@ -13,6 +13,8 @@ extraResources:
       - "**/*"
   - from: ../native/duck_lmu/target/release/duck_lmu.exe
     to: duck_lmu.exe
+    filter:
+      - "**/*"
   - from: src-tauri/icons/icon.ico
     to: icons/icon.ico
 publish:

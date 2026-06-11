@@ -6,8 +6,9 @@ import {
 } from "../services/alertVoice";
 
 describe("shouldVoiceDuringSpeakOnly", () => {
-  it("bloquea alertas proactivas salvo voice_response", () => {
-    expect(shouldVoiceDuringSpeakOnly(true, "proximity", "alert")).toBe(false);
+  it("bloquea ingeniero proactivo; spotter y PTT siguen", () => {
+    expect(shouldVoiceDuringSpeakOnly(true, "proximity", "alert")).toBe(true);
+    expect(shouldVoiceDuringSpeakOnly(true, "fuel", "alert")).toBe(true);
     expect(shouldVoiceDuringSpeakOnly(true, "engineer", "alert")).toBe(false);
     expect(shouldVoiceDuringSpeakOnly(true, "voice_response", "alert")).toBe(true);
     expect(shouldVoiceDuringSpeakOnly(true, "advice", "advice")).toBe(true);

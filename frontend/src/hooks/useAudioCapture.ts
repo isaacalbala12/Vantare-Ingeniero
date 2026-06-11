@@ -77,10 +77,13 @@ export function useAudioCapture(audioCtxRef?: React.MutableRefObject<AudioContex
     }
   };
 
+  const isRecordingRef = useRef(false);
+
   const startCapture = async () => {
-    if (isRecording) return;
+    if (isRecordingRef.current) return;
     
     audioBuffersRef.current = [];
+    isRecordingRef.current = true;
     setIsRecording(true);
 
     try {
@@ -134,26 +137,26 @@ export function useAudioCapture(audioCtxRef?: React.MutableRefObject<AudioContex
         const level = Math.min(100, Math.round(rms * 300));
         setInputLevel(level);
 
-        // Detección de Wake Word por amplitud
-        if (radioModeRef.current === "IDLE") {
-          // A mayor sensibilidad, menor el umbral RMS requerido
-          // Rango de sensibilidad: 0 - 100
-          const threshold = Math.max(0.005, (105 - configRef.current.sensitivity) / 600);
+        // Detección de Wake Word por amplitud — solo si está habilitado explícitamente
+        if (radioModeRef.current === "IDLE" && configRef.current.wakeWordEnabled) {
+          const threshold = Math.max(0.02, (105 - configRef.current.sensitivity) / 400);
           if (rms > threshold) {
-            console.log(`[useAudioCapture] Palabra de activación detectada! RMS: ${rms.toFixed(4)} > Umbral: ${threshold.toFixed(4)}`);
+            console.log(`[useAudioCapture] Wake word (RMS): ${rms.toFixed(4)} > ${threshold.toFixed(4)}`);
             setRadioMode("LISTENING_PILOT");
           }
         }
       };
     } catch (err) {
       console.error("[useAudioCapture] Error inicializando micrófono:", err);
+      isRecordingRef.current = false;
       setIsRecording(false);
     }
   };
 
   const stopCapture = useCallback(() => {
-    if (!isRecording) return null;
+    if (!isRecordingRef.current) return null;
     
+    isRecordingRef.current = false;
     setIsRecording(false);
     setInputLevel(0);
 
@@ -183,7 +186,7 @@ export function useAudioCapture(audioCtxRef?: React.MutableRefObject<AudioContex
     }
 
     return null;
-  }, [isRecording]);
+  }, [audioCtxRef]);
 
   useEffect(() => {
     return () => {

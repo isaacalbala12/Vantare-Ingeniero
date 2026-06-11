@@ -62,6 +62,7 @@ const mockStoreState = {
   updateConfig: vi.fn(),
   radio: { mode: "THINKING_LLM", currentTokens: "", latestAdvice: "" },
   connectivity: { wsStatus: "DISCONNECTED" },
+  telemetry: { alerts: [] },
 };
 
 vi.mock("../store/config", () => ({
@@ -185,5 +186,47 @@ describe("useWebSocket PTT response flow", () => {
     expect(mockStoreState.setRadioMode).toHaveBeenCalledWith("IDLE");
     unmount();
     vi.stubGlobal("WebSocket", MockWebSocket);
+  });
+
+  it("VC-R03: voice_response alert triggers TTS enqueue", async () => {
+    class TrackedMockWebSocket extends MockWebSocket {
+      constructor(url: string) {
+        super(url);
+        (globalThis as { __lastWs?: MockWebSocket }).__lastWs = this;
+      }
+    }
+    vi.stubGlobal("WebSocket", TrackedMockWebSocket);
+
+    const { useWebSocket } = await import("../hooks/useWebSocket");
+    const { audioQueue } = await import("../services/audioQueue");
+
+    const { unmount } = renderHook(() => useWebSocket());
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50));
+    });
+
+    const sock = (globalThis as { __lastWs?: MockWebSocket }).__lastWs;
+    fakeNow = 20_000;
+    await act(async () => {
+      sock!.onmessage!({
+        data: JSON.stringify({
+          event: "alert",
+          data: {
+            message: "Afirmativo, recepción clara.",
+            category: "voice_response",
+            audio_priority: "4",
+            service: "engineer",
+            fast_command: true,
+          },
+        }),
+      });
+      await new Promise((r) => setTimeout(r, 100));
+    });
+
+    // voice_response should be enqueued (ENGINEER priority)
+    expect(audioQueue.enqueueEngineer).toHaveBeenCalled();
+    unmount();
+    vi.stubGlobal("WebSocket", MockWebSocket);
+    vi.unstubAllGlobals();
   });
 });

@@ -1,0 +1,405 @@
+{
+  "damage_impact": {
+    "default": "Toque detectado. Daños leves.",
+    "variants": {
+      "severity=grave": "Golpe fuerte. Daño grave en el frontal.",
+      "severity=moderado": "Impacto notable. Daño moderado — revisa el balance del coche.",
+      "severity=leve": "Toque detectado. Daños leves.",
+      "detached=true": "Golpe fuerte. Daño grave — hay piezas sueltas, entra a boxes."
+    }
+  },
+  "damage_puncture": {
+    "default": "Pinchazo en el coche.",
+    "variants": {
+      "wheel=fl": "Pinchazo delantero izquierdo.",
+      "wheel=fr": "Pinchazo delantero derecho.",
+      "wheel=rl": "Pinchazo trasero izquierdo.",
+      "wheel=rr": "Pinchazo trasero derecho.",
+      "multiple=true": "Múltiples pinchazos — entra a boxes."
+    }
+  },
+  "damage_are_you_ok": {
+    "default": "¿Estás bien? ¿Estás bien?",
+    "variants": {
+      "attempt=0": "¿Estás bien? ¿Estás bien?",
+      "attempt=1": "¿Cómo estás? Responde.",
+      "attempt=2": "No contestas. Entra en boxes si puedes."
+    }
+  },
+  "penalty_new": {
+    "default": "Penalización asignada. Tienes 3 vueltas para entrar en boxes.",
+    "variants": {
+      "repeat=true": "Nueva penalización asignada."
+    }
+  },
+  "penalty_countdown": {
+    "default": "3 vueltas para servir la penalización.",
+    "variants": {
+      "laps=3": "3 vueltas para servir la penalización.",
+      "laps=2": "2 vueltas. Tienes que entrar.",
+      "laps=1": "1 vuelta. Entra ahora o serás descalificado."
+    }
+  },
+  "penalty_pit_now": {
+    "default": "Entra a boxes ahora."
+  },
+  "penalty_served": {
+    "default": "Penalización cumplida. Buen trabajo."
+  },
+  "penalty_not_served": {
+    "default": "No has servido la penalización."
+  },
+  "penalty_disqualified": {
+    "default": "No has servido la penalización. Vas a ser descalificado."
+  },
+  "fcy_pits_closed": {
+    "default": "Safety Car desplegado. Pits cerrados.",
+    "variants": {
+      "safety_car=false": "Bandera amarilla en todo el circuito. Pits cerrados."
+    }
+  },
+  "fcy_pits_open": {
+    "default": "Pits abiertos.",
+    "variants": {
+      "leader=true": "Pits abiertos — coches de delante pueden entrar."
+    }
+  },
+  "fcy_last_lap": {
+    "default": "Última vuelta de Safety Car."
+  },
+  "fcy_prepare_green": {
+    "default": "Prepárate para relanzamiento."
+  },
+  "fcy_green": {
+    "default": "Bandera verde. A tope."
+  },
+  "position_overtake": {
+    "default": "Adelantamiento completado.",
+    "variants": {
+      "with_position=true": "Subiste a P{position}.",
+      "with_driver=true": "Adelantamiento completado. Con {driver_name}."
+    }
+  },
+  "position_lost": {
+    "default": "Te ha pasado un rival.",
+    "variants": {
+      "with_position=true": "Bajaste a P{position}.",
+      "with_driver=true": "Te ha pasado {driver_name}."
+    }
+  },
+  "rain_increasing": {
+    "default": "Llovizna — vigila la pista.",
+    "variants": {
+      "level=drizzle": "Llovizna — vigila la pista.",
+      "level=light": "Lluvia ligera. Prepara intermedias.",
+      "level=mid": "Está lloviendo. Considera entrar a por lluvia.",
+      "level=heavy": "Lluvia intensa. Entra a por mojado.",
+      "level=storm": "Diluvio. Máximo cuidado."
+    }
+  },
+  "rain_heavy": {
+    "default": "Lluvia fuerte en pista."
+  },
+  "rain_stopped": {
+    "default": "Dejó de llover. Pista secándose."
+  },
+  "gap_ahead_increasing": {
+    "default": "Gap con el de delante: {gap} segundos. Se abre.",
+    "variants": {
+      "with_corner=true": "En {corner}, gap adelante {gap}. Se abre."
+    }
+  },
+  "gap_ahead_decreasing": {
+    "default": "El coche de delante está más cerca. Gap {gap}.",
+    "variants": {
+      "with_corner=true": "En {corner}, gap adelante {gap}. Te acercas."
+    }
+  },
+  "gap_ahead_holding": {
+    "default": "Gap estable adelante: {gap} segundos."
+  },
+  "gap_behind_increasing": {
+    "default": "Rival más cerca por detrás. Gap {gap}."
+  },
+  "gap_behind_decreasing": {
+    "default": "Te alejas del de detrás. Gap {gap}."
+  },
+  "gap_behind_holding": {
+    "default": "Gap estable detrás: {gap} segundos."
+  },
+  "gap_being_pressured": {
+    "default": "Te están presionando por detrás. Defiende la posición."
+  },
+  "gap_holding_us_up": {
+    "default": "El de delante te está frenando. Busca el adelantamiento."
+  },
+  "lap_personal_best": {
+    "default": "¡Vuelta rápida personal! {time} segundos."
+  },
+  "lap_invalid": {
+    "default": "Esa vuelta no cuenta — saliste de pista o cortaste."
+  },
+  "lap_consistency_improving": {
+    "default": "Ritmo mejorando — últimas vueltas más rápidas."
+  },
+  "lap_consistency_worsening": {
+    "default": "Ritmo cayendo — cuida los neumáticos y el tráfico."
+  },
+  "lap_consistency_stable": {
+    "default": "Ritmo consistente en las últimas vueltas."
+  },
+  "sector_personal_best": {
+    "default": "Sector {sector} rápido — {delta} mejor que tu mejor."
+  },
+  "sector_off_pace": {
+    "default": "Sector {sector} lento — {delta} por debajo de tu mejor."
+  },
+  "lap_counter_announce": {
+    "default": "Vuelta {lap}."
+  },
+  "last_lap_race": {
+    "default": "¡Última vuelta de la carrera!"
+  },
+  "push_to_win": {
+    "default": "Empuja — estás mejorando.",
+    "variants": {
+      "position=2": "Empuja — puedes ganar esta carrera.",
+      "position=3": "Empuja — puedes ser segundo.",
+      "position=4": "Empuja — puedes subir al podio."
+    }
+  },
+  "push_to_hold": {
+    "default": "Defiende la posición — viene un rival más rápido."
+  },
+  "fuel_about_to_run_out": {
+    "default": "Combustible crítico. Entra a boxes ahora."
+  },
+  "fuel_low": {
+    "default": "Combustible bajo — planifica parada."
+  },
+  "fuel_laps_remaining": {
+    "default": "Combustible para unas {laps} vueltas.",
+    "variants": {
+      "level=3": "Quedan unas 3 vueltas de combustible.",
+      "level=2": "Quedan unas 2 vueltas de combustible.",
+      "level=1": "Queda menos de 1 vuelta de combustible."
+    }
+  },
+  "fuel_box_this_lap": {
+    "default": "Entra a boxes esta vuelta — te quedas sin combustible."
+  },
+  "pit_window_open": {
+    "default": "Ventana de boxes abierta — vuelta {open_lap} a {close_lap}."
+  },
+  "pit_window_closing": {
+    "default": "Ventana de boxes cierra en {laps} vueltas."
+  },
+  "pit_entry": {
+    "default": "Entrada a boxes."
+  },
+  "pit_exit": {
+    "default": "Salida de boxes.",
+    "variants": {
+      "position=5": "Salida de boxes — P{position}."
+    }
+  },
+  "pit_stop_prediction": {
+    "default": "{message}"
+  },
+  "session_disqualified": {
+    "default": "Descalificado. Sesión terminada."
+  },
+  "session_dnf": {
+    "default": "Abandonaste la carrera."
+  },
+  "session_bad_finish": {
+    "default": "P{position}. Has perdido {lost} posiciones respecto a la salida."
+  },
+  "session_victory": {
+    "default": "¡Victoria! Carrera perfecta."
+  },
+  "session_podium": {
+    "default": "Tercer puesto. Podio.",
+    "variants": {
+      "position=2": "Segundo puesto. Gran resultado.",
+      "position=3": "Tercer puesto. Podio."
+    }
+  },
+  "session_finish": {
+    "default": "Carrera completada en P{position}.",
+    "variants": {
+      "good_gain=true": "P{position}. Buen resultado — has ganado {gain} posiciones.",
+      "last=true": "P{position} — último. Hay que trabajar el ritmo."
+    }
+  },
+  "race_start_good": {
+    "default": "Buena salida — has ganado {gain} posiciones."
+  },
+  "race_start_bad": {
+    "default": "Salida complicada — has perdido {lost} posiciones.",
+    "variants": {
+      "terrible=true": "Mala salida — has perdido {lost} posiciones. Céntrate y recupera."
+    }
+  },
+  "cut_track_warning": {
+    "default": "Límites de pista — cuidado.",
+    "variants": {
+      "level=2": "Reiteradas salidas de pista. Van a penalizarte.",
+      "level=3": "No sigas cortando. Van a penalizar.",
+      "level=4": "Ya vale de cortar. Te van a descalificar."
+    }
+  },
+  "flags_yellow": {
+    "default": "Bandera amarilla. Precaución en pista."
+  },
+  "flags_blue": {
+    "default": "Bandera azul — coche más rápido detrás."
+  },
+  "flags_blue_cleared": {
+    "default": "Bandera azul retirada."
+  },
+  "flags_safety_car": {
+    "default": "¡SAFETY CAR ACTIVO! Reduce velocidad y prepárate."
+  },
+  "flags_red": {
+    "default": "Bandera roja — sesión detenida."
+  },
+  "flags_session_over": {
+    "default": "Sesión terminada."
+  },
+  "brake_wear_high": {
+    "default": "Frenos al {wear}% — vigila temperatura."
+  },
+  "suspension_wear_high": {
+    "default": "Suspensión desgastada — revisa el coche."
+  },
+  "tyre_hot": {
+    "default": "Neumáticos calientes — cuidado con el desgaste.",
+    "variants": {
+      "wheel=fl": "Neumático delantero izquierdo caliente.",
+      "wheel=fr": "Neumático delantero derecho caliente.",
+      "wheel=rl": "Neumático trasero izquierdo caliente.",
+      "wheel=rr": "Neumático trasero derecho caliente.",
+      "axle=front": "Neumáticos delanteros calientes.",
+      "axle=rear": "Neumáticos traseros calientes."
+    }
+  },
+  "tyre_cold": {
+    "default": "Neumáticos fríos — cuidado las primeras curvas."
+  },
+  "tyre_wear_high": {
+    "default": "Desgaste alto de neumáticos — media {wear}%."
+  },
+  "tyre_cooking": {
+    "default": "Neumáticos cocinándose — baja el ritmo.",
+    "variants": {
+      "wheel=fl": "Neumático delantero izquierdo cocinándose.",
+      "wheel=fr": "Neumático delantero derecho cocinándose.",
+      "axle=front": "Neumáticos delanteros cocinándose."
+    }
+  },
+  "engine_overheat": {
+    "default": "Temperatura motor elevada — {temp} grados."
+  },
+  "battery_low_soc": {
+    "default": "Batería híbrida baja — optimiza despliegue y recuperación."
+  },
+  "drs_available": {
+    "default": "DRS disponible."
+  },
+  "drs_unavailable": {
+    "default": "DRS no disponible."
+  },
+  "ptp_available": {
+    "default": "Power to pass disponible."
+  },
+  "multiclass_slower_ahead": {
+    "default": "Coche de clase lenta delante — {class_name}."
+  },
+  "multiclass_faster_behind": {
+    "default": "Coche de clase rápida detrás — {class_name}."
+  },
+  "multiclass_class_leader_behind": {
+    "default": "Líder de clase {class_name} detrás — déjale pasar."
+  },
+  "frozen_order": {
+    "default": "Orden de clasificación congelado."
+  },
+  "frozen_order_cleared": {
+    "default": "Orden de clasificación reanudado."
+  },
+  "opponent_pitting": {
+    "default": "{name} entra en boxes desde P{position}."
+  },
+  "opponent_pit_exit": {
+    "default": "{name} sale de boxes — P{position}."
+  },
+  "opponent_position_change": {
+    "default": "{name} P{from} a P{to}."
+  },
+  "opponent_fast_lap": {
+    "default": "{name} — vuelta rápida {time} segundos."
+  },
+  "watched_opponent_pitting": {
+    "default": "Rival vigilado {name} entra en boxes — P{position}."
+  },
+  "watched_opponent_pit_exit": {
+    "default": "Rival vigilado {name} sale de boxes — P{position}."
+  },
+  "watched_opponent_gap": {
+    "default": "{name} {trend} — {delta} segundos."
+  },
+  "strategy_sector_advice": {
+    "default": "{advice}"
+  },
+  "pearl_overtake": {
+    "default": "{message}"
+  },
+  "pearl_comeback": {
+    "default": "{message}"
+  },
+  "pearl_fast_lap": {
+    "default": "{message}"
+  },
+  "pearl_standard": {
+    "default": "{message}"
+  },
+  "race_time_remaining": {
+    "default": "Quedan {remaining} de carrera."
+  },
+  "race_laps_remaining": {
+    "default": "Quedan {laps} vueltas."
+  },
+  "pit_exit_clear": {
+    "default": "Salida limpia.",
+    "variants": {
+      "traffic=true": "Cuidado — coche cerca saliendo de boxes."
+    }
+  },
+  "race_start_grid_side": {
+    "default": "Parrilla apretada.",
+    "variants": {
+      "side=left": "Parrilla por la izquierda.",
+      "side=right": "Parrilla por la derecha.",
+      "side=both": "Parrilla apretada, coches a ambos lados."
+    }
+  },
+  "driver_swap_detected": {
+    "default": "Cambio de piloto — {driver} al volante."
+  },
+  "driver_swap_15_min": {
+    "default": "Quince minutos restantes en el stint del piloto."
+  },
+  "driver_swap_10_min": {
+    "default": "Diez minutos restantes en el stint del piloto."
+  },
+  "driver_swap_5_min": {
+    "default": "Cinco minutos restantes en el stint del piloto."
+  },
+  "driver_swap_2_min": {
+    "default": "Dos minutos restantes en el stint del piloto."
+  },
+  "driver_swap_pit_this_lap": {
+    "default": "Para el cambio de piloto, para en boxes esta vuelta."
+  }
+}

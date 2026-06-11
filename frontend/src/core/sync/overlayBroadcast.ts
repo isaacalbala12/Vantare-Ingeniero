@@ -10,6 +10,15 @@ export type OverlaySyncPayload = {
   };
 };
 
+type OverlayBridge = {
+  publishOverlayState?: (payload: OverlaySyncPayload) => void;
+  subscribeOverlayState?: (handler: (payload: OverlaySyncPayload) => void) => () => void;
+};
+
+function getOverlayBridge(): OverlayBridge | undefined {
+  return (window as Window & { vantare?: OverlayBridge }).vantare;
+}
+
 let overlayPublishChannel: BroadcastChannel | null = null;
 
 function getOverlayPublishChannel(): BroadcastChannel | null {
@@ -21,12 +30,21 @@ function getOverlayPublishChannel(): BroadcastChannel | null {
 }
 
 export function publishOverlaySync(payload: OverlaySyncPayload): void {
+  const bridge = getOverlayBridge();
+  if (bridge?.publishOverlayState) {
+    bridge.publishOverlayState(payload);
+    return;
+  }
   getOverlayPublishChannel()?.postMessage(payload);
 }
 
 export function subscribeOverlaySync(
   handler: (payload: OverlaySyncPayload) => void,
 ): () => void {
+  const bridge = getOverlayBridge();
+  if (bridge?.subscribeOverlayState) {
+    return bridge.subscribeOverlayState(handler);
+  }
   if (typeof BroadcastChannel === "undefined") return () => {};
   const channel = new BroadcastChannel(OVERLAY_SYNC_CHANNEL);
   channel.onmessage = (event: MessageEvent<OverlaySyncPayload>) => {

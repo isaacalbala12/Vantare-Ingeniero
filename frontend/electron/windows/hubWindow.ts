@@ -1,4 +1,4 @@
-import { BrowserWindow } from "electron";
+import { app, BrowserWindow } from "electron";
 import { preloadScriptPath, rendererHtml } from "../paths";
 
 export function createHubWindow(isDev: boolean): BrowserWindow {
@@ -25,10 +25,9 @@ export function createHubWindow(isDev: boolean): BrowserWindow {
     void win.loadFile(rendererHtml("index.html"));
   }
 
-  win.on("close", (event) => {
+  win.on("close", () => {
     if (process.platform !== "darwin") {
-      event.preventDefault();
-      win.hide();
+      app.quit();
     }
   });
 

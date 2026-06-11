@@ -7,8 +7,6 @@ que reemplaza el JSON verboso en los prompts.
 Formato completo documentado en LMU/rag-dictionary.md
 """
 
-from typing import Any, Optional
-
 
 # ============================================================================
 # Mapeos de abreviaturas
@@ -46,6 +44,7 @@ GRIP_ABBREV = {
 # Funciones principales
 # ============================================================================
 
+
 def abbreviate_name(name: str) -> str:
     """Abrevia nombre de piloto a 3 caracteres.
 
@@ -61,11 +60,7 @@ def abbreviate_name(name: str) -> str:
 
     # Tomar primeras letras de cada palabra
     parts = name.strip().split()
-    if len(parts) >= 2:
-        # Primera letra del nombre + primera del apellido (máx 3 chars)
-        result = "".join(p[0].upper() for p in parts[:2] if p)
-    else:
-        result = name.strip()[:3]
+    result = "".join(p[0].upper() for p in parts[:2] if p) if len(parts) >= 2 else name.strip()[:3]
 
     # Padding si es muy corto
     result = result.upper()
@@ -98,19 +93,10 @@ def _format_time(seconds: float) -> str:
 
 
 def _format_laptime(seconds: float) -> str:
-    """Formatea tiempo de vuelta a M:SS.t.
+    """Formatea tiempo de vuelta para ticker/TTS (coloquial si < 60s)."""
+    from src.intelligence.time_format import format_laptime
 
-    Args:
-        seconds: Tiempo en segundos (puede tener decimales).
-
-    Returns:
-        Tiempo formateado como M:SS.t
-    """
-    total_seconds = int(seconds)
-    tenths = int((seconds - total_seconds) * 10) % 10
-    minutes = total_seconds // 60
-    secs = total_seconds % 60
-    return f"{minutes}:{secs:02d}.{tenths}"
+    return format_laptime(seconds, colloquial=True)
 
 
 def _format_drv(data: dict) -> str:
@@ -261,13 +247,13 @@ def _format_riv(data: dict) -> str:
     # Clasificar competidores
     cls1 = []  # gap < 5s
     cls2 = []  # gap 5-30s
-    far = []   # gap > 30s
-    lap = []   # laps_behind >= 1
+    far = []  # gap > 30s
+    lap = []  # laps_behind >= 1
 
     max_far_gap = 0
 
     for comp in competitors:
-        name = abbreviate_name(comp.get("name", "DRV"))
+        name = abbreviate_name(comp.get("name") or comp.get("driver_name") or "DRV")
         cls = comp.get("class", "GT3")
         gap = comp.get("gap", 0.0)
         laps = comp.get("laps", 0)
@@ -289,7 +275,10 @@ def _format_riv(data: dict) -> str:
 
     # Construir líneas
     if cls1:
-        lines.append(f"CLS1({len(cls1)}):" + "·".join(cls1))
+        max_cls = int(data.get("max_cls_rivals", 0) or 0)
+        cls1_display = cls1[:max_cls] if max_cls > 0 else cls1
+        suffix = "·…" if max_cls > 0 and len(cls1) > max_cls else ""
+        lines.append(f"CLS1({len(cls1)}):" + "·".join(cls1_display) + suffix)
     else:
         lines.append("CLS1(0):—")
 

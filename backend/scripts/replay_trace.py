@@ -42,6 +42,7 @@ def main() -> None:
             sent.append({"message": str(message)})
 
     engine = IntelligenceEngine(broadcast_callback=_capture)
+    engine.apply_runtime_config({"verbosityLevel": "normal", "engineerEnabled": True})
     engine.crewchief_suite = build_crewchief_suite(engine)
     loop = CrewChiefGameStateLoop(engine=engine)
 

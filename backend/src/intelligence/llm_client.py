@@ -3,16 +3,30 @@ import json
 import logging
 import re
 from collections.abc import AsyncGenerator
+from dataclasses import dataclass, field
 from typing import Any
 
 import httpx
 from openai import AsyncOpenAI
 from src.config import settings
 from src.intelligence import prompt_templates
+from src.intelligence.llm_speech_sanitize import sanitize_llm_speech
 from src.models.messages import AdviceEndMessage, AdviceStartMessage, AdviceTokenMessage, UIAction
 from src.transport.broadcaster import send
 
 logger = logging.getLogger("vantare.llm_client")
+
+
+@dataclass
+class ParsedToolCall:
+    name: str
+    arguments: dict[str, Any]
+
+
+@dataclass
+class AskWithToolsResult:
+    content: str = ""
+    tool_calls: list[ParsedToolCall] = field(default_factory=list)
 
 
 class VLLMClient:
@@ -122,16 +136,16 @@ class VLLMClient:
 
                 delta = chunk.choices[0].delta
 
-                # Contenido de texto (modelos estándar y de razonamiento Qwen/vLLM)
-                token = None
-                if delta.content:
-                    token = delta.content
-                elif hasattr(delta, "reasoning_content") and delta.reasoning_content:
-                    token = delta.reasoning_content
+                # Solo emitir contenido final al frontend; reasoning_content queda fuera de radio/TTS.
+                if hasattr(delta, "reasoning_content") and delta.reasoning_content:
+                    continue
 
+                token = delta.content if delta.content else None
                 if token:
                     full_text += token
-                    send(AdviceTokenMessage(advice_id=advice_id, token=token, event="advice_token"))
+                    spoken = sanitize_llm_speech(token, finalize=False, preserve_trailing_space=True)
+                    if spoken:
+                        send(AdviceTokenMessage(advice_id=advice_id, token=spoken, event="advice_token"))
 
                 # Tool calls (para acciones UI)
                 if delta.tool_calls:
@@ -193,10 +207,13 @@ class VLLMClient:
                     except Exception as e:
                         logger.warning("Error parseando tool call arguments (idx=%s): %s", idx, e)
 
-            # 4. Emitir mensaje final
+            # 4. Emitir mensaje final (sin chain-of-thought)
+            final_text = sanitize_llm_speech(full_text, finalize=True)
+            if not final_text.strip():
+                final_text = "... Sin respuesta audible del ingeniero ..."
             end_msg = AdviceEndMessage(
                 advice_id=advice_id,
-                full_text=full_text,
+                full_text=final_text,
                 actions=actions,
                 event="advice_end",
             )
@@ -309,3 +326,163 @@ class VLLMClient:
                         continue
         except Exception as e:
             logger.error(f"Error en ask_streaming_text: {e}", exc_info=True)
+
+    def _is_stepfun(self) -> bool:
+        return "stepfun" in (self._base_url or "").lower()
+
+    def _stepfun_extra_body(self) -> dict[str, Any] | None:
+        """Desactiva chain-of-thought en Stepfun para respuestas directas de radio."""
+        if self._is_stepfun():
+            return {"thinking": {"type": "off"}}
+        return None
+
+    @staticmethod
+    def _extract_message_speech(message: Any) -> str:
+        """Texto hablable del mensaje: content primero, reasoning_content como respaldo."""
+        content = (getattr(message, "content", None) or "").strip()
+        if content:
+            return content
+        reasoning = getattr(message, "reasoning_content", None) or ""
+        if isinstance(reasoning, str):
+            return reasoning.strip()
+        return ""
+
+    @staticmethod
+    def _delta_reasoning(delta: Any) -> str:
+        raw = getattr(delta, "reasoning_content", None) or ""
+        return raw if isinstance(raw, str) else ""
+
+    _STEPFUN_TOOL_ALIASES: dict[str, str] = {
+        "consultar_estado_combustible": "get_fuel_status",
+        "get_fuel_status": "get_fuel_status",
+    }
+
+    @staticmethod
+    def _parse_stepfun_tool_markup(raw: str) -> ParsedToolCall | None:
+        import re
+
+        fn_match = re.search(r"<function=([^>\n]+)>", raw, re.IGNORECASE)
+        if not fn_match:
+            return None
+        raw_name = fn_match.group(1).strip()
+        mapped = VLLMClient._STEPFUN_TOOL_ALIASES.get(raw_name, raw_name)
+        args: dict[str, Any] = {}
+        for param_match in re.finditer(
+            r"<parameter=([^>\n]+)>\s*(.*?)\s*</parameter>",
+            raw,
+            re.DOTALL | re.IGNORECASE,
+        ):
+            args[param_match.group(1).strip()] = param_match.group(2).strip()
+        return ParsedToolCall(name=mapped, arguments=args)
+
+    async def complete_text(self, prompt: str, *, max_tokens: int = 500) -> str:
+        client = self._get_client()
+        response = await client.chat.completions.create(
+            model=self._model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2,
+            max_tokens=max_tokens,
+        )
+        return (response.choices[0].message.content or "").strip()
+
+    async def complete_from_messages(self, messages: list[dict], *, max_tokens: int = 500) -> str:
+        client = self._get_client()
+        kwargs: dict[str, Any] = {
+            "model": self._model,
+            "messages": messages,
+            "temperature": 0.2,
+            "max_tokens": max_tokens,
+        }
+        extra = self._stepfun_extra_body()
+        if extra:
+            kwargs["extra_body"] = extra
+        response = await client.chat.completions.create(**kwargs)
+        raw = self._extract_message_speech(response.choices[0].message)
+        if not raw.strip():
+            logger.warning("LLM complete_from_messages: respuesta vacía (content y reasoning)")
+        return sanitize_llm_speech(raw, finalize=True)
+
+    async def _complete_speech_messages(self, messages: list[dict], *, max_tokens: int = 400) -> str:
+        return await self.complete_from_messages(messages, max_tokens=max_tokens)
+
+    async def ask_streaming_messages(
+        self,
+        messages: list[dict],
+        *,
+        tier: str = "FAST",
+    ) -> AsyncGenerator[str, None]:
+        del tier
+        client = self._get_client()
+        kwargs: dict[str, Any] = {
+            "model": self._model,
+            "messages": messages,
+            "temperature": 0.2,
+            "max_tokens": 500,
+            "stream": True,
+        }
+        extra = self._stepfun_extra_body()
+        if extra:
+            kwargs["extra_body"] = extra
+        stream = await client.chat.completions.create(**kwargs)
+        content_buf = ""
+        reasoning_buf = ""
+        async for chunk in stream:
+            if not chunk.choices:
+                continue
+            delta = chunk.choices[0].delta
+            reasoning = self._delta_reasoning(delta)
+            if reasoning:
+                reasoning_buf += reasoning
+            token = delta.content or ""
+            if not token:
+                continue
+            content_buf += token
+            spoken = sanitize_llm_speech(token, finalize=False, preserve_trailing_space=True)
+            if spoken:
+                yield spoken
+
+        if not content_buf.strip() and reasoning_buf.strip():
+            logger.warning(
+                "PTT stream sin content (%d chars reasoning); usando sanitizado de respaldo",
+                len(reasoning_buf),
+            )
+            spoken = sanitize_llm_speech(reasoning_buf, finalize=True)
+            if spoken:
+                yield spoken
+
+    async def ask_with_tools(
+        self,
+        messages: list[dict],
+        tools: list[dict],
+        *,
+        tool_choice: str = "auto",
+        max_tokens: int = 256,
+    ) -> AskWithToolsResult:
+        client = self._get_client()
+        kwargs: dict[str, Any] = {
+            "model": self._model,
+            "messages": messages,
+            "temperature": 0.1,
+            "max_tokens": max_tokens,
+        }
+        extra = self._stepfun_extra_body()
+        if extra:
+            kwargs["extra_body"] = extra
+        if tools and not self._is_stepfun():
+            kwargs["tools"] = tools
+            kwargs["tool_choice"] = tool_choice
+
+        response = await client.chat.completions.create(**kwargs)
+        message = response.choices[0].message
+        content = sanitize_llm_speech(self._extract_message_speech(message), finalize=True)
+        parsed: list[ParsedToolCall] = []
+        for tc in message.tool_calls or []:
+            fn = tc.function
+            if not fn or not fn.name:
+                continue
+            try:
+                args = json.loads(fn.arguments or "{}")
+            except json.JSONDecodeError:
+                args = {}
+            parsed.append(ParsedToolCall(name=fn.name, arguments=args if isinstance(args, dict) else {}))
+        return AskWithToolsResult(content=content, tool_calls=parsed)

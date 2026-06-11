@@ -213,6 +213,7 @@ class TestSpotterWave2:
         assert "derecha" in prox.message.lower()
 
     def test_qualifying_silent_except_sc_and_fuel(self, spotter, base_tick):
+        spotter.apply_runtime_config({"enableFuelMessages": False, "enableGapMessages": False})
         tick = dict(base_tick)
         tick["session_type"] = "qualifying"
         tick["gap_ahead"] = 0.2
@@ -234,6 +235,7 @@ class TestSpotterWave2:
             spotter_off_qualifying=False,
             enabled=True,
         )
+        spotter.apply_runtime_config({"enableGapMessages": False})
         tick = dict(base_tick)
         tick["session_type"] = "qualifying"
         tick["gap_ahead"] = 0.2

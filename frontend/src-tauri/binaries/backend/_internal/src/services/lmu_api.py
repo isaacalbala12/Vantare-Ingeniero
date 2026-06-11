@@ -2,8 +2,8 @@ import asyncio
 import logging
 import time
 from threading import Lock
-import httpx
 
+import httpx
 from src.config import settings
 
 logger = logging.getLogger("vantare.lmu_api")
@@ -12,17 +12,49 @@ logger = logging.getLogger("vantare.lmu_api")
 _weather_cache: dict = {}
 _strategy_usage_cache: dict = {}
 _garage_wear_cache: dict = {}
+_session_settings_cache: dict = {}
 
 _weather_updated: float = 0.0
 _strategy_updated: float = 0.0
 _garage_updated: float = 0.0
+_session_settings_updated: float = 0.0
 
 _cache_lock = Lock()
 
 
+def lmu_weather_scalar(node: object, default: float = 0.0) -> float:
+    """Extrae escalar de campos REST LMU ({currentValue, stringValue}) o planos."""
+    if isinstance(node, dict):
+        node = node.get("currentValue", default)
+    try:
+        return float(node)
+    except (TypeError, ValueError):
+        return default
+
+
+def _normalize_weather_cache(raw: dict) -> dict:
+    """Normaliza nodos anidados de clima a escalares float."""
+    normalized: dict = {}
+    for session_key, session_data in raw.items():
+        if not isinstance(session_data, dict):
+            normalized[session_key] = session_data
+            continue
+        session_out: dict = {}
+        for node_key, node_data in session_data.items():
+            if isinstance(node_data, dict):
+                session_out[node_key] = {
+                    field: lmu_weather_scalar(value)
+                    for field, value in node_data.items()
+                }
+            else:
+                session_out[node_key] = lmu_weather_scalar(node_data)
+        normalized[session_key] = session_out
+    return normalized
+
+
 def get_weather() -> dict:
     """Devuelve los datos climáticos cacheados. Thread-safe.
-    
+
     Estructura esperada: JSON con PRACTICE, QUALIFY, RACE.
     Cada uno con START, NODE_25, NODE_50, NODE_75, FINISH.
     Campos por nodo: WNV_SKY, WNV_TEMPERATURE, WNV_RAIN_CHANCE, WNV_HUMIDITY, WNV_WINDDIRECTION, WNV_WINDSPEED.
@@ -33,7 +65,7 @@ def get_weather() -> dict:
 
 def get_strategy_usage() -> dict:
     """Devuelve el historial de uso de energía virtual por piloto. Thread-safe.
-    
+
     Estructura esperada: ej. {"Isaac Albala": [{"ve": 1.0}, {"ve": 0.95}, ...]}
     """
     with _cache_lock:
@@ -42,16 +74,22 @@ def get_strategy_usage() -> dict:
 
 def get_garage_wear() -> dict:
     """Devuelve los desgastes de garaje (aero, frenos, suspensión). Thread-safe.
-    
+
     Estructura esperada: wearables.body.aero (float), wearables.brakes (array), wearables.suspension (array)
     """
     with _cache_lock:
         return _garage_wear_cache.copy()
 
 
+def get_session_settings() -> dict:
+    """Devuelve ajustes de sesión LMU cacheados (SESSSET_*). Thread-safe."""
+    with _cache_lock:
+        return _session_settings_cache.copy()
+
+
 def get_additional_data(category: str) -> dict:
     """Devuelve datos de cache de forma thread-safe y retrocompatible.
-    
+
     Permite que strategy_service.py siga consultando 'brakes' y 'damage' de forma transparente.
     """
     with _cache_lock:
@@ -69,6 +107,8 @@ def get_additional_data(category: str) -> dict:
             # Extrae el desgaste aerodinámico de wearables
             aero = _garage_wear_cache.get("wearables", {}).get("body", {}).get("aero", 0.0)
             return {"aero": aero}
+        elif category == "session_settings":
+            return _session_settings_cache.copy()
         return {}
 
 
@@ -84,57 +124,59 @@ def get_cache_sizes() -> dict:
             "garage_age_s": time.monotonic() - _garage_updated if _garage_updated else -1,
             # Claves compatibles para no romper la API de health actual
             "drivers": len(_strategy_usage_cache),
-            "brakes": len(_garage_wear_cache)
+            "brakes": len(_garage_wear_cache),
         }
 
 
 async def poll_api() -> None:
     """Loop infinito asíncrono que consulta los 3 endpoints reales de LMU de forma no bloqueante.
-    
+
     - /rest/sessions/weather: cada 120 segundos.
     - /rest/strategy/usage: cada 3 segundos.
     - /rest/garage/UIScreen/RepairAndRefuel: cada 3 segundos.
-    
+
     Arrancado como tarea asyncio en background desde el lifespan de FastAPI.
     """
     logger.info("LMU REST API poller started")
-    
+
     last_weather_poll = 0.0
     last_strategy_poll = 0.0
     last_garage_poll = 0.0
-    
+
     try:
         async with httpx.AsyncClient() as client:
             while True:
                 current_time = time.monotonic()
                 tasks = []
                 task_keys = []
-                
+
                 # 1. Weather (cada 120 segundos)
                 # La primera iteración (last_weather_poll = 0.0) se ejecutará inmediatamente
                 if current_time - last_weather_poll >= 120.0:
                     tasks.append(client.get(f"{settings.LMU_REST_URL}/rest/sessions/weather", timeout=2.0))
                     task_keys.append("weather")
-                
+
                 # 2. Strategy Usage (cada 3 segundos)
                 if current_time - last_strategy_poll >= 3.0:
                     tasks.append(client.get(f"{settings.LMU_REST_URL}/rest/strategy/usage", timeout=2.0))
                     task_keys.append("strategy_usage")
-                
+
                 # 3. Garage Wear (cada 3 segundos)
                 if current_time - last_garage_poll >= 3.0:
-                    tasks.append(client.get(f"{settings.LMU_REST_URL}/rest/garage/UIScreen/RepairAndRefuel", timeout=2.0))
+                    tasks.append(
+                        client.get(f"{settings.LMU_REST_URL}/rest/garage/UIScreen/RepairAndRefuel", timeout=2.0)
+                    )
                     task_keys.append("garage_wear")
-                
+
                 if tasks:
                     # Ejecutar en paralelo todas las consultas agendadas
                     results = await asyncio.gather(*tasks, return_exceptions=True)
-                    
+
                     new_weather = None
                     new_strategy = None
                     new_garage = None
-                    
-                    for key, result in zip(task_keys, results):
+
+                    for key, result in zip(task_keys, results, strict=False):
                         if isinstance(result, Exception):
                             logger.debug(f"Fetch for {key} failed: {result}")
                             continue
@@ -151,12 +193,18 @@ async def poll_api() -> None:
                                 new_garage = data
                         except Exception as e:
                             logger.debug(f"Failed to parse JSON response for {key}: {e}")
-                    
+
                     # Swap atómico con lock para mantener la persistencia
-                    global _weather_cache, _strategy_usage_cache, _garage_wear_cache, _weather_updated, _strategy_updated, _garage_updated
+                    global \
+                        _weather_cache, \
+                        _strategy_usage_cache, \
+                        _garage_wear_cache, \
+                        _weather_updated, \
+                        _strategy_updated, \
+                        _garage_updated
                     with _cache_lock:
                         if new_weather is not None:
-                            _weather_cache = new_weather
+                            _weather_cache = _normalize_weather_cache(new_weather)
                             _weather_updated = current_time
                         if new_strategy is not None:
                             _strategy_usage_cache = new_strategy
@@ -164,7 +212,7 @@ async def poll_api() -> None:
                         if new_garage is not None:
                             _garage_wear_cache = new_garage
                             _garage_updated = current_time
-                            
+
                     # Actualizar timestamps de última consulta para evitar busy-waiting
                     if "weather" in task_keys:
                         last_weather_poll = current_time
@@ -172,10 +220,10 @@ async def poll_api() -> None:
                         last_strategy_poll = current_time
                     if "garage_wear" in task_keys:
                         last_garage_poll = current_time
-                
+
                 # Tick cada 1 segundo para verificar tiempos de refresco
                 await asyncio.sleep(1.0)
-                
+
     except asyncio.CancelledError:
         logger.info("LMU REST API poller cancelled")
         raise

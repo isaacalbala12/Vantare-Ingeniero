@@ -40,16 +40,24 @@ export function gapsFromCompetitorPace(competitors: unknown[]): { ahead: number;
   };
 }
 
+/**
+ * Map native sidecar MessagePack frame → partial UI telemetry store patch.
+ * Native frames expose speed in m/s; store `telemetry.speed` is always km/h.
+ * Gear can be present in sidecar (`gear`) and may be 0 (neutral) / -1 (reverse).
+ */
 export function mapSidecarBinaryFrame(decoded: Record<string, unknown>) {
   const speedMs = Number(decoded.speed ?? 0);
+  const speedKmh = Math.round(speedMs * 3.6);
+  const lapRaw = Number(decoded.lap_number ?? 0);
+  const gearRaw = Number(decoded.gear ?? 0);
 
   return {
-    speed: Math.round(speedMs * 3.6),
+    speed: speedKmh,
     rpm: 0,
-    gear: 0,
+    gear: Number.isFinite(gearRaw) ? Math.trunc(gearRaw) : 0,
     fuel: Number(decoded.fuel_in_tank ?? 0),
-    lap: Number(decoded.lap_number ?? 1),
-    position: Number(decoded.standing_position ?? 1),
+    lap: lapRaw > 0 ? lapRaw : 0,
+    position: Number(decoded.standing_position ?? 0),
     tyreWear: {
       fl: Math.round(Number(decoded.tyre_wear_fl ?? 0)),
       fr: Math.round(Number(decoded.tyre_wear_fr ?? 0)),

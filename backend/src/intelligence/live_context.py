@@ -1,6 +1,9 @@
 import copy
 from typing import Any
 
+from src.intelligence.gaps import resolve_gaps
+from src.intelligence.state_coercion import lmu_scalar
+
 
 class LiveContextManager:
     """Administrador de contexto incremental vuelta a vuelta en tres tiers de snapshots."""
@@ -32,8 +35,7 @@ class LiveContextManager:
         pit_window = strategy.get("pit_window", {})
         pit_window_open = pit_window.get("pit_window_open", False)
 
-        gap_ahead = telemetry.get("gap_ahead", 99.0)
-        gap_behind = telemetry.get("gap_behind", 99.0)
+        gap_ahead, gap_behind = resolve_gaps(telemetry)
 
         # Evaluar si las temperaturas de gomas están en rango seguro (ej: 70°C a 105°C)
         fl_temp = telemetry.get("tyre_temp_fl", 90.0)
@@ -159,7 +161,9 @@ class LiveContextManager:
 
         # Lluvia prevista si la probabilidad en alguno de los primeros slots es > 20%
         rain_expected = any(
-            float(slot.get("WNV_RAIN_CHANCE", 0.0)) > 20.0 for slot in weather_forecast if isinstance(slot, dict)
+            lmu_scalar(slot.get("WNV_RAIN_CHANCE", 0.0)) > 20.0
+            for slot in weather_forecast
+            if isinstance(slot, dict)
         )
 
         damage = {
@@ -220,8 +224,7 @@ class LiveContextManager:
         track_grip_level = telemetry.get("track_grip_level", 0)
         cloud_coverage = telemetry.get("cloud_coverage", 0)
         raining = telemetry.get("raining", 0.0)
-        gap_ahead = telemetry.get("gap_ahead", 99.0)
-        gap_behind = telemetry.get("gap_behind", 99.0)
+        gap_ahead, gap_behind = resolve_gaps(telemetry)
         brake_wear = round(
             (
                 telemetry.get("brake_wear_fl", 0.0)
