@@ -11,7 +11,7 @@ async def test_cache_hit_skips_edge():
     edge.synthesize = AsyncMock(return_value=b"live")
     cache = SpotterPhraseCache(edge)
     cache._bytes["k"] = b"cached"
-    mgr = TTSManager(edge, cache)
+    mgr = TTSManager(edge=edge, spotter_cache=cache)
     out = await mgr.synthesize("text", cache_key="k")
     assert out == b"cached"
     edge.synthesize.assert_not_called()

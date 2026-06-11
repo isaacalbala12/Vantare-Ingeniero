@@ -33,7 +33,7 @@ async def voice_loop(
                     ducking.duck_on()
                 try:
                     if tts is not None and hasattr(tts, "synthesize"):
-                        audio = await tts.synthesize(cmd.text, cache_key=cmd.wav_cache_key)
+                        audio = await tts.synthesize(cmd.text, cache_key=cmd.wav_cache_key, tts_role=cmd.tts_role)
                         if hasattr(player, "play_bytes"):
                             await player.play_bytes(audio, priority=cmd.priority)
                         else:
