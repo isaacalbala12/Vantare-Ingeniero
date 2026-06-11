@@ -10,6 +10,7 @@ export const APP_CONFIG_KEYS = [
   "spotterCarLengthM", "spotterMinSpeedMs", "spotterRaceStartDelayS",
   "brakingZonesMute", "speakOnlyWhenSpokenTo", "ttsVolumeBoost",
   "spotterEnabled", "engineerEnabled",
+  "proactivityLevel", "pearlFrequency",
 ] as const satisfies readonly (keyof AppConfig)[];
 
 export function assertFullAppConfig(payload: AppConfig): void {

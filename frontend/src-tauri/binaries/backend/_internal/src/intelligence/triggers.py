@@ -64,6 +64,7 @@ class BaseTrigger(ABC):
         min_interval: float,
         description: str,
         alert_text: str,
+        phrase_key: str | None = None,
     ) -> None:
         self.priority = priority
         self.tier = tier
@@ -71,9 +72,18 @@ class BaseTrigger(ABC):
         self.min_interval = min_interval
         self.description = description
         self.alert_text = alert_text
+        self.phrase_key = phrase_key
         self.last_triggered: float = 0.0
         self.name = description
         self._edge_latched = False
+
+    def resolve_message(self, personality) -> str:
+        if not self.phrase_key:
+            return self.alert_text
+        from src.intelligence.phrase_picker import get_picker
+
+        msg = get_picker().trigger_phrase(self.phrase_key, profile_id=personality.profile_id)
+        return msg or self.alert_text
 
     def _fire_rising_edge(self, active: bool) -> bool:
         if not active:
@@ -130,7 +140,8 @@ class FuelCriticalTrigger(BaseTrigger):
             TriggerAction.DETERMINISTIC_ONLY,
             min_interval=15.0,
             description="Combustible críticamente bajo",
-            alert_text="¡ATENCIÓN! Quedan menos de 3 vueltas de combustible. Planifica parada.",
+            alert_text="Fallback combustible bajo.",
+            phrase_key="fuel_critical",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -158,6 +169,7 @@ class FlagsMonitorTrigger(BaseTrigger):
         )
         self.name = "Flags Monitor"
         self._prev_snapshot = None
+        self.phrase_key = None
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
         from src.intelligence.flags_monitor import (
@@ -180,6 +192,7 @@ class FlagsMonitorTrigger(BaseTrigger):
         self._prev_snapshot = current
 
         if (current.safety_car or current.fcy) and not (previous.safety_car or previous.fcy):
+            self.phrase_key = "fcy_active" if current.fcy else None
             self.alert_text = "¡SAFETY CAR o FCY ACTIVO! Reduce velocidad y prepárate."
             return True
 
@@ -187,6 +200,7 @@ class FlagsMonitorTrigger(BaseTrigger):
         if event is not None:
             if not telemetry_on_track(telemetry):
                 return False
+            self.phrase_key = None
             self.alert_text = event.message
             return True
         return False
@@ -404,7 +418,8 @@ class BrakeWearCriticalTrigger(BaseTrigger):
             TriggerAction.DETERMINISTIC_ONLY,
             min_interval=20.0,
             description="Desgaste crítico de frenos",
-            alert_text="¡AVISO DE FRENOS! Desgaste superior al 80% detectado.",
+            alert_text="Fallback desgaste frenos alto.",
+            phrase_key="brake_wear_high",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -428,7 +443,8 @@ class TyreDegAccelTrigger(BaseTrigger):
             TriggerAction.DETERMINISTIC_ONLY,
             min_interval=30.0,
             description="Degradación de neumáticos acelerada",
-            alert_text="Desgaste promedio de neumáticos elevado. Ritmo degradado.",
+            alert_text="Fallback desgaste neumáticos alto.",
+            phrase_key="tyre_wear_high",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -441,7 +457,7 @@ class TyreDegAccelTrigger(BaseTrigger):
         w_rl = telemetry.get("tyre_wear_rl", 0.0)
         w_rr = telemetry.get("tyre_wear_rr", 0.0)
         avg_wear = (w_fl + w_fr + w_rl + w_rr) / 4.0
-        return avg_wear > 25.0
+        return self._fire_rising_edge(avg_wear > 25.0)
 
 
 class HybridDeployMapTrigger(BaseTrigger):
@@ -479,7 +495,8 @@ class WeatherChangeTrigger(BaseTrigger):
             TriggerAction.LLM_REQUIRED,
             min_interval=120.0,
             description="Amenaza de lluvia inminente",
-            alert_text="Probabilidad de lluvia superior al 30% en el forecast actual.",
+            alert_text="Fallback probabilidad de lluvia.",
+            phrase_key="rain_increasing",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:
@@ -489,12 +506,14 @@ class WeatherChangeTrigger(BaseTrigger):
         if not isinstance(weather_list, list) or not weather_list:
             return False
         # Evaluar los primeros nodos de previsión (ej: NODE_25, NODE_50)
+        active = False
         for slot in weather_list[:2]:
             if isinstance(slot, dict):
                 rain_chance = lmu_scalar(slot.get("WNV_RAIN_CHANCE", 0.0))
                 if rain_chance > 30.0:
-                    return True
-        return False
+                    active = True
+                    break
+        return self._fire_rising_edge(active)
 
 
 class PitWindowOpenedTrigger(BaseTrigger):
@@ -507,7 +526,8 @@ class PitWindowOpenedTrigger(BaseTrigger):
             TriggerAction.DETERMINISTIC_ONLY,
             min_interval=30.0,
             description="Ventana de parada abierta",
-            alert_text="Ventana de paradas activa. Analizando estrategia óptima.",
+            alert_text="Fallback ventana de parada abierta.",
+            phrase_key="pit_window_opened",
         )
 
     def condition(self, telemetry: dict, strategy: dict, session: dict) -> bool:

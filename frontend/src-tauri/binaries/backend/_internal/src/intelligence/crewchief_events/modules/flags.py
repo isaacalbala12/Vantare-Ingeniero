@@ -7,6 +7,7 @@ from src.intelligence.flags_monitor import (
     detect_flag_transitions,
     snapshot_from_telemetry,
 )
+from src.intelligence.phrase_picker import trigger_phrase_for_session
 
 from ..base import CrewChiefEventModule
 from ..cc_gates import flag_on_cooldown, should_emit_flag_event
@@ -32,7 +33,11 @@ _FLAG_TEMPLATE: dict[FlagEventType, tuple[str, dict]] = {
 }
 
 
-def _flag_text(event: FlagEvent) -> str:
+def _flag_text(event: FlagEvent, session: dict) -> str:
+    if event.event_type == FlagEventType.FCY:
+        phrase = trigger_phrase_for_session(session, "fcy_active", "")
+        if phrase:
+            return phrase
     if event.event_type == FlagEventType.GREEN and "retirada" in event.message.lower():
         return render_template("flags_blue_cleared")
     if event.event_type == FlagEventType.RED and "terminada" in event.message.lower():
@@ -53,11 +58,11 @@ def _priority_from_flag(rank: int) -> CrewChiefPriority:
     return CrewChiefPriority.NORMAL
 
 
-def _message_from_flag_event(event: FlagEvent) -> CrewChiefMessage:
+def _message_from_flag_event(event: FlagEvent, session: dict) -> CrewChiefMessage:
     priority = _priority_from_flag(event.priority)
     return CrewChiefMessage(
         event_id=f"flags_{event.event_type.value}",
-        text=_flag_text(event),
+        text=_flag_text(event, session),
         priority=priority,
         channel=CrewChiefChannel.ENGINEER,
         ttl_ms=5000 if priority == CrewChiefPriority.CRITICAL else 8000,
@@ -98,5 +103,5 @@ class FlagsEvent(CrewChiefEventModule):
             if flag_on_cooldown(event.event_type, now, self._last_flag_played_at):
                 continue
             self._last_flag_played_at[event.event_type] = now
-            messages.append(_message_from_flag_event(event))
+            messages.append(_message_from_flag_event(event, ctx.session))
         return messages

@@ -75,6 +75,9 @@ class CommentaryOrchestrator:
         event_def = get_event(event_id)
         eff_priority = priority or (event_def.priority if event_def else "NORMAL")
         verbosity_min = event_def.verbosity_min if event_def else eff_priority
+        if not self._personality.should_emit_proactive(eff_priority):
+            logger.debug("Commentary filtrado por proactividad: %s", event_id)
+            return False
         if not self._verbosity.should_emit_event(verbosity_min):
             logger.debug("Commentary filtrado por verbosidad: %s", event_id)
             return False

@@ -118,9 +118,11 @@ class IntelligenceEngine(EnginePttMixin):
 
         self.pearls = PearlsService()
         self.personality = PersonalityPack()
+        self.personality.apply_runtime(sweary=self.sweary_messages)
         self.verbosity = VerbosityController()
         self.engineer_enabled = False
         self._spotter_service = None
+        self._tts_routing = None
         self._eval_telemetry: dict[str, Any] = {}
         self._eval_session: dict[str, Any] = {}
 
@@ -153,6 +155,9 @@ class IntelligenceEngine(EnginePttMixin):
         for evt in events:
             event_id = proactive_event_id(evt)
             if is_cc_owned_event(event_id):
+                continue
+            priority = evt[2] if isinstance(evt, tuple) and len(evt) > 2 else "NORMAL"
+            if not self.personality.should_emit_proactive(str(priority)):
                 continue
             if isinstance(evt, ImmediateAlert):
                 self.broadcaster.send(
@@ -217,7 +222,11 @@ class IntelligenceEngine(EnginePttMixin):
 
         if self.verbosity.level == VerbosityLevel.SILENT:
             return
-        message = self.pearls.on_event(pearl_type, sweary=self.sweary_messages)
+        message = self.pearls.on_event(
+            pearl_type,
+            sweary=self.sweary_messages,
+            pearl_frequency=self.personality.pearl_frequency,
+        )
         if not message:
             return
         alert = AlertMessage(
@@ -378,6 +387,7 @@ class IntelligenceEngine(EnginePttMixin):
                         current_prio_val = Priority[self._active_trigger_priority].value
 
                 if trigger.action == TriggerAction.LLM_REQUIRED:
+                    self._emit_trigger_alert(trigger)
                     if int(trigger.priority) > current_prio_val:
                         await self.cancel_current_llm()
 
@@ -425,6 +435,7 @@ class IntelligenceEngine(EnginePttMixin):
                     break
 
                 elif trigger.action == TriggerAction.DETERMINISTIC_ONLY:
+                    self._emit_trigger_alert(trigger)
                     strat_service = self._get_strategy_service()
                     if strat_service:
                         advice = strat_service.get_latest_advice()
@@ -433,16 +444,24 @@ class IntelligenceEngine(EnginePttMixin):
                     break
 
                 elif trigger.action == TriggerAction.ALERT_ONLY:
-                    alert_msg = AlertMessage(
-                        event="alert",
-                        alert_id=str(uuid.uuid4()),
-                        category="strategy",
-                        message=trigger.alert_text,
-                        audio_priority=trigger.priority.name,
-                        payload={"severity": trigger.priority.name, "ttl": 10, "dismissable": True},
-                    )
-                    self.broadcaster.send(alert_msg)
+                    self._emit_trigger_alert(trigger, require_phrase_key=False)
                     break
+
+    def _emit_trigger_alert(self, trigger, *, require_phrase_key: bool = True) -> None:
+        if require_phrase_key and not trigger.phrase_key:
+            return
+        message = trigger.resolve_message(self.personality)
+        if not message:
+            return
+        alert_msg = AlertMessage(
+            event="alert",
+            alert_id=str(uuid.uuid4()),
+            category="strategy",
+            message=message,
+            audio_priority=trigger.priority.name,
+            payload={"severity": trigger.priority.name, "ttl": 10, "dismissable": True},
+        )
+        self.broadcaster.send(alert_msg)
 
     async def _run_llm_stream(self, prompt: str, tier: str, advice_id: str) -> None:
         """Helper para ejecutar ask_streaming dando soporte a mocks de test (async generators)."""
@@ -623,11 +642,30 @@ class IntelligenceEngine(EnginePttMixin):
     def set_spotter_service(self, spotter) -> None:
         self._spotter_service = spotter
 
+    def set_tts_routing(self, routing) -> None:
+        self._tts_routing = routing
+        self._sync_tts_voices_from_personality()
+
+    def _sync_tts_voices_from_personality(self) -> None:
+        routing = getattr(self, "_tts_routing", None)
+        if routing is None:
+            return
+        routing.edge_voice_engineer = self.personality.tts_voice_engineer()
+        routing.edge_voice_spotter = self.personality.tts_voice_spotter()
+
     def apply_runtime_config(self, cfg: dict[str, Any]) -> None:
         if not isinstance(cfg, dict):
             return
         if "personalityProfileId" in cfg:
             self.personality.set_profile(str(cfg["personalityProfileId"]))
+            self._sync_tts_voices_from_personality()
+        if "swearyMessages" in cfg:
+            self.sweary_messages = bool(cfg["swearyMessages"])
+            self.personality.apply_runtime(sweary=self.sweary_messages)
+        if "proactivityLevel" in cfg:
+            self.personality.apply_runtime(proactivity=str(cfg["proactivityLevel"]))
+        if "pearlFrequency" in cfg:
+            self.personality.apply_runtime(pearl_frequency=float(cfg["pearlFrequency"]))
         if "verbosityLevel" in cfg:
             self.verbosity.set_level(str(cfg["verbosityLevel"]))
         if "brakingZonesMute" in cfg:
@@ -645,13 +683,16 @@ class IntelligenceEngine(EnginePttMixin):
         if "spotterEnabled" in cfg and self._spotter_service is not None:
             if bool(cfg["spotterEnabled"]):
                 self._spotter_service.enabled = True
-        if "swearyMessages" in cfg:
-            self.sweary_messages = bool(cfg["swearyMessages"])
+        if "ttsProviderEngineer" in cfg and hasattr(self, "_tts_routing") and self._tts_routing is not None:
+            self._tts_routing.provider_engineer = str(cfg["ttsProviderEngineer"])
+        if "ttsProviderSpotter" in cfg and hasattr(self, "_tts_routing") and self._tts_routing is not None:
+            self._tts_routing.provider_spotter = str(cfg["ttsProviderSpotter"])
 
     def _emit_config_ack(self) -> None:
         self.broadcast_config_ack()
 
     def runtime_config_snapshot(self) -> dict[str, Any]:
+        routing = getattr(self, "_tts_routing", None)
         snap: dict[str, Any] = {
             "personalityProfileId": self.personality.profile_id,
             "verbosityLevel": self.verbosity.level.value,
@@ -660,7 +701,11 @@ class IntelligenceEngine(EnginePttMixin):
             "enableCommentaryBatch": self.verbosity.enable_commentary_batch,
             "engineerEnabled": self.engineer_enabled,
             "swearyMessages": self.sweary_messages,
+            "proactivityLevel": self.personality.proactivity,
+            "pearlFrequency": self.personality.pearl_frequency,
             "voiceBackendPlayback": settings.VOICE_BACKEND_PLAYBACK,
+            "ttsProviderEngineer": routing.provider_engineer if routing else "edge",
+            "ttsProviderSpotter": routing.provider_spotter if routing else "edge",
         }
         if self._spotter_service is not None:
             snap["spotterEnabled"] = self._spotter_service.enabled

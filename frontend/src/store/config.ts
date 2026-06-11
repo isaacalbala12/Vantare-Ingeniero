@@ -100,6 +100,8 @@ export interface AppConfig {
 	spotterEnabled: boolean;
 	engineerEnabled: boolean;
 	voiceBackendPlayback: boolean;
+	proactivityLevel: "low" | "normal" | "high";
+	pearlFrequency: number;
 }
 
 // --- INTERFAZ GLOBAL DEL STORE ---
@@ -212,6 +214,8 @@ const loadSavedConfig = (): AppConfig => {
 				ttsVolumeBoost: migrateTtsVolumePercent(parsed.ttsVolumeBoost),
 				spotterEnabled: migrateV3 ? true : (parsed.spotterEnabled ?? true),
 				engineerEnabled: parsed.engineerEnabled ?? false,
+				proactivityLevel: parsed.proactivityLevel ?? "normal",
+				pearlFrequency: typeof parsed.pearlFrequency === "number" ? parsed.pearlFrequency : 0.5,
 				voiceBackendPlayback: migrateV4
 					? true
 					: (parsed.voiceBackendPlayback ?? true),
@@ -271,6 +275,8 @@ const loadSavedConfig = (): AppConfig => {
 		spotterEnabled: true,
 		engineerEnabled: false,
 		voiceBackendPlayback: true,
+		proactivityLevel: "normal",
+		pearlFrequency: 0.5,
 	};
 };
 

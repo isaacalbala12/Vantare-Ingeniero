@@ -52,6 +52,7 @@ async def test_batch_joins_multiple_summaries():
     orch = CommentaryOrchestrator(
         broadcast_callback=sent.append,
         verbosity=VerbosityController("detailed"),
+        personality=PersonalityPack(proactivity="high"),
         debounce_s=0.01,
         llm_complete=None,
     )
@@ -62,6 +63,25 @@ async def test_batch_joins_multiple_summaries():
     assert "Vuelta 12 completada." in msg.full_text
     assert "+0.8s." in msg.full_text
     assert len(msg.source_events) == 2
+
+
+def test_commentary_blocked_when_proactivity_low_and_priority_low():
+    orch = CommentaryOrchestrator(
+        verbosity=VerbosityController("detailed"),
+        personality=PersonalityPack(proactivity="low"),
+    )
+    ok = orch.enqueue("fuel_low", "Gasolina baja", priority="LOW")
+    assert ok is False
+    assert orch.pending_count() == 0
+
+
+def test_commentary_allowed_when_proactivity_high():
+    orch = CommentaryOrchestrator(
+        verbosity=VerbosityController("detailed"),
+        personality=PersonalityPack(proactivity="high"),
+    )
+    ok = orch.enqueue("fuel_low", "Gasolina baja", priority="LOW")
+    assert ok is True
 
 
 @pytest.mark.asyncio

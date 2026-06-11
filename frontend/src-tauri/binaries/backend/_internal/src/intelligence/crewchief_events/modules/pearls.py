@@ -39,7 +39,10 @@ class PearlsEvent(CrewChiefEventModule):
         messages: list[CrewChiefMessage] = []
         sweary = bool(ctx.session.get("sweary_messages"))
         level = str(ctx.session.get("verbosity_level") or "normal").lower()
+        pearl_freq = float(ctx.session.get("pearl_frequency") if ctx.session.get("pearl_frequency") is not None else 0.5)
         max_pearls = 4 if level == "detailed" else 2
+        if pearl_freq <= 0.0:
+            return []
 
         pos_raw = ctx.current.get("standing_position")
         if pos_raw is not None:
@@ -47,7 +50,7 @@ class PearlsEvent(CrewChiefEventModule):
             if self._worst_position is None or pos > self._worst_position:
                 self._worst_position = pos
             if self._last_standing is not None and pos < self._last_standing:
-                if msg := self._make_pearl(PearlType.OVERTAKE, sweary, max_pearls):
+                if msg := self._make_pearl(PearlType.OVERTAKE, sweary, max_pearls, pearl_freq):
                     messages.append(msg)
             if (
                 not self._comeback_emitted
@@ -55,7 +58,7 @@ class PearlsEvent(CrewChiefEventModule):
                 and pos < self._worst_position - 1
             ):
                 self._comeback_emitted = True
-                if msg := self._make_pearl(PearlType.COMEBACK, sweary, max_pearls):
+                if msg := self._make_pearl(PearlType.COMEBACK, sweary, max_pearls, pearl_freq):
                     messages.append(msg)
             self._last_standing = pos
 
@@ -63,19 +66,33 @@ class PearlsEvent(CrewChiefEventModule):
             prev = float(ctx.current.get("lap_time_previous") or 0)
             best = float(ctx.current.get("lap_time_best") or 0)
             if prev > 0 and best > 0 and abs(prev - best) < FAST_LAP_TOLERANCE_S:
-                if msg := self._make_pearl(PearlType.FAST_LAP, sweary, max_pearls):
+                if msg := self._make_pearl(PearlType.FAST_LAP, sweary, max_pearls, pearl_freq):
                     messages.append(msg)
 
             lap = int(ctx.current.get("lap_number") or 0)
             if level == "detailed" and lap > 0 and lap % STANDARD_LAP_INTERVAL == 0 and lap != self._last_standard_lap:
                 self._last_standard_lap = lap
-                if msg := self._make_pearl(PearlType.STANDARD, sweary, max_pearls):
+                if msg := self._make_pearl(PearlType.STANDARD, sweary, max_pearls, pearl_freq):
                     messages.append(msg)
 
         return messages[:1]
 
-    def _make_pearl(self, pearl_type: PearlType, sweary: bool, max_pearls: int) -> CrewChiefMessage | None:
-        text = self._pearls.on_event(pearl_type, sweary=sweary, max_per_race=max_pearls)
+    def _make_pearl(
+        self,
+        pearl_type: PearlType,
+        sweary: bool,
+        max_pearls: int,
+        pearl_frequency: float,
+        *,
+        roll: float | None = None,
+    ) -> CrewChiefMessage | None:
+        text = self._pearls.on_event(
+            pearl_type,
+            sweary=sweary,
+            max_per_race=max_pearls,
+            pearl_frequency=pearl_frequency,
+            roll=roll,
+        )
         if not text:
             return None
         event_id = f"pearl_{pearl_type.value}"

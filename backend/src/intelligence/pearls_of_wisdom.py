@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import random
 from enum import StrEnum
 
 
@@ -72,7 +73,16 @@ class PearlsService:
         sweary: bool = False,
         *,
         max_per_race: int | None = None,
+        pearl_frequency: float = 1.0,
+        roll: float | None = None,
     ) -> str | None:
+        freq = max(0.0, min(1.0, float(pearl_frequency)))
+        if freq <= 0.0:
+            return None
+        if freq < 1.0:
+            sample = roll if roll is not None else random.random()
+            if sample > freq:
+                return None
         limit = max_per_race if max_per_race is not None else self.MAX_PER_RACE
         if self._count >= limit:
             return None

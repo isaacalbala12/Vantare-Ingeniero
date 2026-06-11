@@ -49,6 +49,27 @@ def test_config_ack_includes_tts_providers():
     assert snap["ttsProviderSpotter"] == "edge"
 
 
+def test_config_payload_includes_personality_v2_fields():
+    eng = IntelligenceEngine(broadcast_callback=lambda m: None)
+    cfg = {
+        "personalityProfileId": "aggressive",
+        "verbosityLevel": "silent",
+        "swearyMessages": True,
+        "proactivityLevel": "low",
+        "pearlFrequency": 0.25,
+    }
+    eng.apply_runtime_config(cfg)
+    snap = eng.runtime_config_snapshot()
+    assert snap["personalityProfileId"] == "aggressive"
+    assert snap["verbosityLevel"] == "silent"
+    assert snap["swearyMessages"] is True
+    assert snap["proactivityLevel"] == "low"
+    assert snap["pearlFrequency"] == 0.25
+    assert eng.personality.sweary_enabled is True
+    assert eng.personality.proactivity == "low"
+    assert eng.personality.pearl_frequency == 0.25
+
+
 def test_config_update_cannot_enable_commentary_batch_when_beta_slim():
     """BETA_SLIM bloquea re-activación de commentary batch vía config WS."""
     assert settings.BETA_SLIM is True

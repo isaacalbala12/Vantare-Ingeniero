@@ -36,6 +36,7 @@ from src.persistence.trace_store import TraceStore
 from src.routers.health import router as health_router
 from src.routers.history import router as history_router
 from src.routers.llm import router as llm_router
+from src.routers.phrases import router as phrases_router
 from src.routers.profiles import router as profiles_router
 from src.routers.traces import router as traces_router
 from src.routers.transcribe import router as transcribe_router
@@ -128,6 +129,12 @@ async def lifespan(app: FastAPI):
     app.state.profile_store = profile_store
     logger.info("ProfileStore initialized (%d profiles)", len(profile_store.list_profiles()))
 
+    from src.persistence.phrase_store import PhraseStore
+
+    phrase_store = PhraseStore()
+    app.state.phrase_store = phrase_store
+    logger.info("PhraseStore initialized (user overrides in AppData)")
+
     trace_store = TraceStore()
     app.state.trace_store = trace_store
     app.state.trace_playback_task = None
@@ -160,6 +167,7 @@ async def lifespan(app: FastAPI):
         strategy_service=strategy_service,
     )
     intelligence_engine.sweary_messages = settings.USE_SWEARY_MESSAGES
+    intelligence_engine.personality.apply_runtime(sweary=intelligence_engine.sweary_messages)
     intelligence_engine.set_spotter_service(spotter_service)
     from src.intelligence.crewchief_events.game_state import CrewChiefGameStateLoop
     from src.intelligence.crewchief_events.suite_factory import build_crewchief_suite
@@ -450,6 +458,7 @@ app.include_router(tts_router)
 app.include_router(history_router)
 app.include_router(transcribe_router)
 app.include_router(profiles_router)
+app.include_router(phrases_router)
 app.include_router(version_router)
 app.include_router(traces_router)
 

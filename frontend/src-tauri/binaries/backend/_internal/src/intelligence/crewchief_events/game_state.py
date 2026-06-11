@@ -106,6 +106,12 @@ class CrewChiefGameStateLoop:
             strategy=strategy or {},
             now_monotonic=now,
         )
+        personality = getattr(self.engine, "personality", None)
+        if personality is not None:
+            ctx.session["personalityProfileId"] = personality.profile_id
+            ctx.session["sweary_messages"] = personality.sweary_enabled
+            ctx.session["proactivity_level"] = personality.proactivity
+            ctx.session["pearl_frequency"] = personality.pearl_frequency
         verbosity = getattr(self.engine, "verbosity", None)
         if verbosity is not None:
             verbosity.update_auto_context(current, ctx.session)

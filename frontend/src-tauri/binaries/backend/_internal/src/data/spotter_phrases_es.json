@@ -1,36 +1,38 @@
 {
-    "standard": {
-    "hold_line": "Mantén la línea, coche por {side}.",
-    "still_there": "Sigue coche por {side}.",
-    "closing_fast": "¡Viene rápido por {side}!",
-    "clear_left": "Despejado izquierda",
-    "clear_right": "Despejado derecha",
-    "clear_all_round": "Despejado alrededor",
-    "in_the_middle": "En el medio",
-    "engage_limiter": "Activa el limiter de boxes.",
-    "disengage_limiter": "Desactiva el limiter de boxes.",
-    "fuel_critical": "¡Combustible crítico! Menos de 1 vuelta restante."
+  "standard": {
+    "hold_line": "Mantén la línea, coche por {side}|Aguanta la trazada, viene por {side}",
+    "still_there": "Sigue coche por {side}|Todavía hay coche por {side}|Aún tienes un coche por {side}",
+    "closing_fast": "Viene rápido por {side}|Coche cerrándose por {side}",
+    "clear_left": "Despejado izquierda|Izquierda libre|Clear a la izquierda",
+    "clear_right": "Despejado derecha|Derecha libre|Clear a la derecha",
+    "clear_all_round": "Despejado alrededor|Todo despejado|No hay coches cerca",
+    "in_the_middle": "En el medio|Tres coches de ancho|Coche en medio",
+    "engage_limiter": "Activa el limiter de boxes|Limiter de pits, por favor",
+    "disengage_limiter": "Desactiva el limiter de boxes|Quita el limiter, fuera de pits",
+    "fuel_critical": "Combustible crítico, menos de una vuelta|Gasolina para menos de una vuelta, entra a boxes"
   },
   "aggressive": {
-    "hold_line": "¡Aguanta! Coche por {side}.",
-    "still_there": "¡Sigue ahí por {side}!",
-    "closing_fast": "¡Viene muy rápido por {side}!",
-    "clear_left": "¡Despejado izquierda!",
-    "clear_right": "¡Despejado derecha!",
-    "clear_all_round": "¡Despejado alrededor!",
-    "in_the_middle": "¡En el medio!",
-    "engage_limiter": "¡Limiter! ¡Actívalo ya!",
-    "disengage_limiter": "¡Quita el limiter!"
+    "hold_line": "¡Aguanta! Coche por {side}|¡No te desvíes! Viene por {side}",
+    "still_there": "¡Sigue ahí por {side}!|¡Todavía está por {side}!",
+    "closing_fast": "¡Viene muy rápido por {side}!|¡Coche encima por {side}!",
+    "clear_left": "¡Despejado izquierda!|¡Izquierda libre!",
+    "clear_right": "¡Despejado derecha!|¡Derecha libre!",
+    "clear_all_round": "¡Despejado alrededor!|¡Todo limpio!",
+    "in_the_middle": "¡En el medio!|¡Tres coches de ancho!",
+    "engage_limiter": "¡Limiter! ¡Actívalo ya!|¡Pits limiter ya!",
+    "disengage_limiter": "¡Quita el limiter!|¡Limiter fuera!",
+    "fuel_critical": "¡Combustible crítico! Entra ahora|¡Te quedas sin gasolina, entra ya!"
   },
   "formal": {
-    "hold_line": "Mantenga la trayectoria, vehículo por {side}.",
-    "still_there": "Vehículo aún por {side}.",
-    "closing_fast": "Aproximación rápida por {side}.",
-    "clear_left": "Despejado por izquierda",
-    "clear_right": "Despejado por derecha",
-    "clear_all_round": "Despejado en ambos lados",
-    "in_the_middle": "Tres coches de ancho",
-    "engage_limiter": "Limitador de pits no activado.",
-    "disengage_limiter": "Limitador de pits aún activo."
+    "hold_line": "Mantenga la trayectoria, vehículo por {side}|Mantenga su línea, coche por {side}",
+    "still_there": "Vehículo aún por {side}|Coche todavía presente por {side}",
+    "closing_fast": "Aproximación rápida por {side}|Vehículo cerrándose por {side}",
+    "clear_left": "Despejado por izquierda|Lado izquierdo libre",
+    "clear_right": "Despejado por derecha|Lado derecho libre",
+    "clear_all_round": "Despejado en ambos lados|Sin tráfico cercano",
+    "in_the_middle": "Tres coches de ancho|Vehículo en medio",
+    "engage_limiter": "Active el limitador de pits|Limitador de pits, por favor",
+    "disengage_limiter": "Desactive el limitador de pits|Limitador de pits desactivado",
+    "fuel_critical": "Combustible crítico, menos de una vuelta|Autonomía inferior a una vuelta, entre a pits"
   }
 }

@@ -25,12 +25,23 @@ class PhrasePicker:
     triggers: dict[str, dict[str, str]]
 
     @classmethod
-    def load_defaults(cls) -> "PhrasePicker":
+    def load_bundle_defaults(cls) -> "PhrasePicker":
         spotter_path = _DATA / "spotter_phrases_es.json"
         trigger_path = _DATA / "trigger_phrases_es.json"
         spotter = json.loads(spotter_path.read_text(encoding="utf-8")) if spotter_path.is_file() else {}
         triggers = json.loads(trigger_path.read_text(encoding="utf-8")) if trigger_path.is_file() else {}
         return cls(spotter=spotter, triggers=triggers)
+
+    @classmethod
+    def load_defaults(cls) -> "PhrasePicker":
+        from src.intelligence.phrase_catalog import PhraseCatalog
+
+        catalog = PhraseCatalog.load_merged()
+        return cls(spotter=catalog.spotter, triggers=catalog.triggers)
+
+    @classmethod
+    def from_catalog(cls, catalog: "PhraseCatalog") -> "PhrasePicker":
+        return cls(spotter=catalog.spotter, triggers=catalog.triggers)
 
     def spotter_phrase(self, key: str, *, profile_id: str, seed: int | None = None, **kwargs: str) -> str:
         template = self.spotter.get(profile_id, {}).get(key) or self.spotter.get("standard", {}).get(key, "")
@@ -39,7 +50,7 @@ class PhrasePicker:
             return ""
         try:
             return text.format(**kwargs)
-        except KeyError:
+        except (KeyError, ValueError):
             return text
 
     def trigger_phrase(self, key: str, *, profile_id: str, seed: int | None = None, **kwargs: str) -> str:
@@ -50,14 +61,23 @@ class PhrasePicker:
             return ""
         try:
             return text.format(**kwargs)
-        except KeyError:
+        except (KeyError, ValueError):
             return text
+
+
+def reload_picker() -> PhrasePicker:
+    global _picker_singleton
+    from src.intelligence.phrase_catalog import PhraseCatalog
+
+    catalog = PhraseCatalog.load_merged()
+    _picker_singleton = PhrasePicker(spotter=catalog.spotter, triggers=catalog.triggers)
+    return _picker_singleton
 
 
 def get_picker() -> PhrasePicker:
     global _picker_singleton
     if _picker_singleton is None:
-        _picker_singleton = PhrasePicker.load_defaults()
+        reload_picker()
     return _picker_singleton
 
 

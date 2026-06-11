@@ -174,3 +174,101 @@ export async function deleteProfile(name: string): Promise<boolean> {
   }
 }
 
+export interface PhraseCatalog {
+  spotter: Record<string, Record<string, string>>;
+  triggers: Record<string, Record<string, string>>;
+}
+
+export async function getPhrasesMerged(): Promise<PhraseCatalog | null> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/phrases`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function getPhrasesDefaults(): Promise<PhraseCatalog | null> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/phrases/defaults`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function exportPhrases(): Promise<PhraseCatalog | null> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/phrases/export`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function getPhrasesMeta(): Promise<{ user_load_error: string | null } | null> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/phrases/meta`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function savePhrases(
+  payload: Partial<PhraseCatalog>,
+  options?: { replace?: boolean },
+): Promise<{ ok: boolean; detail?: string }> {
+  try {
+    const replace = options?.replace ?? false;
+    const url = `${getBaseUrl()}/phrases${replace ? "?replace=true" : ""}`;
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      return { ok: false, detail: data.detail ?? `HTTP ${res.status}` };
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, detail: String(err) };
+  }
+}
+
+export async function importPhrases(
+  payload: Partial<PhraseCatalog>,
+  options?: { replace?: boolean },
+): Promise<{ ok: boolean; detail?: string }> {
+  try {
+    const replace = options?.replace ?? false;
+    const url = `${getBaseUrl()}/phrases/import${replace ? "?replace=true" : ""}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      return { ok: false, detail: data.detail ?? `HTTP ${res.status}` };
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, detail: String(err) };
+  }
+}
+
+export async function resetPhrases(): Promise<boolean> {
+  try {
+    const res = await fetch(`${getBaseUrl()}/phrases/reset`, { method: "POST" });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+

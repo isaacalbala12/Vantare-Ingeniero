@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from src.intelligence.crewchief_events.templates import render_template
+from src.intelligence.phrase_picker import trigger_phrase_for_session
 from src.intelligence.pit_prediction import (
     count_pit_context,
     estimate_position_after_pit_stop,
@@ -52,13 +53,14 @@ class PitStopsEvent(CrewChiefEventModule):
         if open_now and not self._window_was_open:
             open_lap = int(pw.get("optimal_pit_lap") or ctx.current.get("lap_number") or 0)
             close_lap = int(pw.get("window_close_lap") or open_lap + 5)
+            fallback = render_template(
+                "pit_window_open",
+                {"open_lap": str(open_lap), "close_lap": str(close_lap)},
+            )
             messages.append(
                 CrewChiefMessage(
                     event_id="pit_window_open",
-                    text=render_template(
-                        "pit_window_open",
-                        {"open_lap": str(open_lap), "close_lap": str(close_lap)},
-                    ),
+                    text=trigger_phrase_for_session(ctx.session, "pit_window_opened", fallback),
                     priority=CrewChiefPriority.IMPORTANT,
                     channel=CrewChiefChannel.ENGINEER,
                     ttl_ms=12000,

@@ -5,15 +5,35 @@ import { sendConfigUpdate } from "../services/configUpdateWs";
 import { sendTestAudio } from "../services/wsCommands";
 import { validateSpotterFields } from "../hub/forms/configValidation";
 import { AudioTtsPanel } from "../hub/sections/AudioTtsPanel";
+import {
+	PhraseEditorPanel,
+	type PhraseCatalog,
+	type PhraseCategory,
+	type PhraseProfile,
+	buildUserOverrides,
+	listSpotterKeys,
+	listTriggerKeys,
+	linesToTemplate,
+	readMergedTemplate,
+	templateToLines,
+} from "../hub/sections/PhraseEditorPanel";
 import { UpdatesPanel } from "../hub/sections/UpdatesPanel";
+import { PersonalityPanel } from "../hub/sections/PersonalityPanel";
 import { HotkeyCapture } from "../hub/components/HotkeyCapture";
 import { assertFullAppConfig } from "../hub/forms/appConfigKeys";
 import { migrateTtsVolumePercent } from "../hub/forms/volumeMigration";
 import {
 	deleteProfile,
+	exportPhrases,
 	getHealth,
+	getPhrasesDefaults,
+	getPhrasesMerged,
+	getPhrasesMeta,
+	importPhrases,
 	listProfiles,
 	loadProfile,
+	resetPhrases,
+	savePhrases,
 	saveProfile,
 } from "../services/api";
 
@@ -122,6 +142,27 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 	const [ttsProviderSpotter, setTtsProviderSpotter] = useState<
 		"edge" | "gemini"
 	>(config.ttsProviderSpotter ?? "edge");
+	const [proactivityLevel, setProactivityLevel] = useState<
+		"low" | "normal" | "high"
+	>(config.proactivityLevel ?? "normal");
+	const [pearlFrequency, setPearlFrequency] = useState(
+		config.pearlFrequency ?? 0.5,
+	);
+
+	const [phraseMerged, setPhraseMerged] = useState<PhraseCatalog | null>(null);
+	const [phraseDefaults, setPhraseDefaults] = useState<PhraseCatalog | null>(
+		null,
+	);
+	const [phraseUser, setPhraseUser] = useState<PhraseCatalog | null>(null);
+	const [phraseCategory, setPhraseCategory] =
+		useState<PhraseCategory>("spotter");
+	const [phraseProfile, setPhraseProfile] =
+		useState<PhraseProfile>("standard");
+	const [phraseKey, setPhraseKey] = useState("");
+	const [phraseDraft, setPhraseDraft] = useState("");
+	const [phraseStatus, setPhraseStatus] = useState("");
+	const [phraseBusy, setPhraseBusy] = useState(false);
+	const phraseImportRef = useRef<HTMLInputElement>(null);
 
 	// Estados de test y dispositivos
 	const [testStatus, setTestStatus] = useState<string | null>(null);
@@ -145,6 +186,8 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		setSpotterRaceStartDelayS(config.spotterRaceStartDelayS ?? 3.0);
 		setSpotterOffQualifying(config.spotterOffQualifying ?? true);
 		setSpotterExcludeStopped(config.spotterExcludeStopped ?? true);
+		setProactivityLevel(config.proactivityLevel ?? "normal");
+		setPearlFrequency(config.pearlFrequency ?? 0.5);
 	};
 
 	// Leer micLevel del store
@@ -194,6 +237,50 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		}
 	}, [activeTab, section]);
 
+	const refreshPhraseCatalogs = async () => {
+		const [merged, defaults, user, meta] = await Promise.all([
+			getPhrasesMerged(),
+			getPhrasesDefaults(),
+			exportPhrases(),
+			getPhrasesMeta(),
+		]);
+		setPhraseMerged(merged);
+		setPhraseDefaults(defaults);
+		setPhraseUser(user ?? { spotter: {}, triggers: {} });
+		if (meta?.user_load_error) {
+			setPhraseStatus(
+				`⚠ user_phrases.json inválido — usando defaults. ${meta.user_load_error}`,
+			);
+		}
+	};
+
+	useEffect(() => {
+		if (section !== "audio" && activeTab !== "audio") return;
+		void refreshPhraseCatalogs();
+	}, [section, activeTab]);
+
+	useEffect(() => {
+		if (!phraseMerged) return;
+		const keys =
+			phraseCategory === "spotter"
+				? listSpotterKeys(phraseMerged, phraseProfile)
+				: listTriggerKeys(phraseMerged);
+		if (keys.length && (!phraseKey || !keys.includes(phraseKey))) {
+			setPhraseKey(keys[0]);
+		}
+	}, [phraseMerged, phraseCategory, phraseProfile, phraseKey]);
+
+	useEffect(() => {
+		if (!phraseMerged || !phraseKey) return;
+		const template = readMergedTemplate(
+			phraseMerged,
+			phraseCategory,
+			phraseProfile,
+			phraseKey,
+		);
+		setPhraseDraft(templateToLines(template));
+	}, [phraseMerged, phraseCategory, phraseProfile, phraseKey]);
+
 	useEffect(() => {
 		if (prevTabRef.current !== "voz" && activeTab === "voz") {
 			hydrateRuntimeFieldsFromStore();
@@ -234,6 +321,8 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 			spotterRaceStartDelayS: Number(spotterRaceStartDelayS),
 			brakingZonesMute,
 			speakOnlyWhenSpokenTo: config.speakOnlyWhenSpokenTo,
+			proactivityLevel,
+			pearlFrequency,
 			ttsVolumeBoost: Number(ttsVolumeBoost),
 			spotterEnabled: config.spotterEnabled,
 			engineerEnabled: config.engineerEnabled,
@@ -256,6 +345,8 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		setPttHotkey(merged.pttHotkey);
 		setPttStopHotkey(merged.pttStopHotkey);
 		setSwearyMessages(merged.swearyMessages);
+		setProactivityLevel(merged.proactivityLevel ?? "normal");
+		setPearlFrequency(merged.pearlFrequency ?? 0.5);
 		setSpotterOffQualifying(merged.spotterOffQualifying);
 		setSpotterExcludeStopped(merged.spotterExcludeStopped);
 		setMqttEnabled(merged.mqttEnabled ?? false);
@@ -416,6 +507,113 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 			setTestStatus("❌ Error de conexión");
 		}
 		setTimeout(() => setTestStatus(null), 3000);
+	};
+
+	const handlePhraseSave = async () => {
+		if (!phraseMerged || !phraseDefaults || !phraseUser) {
+			setPhraseStatus("Catálogo de frases no cargado todavía");
+			return;
+		}
+		if (!phraseKey) {
+			setPhraseStatus("Selecciona una clave de frase antes de guardar");
+			return;
+		}
+		setPhraseBusy(true);
+		setPhraseStatus("Guardando…");
+		const template = linesToTemplate(phraseDraft);
+		const nextUser = buildUserOverrides(
+			phraseMerged,
+			phraseDefaults,
+			phraseCategory,
+			phraseProfile,
+			phraseKey,
+			template,
+			phraseUser,
+		);
+		const result = await savePhrases(nextUser, { replace: true });
+		if (!result.ok) {
+			setPhraseStatus(`Error: ${result.detail ?? "no se pudo guardar"}`);
+			setPhraseBusy(false);
+			return;
+		}
+		await refreshPhraseCatalogs();
+		setPhraseStatus("Frase guardada — caché spotter actualizado");
+		setPhraseBusy(false);
+		setTimeout(() => setPhraseStatus(""), 4000);
+	};
+
+	const handlePhraseExport = async () => {
+		const user = (await exportPhrases()) ?? { spotter: {}, triggers: {} };
+		const blob = new Blob([JSON.stringify(user, null, 2)], {
+			type: "application/json",
+		});
+		const url = URL.createObjectURL(blob);
+		const anchor = document.createElement("a");
+		anchor.href = url;
+		anchor.download = "vantare-user-phrases.json";
+		anchor.click();
+		URL.revokeObjectURL(url);
+		setPhraseStatus("Exportado user_phrases.json");
+		setTimeout(() => setPhraseStatus(""), 3000);
+	};
+
+	const handlePhraseImportClick = () => {
+		phraseImportRef.current?.click();
+	};
+
+	const handlePhraseImportFile = async (
+		event: React.ChangeEvent<HTMLInputElement>,
+	) => {
+		const file = event.target.files?.[0];
+		event.target.value = "";
+		if (!file) return;
+		if (
+			!window.confirm(
+				"¿Importar frases? Se fusionarán con tus overrides actuales. Usa export + edición manual para reemplazo total.",
+			)
+		) {
+			return;
+		}
+		setPhraseBusy(true);
+		setPhraseStatus("Importando…");
+		try {
+			const text = await file.text();
+			const payload = JSON.parse(text) as Partial<PhraseCatalog>;
+			const result = await importPhrases(payload, { replace: false });
+			if (!result.ok) {
+				setPhraseStatus(`Error: ${result.detail ?? "import inválido"}`);
+				setPhraseBusy(false);
+				return;
+			}
+			await refreshPhraseCatalogs();
+			setPhraseStatus("Importación completada");
+		} catch {
+			setPhraseStatus("JSON inválido");
+		}
+		setPhraseBusy(false);
+		setTimeout(() => setPhraseStatus(""), 4000);
+	};
+
+	const handlePhraseReset = async () => {
+		if (
+			!window.confirm(
+				"¿Restaurar todas las frases al bundle por defecto? Se borrarán tus overrides en AppData.",
+			)
+		) {
+			return;
+		}
+		setPhraseBusy(true);
+		setPhraseStatus("Restaurando defaults…");
+		const ok = await resetPhrases();
+		if (!ok) {
+			setPhraseStatus("Error al restaurar defaults");
+			setPhraseBusy(false);
+			return;
+		}
+		await refreshPhraseCatalogs();
+		setPhraseStatus("Overrides eliminados — bundle restaurado");
+		setPhraseBusy(false);
+		setTimeout(() => setPhraseStatus(""), 4000);
 	};
 
 	// 4. Guardar configuración con validación
@@ -765,6 +963,31 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 								onSpotterVoice={setTtsVoiceSpotter}
 								onVolume={setTtsVolumeBoost}
 							/>
+							<input
+								ref={phraseImportRef}
+								type="file"
+								accept="application/json,.json"
+								className="hidden"
+								onChange={handlePhraseImportFile}
+							/>
+							<PhraseEditorPanel
+								merged={phraseMerged}
+								defaults={phraseDefaults}
+								category={phraseCategory}
+								profile={phraseProfile}
+								selectedKey={phraseKey}
+								draftLines={phraseDraft}
+								status={phraseStatus}
+								busy={phraseBusy}
+								onCategory={setPhraseCategory}
+								onProfile={setPhraseProfile}
+								onKey={setPhraseKey}
+								onDraftLines={setPhraseDraft}
+								onSave={() => void handlePhraseSave()}
+								onExport={() => void handlePhraseExport()}
+								onImport={handlePhraseImportClick}
+								onReset={() => void handlePhraseReset()}
+							/>
 							<div className="flex flex-col gap-1">
 								<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
 									Ingeniero TTS
@@ -873,6 +1096,16 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									/>
 									Lenguaje de paddock (juramentos opcionales)
 								</label>
+								<PersonalityPanel
+									personalityProfileId={personalityProfileId}
+									swearyMessages={swearyMessages}
+									proactivityLevel={proactivityLevel}
+									pearlFrequency={pearlFrequency}
+									onProfileId={setPersonalityProfileId}
+									onSweary={setSwearyMessages}
+									onProactivity={setProactivityLevel}
+									onPearlFrequency={setPearlFrequency}
+								/>
 								<div className="flex flex-col gap-1">
 									<label className="hub-label">Perfil de personalidad</label>
 									<select

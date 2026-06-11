@@ -652,6 +652,12 @@ export function useWebSocket() {
               if (typeof ackCfg.engineerEnabled === "boolean") {
                 patch.engineerEnabled = ackCfg.engineerEnabled;
               }
+              if (typeof ackCfg.proactivityLevel === "string") {
+                patch.proactivityLevel = ackCfg.proactivityLevel;
+              }
+              if (typeof ackCfg.pearlFrequency === "number") {
+                patch.pearlFrequency = ackCfg.pearlFrequency;
+              }
               if (typeof ackCfg.voiceBackendPlayback === "boolean") {
                 patch.voiceBackendPlayback = ackCfg.voiceBackendPlayback;
               }

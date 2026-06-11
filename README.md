@@ -2,9 +2,15 @@
 
 Crew chief en español para **Le Mans Ultimate**: telemetría nativa Windows, spotter de baja latencia, ingeniero por voz (PTT + LLM) y overlay F1-style.
 
-**Versión actual:** **0.3.0** — frases humanas + Gemini TTS selectable por rol (ingeniero/spotter).
+**Versión actual:** **0.4.0** — frases spotter/triggers editables (export/import AppData).
 
 **Distribución:** instalador Windows (Electron + backend empaquetado). Ver [Instalación desktop](docs/instalacion-desktop.md) y [Releases](https://github.com/isaacalbala12/Vantare-Ingeniero/releases).
+
+## Novedades v0.4.0
+
+- **Frases personalizadas** en Hub → Audio: edita variantes spotter/triggers por perfil, export/import JSON
+- Overrides en `%APPDATA%/Vantare/phrases/user_phrases.json` con merge sobre el bundle
+- Hot-reload de caché TTS spotter al guardar
 
 ## Novedades v0.3.0
 

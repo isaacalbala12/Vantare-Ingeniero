@@ -22,6 +22,7 @@ class PlayCommand:
     expires_at: float
     wav_cache_key: str | None = None
     validation_key: str | None = None
+    tts_role: str = "engineer"
 
     def is_expired(self, now: float | None = None) -> bool:
         t = time.monotonic() if now is None else now
@@ -40,6 +41,8 @@ def play_command_from_alert(
     ttl_ms = max(1000, int(ttl_seconds * 1000))
     priority = map_alert_to_play_priority(text=text, audio_priority=audio_priority, payload=payload)
     cache_key = resolve_wav_cache_key(text=text, category=category, event_id=event_id, payload=payload)
+    payload = payload or {}
+    role = "spotter" if category in ("spotter", "proximity") else "engineer"
     return PlayCommand(
         id=str(uuid.uuid4()),
         text=text.strip(),
@@ -49,5 +52,6 @@ def play_command_from_alert(
         ttl_ms=ttl_ms,
         expires_at=time.monotonic() + ttl_ms / 1000.0,
         wav_cache_key=cache_key,
-        validation_key=(payload or {}).get("validation_key"),
+        validation_key=payload.get("validation_key"),
+        tts_role=role,
     )

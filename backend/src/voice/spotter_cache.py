@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import json
 import logging
-from pathlib import Path
 
 from src.intelligence.phrase_picker import pick_variant, spotter_phrase_for_cache
 
@@ -44,24 +42,49 @@ _SPOTTER_JSON_KEYS = (
     "fuel_critical",
 )
 
+_DERIVED_SIDE_PHRASES: tuple[tuple[str, str, dict[str, str]], ...] = (
+    ("still_there", "still_there_left", {"side": "izquierda"}),
+    ("still_there", "still_there_right", {"side": "derecha"}),
+    ("hold_line", "hold_line_left", {"side": "izquierda"}),
+    ("hold_line", "hold_line_right", {"side": "derecha"}),
+    ("closing_fast", "closing_fast_left", {"side": "izquierda"}),
+    ("closing_fast", "closing_fast_right", {"side": "derecha"}),
+)
 
-def default_spotter_phrases() -> dict[str, str]:
-    path = Path(__file__).resolve().parents[1] / "data" / "spotter_phrases_es.json"
+
+def _apply_picker_phrases(phrases: dict[str, str], *, profile_id: str = "standard") -> None:
+    from src.intelligence.phrase_picker import get_picker
+
+    picker = get_picker()
+    profile_keys = picker.spotter.get(profile_id, {})
+    fallback_keys = picker.spotter.get("standard", {})
+
+    for key in _SPOTTER_JSON_KEYS:
+        raw = profile_keys.get(key) or fallback_keys.get(key)
+        if not raw:
+            continue
+        if "|" in raw:
+            phrases[key] = picker.spotter_phrase(key, profile_id=profile_id, seed=0)
+        else:
+            phrases[key] = raw
+
+    for source_key, cache_key, kwargs in _DERIVED_SIDE_PHRASES:
+        if not (profile_keys.get(source_key) or fallback_keys.get(source_key)):
+            continue
+        text = picker.spotter_phrase(source_key, profile_id=profile_id, seed=0, **kwargs)
+        if text:
+            phrases[cache_key] = text
+
+    if profile_keys.get("in_the_middle") or fallback_keys.get("in_the_middle"):
+        phrases.setdefault("three_wide", picker.spotter_phrase("in_the_middle", profile_id=profile_id, seed=0))
+
+
+def default_spotter_phrases(*, profile_id: str = "standard") -> dict[str, str]:
     phrases = dict(PREFETCH_PHRASES)
-    if path.is_file():
-        try:
-            data = json.loads(path.read_text(encoding="utf-8"))
-            std = data.get("standard", {})
-            for key in _SPOTTER_JSON_KEYS:
-                raw = std.get(key)
-                if not raw:
-                    continue
-                if "|" in raw:
-                    phrases[key] = spotter_phrase_for_cache(key, profile_id="standard", seed=0)
-                else:
-                    phrases.setdefault(key, raw)
-        except Exception as exc:
-            logger.warning("Could not merge spotter_phrases_es.json: %s", exc)
+    try:
+        _apply_picker_phrases(phrases, profile_id=profile_id)
+    except Exception as exc:
+        logger.warning("Could not merge spotter phrases from picker: %s", exc)
     return {k: v for k, v in phrases.items() if v and v.strip()}
 
 
@@ -70,8 +93,14 @@ class SpotterPhraseCache:
         self._tts = tts
         self._bytes: dict[str, bytes] = {}
 
-    async def warm(self, phrases: dict[str, str] | None = None, *, voice: str | None = None) -> None:
-        phrases = phrases or default_spotter_phrases()
+    async def warm(
+        self,
+        phrases: dict[str, str] | None = None,
+        *,
+        voice: str | None = None,
+        profile_id: str = "standard",
+    ) -> None:
+        phrases = phrases or default_spotter_phrases(profile_id=profile_id)
         for key, text in phrases.items():
             if not text or not text.strip():
                 continue
@@ -85,6 +114,9 @@ class SpotterPhraseCache:
         if not key:
             return None
         return self._bytes.get(key)
+
+    def invalidate_all(self) -> None:
+        self._bytes.clear()
 
     @property
     def size(self) -> int:

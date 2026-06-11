@@ -25,5 +25,7 @@ export function buildConfigUpdatePayload(cfg: AppConfig): Record<string, unknown
   }
   payload.ttsProviderEngineer = cfg.ttsProviderEngineer ?? "edge";
   payload.ttsProviderSpotter = cfg.ttsProviderSpotter ?? "edge";
+  payload.proactivityLevel = cfg.proactivityLevel ?? "normal";
+  payload.pearlFrequency = cfg.pearlFrequency ?? 0.5;
   return payload;
 }

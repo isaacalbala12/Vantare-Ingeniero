@@ -118,6 +118,7 @@ class IntelligenceEngine(EnginePttMixin):
 
         self.pearls = PearlsService()
         self.personality = PersonalityPack()
+        self.personality.apply_runtime(sweary=self.sweary_messages)
         self.verbosity = VerbosityController()
         self.engineer_enabled = False
         self._spotter_service = None
@@ -154,6 +155,9 @@ class IntelligenceEngine(EnginePttMixin):
         for evt in events:
             event_id = proactive_event_id(evt)
             if is_cc_owned_event(event_id):
+                continue
+            priority = evt[2] if isinstance(evt, tuple) and len(evt) > 2 else "NORMAL"
+            if not self.personality.should_emit_proactive(str(priority)):
                 continue
             if isinstance(evt, ImmediateAlert):
                 self.broadcaster.send(
@@ -218,7 +222,11 @@ class IntelligenceEngine(EnginePttMixin):
 
         if self.verbosity.level == VerbosityLevel.SILENT:
             return
-        message = self.pearls.on_event(pearl_type, sweary=self.sweary_messages)
+        message = self.pearls.on_event(
+            pearl_type,
+            sweary=self.sweary_messages,
+            pearl_frequency=self.personality.pearl_frequency,
+        )
         if not message:
             return
         alert = AlertMessage(
@@ -651,6 +659,13 @@ class IntelligenceEngine(EnginePttMixin):
         if "personalityProfileId" in cfg:
             self.personality.set_profile(str(cfg["personalityProfileId"]))
             self._sync_tts_voices_from_personality()
+        if "swearyMessages" in cfg:
+            self.sweary_messages = bool(cfg["swearyMessages"])
+            self.personality.apply_runtime(sweary=self.sweary_messages)
+        if "proactivityLevel" in cfg:
+            self.personality.apply_runtime(proactivity=str(cfg["proactivityLevel"]))
+        if "pearlFrequency" in cfg:
+            self.personality.apply_runtime(pearl_frequency=float(cfg["pearlFrequency"]))
         if "verbosityLevel" in cfg:
             self.verbosity.set_level(str(cfg["verbosityLevel"]))
         if "brakingZonesMute" in cfg:
@@ -668,8 +683,6 @@ class IntelligenceEngine(EnginePttMixin):
         if "spotterEnabled" in cfg and self._spotter_service is not None:
             if bool(cfg["spotterEnabled"]):
                 self._spotter_service.enabled = True
-        if "swearyMessages" in cfg:
-            self.sweary_messages = bool(cfg["swearyMessages"])
         if "ttsProviderEngineer" in cfg and hasattr(self, "_tts_routing") and self._tts_routing is not None:
             self._tts_routing.provider_engineer = str(cfg["ttsProviderEngineer"])
         if "ttsProviderSpotter" in cfg and hasattr(self, "_tts_routing") and self._tts_routing is not None:
@@ -688,6 +701,8 @@ class IntelligenceEngine(EnginePttMixin):
             "enableCommentaryBatch": self.verbosity.enable_commentary_batch,
             "engineerEnabled": self.engineer_enabled,
             "swearyMessages": self.sweary_messages,
+            "proactivityLevel": self.personality.proactivity,
+            "pearlFrequency": self.personality.pearl_frequency,
             "voiceBackendPlayback": settings.VOICE_BACKEND_PLAYBACK,
             "ttsProviderEngineer": routing.provider_engineer if routing else "edge",
             "ttsProviderSpotter": routing.provider_spotter if routing else "edge",
