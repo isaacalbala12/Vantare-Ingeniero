@@ -121,6 +121,7 @@ class IntelligenceEngine(EnginePttMixin):
         self.verbosity = VerbosityController()
         self.engineer_enabled = False
         self._spotter_service = None
+        self._tts_routing = None
         self._eval_telemetry: dict[str, Any] = {}
         self._eval_session: dict[str, Any] = {}
 
@@ -623,6 +624,9 @@ class IntelligenceEngine(EnginePttMixin):
     def set_spotter_service(self, spotter) -> None:
         self._spotter_service = spotter
 
+    def set_tts_routing(self, routing) -> None:
+        self._tts_routing = routing
+
     def apply_runtime_config(self, cfg: dict[str, Any]) -> None:
         if not isinstance(cfg, dict):
             return
@@ -647,6 +651,10 @@ class IntelligenceEngine(EnginePttMixin):
                 self._spotter_service.enabled = True
         if "swearyMessages" in cfg:
             self.sweary_messages = bool(cfg["swearyMessages"])
+        if "ttsProviderEngineer" in cfg and hasattr(self, "_tts_routing") and self._tts_routing is not None:
+            self._tts_routing.provider_engineer = str(cfg["ttsProviderEngineer"])
+        if "ttsProviderSpotter" in cfg and hasattr(self, "_tts_routing") and self._tts_routing is not None:
+            self._tts_routing.provider_spotter = str(cfg["ttsProviderSpotter"])
 
     def _emit_config_ack(self) -> None:
         self.broadcast_config_ack()
@@ -661,6 +669,8 @@ class IntelligenceEngine(EnginePttMixin):
             "engineerEnabled": self.engineer_enabled,
             "swearyMessages": self.sweary_messages,
             "voiceBackendPlayback": settings.VOICE_BACKEND_PLAYBACK,
+            "ttsProviderEngineer": getattr(self, "_tts_routing", None) is not None and self._tts_routing.provider_engineer or "edge",
+            "ttsProviderSpotter": getattr(self, "_tts_routing", None) is not None and self._tts_routing.provider_spotter or "edge",
         }
         if self._spotter_service is not None:
             snap["spotterEnabled"] = self._spotter_service.enabled

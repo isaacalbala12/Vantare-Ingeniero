@@ -278,11 +278,17 @@ async def lifespan(app: FastAPI):
     )
     app.state.ducking = ducking
 
+    from src.voice.tts_routing import TtsRouting
+
+    app.state.tts_routing = TtsRouting()
+    intelligence_engine.set_tts_routing(app.state.tts_routing)
+
     spotter_cache = None
     tts_manager = None
     voice_player = None
 
     edge = getattr(app.state, "edge_tts_service", None)
+    gemini = getattr(app.state, "gemini_tts_service", None)
     if settings.VOICE_BACKEND_PLAYBACK and edge is not None:
         from src.voice.player_pygame import PygameAudioPlayer
         from src.voice.spotter_cache import SpotterPhraseCache
@@ -294,7 +300,7 @@ async def lifespan(app: FastAPI):
             logger.info("SpotterPhraseCache warmed (%d phrases)", spotter_cache.size)
         except Exception as exc:
             logger.warning("Spotter cache warm failed — live TTS only: %s", exc)
-        tts_manager = TTSManager(edge, spotter_cache)
+        tts_manager = TTSManager(edge=edge, gemini=gemini, spotter_cache=spotter_cache, routing=app.state.tts_routing)
         voice_player = PygameAudioPlayer()
         logger.info("Voice player: PygameAudioPlayer (real playback)")
     else:

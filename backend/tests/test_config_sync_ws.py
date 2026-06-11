@@ -3,6 +3,7 @@
 from src.config import settings
 from src.intelligence.engine import IntelligenceEngine
 from src.intelligence.spotter import SpotterService
+from src.voice.tts_routing import TtsRouting
 
 
 def test_config_payload_fields_engine_and_spotter():
@@ -31,6 +32,18 @@ def test_config_payload_fields_engine_and_spotter():
     assert spotter._proximity_state.hold_repeat_s == 3.0
     # Frontend legacy puede enviar 10 m/s; runtime cap = min(cfg, SPOTTER_MIN_SPEED_MS).
     assert spotter._min_speed_ms == min(10.0, 5.0)
+
+
+def test_config_ack_includes_tts_providers():
+    eng = IntelligenceEngine(broadcast_callback=lambda m: None)
+    routing = TtsRouting()
+    eng.set_tts_routing(routing)
+    eng.apply_runtime_config({
+        "ttsProviderEngineer": "gemini",
+        "ttsProviderSpotter": "edge",
+    })
+    assert routing.provider_engineer == "gemini"
+    assert routing.provider_spotter == "edge"
 
 
 def test_config_update_cannot_enable_commentary_batch_when_beta_slim():
