@@ -182,9 +182,11 @@ class PhraseStore:
         self._lock = threading.Lock()
         self.last_user_load_error: str | None = None
 
-    def load_defaults(self) -> dict[str, dict[str, Any]]:
-        spotter_path = _DATA / "spotter_phrases_es.json"
-        trigger_path = _DATA / "trigger_phrases_es.json"
+    def load_defaults(self, locale: str = "es") -> dict[str, dict[str, Any]]:
+        if locale not in ("es", "en"):
+            raise ValueError(f"Unsupported locale: {locale}")
+        spotter_path = _DATA / f"spotter_phrases_{locale}.json"
+        trigger_path = _DATA / f"trigger_phrases_{locale}.json"
         spotter = json.loads(spotter_path.read_text(encoding="utf-8")) if spotter_path.is_file() else {}
         triggers = json.loads(trigger_path.read_text(encoding="utf-8")) if trigger_path.is_file() else {}
         return {"spotter": spotter, "triggers": triggers}
@@ -218,8 +220,8 @@ class PhraseStore:
         with self._lock:
             return self._read_user_file(record_error=True)
 
-    def load_merged(self) -> dict[str, dict[str, Any]]:
-        return merge_phrase_catalog(self.load_defaults(), self.load_user())
+    def load_merged(self, locale: str = "es") -> dict[str, dict[str, Any]]:
+        return merge_phrase_catalog(self.load_defaults(locale=locale), self.load_user())
 
     def export_user(self) -> dict[str, Any]:
         return self.load_user()

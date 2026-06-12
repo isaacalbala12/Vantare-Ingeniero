@@ -2,9 +2,15 @@
 
 Crew chief en español para **Le Mans Ultimate**: telemetría nativa Windows, spotter de baja latencia, ingeniero por voz (PTT + LLM) y overlay F1-style.
 
-**Versión actual:** **0.4.0** — frases spotter/triggers editables (export/import AppData).
+**Versión actual:** **0.5.1** — personalidades avanzadas + frases editables + fix auto-update.
 
 **Distribución:** instalador Windows (Electron + backend empaquetado). Ver [Instalación desktop](docs/instalacion-desktop.md) y [Releases](https://github.com/isaacalbala12/Vantare-Ingeniero/releases).
+
+## Novedades v0.5.x
+
+- **Personalidades avanzadas** — proactividad (baja/normal/alta), frecuencia perlas 0–100%, preview tono
+- **Frases personalizadas** (v0.4) en Hub → Audio: edita variantes spotter/triggers por perfil, export/import JSON
+- **Auto-update** (v0.5.1) — funciona sin certificado de firma de código
 
 ## Novedades v0.4.0
 
@@ -96,9 +102,10 @@ Runbook: [docs/launch/first-deploy-runbook.md](docs/launch/first-deploy-runbook.
 
 ## Documentación
 
+- **[Handbook del proyecto](docs/proyecto/README.md)** — visión, arquitectura, estado, roadmap, prompt orquestador
 - [Instalación y actualizaciones](docs/instalacion-desktop.md)
 - [Smoke checklist Electron](docs/qa/electron-smoke-checklist.md)
-- [AGENTS.md](AGENTS.md) — guía para agentes IA
+- [AGENTS.md](AGENTS.md) — guía rápida para agentes IA (ver handbook para estado actual)
 - [Roadmap producto 0.3→1.1](docs/ROADMAP-1.0.md)
 - [Roadmap beta / deuda alpha](docs/ROADMAP-beta.md)
 

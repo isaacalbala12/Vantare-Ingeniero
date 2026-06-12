@@ -14,8 +14,18 @@ class PhraseCatalog:
     triggers: dict[str, dict[str, str]]
 
     @classmethod
-    def load_merged(cls, store: PhraseStore | None = None) -> "PhraseCatalog":
-        data = (store or PhraseStore()).load_merged()
+    def load(cls, locale: str = "es") -> "PhraseCatalog":
+        if locale not in ("es", "en"):
+            raise ValueError(f"Unsupported locale: {locale}")
+        data = PhraseStore().load_defaults(locale=locale)
+        return cls(
+            spotter=data.get("spotter") or {},
+            triggers=data.get("triggers") or {},
+        )
+
+    @classmethod
+    def load_merged(cls, store: PhraseStore | None = None, locale: str = "es") -> "PhraseCatalog":
+        data = (store or PhraseStore()).load_merged(locale=locale)
         return cls(
             spotter=data.get("spotter") or {},
             triggers=data.get("triggers") or {},

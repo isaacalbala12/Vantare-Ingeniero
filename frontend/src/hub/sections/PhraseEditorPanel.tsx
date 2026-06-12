@@ -1,4 +1,6 @@
 import { CollapsibleSection } from "../components/CollapsibleSection";
+import { t } from "../../i18n/strings";
+import { useAppStore } from "../../store/config";
 
 export type PhraseCategory = "spotter" | "triggers";
 export type PhraseProfile = "standard" | "formal" | "aggressive";
@@ -129,6 +131,7 @@ export function PhraseEditorPanel({
   onImport,
   onReset,
 }: PhraseEditorPanelProps) {
+  const uiLanguage = useAppStore((s) => s.config.uiLanguage);
   const keys =
     merged && category === "spotter"
       ? listSpotterKeys(merged, profile)
@@ -137,9 +140,9 @@ export function PhraseEditorPanel({
         : [];
 
   return (
-    <CollapsibleSection title="Frases personalizadas (spotter / triggers)" defaultOpen>
+    <CollapsibleSection title={t(uiLanguage, "customPhrases")} defaultOpen>
       <p className="text-[10px] text-a1-text-muted leading-relaxed mb-2">
-        Edita variantes (una por línea). Se guardan en AppData y tienen prioridad sobre el bundle.
+        {t(uiLanguage, "phraseEditorHelp")}
       </p>
       <div className="flex flex-wrap gap-2 mb-2">
         <select
@@ -177,28 +180,28 @@ export function PhraseEditorPanel({
         rows={5}
         disabled={!merged || busy}
         className="w-full bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[11px] text-white font-mono"
-        placeholder="Una variante por línea…"
+        placeholder={t(uiLanguage, "oneVariantPerLine")}
       />
       {defaults && merged && selectedKey && (
         <p className="text-[9px] text-a1-text-muted mt-1">
           Default bundle:{" "}
           {templateToLines(
-            readMergedTemplate(defaults, category, profile, selectedKey) || "(vacío)",
+            readMergedTemplate(defaults, category, profile, selectedKey) || `(${t(uiLanguage, "empty")})`,
           ).replace(/\n/g, " · ")}
         </p>
       )}
       <div className="flex flex-wrap gap-2 mt-2">
         <button type="button" className="hub-btn-secondary text-[11px]" disabled={busy} onClick={onSave}>
-          Guardar frase
+          {t(uiLanguage, "savePhrase")}
         </button>
         <button type="button" className="hub-btn-secondary text-[11px]" disabled={busy} onClick={onExport}>
-          Exportar JSON
+          {t(uiLanguage, "exportJson")}
         </button>
         <button type="button" className="hub-btn-secondary text-[11px]" disabled={busy} onClick={onImport}>
-          Importar JSON
+          {t(uiLanguage, "importJson")}
         </button>
         <button type="button" className="hub-btn-secondary text-[11px]" disabled={busy} onClick={onReset}>
-          Restaurar defaults
+          {t(uiLanguage, "restoreDefaults")}
         </button>
       </div>
       {status && <span className="text-[10px] text-a1-text-muted mt-1 block">{status}</span>}

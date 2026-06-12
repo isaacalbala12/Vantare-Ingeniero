@@ -121,6 +121,7 @@ class IntelligenceEngine(EnginePttMixin):
         self.personality.apply_runtime(sweary=self.sweary_messages)
         self.verbosity = VerbosityController()
         self.engineer_enabled = False
+        self.voice_language = "es"
         self._spotter_service = None
         self._tts_routing = None
         self._eval_telemetry: dict[str, Any] = {}
@@ -659,6 +660,9 @@ class IntelligenceEngine(EnginePttMixin):
         if "personalityProfileId" in cfg:
             self.personality.set_profile(str(cfg["personalityProfileId"]))
             self._sync_tts_voices_from_personality()
+        if "voiceLanguage" in cfg:
+            self.voice_language = self.personality.set_locale(str(cfg["voiceLanguage"]))
+            self._sync_tts_voices_from_personality()
         if "swearyMessages" in cfg:
             self.sweary_messages = bool(cfg["swearyMessages"])
             self.personality.apply_runtime(sweary=self.sweary_messages)
@@ -703,6 +707,7 @@ class IntelligenceEngine(EnginePttMixin):
             "swearyMessages": self.sweary_messages,
             "proactivityLevel": self.personality.proactivity,
             "pearlFrequency": self.personality.pearl_frequency,
+            "voiceLanguage": self.voice_language,
             "voiceBackendPlayback": settings.VOICE_BACKEND_PLAYBACK,
             "ttsProviderEngineer": routing.provider_engineer if routing else "edge",
             "ttsProviderSpotter": routing.provider_spotter if routing else "edge",

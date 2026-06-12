@@ -27,5 +27,7 @@ export function buildConfigUpdatePayload(cfg: AppConfig): Record<string, unknown
   payload.ttsProviderSpotter = cfg.ttsProviderSpotter ?? "edge";
   payload.proactivityLevel = cfg.proactivityLevel ?? "normal";
   payload.pearlFrequency = cfg.pearlFrequency ?? 0.5;
+  payload.uiLanguage = cfg.uiLanguage ?? "es";
+  payload.voiceLanguage = cfg.voiceLanguage ?? "es";
   return payload;
 }

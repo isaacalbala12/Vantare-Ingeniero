@@ -133,6 +133,9 @@ class SpotterService:
         if "personalityProfileId" in cfg:
             self._personality.set_profile(str(cfg["personalityProfileId"]))
             self._proximity_state.set_personality_profile(self._personality.profile_id)
+        if "voiceLanguage" in cfg:
+            self._personality.set_locale(str(cfg["voiceLanguage"]))
+            self._proximity_state.set_personality_profile(self._personality.profile_id)
         if "spotterClearDelayS" in cfg:
             self._proximity_state.clear_delay_s = float(cfg["spotterClearDelayS"])
         if "spotterOverlapDelayS" in cfg:

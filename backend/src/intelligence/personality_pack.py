@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict
 
-from src.intelligence.phrase_picker import get_picker
+from src.intelligence.phrase_picker import get_picker, normalize_locale
 
 DEFAULT_PROFILE_ID = "standard"
 VALID_PROACTIVITY = frozenset({"low", "normal", "high"})
@@ -28,7 +28,7 @@ class PersonalityRuntime:
     pearl_frequency: float = 0.5
 
 
-_PROFILES: Dict[str, PersonalityProfile] = {
+_PROFILES_ES: Dict[str, PersonalityProfile] = {
     "formal": PersonalityProfile(
         profile_id="formal",
         label="Formal",
@@ -55,6 +55,33 @@ _PROFILES: Dict[str, PersonalityProfile] = {
     ),
 }
 
+_PROFILES_EN: Dict[str, PersonalityProfile] = {
+    "formal": PersonalityProfile(
+        profile_id="formal",
+        label="Formal",
+        engineer_tone="Professional and precise tone. No filler. Maximum 2 sentences.",
+        spotter_tone="Brief neutral alerts. No emotion.",
+        tts_voice_engineer="en-GB-RyanNeural",
+        tts_voice_spotter="en-US-JennyNeural",
+    ),
+    "standard": PersonalityProfile(
+        profile_id="standard",
+        label="Standard",
+        engineer_tone="Race radio tone: direct, clear, motivating without excess.",
+        spotter_tone="Short, clear alerts, race spotter style.",
+        tts_voice_engineer="en-GB-RyanNeural",
+        tts_voice_spotter="en-US-JennyNeural",
+    ),
+    "aggressive": PersonalityProfile(
+        profile_id="aggressive",
+        label="Aggressive",
+        engineer_tone="Energetic and demanding tone. Pushes the driver. Maximum 2 forceful sentences.",
+        spotter_tone="Crisp urgent alerts. Prioritises clarity under pressure.",
+        tts_voice_engineer="en-GB-RyanNeural",
+        tts_voice_spotter="en-US-JennyNeural",
+    ),
+}
+
 _PROACTIVE_RANK = {"CRITICAL": 4, "HIGH": 3, "IMPORTANT": 3, "MEDIUM": 2, "NORMAL": 2, "LOW": 1}
 
 
@@ -65,10 +92,12 @@ class PersonalityPack:
         self,
         profile_id: str = DEFAULT_PROFILE_ID,
         *,
+        locale: str = "es",
         sweary: bool = False,
         proactivity: str = "normal",
         pearl_frequency: float = 0.5,
     ) -> None:
+        self._locale = normalize_locale(locale)
         self._profile_id = self._normalize(profile_id)
         self._runtime = PersonalityRuntime(
             sweary=bool(sweary),
@@ -76,10 +105,10 @@ class PersonalityPack:
             pearl_frequency=self._clamp_pearl_frequency(pearl_frequency),
         )
 
-    @staticmethod
-    def _normalize(profile_id: str | None) -> str:
+    def _normalize(self, profile_id: str | None) -> str:
+        profiles = _PROFILES_EN if self._locale == "en" else _PROFILES_ES
         pid = (profile_id or DEFAULT_PROFILE_ID).strip().lower()
-        return pid if pid in _PROFILES else DEFAULT_PROFILE_ID
+        return pid if pid in profiles else DEFAULT_PROFILE_ID
 
     @staticmethod
     def _normalize_proactivity(value: str | None) -> str:
@@ -99,6 +128,10 @@ class PersonalityPack:
         return self._profile_id
 
     @property
+    def locale(self) -> str:
+        return self._locale
+
+    @property
     def sweary_enabled(self) -> bool:
         return self._runtime.sweary
 
@@ -113,6 +146,11 @@ class PersonalityPack:
     def set_profile(self, profile_id: str) -> str:
         self._profile_id = self._normalize(profile_id)
         return self._profile_id
+
+    def set_locale(self, locale: str | None) -> str:
+        self._locale = normalize_locale(locale)
+        self._profile_id = self._normalize(self._profile_id)
+        return self._locale
 
     def apply_runtime(
         self,
@@ -129,7 +167,8 @@ class PersonalityPack:
             self._runtime.pearl_frequency = self._clamp_pearl_frequency(pearl_frequency)
 
     def get(self) -> PersonalityProfile:
-        return _PROFILES[self._profile_id]
+        profiles = _PROFILES_EN if self._locale == "en" else _PROFILES_ES
+        return profiles[self._profile_id]
 
     def engineer_system_suffix(self) -> str:
         tone = self.get().engineer_tone
@@ -158,8 +197,12 @@ class PersonalityPack:
         return rank >= _PROACTIVE_RANK["LOW"]
 
     def spotter_phrase(self, key: str, **kwargs: str) -> str:
-        return get_picker().spotter_phrase(key, profile_id=self._profile_id, **kwargs)
+        return get_picker(self._locale).spotter_phrase(key, profile_id=self._profile_id, **kwargs)
+
+    def trigger_phrase(self, key: str, **kwargs: str) -> str:
+        return get_picker(self._locale).trigger_phrase(key, profile_id=self._profile_id, **kwargs)
 
     @staticmethod
-    def list_profiles() -> list[PersonalityProfile]:
-        return list(_PROFILES.values())
+    def list_profiles(locale: str = "es") -> list[PersonalityProfile]:
+        profiles = _PROFILES_EN if normalize_locale(locale) == "en" else _PROFILES_ES
+        return list(profiles.values())

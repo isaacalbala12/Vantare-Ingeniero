@@ -1,9 +1,10 @@
 /** Pure helpers for PTT voice → text → pilot_question (unit-tested). */
+import { t, type AppLanguage } from "../i18n/strings";
 
 export const PTT_MIN_QUESTION_CHARS = 2;
 export const PTT_MIN_WAV_BYTES = 512;
 
-export const PTT_EMPTY_MESSAGE = "No te oí. Mantén PTT y repite la pregunta.";
+export const PTT_EMPTY_MESSAGE = t("es", "pttEmptyMessage");
 
 export function mergePttTranscripts(speechRecognitionText: string, backendTranscript: string): string {
   const sr = speechRecognitionText.trim();
@@ -23,10 +24,10 @@ export type PttResolution =
   | { status: "ready"; question: string }
   | { status: "empty"; message: string };
 
-export function resolvePttQuestion(raw: string): PttResolution {
+export function resolvePttQuestion(raw: string, language: AppLanguage = "es"): PttResolution {
   const question = raw.trim();
   if (question.length < PTT_MIN_QUESTION_CHARS) {
-    return { status: "empty", message: PTT_EMPTY_MESSAGE };
+    return { status: "empty", message: t(language, "pttEmptyMessage") };
   }
   return { status: "ready", question };
 }

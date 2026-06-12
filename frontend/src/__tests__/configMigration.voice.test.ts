@@ -70,6 +70,6 @@ describe("VC-R04 config v1 migrates speakOnly and wakeWord", () => {
 
 		// Verify localStorage was updated with new version
 		const stored = JSON.parse(localStorage.getItem("vantare_config") ?? "{}");
-		expect(stored.configSchemaVersion).toBe(5);
+    expect(stored.configSchemaVersion).toBe(6);
 	});
 });

@@ -8,6 +8,8 @@ import {
   mouseButtonToHotkey,
   normalizeHotkey,
 } from "../forms/hotkeyFormat";
+import { t } from "../../i18n/strings";
+import { useAppStore } from "../../store/config";
 
 interface HotkeyCaptureProps {
   value: string;
@@ -15,12 +17,13 @@ interface HotkeyCaptureProps {
   label: string;
 }
 
-function formatHotkeyLabel(value: string): string {
+function formatHotkeyLabel(value: string, uiLanguage: "es" | "en"): string {
   if (isGamepadHotkey(value)) return formatGamepadHotkeyLabel(value);
-  return value || "Sin asignar";
+  return value || t(uiLanguage, "unassigned");
 }
 
 export function HotkeyCapture({ value, onChange, label }: HotkeyCaptureProps) {
+  const uiLanguage = useAppStore((s) => s.config.uiLanguage);
   const [listening, setListening] = useState(false);
   const pressedRef = useRef<Set<string>>(new Set());
 
@@ -94,15 +97,15 @@ export function HotkeyCapture({ value, onChange, label }: HotkeyCaptureProps) {
         className={`hub-input text-left ${listening ? "ring-2 ring-a1-accent" : ""}`}
       >
         {listening
-          ? "Pulsa tecla, botón del ratón o del volante/mando… (Esc cancelar)"
-          : formatHotkeyLabel(value)}
+          ? t(uiLanguage, "captureHotkey")
+          : formatHotkeyLabel(value, uiLanguage)}
       </button>
       {isMouseHotkey(value) ? (
-        <p className="text-[10px] text-a1-text-muted">Ratón: solo con el hub enfocado.</p>
+        <p className="text-[10px] text-a1-text-muted">{t(uiLanguage, "mouseHubOnly")}</p>
       ) : null}
       {isGamepadHotkey(value) ? (
         <p className="text-[10px] text-a1-text-muted">
-          Volante/mando: funciona en pista aunque LMU tenga el foco.
+          {t(uiLanguage, "gamepadWorksOnTrack")}
         </p>
       ) : null}
     </div>

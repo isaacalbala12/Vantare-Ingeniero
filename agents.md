@@ -3,7 +3,9 @@ This file provides guidance to various AI agents when working with code in this 
 
 ## Project Overview
 
-**Vantare Ingeniero IA** is a real-time race strategy assistant for Le Mans Ultimate (LMU). It reads live telemetry from shared memory, computes pit strategies deterministically, and provides natural-language advice to the driver via an LLM backend and TTS synthesis. The frontend is a Tauri/React/TypeScript desktop app.
+**Vantare Ingeniero IA** is a real-time race strategy assistant for Le Mans Ultimate (LMU). It reads live telemetry from shared memory, computes pit strategies deterministically, and provides natural-language advice to the driver via an LLM backend and TTS synthesis. The frontend is an **Electron/React/TypeScript** desktop app (Hub + overlay); audio playback runs in the **Python backend** (Voice Beta v0.2.14+).
+
+> **Canonical documentation:** [`docs/proyecto/README.md`](docs/proyecto/README.md) — handbook, architecture, roadmap, orchestrator prompt.
 
 ## High-Level Architecture
 

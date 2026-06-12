@@ -1,4 +1,6 @@
 import type React from "react";
+import { t, type AppLanguage } from "../../i18n/strings";
+import { useAppStore } from "../../store/config";
 
 export type ProactivityLevel = "low" | "normal" | "high";
 export type ProfileId = "formal" | "standard" | "aggressive";
@@ -6,18 +8,16 @@ export type ProfileId = "formal" | "standard" | "aggressive";
 export function engineerTonePreview(
   profileId: ProfileId,
   sweary: boolean,
+  language: AppLanguage = "es",
 ): string {
   const tones: Record<string, string> = {
-    formal: "Tono profesional y preciso. Sin muletillas. Máximo 2 frases.",
-    standard:
-      "Tono de radio de boxes: directo, claro, motivador sin excesos.",
-    aggressive:
-      "Tono enérgico y exigente. Empuja al piloto. Máximo 2 frases contundentes.",
+    formal: t(language, "toneFormal"),
+    standard: t(language, "toneStandard"),
+    aggressive: t(language, "toneAggressive"),
   };
   let text = tones[profileId] ?? tones.standard;
   if (sweary) {
-    text +=
-      " Lenguaje coloquial de paddock permitido; evita prefijos robóticos tipo «Atención».";
+    text += t(language, "toneSwearySuffix");
   }
   return text;
 }
@@ -43,12 +43,13 @@ export const PersonalityPanel: React.FC<PersonalityPanelProps> = ({
   onProactivity,
   onPearlFrequency,
 }) => {
-  const preview = engineerTonePreview(personalityProfileId, swearyMessages);
+  const uiLanguage = useAppStore((s) => s.config.uiLanguage);
+  const preview = engineerTonePreview(personalityProfileId, swearyMessages, uiLanguage);
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-1">
-        <label className="hub-label">Proactividad del ingeniero</label>
+        <label className="hub-label">{t(uiLanguage, "engineerProactivity")}</label>
         <select
           value={proactivityLevel}
           onChange={(e) =>
@@ -56,15 +57,15 @@ export const PersonalityPanel: React.FC<PersonalityPanelProps> = ({
           }
           className="hub-input"
         >
-          <option value="low">Baja (solo HIGH+CRITICAL)</option>
-          <option value="normal">Normal (MEDIUM+)</option>
-          <option value="high">Alta (todo incluso LOW)</option>
+          <option value="low">{t(uiLanguage, "proactivityLow")}</option>
+          <option value="normal">{t(uiLanguage, "proactivityNormal")}</option>
+          <option value="high">{t(uiLanguage, "proactivityHigh")}</option>
         </select>
       </div>
 
       <div className="flex flex-col gap-1">
         <label className="hub-label">
-          Frecuencia de perlas ({Math.round(pearlFrequency * 100)}%)
+          {t(uiLanguage, "pearlFrequency")} ({Math.round(pearlFrequency * 100)}%)
         </label>
         <input
           type="range"
@@ -76,15 +77,15 @@ export const PersonalityPanel: React.FC<PersonalityPanelProps> = ({
         />
         <span className="text-[10px] text-a1-text-muted">
           {pearlFrequency <= 0
-            ? "Sin perlas de sabiduría"
+            ? t(uiLanguage, "noPearls")
             : pearlFrequency >= 1
-              ? "Máxima frecuencia de perlas"
-              : "Perlas ocasionales"}
+              ? t(uiLanguage, "maxPearls")
+              : t(uiLanguage, "occasionalPearls")}
         </span>
       </div>
 
       <p className="text-[10px] text-a1-text-muted italic leading-relaxed">
-        Preview: {preview}
+        {t(uiLanguage, "preview")}: {preview}
       </p>
     </div>
   );

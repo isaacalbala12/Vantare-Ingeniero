@@ -6,7 +6,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 _DATA = Path(__file__).resolve().parent.parent / "data"
-_picker_singleton: PhrasePicker | None = None
+_picker_singletons: dict[str, PhrasePicker] = {}
+
+
+def normalize_locale(locale: str | None) -> str:
+    return "en" if locale == "en" else "es"
 
 
 def pick_variant(template: str, *, seed: int | None = None) -> str:
@@ -25,18 +29,19 @@ class PhrasePicker:
     triggers: dict[str, dict[str, str]]
 
     @classmethod
-    def load_bundle_defaults(cls) -> "PhrasePicker":
-        spotter_path = _DATA / "spotter_phrases_es.json"
-        trigger_path = _DATA / "trigger_phrases_es.json"
+    def load_bundle_defaults(cls, locale: str = "es") -> "PhrasePicker":
+        locale = normalize_locale(locale)
+        spotter_path = _DATA / f"spotter_phrases_{locale}.json"
+        trigger_path = _DATA / f"trigger_phrases_{locale}.json"
         spotter = json.loads(spotter_path.read_text(encoding="utf-8")) if spotter_path.is_file() else {}
         triggers = json.loads(trigger_path.read_text(encoding="utf-8")) if trigger_path.is_file() else {}
         return cls(spotter=spotter, triggers=triggers)
 
     @classmethod
-    def load_defaults(cls) -> "PhrasePicker":
+    def load_defaults(cls, locale: str = "es") -> "PhrasePicker":
         from src.intelligence.phrase_catalog import PhraseCatalog
 
-        catalog = PhraseCatalog.load_merged()
+        catalog = PhraseCatalog.load_merged(locale=normalize_locale(locale))
         return cls(spotter=catalog.spotter, triggers=catalog.triggers)
 
     @classmethod
@@ -65,20 +70,18 @@ class PhrasePicker:
             return text
 
 
-def reload_picker() -> PhrasePicker:
-    global _picker_singleton
+def reload_picker(locale: str = "es") -> PhrasePicker:
+    locale = normalize_locale(locale)
     from src.intelligence.phrase_catalog import PhraseCatalog
 
-    catalog = PhraseCatalog.load_merged()
-    _picker_singleton = PhrasePicker(spotter=catalog.spotter, triggers=catalog.triggers)
-    return _picker_singleton
+    catalog = PhraseCatalog.load_merged(locale=locale)
+    picker = PhrasePicker(spotter=catalog.spotter, triggers=catalog.triggers)
+    _picker_singletons[locale] = picker
+    return picker
 
 
-def get_picker() -> PhrasePicker:
-    global _picker_singleton
-    if _picker_singleton is None:
-        reload_picker()
-    return _picker_singleton
+def get_picker(locale: str = "es") -> PhrasePicker:
+    return reload_picker(locale)
 
 
 def profile_from_session(session: dict | None) -> str:
@@ -86,6 +89,12 @@ def profile_from_session(session: dict | None) -> str:
         return "standard"
     pid = str(session.get("personalityProfileId") or "standard").strip().lower()
     return pid if pid in ("standard", "formal", "aggressive") else "standard"
+
+
+def locale_from_session(session: dict | None) -> str:
+    if not session:
+        return "es"
+    return normalize_locale(str(session.get("voiceLanguage") or "es").strip().lower())
 
 
 def trigger_phrase_for_session(
@@ -96,7 +105,7 @@ def trigger_phrase_for_session(
     seed: int | None = None,
     **kwargs: str,
 ) -> str:
-    msg = get_picker().trigger_phrase(
+    msg = get_picker(locale_from_session(session)).trigger_phrase(
         key,
         profile_id=profile_from_session(session),
         seed=seed,
@@ -105,6 +114,6 @@ def trigger_phrase_for_session(
     return msg or fallback
 
 
-def spotter_phrase_for_cache(key: str, *, profile_id: str = "standard", seed: int = 0) -> str:
+def spotter_phrase_for_cache(key: str, *, profile_id: str = "standard", seed: int = 0, locale: str = "es") -> str:
     """Primera variante estable para precalentar caché TTS spotter."""
-    return get_picker().spotter_phrase(key, profile_id=profile_id, seed=seed)
+    return get_picker(locale).spotter_phrase(key, profile_id=profile_id, seed=seed)

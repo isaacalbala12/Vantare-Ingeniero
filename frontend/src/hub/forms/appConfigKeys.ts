@@ -11,6 +11,7 @@ export const APP_CONFIG_KEYS = [
   "brakingZonesMute", "speakOnlyWhenSpokenTo", "ttsVolumeBoost",
   "spotterEnabled", "engineerEnabled",
   "proactivityLevel", "pearlFrequency",
+  "uiLanguage", "voiceLanguage",
 ] as const satisfies readonly (keyof AppConfig)[];
 
 export function assertFullAppConfig(payload: AppConfig): void {

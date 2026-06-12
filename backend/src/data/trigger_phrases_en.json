@@ -1,0 +1,32 @@
+{
+  "fuel_critical": {
+    "standard": "You have less than three laps of fuel left|Fuel for less than three laps, plan a stop",
+    "formal": "Fuel range below three laps. Plan a stop.",
+    "aggressive": "You are running out in three laps! Pit now"
+  },
+  "fcy_active": {
+    "standard": "Full course yellow, lift off|FCY on track, reduce pace",
+    "formal": "Full course yellow active. Reduce speed.",
+    "aggressive": "FCY! Lift off now"
+  },
+  "rain_increasing": {
+    "standard": "Rain probability increasing|Watch out, rain may come soon",
+    "formal": "Rain probability rising.",
+    "aggressive": "Rain coming, be ready"
+  },
+  "brake_wear_high": {
+    "standard": "Brake wear high, take care under braking|Brake wear above eighty percent",
+    "formal": "Critical brake wear. Reduce braking load.",
+    "aggressive": "Brakes at the limit! Careful under braking"
+  },
+  "tyre_wear_high": {
+    "standard": "Tyre wear high, pace dropping|Tyres are falling off, manage pace",
+    "formal": "High tyre degradation. Pace compromised.",
+    "aggressive": "Tyres are gone! Manage them now"
+  },
+  "pit_window_opened": {
+    "standard": "Pit window open, you can come in|Pits open, pit window has started",
+    "formal": "Pit window active. Analysing optimal strategy.",
+    "aggressive": "Pit window is open! Come in when ready"
+  }
+}

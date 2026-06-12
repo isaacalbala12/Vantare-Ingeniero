@@ -1,16 +1,28 @@
 import React, { useState } from "react";
 import { HubSidebar } from "./components/HubSidebar";
 import { HubHeader } from "./components/HubHeader";
-import { HUB_SECTIONS, type HubSection } from "./routes";
+import { type HubSection } from "./routes";
 import { InicioPage } from "./pages/InicioPage";
 import { HistorialPage } from "./pages/HistorialPage";
 import ConfigTab from "../components/ConfigTab";
+import { useAppStore } from "../store/config";
+import { t } from "../i18n/strings";
 
 interface AppShellProps {
   backendOk: boolean;
   lmuOk: boolean;
   llmOk: boolean;
 }
+
+const SECTION_TITLE_KEY: Record<HubSection, Parameters<typeof t>[1]> = {
+  inicio: "home",
+  ingeniero: "engineer",
+  spotter: "spotter",
+  audio: "audio",
+  perfiles: "profiles",
+  avanzado: "advanced",
+  historial: "history",
+};
 
 function renderSection(section: HubSection): React.ReactNode {
   switch (section) {
@@ -35,11 +47,12 @@ function renderSection(section: HubSection): React.ReactNode {
 
 export function AppShell({ backendOk, lmuOk, llmOk }: AppShellProps) {
   const [section, setSection] = useState<HubSection>("inicio");
-  const title = HUB_SECTIONS.find((s) => s.id === section)?.label ?? "Inicio";
+  const uiLanguage = useAppStore((s) => s.config.uiLanguage);
+  const title = t(uiLanguage, SECTION_TITLE_KEY[section]);
 
   return (
     <div className="hub-root w-screen h-screen flex overflow-hidden">
-      <HubSidebar active={section} onNavigate={setSection} items={HUB_SECTIONS} />
+      <HubSidebar active={section} onNavigate={setSection} />
       <div className="flex-1 flex flex-col min-w-0">
         <HubHeader title={title} backendOk={backendOk} lmuOk={lmuOk} llmOk={llmOk} />
         <main className="flex-1 overflow-auto p-6 bg-a1-bg">

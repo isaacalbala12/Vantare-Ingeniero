@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { useAppStore } from "../../store/config";
+import { t } from "../../i18n/strings";
 import {
   OVERLAY_SPEAKING_MESSAGE_MAX_HEIGHT_PX,
   OVERLAY_SPEAKING_WIDTH_PX,
@@ -8,6 +9,7 @@ import {
 const WAVE_HEIGHTS = [45, 70, 55, 80, 60, 75];
 
 export const A1SpeakingCard = memo(function A1SpeakingCard() {
+  const uiLanguage = useAppStore((s) => s.config.uiLanguage);
   const voicePlaybackText = useAppStore((s) => s.radio.voicePlaybackText);
   const activeMessage = voicePlaybackText.trim() || "…";
 
@@ -34,7 +36,7 @@ export const A1SpeakingCard = memo(function A1SpeakingCard() {
           >
             Vantare
           </div>
-          <div className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#c42040]">Hablando</div>
+          <div className="text-[10px] font-medium tracking-[0.35em] uppercase text-[#c42040]">{t(uiLanguage, "speaking")}</div>
         </div>
 
         <div className="flex items-end gap-[2.5px] h-[18px] mb-3">
@@ -65,11 +67,11 @@ export const A1SpeakingCard = memo(function A1SpeakingCard() {
             className="text-[8.5px] font-medium tracking-[0.25em] uppercase text-[rgba(244,244,245,0.35)]"
             style={{ fontFamily: "var(--font-a1-display)" }}
           >
-            Engineer channel
+            {t(uiLanguage, "engineerChannel")}
           </div>
           <div className="overlay-a1-live-dot text-[9px] font-semibold tracking-[0.15em] uppercase text-[#c42040] flex items-center gap-1.5">
             <span className="inline-block w-[5px] h-[5px] rounded-full bg-[#c42040]" />
-            Live
+            {t(uiLanguage, "live")}
           </div>
         </div>
       </div>

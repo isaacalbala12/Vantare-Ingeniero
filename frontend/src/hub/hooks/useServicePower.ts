@@ -1,11 +1,13 @@
 import { useCallback, useState } from "react";
 import { useAppStore } from "../../store/config";
 import { sendWsCommand } from "../../services/wsCommands";
+import { t } from "../../i18n/strings";
 
 export function useServicePower() {
   const spotterEnabled = useAppStore((s) => s.config.spotterEnabled);
   const engineerEnabled = useAppStore((s) => s.config.engineerEnabled);
   const wsConnected = useAppStore((s) => s.connectivity.wsStatus === "CONNECTED");
+  const uiLanguage = useAppStore((s) => s.config.uiLanguage);
   const updateConfig = useAppStore((s) => s.updateConfig);
   const [syncError, setSyncError] = useState<string | null>(null);
 
@@ -20,12 +22,12 @@ export function useServicePower() {
       const ok = sendWsCommand(command, { action: next ? "enable" : "disable" });
       if (!ok) {
         updateConfig({ [key]: prev });
-        setSyncError("No se pudo sincronizar con el backend. Revisa la conexión.");
+        setSyncError(t(uiLanguage, "backendSyncFailed"));
         return;
       }
       setSyncError(null);
     },
-    [updateConfig],
+    [updateConfig, uiLanguage],
   );
 
   const toggleSpotter = useCallback(() => {

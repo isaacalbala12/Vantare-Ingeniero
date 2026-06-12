@@ -2,6 +2,9 @@ import { create } from "zustand";
 import { migrateTtsVolumePercent } from "../hub/forms/volumeMigration";
 import { isInternalRadioText } from "../hub/forms/telemetryFilters";
 import { getPlatform } from "../core/platform";
+import { normalizeLanguage, type AppLanguage } from "../i18n/strings";
+
+export type { AppLanguage };
 
 export type WebSocketStatus = "CONNECTING" | "CONNECTED" | "DISCONNECTED";
 export type RadioMode =
@@ -102,6 +105,8 @@ export interface AppConfig {
 	voiceBackendPlayback: boolean;
 	proactivityLevel: "low" | "normal" | "high";
 	pearlFrequency: number;
+	uiLanguage: AppLanguage;
+	voiceLanguage: AppLanguage;
 }
 
 // --- INTERFAZ GLOBAL DEL STORE ---
@@ -162,7 +167,7 @@ function normalizePttHotkey(value: string | undefined): string {
 	return trimmed || DEFAULT_PTT_HOTKEY;
 }
 
-const CONFIG_SCHEMA_VERSION = 5;
+const CONFIG_SCHEMA_VERSION = 6;
 
 const loadSavedConfig = (): AppConfig => {
 	try {
@@ -174,6 +179,7 @@ const loadSavedConfig = (): AppConfig => {
 			const migrateV3 = schemaVersion < 3;
 			const migrateV4 = schemaVersion < 4;
 			const migrateV5 = schemaVersion < 5;
+			const migrateV6 = schemaVersion < 6;
 			const config: AppConfig = {
 				vllmIP: parsed.vllmIP ?? "127.0.0.1",
 				serverPort: parsed.serverPort ?? 8008,
@@ -219,6 +225,8 @@ const loadSavedConfig = (): AppConfig => {
 				voiceBackendPlayback: migrateV4
 					? true
 					: (parsed.voiceBackendPlayback ?? true),
+				uiLanguage: migrateV6 ? "es" : normalizeLanguage(parsed.uiLanguage),
+				voiceLanguage: migrateV6 ? "es" : normalizeLanguage(parsed.voiceLanguage),
 			};
 			if (legacy) {
 				try {
@@ -277,6 +285,8 @@ const loadSavedConfig = (): AppConfig => {
 		voiceBackendPlayback: true,
 		proactivityLevel: "normal",
 		pearlFrequency: 0.5,
+		uiLanguage: "es",
+		voiceLanguage: "es",
 	};
 };
 
@@ -386,7 +396,12 @@ export const useAppStore = create<GlobalStore>((set) => ({
 		})),
 	updateConfig: (newConfig) =>
 		set((state) => {
-			const updated = { ...state.config, ...newConfig };
+			const updated = {
+				...state.config,
+				...newConfig,
+				uiLanguage: normalizeLanguage(newConfig.uiLanguage ?? state.config.uiLanguage),
+				voiceLanguage: normalizeLanguage(newConfig.voiceLanguage ?? state.config.voiceLanguage),
+			};
 			try {
 				localStorage.setItem("vantare_config", JSON.stringify(updated));
 			} catch (e) {
@@ -408,6 +423,8 @@ export const useAppStore = create<GlobalStore>((set) => ({
 		set(() => {
 			const normalized: AppConfig = {
 				...config,
+				uiLanguage: normalizeLanguage(config.uiLanguage),
+				voiceLanguage: normalizeLanguage(config.voiceLanguage),
 				ttsVolumeBoost: migrateTtsVolumePercent(config.ttsVolumeBoost),
 			};
 			try {

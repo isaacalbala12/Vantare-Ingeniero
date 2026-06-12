@@ -1,6 +1,7 @@
 import type React from "react";
 import { useState, useEffect, useRef } from "react";
-import { useAppStore, type AppConfig } from "../store/config";
+import { useAppStore, type AppConfig, type AppLanguage } from "../store/config";
+import { normalizeLanguage, t } from "../i18n/strings";
 import { sendConfigUpdate } from "../services/configUpdateWs";
 import { sendTestAudio } from "../services/wsCommands";
 import { validateSpotterFields } from "../hub/forms/configValidation";
@@ -148,6 +149,8 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 	const [pearlFrequency, setPearlFrequency] = useState(
 		config.pearlFrequency ?? 0.5,
 	);
+	const [uiLanguage, setUiLanguage] = useState<AppLanguage>(normalizeLanguage(config.uiLanguage));
+	const [voiceLanguage, setVoiceLanguage] = useState<AppLanguage>(normalizeLanguage(config.voiceLanguage));
 
 	const [phraseMerged, setPhraseMerged] = useState<PhraseCatalog | null>(null);
 	const [phraseDefaults, setPhraseDefaults] = useState<PhraseCatalog | null>(
@@ -327,6 +330,8 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 			spotterEnabled: config.spotterEnabled,
 			engineerEnabled: config.engineerEnabled,
 			voiceBackendPlayback: config.voiceBackendPlayback,
+			uiLanguage,
+			voiceLanguage,
 		};
 		assertFullAppConfig(payload);
 		return payload;
@@ -366,6 +371,8 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		setSpotterRaceStartDelayS(merged.spotterRaceStartDelayS ?? 3.0);
 		setBrakingZonesMute(merged.brakingZonesMute ?? false);
 		setTtsVolumeBoost(migrateTtsVolumePercent(merged.ttsVolumeBoost));
+		setUiLanguage(normalizeLanguage(merged.uiLanguage));
+		setVoiceLanguage(normalizeLanguage(merged.voiceLanguage));
 		return merged;
 	};
 
@@ -373,20 +380,20 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		if (!selectedProfile) return;
 		const loaded = await loadProfile(selectedProfile);
 		if (!loaded) {
-			setProfileStatus("❌ No se pudo cargar el perfil");
+			setProfileStatus(`❌ ${t(uiLanguage, "profileLoadFailed")}`);
 			setTimeout(() => setProfileStatus(null), 3000);
 			return;
 		}
 		const merged = applyLoadedConfig(loaded);
 		sendConfigUpdate(merged);
-		setProfileStatus(`✅ Perfil "${selectedProfile}" cargado`);
+		setProfileStatus(`✅ ${t(uiLanguage, "profiles")} "${selectedProfile}"`);
 		setTimeout(() => setProfileStatus(null), 2500);
 	};
 
 	const handleSaveProfile = async () => {
 		const name = (newProfileName || selectedProfile).trim();
 		if (!name) {
-			setProfileStatus("❌ Indica un nombre de perfil");
+			setProfileStatus(`❌ ${t(uiLanguage, "profileNameRequired")}`);
 			setTimeout(() => setProfileStatus(null), 3000);
 			return;
 		}
@@ -395,14 +402,14 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 			buildConfigPayload() as unknown as Record<string, unknown>,
 		);
 		if (!ok) {
-			setProfileStatus("❌ Error al guardar perfil");
+			setProfileStatus(`❌ ${t(uiLanguage, "profileSaveFailed")}`);
 			setTimeout(() => setProfileStatus(null), 3000);
 			return;
 		}
 		setSelectedProfile(name);
 		setNewProfileName("");
 		await refreshProfiles();
-		setProfileStatus(`✅ Perfil "${name}" guardado`);
+		setProfileStatus(`✅ ${t(uiLanguage, "saveProfile")}: "${name}"`);
 		setTimeout(() => setProfileStatus(null), 2500);
 	};
 
@@ -410,13 +417,13 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		if (!selectedProfile) return;
 		const ok = await deleteProfile(selectedProfile);
 		if (!ok) {
-			setProfileStatus("❌ Error al eliminar");
+			setProfileStatus(`❌ ${t(uiLanguage, "profileDeleteFailed")}`);
 			setTimeout(() => setProfileStatus(null), 3000);
 			return;
 		}
 		setSelectedProfile("");
 		await refreshProfiles();
-		setProfileStatus("✅ Perfil eliminado");
+		setProfileStatus(`✅ ${t(uiLanguage, "profileDeleted")}`);
 		setTimeout(() => setProfileStatus(null), 2500);
 	};
 
@@ -495,31 +502,31 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 
 	// 3. Test de conexión
 	const handleTestConnection = async () => {
-		setTestStatus("Probando...");
+			setTestStatus(t(uiLanguage, "testing"));
 		try {
 			const health = await getHealth();
 			if (health?.status === "ok") {
-				setTestStatus("✅ Backend OK");
+				setTestStatus(`✅ ${t(uiLanguage, "backendOK")}`);
 			} else {
-				setTestStatus("❌ Backend no responde");
+				setTestStatus(`❌ ${t(uiLanguage, "backendNoResponse")}`);
 			}
 		} catch (e) {
-			setTestStatus("❌ Error de conexión");
+			setTestStatus(`❌ ${t(uiLanguage, "connectionError")}`);
 		}
 		setTimeout(() => setTestStatus(null), 3000);
 	};
 
 	const handlePhraseSave = async () => {
 		if (!phraseMerged || !phraseDefaults || !phraseUser) {
-			setPhraseStatus("Catálogo de frases no cargado todavía");
+			setPhraseStatus(t(uiLanguage, "phrasesNotLoaded"));
 			return;
 		}
 		if (!phraseKey) {
-			setPhraseStatus("Selecciona una clave de frase antes de guardar");
+			setPhraseStatus(t(uiLanguage, "selectPhraseBeforeSave"));
 			return;
 		}
 		setPhraseBusy(true);
-		setPhraseStatus("Guardando…");
+		setPhraseStatus(t(uiLanguage, "saving"));
 		const template = linesToTemplate(phraseDraft);
 		const nextUser = buildUserOverrides(
 			phraseMerged,
@@ -537,7 +544,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 			return;
 		}
 		await refreshPhraseCatalogs();
-		setPhraseStatus("Frase guardada — caché spotter actualizado");
+		setPhraseStatus(t(uiLanguage, "phraseSaved"));
 		setPhraseBusy(false);
 		setTimeout(() => setPhraseStatus(""), 4000);
 	};
@@ -553,7 +560,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		anchor.download = "vantare-user-phrases.json";
 		anchor.click();
 		URL.revokeObjectURL(url);
-		setPhraseStatus("Exportado user_phrases.json");
+		setPhraseStatus(t(uiLanguage, "exportedUserPhrases"));
 		setTimeout(() => setPhraseStatus(""), 3000);
 	};
 
@@ -569,26 +576,26 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		if (!file) return;
 		if (
 			!window.confirm(
-				"¿Importar frases? Se fusionarán con tus overrides actuales. Usa export + edición manual para reemplazo total.",
+				t(uiLanguage, "importPhrasesConfirm"),
 			)
 		) {
 			return;
 		}
 		setPhraseBusy(true);
-		setPhraseStatus("Importando…");
+		setPhraseStatus(t(uiLanguage, "importing"));
 		try {
 			const text = await file.text();
 			const payload = JSON.parse(text) as Partial<PhraseCatalog>;
 			const result = await importPhrases(payload, { replace: false });
 			if (!result.ok) {
-				setPhraseStatus(`Error: ${result.detail ?? "import inválido"}`);
+				setPhraseStatus(`Error: ${result.detail ?? t(uiLanguage, "invalidImport")}`);
 				setPhraseBusy(false);
 				return;
 			}
 			await refreshPhraseCatalogs();
-			setPhraseStatus("Importación completada");
+			setPhraseStatus(t(uiLanguage, "importComplete"));
 		} catch {
-			setPhraseStatus("JSON inválido");
+			setPhraseStatus(t(uiLanguage, "invalidJson"));
 		}
 		setPhraseBusy(false);
 		setTimeout(() => setPhraseStatus(""), 4000);
@@ -597,21 +604,21 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 	const handlePhraseReset = async () => {
 		if (
 			!window.confirm(
-				"¿Restaurar todas las frases al bundle por defecto? Se borrarán tus overrides en AppData.",
+				t(uiLanguage, "resetPhrasesConfirm"),
 			)
 		) {
 			return;
 		}
 		setPhraseBusy(true);
-		setPhraseStatus("Restaurando defaults…");
+		setPhraseStatus(t(uiLanguage, "restoringDefaults"));
 		const ok = await resetPhrases();
 		if (!ok) {
-			setPhraseStatus("Error al restaurar defaults");
+			setPhraseStatus(t(uiLanguage, "resetDefaultsFailed"));
 			setPhraseBusy(false);
 			return;
 		}
 		await refreshPhraseCatalogs();
-		setPhraseStatus("Overrides eliminados — bundle restaurado");
+		setPhraseStatus(t(uiLanguage, "overridesDeleted"));
 		setPhraseBusy(false);
 		setTimeout(() => setPhraseStatus(""), 4000);
 	};
@@ -621,7 +628,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		// Validar IP
 		const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$|^localhost$|^[a-zA-Z0-9.-]+$/;
 		if (!vllmIP.trim() || !ipRegex.test(vllmIP.trim())) {
-			setSaveStatus("❌ IP inválida (ej: 192.168.1.100 o localhost)");
+			setSaveStatus(`❌ ${t(uiLanguage, "invalidIp")}`);
 			setTimeout(() => setSaveStatus(null), 3000);
 			return;
 		}
@@ -634,13 +641,13 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		}
 		// Validar hotkey START (no vacío)
 		if (!pttHotkey.trim()) {
-			setSaveStatus("❌ START no puede estar vacío");
+			setSaveStatus(`❌ ${t(uiLanguage, "pttStartEmpty")}`);
 			setTimeout(() => setSaveStatus(null), 3000);
 			return;
 		}
 		// Validar hotkey STOP (no vacío)
 		if (!pttStopHotkey.trim()) {
-			setSaveStatus("❌ STOP no puede estar vacío");
+			setSaveStatus(`❌ ${t(uiLanguage, "pttStopEmpty")}`);
 			setTimeout(() => setSaveStatus(null), 3000);
 			return;
 		}
@@ -693,7 +700,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 		const payload = buildConfigPayload();
 		updateConfig(payload);
 		sendConfigUpdate(payload);
-		setSaveStatus("✅ Guardado");
+		setSaveStatus(`✅ ${t(uiLanguage, "saved")}`);
 		setTimeout(() => setSaveStatus(null), 2000);
 	};
 
@@ -748,10 +755,10 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 							}`}
 						>
 							{tab === "conexion"
-								? "Conexión"
+								? t(uiLanguage, "connectionTab")
 								: tab === "audio"
-									? "Audio"
-									: "Voz"}
+									? t(uiLanguage, "audioTab")
+									: t(uiLanguage, "voiceTab")}
 						</button>
 					))}
 				</div>
@@ -765,7 +772,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 						{!showProfilesOnly && (
 							<>
 								<div className="flex flex-col gap-1">
-									<label className="hub-label">IP del Servidor</label>
+									<label className="hub-label">{t(uiLanguage, "serverIp")}</label>
 									<input
 										type="text"
 										value={vllmIP}
@@ -774,7 +781,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									/>
 								</div>
 								<div className="flex flex-col gap-1">
-									<label className="hub-label">Puerto</label>
+									<label className="hub-label">{t(uiLanguage, "port")}</label>
 									<input
 										type="number"
 										value={serverPort}
@@ -787,7 +794,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 										onClick={handleTestConnection}
 										className="hub-btn-primary"
 									>
-										Probar conexión
+										{t(uiLanguage, "testConnection")}
 									</button>
 									{testStatus && (
 										<span className="text-[12px] text-a1-text-muted">
@@ -795,13 +802,39 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 										</span>
 									)}
 								</div>
+								{!showProfilesOnly && (
+									<div className="flex flex-col gap-2 mt-1">
+										<label className="hub-label">{t(uiLanguage, "uiLanguage")}</label>
+										<select
+											value={uiLanguage}
+											onChange={(e) => setUiLanguage(normalizeLanguage(e.target.value))}
+											className="hub-input"
+										>
+											<option value="es">Español</option>
+											<option value="en">English</option>
+										</select>
+									</div>
+								)}
+								{!showProfilesOnly && (
+									<div className="flex flex-col gap-2">
+										<label className="hub-label">{t(uiLanguage, "voiceLanguage")}</label>
+										<select
+											value={voiceLanguage}
+											onChange={(e) => setVoiceLanguage(normalizeLanguage(e.target.value))}
+											className="hub-input"
+										>
+											<option value="es">Español</option>
+											<option value="en">English</option>
+										</select>
+									</div>
+								)}
 								{connectivity.backendHealth && (
 									<div className="mt-2 p-2 bg-hub-card border border-hub-border rounded text-[10px] flex flex-col gap-1">
 										<div className="text-a1-text-muted uppercase tracking-wider mb-1">
-											Estado del Backend:
+											{t(uiLanguage, "backendStatus")}
 										</div>
 										<div>
-											Shared Memory:{" "}
+											{t(uiLanguage, "sharedMemory")}:{" "}
 											<span
 												className={
 													connectivity.backendHealth.shared_memory
@@ -839,7 +872,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 											</span>
 										</div>
 										<div>
-											WebSocket:{" "}
+											{t(uiLanguage, "websocket")}:{" "}
 											<span
 												className={
 													connectivity.backendHealth.websocket
@@ -858,14 +891,14 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 							(!section && activeTab === "conexion")) && (
 							<div className="mt-3 p-2 bg-hub-card border border-hub-border rounded flex flex-col gap-2">
 								<div className="text-[10px] text-[#666] uppercase tracking-wider">
-									Perfiles
+									{t(uiLanguage, "profiles")}
 								</div>
 								<select
 									value={selectedProfile}
 									onChange={(e) => setSelectedProfile(e.target.value)}
 									className="bg-[#111] border border-[#333] rounded px-2 py-1.5 text-[12px] text-white"
 								>
-									<option value="">Seleccionar perfil...</option>
+									<option value="">{t(uiLanguage, "selectProfile")}</option>
 									{profiles.map((p) => (
 										<option key={p} value={p}>
 											{p}
@@ -874,7 +907,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 								</select>
 								<input
 									type="text"
-									placeholder="Nombre nuevo (ej: endurance)"
+									placeholder={t(uiLanguage, "newProfilePlaceholder")}
 									value={newProfileName}
 									onChange={(e) => setNewProfileName(e.target.value)}
 									className="bg-[#111] border border-[#333] rounded px-2 py-1.5 text-[12px] text-white"
@@ -884,19 +917,19 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 										onClick={handleLoadProfile}
 										className="text-[10px] bg-[#333] px-2 py-1 rounded uppercase"
 									>
-										Cargar
+										{t(uiLanguage, "loadProfile")}
 									</button>
 									<button
 										onClick={handleSaveProfile}
 										className="text-[10px] bg-[#333] px-2 py-1 rounded uppercase"
 									>
-										Guardar
+										{t(uiLanguage, "saveProfile")}
 									</button>
 									<button
 										onClick={handleDeleteProfile}
 										className="text-[10px] bg-[#442222] px-2 py-1 rounded uppercase"
 									>
-										Eliminar
+										{t(uiLanguage, "deleteProfile")}
 									</button>
 								</div>
 								{profileStatus && (
@@ -911,7 +944,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 								onClick={handleSave}
 								className="mt-2 hub-btn-secondary w-fit"
 							>
-								{saveStatus || "Guardar"}
+								{saveStatus || t(uiLanguage, "save")}
 							</button>
 						)}
 					</div>
@@ -924,24 +957,24 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 						<div className="flex flex-col gap-3">
 							<div className="flex flex-col gap-1">
 								<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
-									Dispositivo de Micrófono
+									{t(uiLanguage, "audioDevicesTitle")}
 								</label>
 								<select
 									value={micDevice}
 									onChange={(e) => setMicDevice(e.target.value)}
 									className="bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[12px] text-white focus:border-[#8a2be2] focus:outline-none"
 								>
-									<option value="default">Predeterminado</option>
+									<option value="default">{t(uiLanguage, "defaultDevice")}</option>
 									{micDevices.map((d) => (
 										<option key={d.deviceId} value={d.deviceId}>
-											{d.label || `Micrófono ${d.deviceId.slice(0, 8)}`}
+											{d.label || `Mic ${d.deviceId.slice(0, 8)}`}
 										</option>
 									))}
 								</select>
 							</div>
 							<div className="flex flex-col gap-1">
 								<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
-									Sensibilidad ({sensitivity}%)
+									{t(uiLanguage, "sensitivity")} ({sensitivity}%)
 								</label>
 								<input
 									type="range"
@@ -953,7 +986,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 								/>
 							</div>
 							<div className="mt-2">
-								<Vumeter level={localLevel} label="Nivel del micrófono" />
+								<Vumeter level={localLevel} label={t(uiLanguage, "micLevel")} />
 							</div>
 							<AudioTtsPanel
 								ttsVoiceEngineer={ttsVoiceEngineer}
@@ -990,7 +1023,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 							/>
 							<div className="flex flex-col gap-1">
 								<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
-									Ingeniero TTS
+									{t(uiLanguage, "engineerTts")}
 								</label>
 								<select
 									value={ttsProviderEngineer}
@@ -1005,12 +1038,12 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									<option value="gemini">Gemini (Google)</option>
 								</select>
 								<span className="text-[9px] text-a1-text-muted">
-									Gemini requiere GEMINI_API_KEY en backend
+									{t(uiLanguage, "geminiRequiresKey")}
 								</span>
 							</div>
 							<div className="flex flex-col gap-1">
 								<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
-									Spotter TTS
+									{t(uiLanguage, "spotterTts")}
 								</label>
 								<select
 									value={ttsProviderSpotter}
@@ -1025,7 +1058,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									<option value="gemini">Gemini (Google)</option>
 								</select>
 								<span className="text-[9px] text-a1-text-muted">
-									Gemini requiere GEMINI_API_KEY en backend
+									{t(uiLanguage, "geminiRequiresKey")}
 								</span>
 							</div>
 							<button
@@ -1033,28 +1066,26 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 								className="mt-2 hub-btn-secondary w-fit"
 								onClick={() => {
 									if (!sendTestAudio()) {
-										setSaveStatus("WS desconectado — no se envió test audio");
+										setSaveStatus(t(uiLanguage, "wsDisconnectedTestAudio"));
 									}
 								}}
 							>
-								Probar audio (backend)
+								{t(uiLanguage, "testAudio")}
 							</button>
 							{section === "audio" && showPtt && (
 								<>
 									<HotkeyCapture
-										label="Tecla PTT (START)"
+										label={t(uiLanguage, "pttStartLabel")}
 										value={pttHotkey}
 										onChange={setPttHotkey}
 									/>
 									<HotkeyCapture
-										label="Tecla PTT (STOP)"
+										label={t(uiLanguage, "pttStopLabel")}
 										value={pttStopHotkey}
 										onChange={setPttStopHotkey}
 									/>
 									<p className="text-[10px] text-a1-text-muted leading-relaxed">
-										En pista: atajos globales de teclado. Si START y STOP son
-										distintos, STOP solo con el hub enfocado. Botones del ratón
-										solo con el hub enfocado.
+										{t(uiLanguage, "pttHelp")}
 									</p>
 								</>
 							)}
@@ -1062,7 +1093,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 								onClick={handleSave}
 								className="mt-2 hub-btn-secondary w-fit"
 							>
-								{saveStatus || "Guardar"}
+								{saveStatus || t(uiLanguage, "save")}
 							</button>
 						</div>
 					)}
@@ -1074,12 +1105,12 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 						{showPtt && (
 							<>
 								<HotkeyCapture
-									label="Tecla PTT (START)"
+									label={t(uiLanguage, "pttStartLabel")}
 									value={pttHotkey}
 									onChange={setPttHotkey}
 								/>
 								<HotkeyCapture
-									label="Tecla PTT (STOP)"
+									label={t(uiLanguage, "pttStopLabel")}
 									value={pttStopHotkey}
 									onChange={setPttStopHotkey}
 								/>
@@ -1094,7 +1125,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 										onChange={(e) => setSwearyMessages(e.target.checked)}
 										className="accent-a1-accent"
 									/>
-									Lenguaje de paddock (juramentos opcionales)
+									{t(uiLanguage, "paddockLang")}
 								</label>
 								<PersonalityPanel
 									personalityProfileId={personalityProfileId}
@@ -1107,7 +1138,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									onPearlFrequency={setPearlFrequency}
 								/>
 								<div className="flex flex-col gap-1">
-									<label className="hub-label">Perfil de personalidad</label>
+									<label className="hub-label">{t(uiLanguage, "personalityProfile")}</label>
 									<select
 										value={personalityProfileId}
 										onChange={(e) =>
@@ -1117,13 +1148,13 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 										}
 										className="hub-input"
 									>
-										<option value="formal">Formal</option>
-										<option value="standard">Estándar</option>
-										<option value="aggressive">Agresivo</option>
+										<option value="formal">{t(uiLanguage, "profileFormal")}</option>
+										<option value="standard">{t(uiLanguage, "profileStandard")}</option>
+										<option value="aggressive">{t(uiLanguage, "profileAggressive")}</option>
 									</select>
 								</div>
 								<div className="flex flex-col gap-1">
-									<label className="hub-label">Verbosidad del ingeniero</label>
+									<label className="hub-label">{t(uiLanguage, "verbosity")}</label>
 									<select
 										value={verbosityLevel}
 										onChange={(e) =>
@@ -1134,10 +1165,10 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 										className="hub-input"
 									>
 										<option value="silent">
-											Silencioso (solo crítico + spotter)
+											{t(uiLanguage, "silent")}
 										</option>
-										<option value="normal">Normal</option>
-										<option value="detailed">Detallado</option>
+										<option value="normal">{t(uiLanguage, "normal")}</option>
+										<option value="detailed">{t(uiLanguage, "detailed")}</option>
 									</select>
 								</div>
 								<label className="flex items-center gap-2 text-[12px] text-a1-text cursor-pointer">
@@ -1147,7 +1178,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 										onChange={(e) => setBrakingZonesMute(e.target.checked)}
 										className="accent-a1-accent"
 									/>
-									Silenciar TTS del ingeniero al frenar (zonas de frenada)
+									{t(uiLanguage, "muteBraking")}
 								</label>
 							</>
 						)}
@@ -1156,7 +1187,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 								<div className="grid grid-cols-2 gap-2 mt-1">
 									<div className="flex flex-col gap-1">
 										<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
-											Clear delay (s)
+											{t(uiLanguage, "clearDelay")}
 										</label>
 										<input
 											type="number"
@@ -1172,7 +1203,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									</div>
 									<div className="flex flex-col gap-1">
 										<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
-											Hold repeat (s)
+											{t(uiLanguage, "holdRepeat")}
 										</label>
 										<input
 											type="number"
@@ -1188,7 +1219,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									</div>
 									<div className="flex flex-col gap-1">
 										<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
-											Gap frequency (s)
+											{t(uiLanguage, "gapFrequency")}
 										</label>
 										<input
 											type="number"
@@ -1204,7 +1235,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									</div>
 									<div className="flex flex-col gap-1">
 										<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
-											Car length (m)
+											{t(uiLanguage, "carLength")}
 										</label>
 										<input
 											type="number"
@@ -1220,7 +1251,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									</div>
 									<div className="flex flex-col gap-1">
 										<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
-											Min speed (m/s)
+											{t(uiLanguage, "minSpeed")}
 										</label>
 										<input
 											type="number"
@@ -1236,7 +1267,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									</div>
 									<div className="flex flex-col gap-1">
 										<label className="text-[10px] text-[#aaa] uppercase tracking-wider">
-											Race start delay (s)
+											{t(uiLanguage, "raceStartDelay")}
 										</label>
 										<input
 											type="number"
@@ -1258,8 +1289,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 										onChange={(e) => setSpotterOffQualifying(e.target.checked)}
 										className="accent-[#8a2be2]"
 									/>
-									Silenciar spotter en clasificación (SC y combustible siguen
-									activos)
+									{t(uiLanguage, "muteSpotterQualifying")}
 								</label>
 								<label className="flex items-center gap-2 text-[12px] text-a1-text cursor-pointer">
 									<input
@@ -1268,7 +1298,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 										onChange={(e) => setSpotterExcludeStopped(e.target.checked)}
 										className="accent-a1-accent"
 									/>
-									Ignorar coches parados o en boxes
+									{t(uiLanguage, "ignoreStopped")}
 								</label>
 							</>
 						)}
@@ -1281,7 +1311,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 										onChange={(e) => setMqttEnabled(e.target.checked)}
 										className="accent-a1-accent"
 									/>
-									Publicar telemetría vía MQTT (broker local)
+									{t(uiLanguage, "publishMqtt")}
 								</label>
 								{mqttEnabled && (
 									<div className="grid grid-cols-2 gap-2">
@@ -1306,7 +1336,7 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 									<span className="text-a1-accent">Ctrl+Shift+O</span>
 								</div>
 								<div className="flex flex-col gap-1">
-									<label className="hub-label">Variante overlay</label>
+									<label className="hub-label">{t(uiLanguage, "overlayVariant")}</label>
 									<select
 										defaultValue={
 											localStorage.getItem("overlayVariant") ?? "a1"
@@ -1327,17 +1357,16 @@ export const ConfigTab: React.FC<ConfigTabProps> = ({ section }) => {
 							<div className="mt-2 p-2 bg-hub-card border border-hub-border rounded text-[11px] text-a1-text-muted">
 								{pttHotkey.trim().toLowerCase() ===
 								pttStopHotkey.trim().toLowerCase()
-									? "Modo toggle: pulsa y suelta el botón PTT para transmitir."
-									: "Pulsa START para hablar, pulsa STOP para enviar y recibir respuesta."}{" "}
-								Volante/mando: asigna con el hub abierto; en pista funciona
-								aunque el simulador tenga el foco.
+									? t(uiLanguage, "togglePttMode")
+									: t(uiLanguage, "splitPttMode")}{" "}
+								{t(uiLanguage, "wheelHelp")}
 							</div>
 						)}
 						<button
 							onClick={handleSave}
 							className="mt-2 hub-btn-secondary w-fit"
 						>
-							{saveStatus || "Guardar"}
+							{saveStatus || t(uiLanguage, "save")}
 						</button>
 					</div>
 				)}

@@ -48,7 +48,7 @@
 | **0.3** | Copy + TTS | Frases humanas, Gemini voz premium |
 | **0.4** | Customización | Frases de triggers editables (export/import) |
 | **0.5** | Personalidad | Perfiles avanzados, sweary, verbosidad, mood |
-| **0.6** | Idioma | Inglés (frases + TTS + NumberProcessing) |
+| **0.6** | Idioma | Inglés en toda la app (UI Hub/overlay + frases + TTS + NumberProcessing) |
 | **0.7** | Ingeniero consultable | Fuel, daños, neumáticos, gaps, tiempos, oponentes |
 | **0.8** | Pit Manager LMU | REST write: fuel, tyres, repairs, energy (confirmación voz) |
 | **0.9** | Ship quality LMU | Hardening + validación multi-circuito |
@@ -165,6 +165,8 @@ Opcional (Suite):
 - [ ] `spotter_phrases_en.json` + triggers EN
 - [ ] TTS EN por perfil
 - [ ] Números/tiempos localizados (estilo CC NumberProcessing)
+- [ ] Hub + overlay con textos principales localizados por `uiLanguage`
+- [ ] Selector simple `uiLanguage` / `voiceLanguage` en configuración; onboarding queda para futuro
 
 ### 0.7 — Comandos ingeniero
 - [ ] Tools deterministas: fuel, damage, tyres, gaps, session time, opponents
@@ -214,6 +216,7 @@ Opcional (Suite):
 
 | Documento | Rol |
 |-----------|-----|
+| [`proyecto/README.md`](proyecto/README.md) | **Handbook consolidado** — visión, arquitectura, estado v0.5.1, prompt orquestador |
 | [`superpowers/plans/2026-06-11-roadmap-1.0-ORCHESTRATOR-INDEX.md`](superpowers/plans/2026-06-11-roadmap-1.0-ORCHESTRATOR-INDEX.md) | **Orquestador** — mini-planes 0.3→1.1, gates, protocolo agente |
 | [`superpowers/plans/prompts/2026-06-11-v03-EXECUTOR-PROMPT.md`](superpowers/plans/prompts/2026-06-11-v03-EXECUTOR-PROMPT.md) | **Prompt ejecutor v0.3** (copiar al implementador) |
 | [`superpowers/plans/2026-06-11-roadmap-1.0-master-plan.md`](superpowers/plans/2026-06-11-roadmap-1.0-master-plan.md) | Plan maestro + mapa de archivos |

@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
 import { HubCard } from "../components/HubCard";
 import { getPlatform } from "../../core/platform";
+import { useAppStore } from "../../store/config";
+import { t } from "../../i18n/strings";
 import type { SessionHistoryFile } from "../../core/platform/types";
 
-const SENDER_LABEL: Record<string, string> = {
-  pilot: "Piloto",
-  engineer: "Ingeniero",
-  spotter: "Spotter",
-};
-
 export function HistorialPage() {
+  const uiLanguage = useAppStore((s) => s.config.uiLanguage);
   const [files, setFiles] = useState<string[]>([]);
   const [selected, setSelected] = useState<SessionHistoryFile | null>(null);
 
   useEffect(() => {
     void getPlatform().listSessionHistories().then(setFiles);
   }, []);
+
+  const SENDER_LABEL: Record<string, string> = {
+    pilot: t(uiLanguage, "pilot"),
+    engineer: t(uiLanguage, "engineerLabel"),
+    spotter: t(uiLanguage, "spotterLabel"),
+  };
 
   const loadFile = async (filename: string) => {
     const data = await getPlatform().loadSessionHistory(filename);
@@ -24,10 +27,10 @@ export function HistorialPage() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-      <HubCard title="Sesiones">
+      <HubCard title={t(uiLanguage, "sessions")}>
         <div className="flex flex-col gap-2 max-h-[60vh] overflow-auto">
           {files.length === 0 ? (
-            <p className="text-sm text-a1-text-muted">Sin historial guardado aún.</p>
+            <p className="text-sm text-a1-text-muted">{t(uiLanguage, "noHistory")}</p>
           ) : (
             files.map((file) => (
               <button
@@ -42,9 +45,9 @@ export function HistorialPage() {
           )}
         </div>
       </HubCard>
-      <HubCard title="Mensajes">
+      <HubCard title={t(uiLanguage, "messages")}>
         {!selected ? (
-          <p className="text-sm text-a1-text-muted">Selecciona una sesión para ver el historial.</p>
+          <p className="text-sm text-a1-text-muted">{t(uiLanguage, "selectSession")}</p>
         ) : (
           <div className="flex flex-col gap-3 max-h-[60vh] overflow-auto">
             {selected.messages.map((msg, idx) => (

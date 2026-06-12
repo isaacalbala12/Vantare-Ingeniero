@@ -53,6 +53,14 @@ describe("pttPipeline", () => {
         expect(res.message).toBe(PTT_EMPTY_MESSAGE);
       }
     });
+
+    it("returns English empty message when requested", () => {
+      const res = resolvePttQuestion("  ", "en");
+      expect(res.status).toBe("empty");
+      if (res.status === "empty") {
+        expect(res.message).toContain("I did not hear you");
+      }
+    });
   });
 
   describe("transcribePttWav", () => {

@@ -80,9 +80,12 @@ class BaseTrigger(ABC):
     def resolve_message(self, personality) -> str:
         if not self.phrase_key:
             return self.alert_text
-        from src.intelligence.phrase_picker import get_picker
+        if hasattr(personality, "trigger_phrase"):
+            msg = personality.trigger_phrase(self.phrase_key)
+        else:
+            from src.intelligence.phrase_picker import get_picker
 
-        msg = get_picker().trigger_phrase(self.phrase_key, profile_id=personality.profile_id)
+            msg = get_picker().trigger_phrase(self.phrase_key, profile_id=personality.profile_id)
         return msg or self.alert_text
 
     def _fire_rising_edge(self, active: bool) -> bool:

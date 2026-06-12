@@ -50,6 +50,8 @@ describe("AppStore", () => {
         pttStopHotkey: "Ctrl+Shift+P",
         wakeWordEnabled: false,
         speakOnlyWhenSpokenTo: true,
+        uiLanguage: "es",
+        voiceLanguage: "es",
       },
     });
     localStorage.clear();

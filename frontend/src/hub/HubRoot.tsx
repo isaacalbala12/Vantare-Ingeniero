@@ -18,6 +18,7 @@ import {
   buildPttQuestionText,
   resolvePttQuestion,
 } from "./pttPipeline";
+import { t } from "../i18n/strings";
 
 const isSpeechRecognitionAvailable =
   typeof window !== "undefined" &&
@@ -175,7 +176,7 @@ export function HubRoot() {
       baseUrl,
     );
 
-    const resolved = resolvePttQuestion(questionText);
+    const resolved = resolvePttQuestion(questionText, config.uiLanguage);
     if (resolved.status === "empty") {
       setLatestAdvice(resolved.message);
       setRadioMode("IDLE");
@@ -272,6 +273,7 @@ export function HubRoot() {
   }, []);
 
   const isBackendOnline = connectivity.wsStatus === "CONNECTED";
+  const uiLanguage = useAppStore((s) => s.config.uiLanguage);
   const isLmuOnline = !!(
     connectivity.backendHealth?.shared_memory || connectivity.backendHealth?.lmu_api
   );
@@ -286,15 +288,15 @@ export function HubRoot() {
 
   const desktopUpdateBannerText = (() => {
     const { phase, latestVersion, percent } = desktopUpdate.status;
-    if (phase === "checking") return "Buscando actualizaciones…";
-    if (phase === "available") return "Preparando instalación…";
+    if (phase === "checking") return t(uiLanguage, "checkingUpdates");
+    if (phase === "available") return t(uiLanguage, "preparingInstall");
     if (phase === "downloading") {
       const pct = percent != null ? ` ${Math.round(percent)}%` : "";
       return latestVersion
-        ? `Instalando v${latestVersion}…${pct}`
-        : `Descargando actualización…${pct}`;
+        ? t(uiLanguage, "installingVersion", { version: String(latestVersion), percent: pct })
+        : t(uiLanguage, "downloadingUpdate", { percent: pct });
     }
-    if (phase === "downloaded") return "Reiniciando con la nueva versión…";
+    if (phase === "downloaded") return t(uiLanguage, "restartingNewVersion");
     return "";
   })();
 

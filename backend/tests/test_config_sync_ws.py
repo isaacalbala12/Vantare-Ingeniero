@@ -49,6 +49,29 @@ def test_config_ack_includes_tts_providers():
     assert snap["ttsProviderSpotter"] == "edge"
 
 
+def test_voice_language_updates_tts_voices_and_snapshot():
+    eng = IntelligenceEngine(broadcast_callback=lambda m: None)
+    routing = TtsRouting()
+    eng.set_tts_routing(routing)
+
+    eng.apply_runtime_config({"voiceLanguage": "en"})
+
+    assert routing.edge_voice_engineer == "en-GB-RyanNeural"
+    assert routing.edge_voice_spotter == "en-US-JennyNeural"
+    assert eng.runtime_config_snapshot()["voiceLanguage"] == "en"
+
+
+def test_voice_language_rejects_unknown_locale_to_spanish():
+    eng = IntelligenceEngine(broadcast_callback=lambda m: None)
+    routing = TtsRouting()
+    eng.set_tts_routing(routing)
+
+    eng.apply_runtime_config({"voiceLanguage": "fr"})
+
+    assert routing.edge_voice_engineer == "es-ES-AlvaroNeural"
+    assert eng.runtime_config_snapshot()["voiceLanguage"] == "es"
+
+
 def test_config_payload_includes_personality_v2_fields():
     eng = IntelligenceEngine(broadcast_callback=lambda m: None)
     cfg = {

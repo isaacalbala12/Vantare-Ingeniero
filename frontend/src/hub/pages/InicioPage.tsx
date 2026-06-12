@@ -1,4 +1,5 @@
 import { useAppStore } from "../../store/config";
+import { t } from "../../i18n/strings";
 
 import { HubCard } from "../components/HubCard";
 
@@ -19,6 +20,7 @@ function formatGap(seconds: number): string {
 
 export function InicioPage() {
 
+  const uiLanguage = useAppStore((s) => s.config.uiLanguage);
   const latestAdvice = useAppStore((s) => s.radio.latestAdvice);
   const currentTokens = useAppStore((s) => s.radio.currentTokens);
   const latestAlert = useAppStore((s) => s.radio.latestAlert);
@@ -33,7 +35,7 @@ export function InicioPage() {
   const gapAhead = useAppStore((s) => s.telemetry.gaps?.ahead ?? 0);
   const gapBehind = useAppStore((s) => s.telemetry.gaps?.behind ?? 0);
   const telemetrySource =
-    backendHealth?.shared_memory ? "LMU (memoria compartida)" : "Esperando sesión";
+    backendHealth?.shared_memory ? t(uiLanguage, "telemetrySourceLmu") : t(uiLanguage, "telemetrySourceWaiting");
   const gearLabel = gear === 0 ? "—" : gear === -1 ? "R" : String(gear);
   const telemetryLive = wsStatus === "CONNECTED" && speed > 1;
 
@@ -55,21 +57,19 @@ export function InicioPage() {
 
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
-      <HubCard title="Servicios de radio" className="xl:col-span-2">
+      <HubCard title={t(uiLanguage, "radioServices")} className="xl:col-span-2">
 
         <p className="text-sm text-a1-text-muted mb-4">
-
-          Enciende solo lo que necesites en pista. El PTT sigue disponible con el ingeniero apagado.
-
+          {t(uiLanguage, "radioDescription")}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 
           <PowerToggle
 
-            label="Ingeniero"
+            label={t(uiLanguage, "engineerLabel")}
 
-            description="Comentarios proactivos, estrategia y alertas del jefe de pista."
+            description={t(uiLanguage, "engineerDesc")}
 
             enabled={engineerEnabled}
 
@@ -81,9 +81,9 @@ export function InicioPage() {
 
           <PowerToggle
 
-            label="Spotter"
+            label={t(uiLanguage, "spotterLabel")}
 
-            description="Avisos de tráfico, adelantamientos y proximidad en pista."
+            description={t(uiLanguage, "spotterDesc")}
 
             enabled={spotterEnabled}
 
@@ -97,7 +97,7 @@ export function InicioPage() {
 
         {!wsConnected ? (
           <p className="mt-3 text-xs text-a1-text-muted">
-            Conectando al backend… (el arranque puede tardar hasta 30 s la primera vez)
+            {t(uiLanguage, "connecting")}
           </p>
         ) : null}
         {syncError ? (
@@ -109,7 +109,7 @@ export function InicioPage() {
 
 
 
-      <HubCard title="Telemetría en vivo">
+      <HubCard title={t(uiLanguage, "liveTelemetry")}>
         <div className="flex items-center justify-between mb-3">
           <span className="text-[10px] uppercase tracking-widest text-a1-text-muted">
             {telemetrySource}
@@ -119,59 +119,59 @@ export function InicioPage() {
               telemetryLive ? "text-emerald-400" : "text-a1-text-muted"
             }`}
           >
-            {telemetryLive ? "En pista" : wsStatus === "CONNECTED" ? "Conectado" : "Sin enlace"}
+            {telemetryLive ? t(uiLanguage, "onTrack") : wsStatus === "CONNECTED" ? t(uiLanguage, "connected") : t(uiLanguage, "noLink")}
           </span>
         </div>
         <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
           <div>
-            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">Velocidad</dt>
+            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">{t(uiLanguage, "speed")}</dt>
             <dd className="text-lg font-semibold text-a1-text">{formatSpeedKmh(speed)}</dd>
           </div>
           <div>
-            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">Marcha</dt>
+            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">{t(uiLanguage, "gear")}</dt>
             <dd className="text-lg font-semibold text-a1-text">{gearLabel}</dd>
           </div>
           <div>
-            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">Vuelta</dt>
+            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">{t(uiLanguage, "lap")}</dt>
             <dd className="text-lg font-semibold text-a1-text">{lap > 0 ? lap : "—"}</dd>
           </div>
           <div>
-            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">Posición</dt>
+            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">{t(uiLanguage, "position")}</dt>
             <dd className="text-lg font-semibold text-a1-text">P{position || "—"}</dd>
           </div>
           <div>
-            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">Combustible</dt>
+            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">{t(uiLanguage, "fuel")}</dt>
             <dd className="text-lg font-semibold text-a1-text">{fuel > 0 ? `${fuel.toFixed(1)} L` : "—"}</dd>
           </div>
           <div>
-            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">Delante</dt>
+            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">{t(uiLanguage, "ahead")}</dt>
             <dd className="text-lg font-semibold text-a1-text">{formatGap(gapAhead)}</dd>
           </div>
           <div>
-            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">Detrás</dt>
+            <dt className="text-[10px] uppercase tracking-widest text-a1-text-muted">{t(uiLanguage, "behind")}</dt>
             <dd className="text-lg font-semibold text-a1-text">{formatGap(gapBehind)}</dd>
           </div>
         </dl>
         {!telemetryLive && wsStatus === "CONNECTED" ? (
           <p className="mt-3 text-xs text-a1-text-muted">
-            Entra en pista con LMU en ejecución. Si sigue en cero, revisa que la sesión no esté en menú.
+            {t(uiLanguage, "enterTrack")}
           </p>
         ) : null}
       </HubCard>
 
-      <HubCard title="Radio">
+      <HubCard title={t(uiLanguage, "radio")}>
 
-        <div className="text-[10px] uppercase tracking-widest text-a1-accent mb-2">{mode.replace("_", " ")}</div>
+        <div className="text-[10px] uppercase tracking-widest text-a1-accent mb-2">{mode === "IDLE" ? t(uiLanguage, "idle") : mode.replace("_", " ")}</div>
 
         <p className="text-sm text-a1-text leading-relaxed">
           {mode === "THINKING_LLM"
-            ? (currentTokens || "Pensando…")
-            : (latestAdvice || "Radio silenciosa. Usa PTT para hablar con el ingeniero.")}
+            ? (currentTokens || t(uiLanguage, "thinking"))
+            : (latestAdvice || t(uiLanguage, "radioSilent"))}
         </p>
 
         {latestAlert ? (
 
-          <p className="mt-3 text-sm text-a1-accent-bright">Spotter: {latestAlert}</p>
+          <p className="mt-3 text-sm text-a1-accent-bright">{t(uiLanguage, "spotterAlert", { text: latestAlert })}</p>
 
         ) : null}
 
@@ -179,14 +179,10 @@ export function InicioPage() {
 
 
 
-      <HubCard title="Overlay in-game" className="xl:col-span-2">
+      <HubCard title={t(uiLanguage, "inGameOverlay")} className="xl:col-span-2">
 
         <p className="text-sm text-a1-text-muted leading-relaxed">
-
-          El overlay aparece al mantener PTT (<span className="text-a1-accent">Escuchando</span>)
-          y cuando suena radio — ingeniero o spotter (<span className="text-a1-accent">Hablando</span>).
-          Fuera de eso permanece oculto. Requiere LMU en borderless o ventana y spotter/ingeniero encendidos.
-
+          {t(uiLanguage, "overlayDesc")}
         </p>
 
       </HubCard>

@@ -1,0 +1,38 @@
+{
+  "standard": {
+    "hold_line": "Hold your line, car on {side}|Hold your line, car by {side}",
+    "still_there": "Car still on {side}|Car still there on {side}|Still got a car on {side}",
+    "closing_fast": "Car closing fast on {side}|Car coming quickly on {side}",
+    "clear_left": "Clear left|Left side clear",
+    "clear_right": "Clear right|Right side clear",
+    "clear_all_round": "Clear all around|All clear|No cars nearby",
+    "in_the_middle": "Three wide|Car in the middle|Three cars abreast",
+    "engage_limiter": "Engage pit limiter|Pit limiter, please",
+    "disengage_limiter": "Disengage pit limiter|Lift the limiter, clear of pits",
+    "fuel_critical": "Fuel critical, less than one lap|Fuel for less than one lap, pit now"
+  },
+  "aggressive": {
+    "hold_line": "Hold your line! Car on {side}|Do not move! Car by {side}",
+    "still_there": "Still there on {side}!|Car still on {side}!",
+    "closing_fast": "Closing very fast on {side}!|Car right there on {side}!",
+    "clear_left": "Clear left!|Left side clear!",
+    "clear_right": "Clear right!|Right side clear!",
+    "clear_all_round": "Clear all around!|All clear!",
+    "in_the_middle": "Three wide!|Car in the middle!",
+    "engage_limiter": "Limiter! Engage it now!|Pit limiter now!",
+    "disengage_limiter": "Lift the limiter!|Limiter off!",
+    "fuel_critical": "Fuel critical! Pit now|You are out of fuel, pit now!"
+  },
+  "formal": {
+    "hold_line": "Hold your trajectory, vehicle on {side}|Maintain your line, car on {side}",
+    "still_there": "Vehicle still on {side}|Car still present on {side}",
+    "closing_fast": "Fast approach on {side}|Vehicle closing on {side}",
+    "clear_left": "Clear on the left|Left side clear",
+    "clear_right": "Clear on the right|Right side clear",
+    "clear_all_round": "Clear on both sides|No traffic nearby",
+    "in_the_middle": "Three cars abreast|Vehicle in the middle",
+    "engage_limiter": "Engage pit limiter|Pit limiter, please",
+    "disengage_limiter": "Disengage pit limiter|Pit limiter disengaged",
+    "fuel_critical": "Fuel critical, less than one lap|Range below one lap, pit now"
+  }
+}
